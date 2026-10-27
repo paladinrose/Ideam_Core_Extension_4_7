@@ -1,0 +1,256 @@
+#pragma once
+
+#include "strategies.h"
+#include "../memory_grant_pod.h"
+#include "view_traits.h"
+#include <cstdint>
+#include <type_traits>
+#include <cassert>
+
+namespace ideam::core {
+
+/**
+ * RingView<T, Strategy>
+ * Specialized for circular buffer streaming with optional spatial addressing.
+ * Access is strictly bound to the MemoryBufferSelectionPOD.
+ * Selection logic is applied to the physical buffer index after the read-head offset is calculated.
+ * * [C++26 Enabled]: Multidimensional Subscripts, [[assume]] optimizations, and perfect 48-byte alignment.
+ */
+template<typename T, IsMemoryStrategy Strategy = FlatStrategy>
+struct RingView {
+    // --- 8-Byte Block (32 Bytes) ---
+    T* head_ptr = nullptr;
+    const MemoryGrantPOD* grant = nullptr;
+    uint32_t* read_index_ptr = nullptr;
+    uint32_t* write_index_ptr = nullptr;
+
+    // --- 4-Byte Block (12 Bytes) ---
+    uint32_t grant_part_index = 0;
+    uint32_t baked_buffer_version = 0;
+    uint32_t baked_manager_version = 0;
+
+    // Zero-overhead abstraction. If Strategy is empty, it adds 0 bytes to the struct size.
+    #if defined(_MSC_VER)
+        [[msvc::no_unique_address]] Strategy strategy;
+    #else
+        [[no_unique_address]] Strategy strategy;
+    #endif
+
+    // --- Explicit Alignment Padding (4 Bytes) ---
+    // Locks the base members to exactly 48 bytes (perfect 16-byte multiple).
+    uint8_t reserved_padding[4] = {0};
+
+    // --- Capability Traits ---
+    static constexpr ViewCapability capabilities = 
+        ViewCapability::LINEAR_ACCESS | 
+        ViewCapability::RANDOM_ACCESS |
+        ViewCapability::QUEUE_ACCESS | 
+        (Strategy::is_spatial ? ViewCapability::SPATIAL_ACCESS : ViewCapability::NONE);
+
+    static constexpr BufferLayoutType supported_layouts = BufferLayoutType::RING;
+
+    // Ring arithmetic wraps over physical dimensions, supporting linear sequences or spatial chunks.
+    static constexpr ViewStrategies supported_strategies = 
+        ViewStrategies::ANY_LINEAR | ViewStrategies::ANY_SPATIAL;
+
+    static constexpr DataType supported_types = DataType::ANY;
+
+    static constexpr uint32_t lane_width = 1;
+
+    /**
+     * is_valid
+     * Standard reactive version check.
+     */
+    [[nodiscard]] inline bool is_valid() const noexcept {
+        if (!grant || !grant->active) return false;
+        if (grant_part_index >= grant->part_count) return false;
+
+        const auto& part = grant->parts[grant_part_index];
+        if (part.buffer_version_at_issue != baked_buffer_version) return false;
+        if (grant->global_manager_version_ptr && *grant->global_manager_version_ptr != baked_manager_version) return false;
+        
+        return part.selection.is_valid();
+    }
+
+    /**
+     * Binds the raw memory block to the View's circular buffer pointer.
+     */
+    #if defined(_MSC_VER)
+        [[msvc::forceinline]]
+    #else
+        [[gnu::always_inline]]
+    #endif
+    inline void bind(const GrantPartPOD* p_part) noexcept {
+        head_ptr = reinterpret_cast<T*>(p_part->raw_base_ptr);
+    }
+    
+    /**
+     * operator[] (C++23/26 Multidimensional Subscript)
+     * Handles both 1D Stream polling and ND Spatial Ring mapping.
+     */
+    template<typename... Coords>
+    #if defined(_MSC_VER)
+        [[msvc::forceinline]]
+    #else
+        [[gnu::always_inline]]
+    #endif
+    inline T& operator[](Coords... p_coords) const noexcept {
+        const auto& part = grant->parts[grant_part_index];
+        const auto& selection = part.selection;
+
+        size_t logical_idx = 0;
+
+        // --- 1D LINEAR ACCESS PATH ---
+        if constexpr (sizeof...(Coords) == 1) {
+            size_t p_selection_index = static_cast<size_t>((p_coords, ...));
+            
+            #ifdef NDEBUG
+                [[assume(p_selection_index < static_cast<size_t>(selection.element_count))]];
+            #else
+                assert(p_selection_index < static_cast<size_t>(selection.element_count) && "RingView logical index out of bounds!");
+            #endif
+
+            switch (selection.mode) {
+                case SelectionMode::SPARSE:
+                    logical_idx = static_cast<size_t>(selection.data.indices[p_selection_index]);
+                    break;
+                case SelectionMode::DENSE:
+                    #ifdef NDEBUG
+                        [[assume(selection.is_selected(static_cast<int64_t>(p_selection_index)))]];
+                    #else
+                        assert(selection.is_selected(static_cast<int64_t>(p_selection_index)) && "Accessed unselected DENSE index!");
+                    #endif
+                    logical_idx = p_selection_index;
+                    break;
+                case SelectionMode::RANGE:
+                    logical_idx = static_cast<size_t>(selection.start_index) + p_selection_index;
+                    break;
+            }
+        } 
+        // --- N-DIMENSIONAL SPATIAL ACCESS PATH ---
+        else if constexpr (sizeof...(Coords) > 1 && Strategy::is_spatial) {
+            if constexpr (sizeof...(Coords) == 2) {
+                logical_idx = static_cast<size_t>(strategy.get_index_2d(p_coords..., part.element_stride));
+            } else if constexpr (sizeof...(Coords) == 3) {
+                logical_idx = static_cast<size_t>(strategy.get_index_3d(p_coords..., part.element_stride));
+            } else if constexpr (sizeof...(Coords) == 4) {
+                logical_idx = static_cast<size_t>(strategy.get_index_4d(p_coords..., part.element_stride));
+            }
+        } 
+        else {
+            static_assert(sizeof...(Coords) < 0, "Invalid coordinate dimensions for RingView Strategy!");
+        }
+
+        // Apply read-head offset for circular hardware wrap-around
+        const size_t physical_idx = (*read_index_ptr + logical_idx) % selection.capacity;
+
+        // C++26 Optimizer Hinting: Guarantee the wrapped physical index remains within the bitmask
+        #ifdef NDEBUG
+            [[assume(selection.is_selected(static_cast<int64_t>(physical_idx)))]];
+        #else
+            assert(selection.is_selected(static_cast<int64_t>(physical_idx)) && "Ring physical index is outside selection mask!");
+        #endif
+
+        if constexpr (std::is_empty_v<Strategy>) {
+            return *Strategy::template resolve<T>(head_ptr, physical_idx, part.element_stride, part.capacity_bytes);
+        } else {
+            return *strategy.template resolve<T>(head_ptr, physical_idx, part.element_stride, part.capacity_bytes);
+        }
+    }
+
+    /**
+     * available
+     * Returns the number of unread elements currently in the ring.
+     */
+    [[nodiscard]] inline size_t available() const noexcept {
+        if (*write_index_ptr >= *read_index_ptr) {
+            return *write_index_ptr - *read_index_ptr;
+        }
+        const auto& part = grant->parts[grant_part_index];
+        return (static_cast<size_t>(part.selection.capacity) - *read_index_ptr) + *write_index_ptr;
+    }
+
+    /**
+     * pop
+     * Removes and returns the next element from the ring buffer.
+     * Returns false if the buffer is empty.
+     */
+    #if defined(_MSC_VER)
+        [[msvc::forceinline]]
+    #else
+        [[gnu::always_inline]]
+    #endif
+    inline bool pop(T& out_value) const noexcept {
+        if (available() == 0) return false;
+
+        const auto& part = grant->parts[grant_part_index];
+
+        // Access the value at the current physical read index
+        if constexpr (std::is_empty_v<Strategy>) {
+            out_value = *Strategy::template resolve<T>(head_ptr, *read_index_ptr, part.element_stride, part.capacity_bytes);
+        } else {
+            out_value = *strategy.template resolve<T>(head_ptr, *read_index_ptr, part.element_stride, part.capacity_bytes);
+        }
+
+        // Advance the read index and wrap around the capacity
+        *read_index_ptr = (*read_index_ptr + 1) % part.selection.capacity;
+
+        return true;
+    }
+
+    /**
+     * push
+     * Adds an element to the ring buffer.
+     * Returns false if the buffer is full.
+     */
+    #if defined(_MSC_VER)
+        [[msvc::forceinline]]
+    #else
+        [[gnu::always_inline]]
+    #endif
+    inline bool push(const T& in_value) const noexcept {
+        const auto& part = grant->parts[grant_part_index];
+        const uint32_t cap = part.selection.capacity;
+
+        // Check if full (write_index + 1 == read_index)
+        if ((*write_index_ptr + 1) % cap == *read_index_ptr) {
+            return false; 
+        }
+
+        // Write the value at the current physical write index
+        if constexpr (std::is_empty_v<Strategy>) {
+            *Strategy::template resolve<T>(head_ptr, *write_index_ptr, part.element_stride, part.capacity_bytes) = in_value;
+        } else {
+            *strategy.template resolve<T>(head_ptr, *write_index_ptr, part.element_stride, part.capacity_bytes) = in_value;
+        }
+
+        // Advance the write index and wrap around the capacity
+        *write_index_ptr = (*write_index_ptr + 1) % cap;
+
+        return true;
+    }
+};
+
+#ifndef __INTELLISENSE__
+static_assert(sizeof(RingView<int, FlatStrategy>) == 48, "RingView base layout alignment failed!");
+#endif
+
+template<typename T, IsMemoryStrategy Strategy>
+struct ViewTraits<RingView<T, Strategy>> {
+    static constexpr ViewCapability capabilities = RingView<T, Strategy>::capabilities;
+        
+    static constexpr BufferLayoutType supported_layouts = RingView<T, Strategy>::supported_layouts;
+        
+    static constexpr ViewStrategies supported_strategies = RingView<T, Strategy>::supported_strategies;
+    static constexpr DataType       supported_types      = RingView<T, Strategy>::supported_types;
+    static constexpr uint32_t       lane_width           = RingView<T, Strategy>::lane_width;
+
+    // Spatial Contracts
+    static constexpr bool is_static_stencil = false; 
+    static constexpr size_t kernel_size     = 0;
+    static constexpr size_t dimensions      = Strategy::dimensions;
+};
+
+} // namespace ideam::core
+
+ // IDEAM_CORE_MEMORY_RING_VIEW_H

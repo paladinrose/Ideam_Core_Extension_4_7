@@ -1,0 +1,164 @@
+#pragma once
+
+#include "../../memory/memory_common.h"
+#include "../../memory/memory_manager_dod.h"
+#include "../../memory/memory_buffer_selection_pod.h"
+#include "../../memory/views/single_element_view.h"
+#include "../../memory/views/strategies.h"
+#include "../i_native_task.h"
+#include "transform_logic_traits.h"
+
+#include <vector>
+#include <algorithm>
+#include <type_traits>
+
+namespace ideam::core {
+
+enum class SortDirection : uint8_t {
+    ASCENDING,
+    DESCENDING
+};
+
+/**
+ * DataSortTransformLogic<T>
+ * Generates a sorted index map based on element values or vector magnitudes.
+ * Leaves the source selection strictly intact to preserve SoA cache coherency.
+ */
+template <typename T>
+struct DataSortTransformLogic {
+    using ValueType       = T;
+    using DefaultStrategy = FlatStrategy;
+    using DefaultView     = SingleElementView<T, DefaultStrategy>;
+
+    // --- DOD Contract Requirements ---
+    static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS | ViewCapability::RANDOM_ACCESS;
+    static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR;
+    static constexpr DataType required_types              = DataType::ANY_NUMERIC | DataType::GODOT_VECTOR_TYPES;
+    
+    // --- Explicit Spatial Contracts ---
+    static constexpr size_t dimensions = 0; // Point-based lookup
+    static constexpr bool requires_static_kernel = false;
+    static constexpr size_t kernel_size = 0;
+
+    static constexpr size_t transient_workspace_bytes     = 0; // Output vector is externally provided via Graph Port
+    
+    static constexpr std::string_view display_name = "Data Sort";
+    
+    // --- Configuration ---
+    SortDirection direction = SortDirection::ASCENDING;
+    uint32_t target_buffer_id = INVALID_ID;
+    
+    // Output Graph Port: Will contain the sorted sequence of buffer indices
+    std::vector<int64_t>* output_destination = nullptr;
+
+    static godot::Array get_ui_properties() {
+        godot::Array props;
+
+        godot::Dictionary dir_prop;
+        dir_prop["name"] = "direction";
+        dir_prop["type"] = godot::Variant::INT;
+        dir_prop["hint"] = godot::PROPERTY_HINT_ENUM;
+        dir_prop["hint_string"] = "Ascending,Descending";
+        props.push_back(dir_prop);
+
+        return props;
+    }
+    
+    [[nodiscard]] inline uint32_t get_target_buffer_id() const {
+        return target_buffer_id;
+    }
+
+    void apply_properties(const godot::Dictionary& p_props) noexcept {
+        if (p_props.has("direction")) {
+            direction = static_cast<SortDirection>(static_cast<uint8_t>(p_props["direction"]));
+        }
+    }
+
+    template <typename T_View, typename T_Strategy>
+    inline void execute(const TaskContextPOD& context, const T_View& p_view) const {
+        if (!output_destination) return;
+
+        const MemoryBufferSelectionPOD* sel = context.get_selection(target_buffer_id);
+        if (!sel || !sel->is_valid()) return;
+
+        // 1. Unpack active indices from the selection mask
+        output_destination->clear();
+        output_destination->reserve(sel->element_count);
+
+        if (sel->mode == SelectionMode::DENSE) {
+            const uint64_t* bitset = sel->data.bitset;
+            const int64_t cap = sel->capacity;
+            for (int64_t i = 0; i < cap; ++i) {
+                if (bitset[i >> 6] & (1ULL << (i & 63))) {
+                    output_destination->push_back(i);
+                }
+            }
+        } else if (sel->mode == SelectionMode::SPARSE) {
+            const int64_t* indices = sel->data.indices;
+            const int64_t count = sel->element_count;
+            for (int64_t i = 0; i < count; ++i) {
+                output_destination->push_back(indices[i]);
+            }
+        } else if (sel->mode == SelectionMode::RANGE) {
+            for (int64_t i = 0; i < sel->element_count; ++i) {
+                output_destination->push_back(sel->start_index + i);
+            }
+        }
+
+        // 2. Sort the indices by looking up their values in the View
+        // We use std::stable_sort to maintain deterministic rendering/processing order for tied values.
+        std::stable_sort(output_destination->begin(), output_destination->end(), 
+            [this, &p_view](int64_t a, int64_t b) {
+                return _compare(_read_view(p_view, a), _read_view(p_view, b));
+            }
+        );
+    }
+
+private:
+    [[nodiscard]] inline bool _compare(const T& p_val_a, const T& p_val_b) const noexcept {
+        if constexpr (std::is_arithmetic_v<T>) {
+            // Scalars: Direct comparison
+            return (direction == SortDirection::ASCENDING) ? (p_val_a < p_val_b) : (p_val_a > p_val_b);
+        } 
+        else if constexpr (requires { p_val_a.length_squared(); }) {
+            // Godot Vectors (Vector2, Vector3, etc.): Use magnitude squared to avoid sqrt overhead
+            const float mag_a = p_val_a.length_squared();
+            const float mag_b = p_val_b.length_squared();
+            return (direction == SortDirection::ASCENDING) ? (mag_a < mag_b) : (mag_a > mag_b);
+        }
+        return false;
+    }
+
+    template <typename T_View>
+    #if defined(_MSC_VER)
+        [[msvc::forceinline]]
+    #else
+        [[gnu::always_inline]]
+    #endif
+    inline T _read_view(const T_View& p_view, int64_t idx) const {
+        // --- DOD PROXY UNWRAPPING ---
+        // Statically detects if the View returns a proxy object
+        if constexpr (requires { p_view[idx].read(); }) {
+            return static_cast<T>(p_view[idx].read());
+        } 
+        // --- ATOMIC REFERENCE UNWRAPPING ---
+        else if constexpr (requires { p_view[idx].load(); }) {
+            return static_cast<T>(p_view[idx].load());
+        }
+        // --- STANDARD RESOLUTION ---
+        else {
+            if constexpr (std::is_pointer_v<decltype(p_view[idx])>) {
+                // We bypass intermediate decay and cast the generic buffer pointer directly to T*.
+                // This ensures we read the full sizeof(T) block from the cache line in a single fetch.
+                return *reinterpret_cast<const T*>(p_view[idx]);
+            } else {
+                // If it's a value or a reference proxy, invoke its conversion operator.
+                return static_cast<T>(p_view[idx]);
+            }
+        }
+    }
+};
+
+} // namespace ideam::core
+
+ // IDEAM_CORE_DATA_SORT_TRANSFORM_LOGIC_H

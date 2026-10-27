@@ -1,0 +1,40 @@
+#pragma once
+
+#include "../editor/ideam_editor_plugin.h"
+#include <godot_cpp/classes/editor_inspector_plugin.hpp>
+
+namespace ideam::godot_ext {
+
+class IdeamMemoryPlugin : public IdeamEditorPlugin {
+    GDCLASS(IdeamMemoryPlugin, IdeamEditorPlugin)
+
+private:
+    static IdeamMemoryPlugin *singleton;
+
+    // Ecosystem resource paths defining memory layout defaults
+    static constexpr std::string_view MEMORY_SETTINGS_PATH = "res://addons/ideam_memory/resources/project_memory_settings.res";
+
+    // Inspector for Memory resources (BufferPODs, GrantPODs)
+    godot::Ref<godot::EditorInspectorPlugin> memory_graph_inspector;
+    godot::Ref<godot::EditorInspectorPlugin> memory_manager_inspector;
+    
+protected:
+    static void _bind_methods();
+
+public:
+    IdeamMemoryPlugin();
+    virtual ~IdeamMemoryPlugin() override;
+    
+    // Lifecycle
+    virtual void _enter_tree() override;
+    virtual void _exit_tree() override;
+
+#ifdef TOOLS_ENABLED
+    // Global Access
+    static godot::EditorUndoRedoManager *undo_redo();
+#endif
+};
+
+} // namespace ideam::godot_ext
+
+ // IDEAM_MEMORY_PLUGIN_H
