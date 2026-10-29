@@ -6810,6 +6810,12 @@
         "output": "src\\core\\tasks\\registration\\query_reg\\swap_eruption_bridge_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\blend_shape_evaluate_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\blend_shape_evaluate_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\blend_shape_evaluate_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\blend_shape_evaluate_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\boundary_constraint_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\boundary_constraint_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\boundary_constraint_sub_registry.cpp",
@@ -6820,6 +6826,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\bounds_extraction_sub_registry.cpp",
         "output": "src\\core\\tasks\\registration\\transform_reg\\bounds_extraction_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\cpu_linear_blend_skinning_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\cpu_linear_blend_skinning_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\cpu_linear_blend_skinning_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\cpu_linear_blend_skinning_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\data_scatter_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\data_scatter_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -6840,10 +6852,28 @@
         "output": "src\\core\\tasks\\registration\\transform_reg\\euler_integration_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\fabrik_chain_ik_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\fabrik_chain_ik_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\fabrik_chain_ik_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\fabrik_chain_ik_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\face_center_and_area_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\face_center_and_area_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\face_center_and_area_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\face_center_and_area_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\fast_noise_lite_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\fast_noise_lite_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\fast_noise_lite_sub_registry.cpp",
         "output": "src\\core\\tasks\\registration\\transform_reg\\fast_noise_lite_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\forward_kinematics_chain_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\forward_kinematics_chain_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\forward_kinematics_chain_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\forward_kinematics_chain_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\image_channel_extract_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\image_channel_extract_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -6894,6 +6924,66 @@
         "output": "src\\core\\tasks\\registration\\transform_reg\\image_spatial2d_import_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_attribute_region_commit_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_attribute_region_commit_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_attribute_region_commit_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_attribute_region_commit_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_bounds_sync_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_bounds_sync_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_bounds_sync_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_bounds_sync_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_skin_region_commit_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_skin_region_commit_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_skin_region_commit_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_skin_region_commit_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_stream_pack_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_stream_pack_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_stream_pack_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_stream_pack_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_stream_unpack_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_stream_unpack_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_stream_unpack_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_stream_unpack_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_surface_export_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_surface_export_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_export_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_export_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_surface_import_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_surface_import_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_import_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_import_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_surface_scatter_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_surface_scatter_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_scatter_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_surface_scatter_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_uv_projection_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_uv_projection_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_uv_projection_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_uv_projection_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_vertex_color_map_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_color_map_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_color_map_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_color_map_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\mesh_vertex_deform_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_deform_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_deform_sub_registry.cpp",
@@ -6904,6 +6994,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_region_commit_sub_registry.cpp",
         "output": "src\\core\\tasks\\registration\\transform_reg\\mesh_vertex_region_commit_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\multi_mesh_buffer_sync_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\multi_mesh_buffer_sync_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\multi_mesh_buffer_sync_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\multi_mesh_buffer_sync_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\noise_injection_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\noise_injection_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -6924,6 +7020,12 @@
         "output": "src\\core\\tasks\\registration\\transform_reg\\packed_array_export_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\skeleton_pose_bridge_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\skeleton_pose_bridge_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\skeleton_pose_bridge_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\skeleton_pose_bridge_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\spring_bone_chain_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\spring_bone_chain_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\spring_bone_chain_sub_registry.cpp",
@@ -6934,6 +7036,24 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\core\\tasks\\registration\\transform_reg\\stencil_convolution_sub_registry.cpp",
         "output": "src\\core\\tasks\\registration\\transform_reg\\stencil_convolution_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\tangent_recalc_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\tangent_recalc_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\tangent_recalc_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\tangent_recalc_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\transform_3d_batch_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\transform_3d_batch_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\transform_3d_batch_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\transform_3d_batch_sub_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\two_bone_ik_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\two_bone_ik_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\core\\tasks\\registration\\transform_reg\\two_bone_ik_sub_registry.cpp",
+        "output": "src\\core\\tasks\\registration\\transform_reg\\two_bone_ik_sub_registry.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\core\\tasks\\registration\\transform_reg\\value_accumulation_sub_registry.windows.template_debug.x86_64.obj /c src\\core\\tasks\\registration\\transform_reg\\value_accumulation_sub_registry.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",

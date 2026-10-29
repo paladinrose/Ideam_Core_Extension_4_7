@@ -10,56 +10,116 @@ namespace { // Translation Unit Firewall
         "Moore (R1)", "Moore (R2)", "Moore (R3)", 
         "Von Neumann (R1)", "Von Neumann (R2)", "Von Neumann (R3)" 
     };
+
+    constexpr const char* blend_shape_labels[] = {
+    "1 Shape", "2 Shapes", "4 Shapes", "8 Shapes"
+    };
 } // namespace
 
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, TransformTaskRegistry::L_COUNT> TransformTaskRegistry::logic_variants = {{
-    // BoundaryConstraint (0)
+    // BlendShapeEvaluate_1Shape (0)
+    { true, 4, blend_shape_labels },
+    // BlendShapeEvaluate_2Shapes, 4Shapes, 8Shapes (1, 2, 3)
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+
+    // BoundaryConstraint (4)
     { true, 1, nullptr },
-    // BoundsExtraction (1)
+    // BoundsExtraction (5)
     { true, 1, nullptr },
-    // DataScatter (2)
+    // CollisionShapeMeshSync (6)
     { true, 1, nullptr },
-    // DataSort (3)
+    // CpuLinearBlendSkinning (7)
     { true, 1, nullptr },
-    // EulerIntegration (4)
+    // DataScatter (8)
     { true, 1, nullptr },
-    // FastNoiseLite (5)
+    // DataSort (9)
+    { true, 1, nullptr },
+    // EulerIntegration (10)
+    { true, 1, nullptr },
+    // FabrikChainIK (11)
+    { true, 1, nullptr },
+    // FaceCenterAndArea (12)
+    { true, 1, nullptr },
+    // FastNoiseLite (13)
+    { true, 1, nullptr },
+    // ForwardKinematicsChain (14)
     { true, 1, nullptr },
 
-    // ImageChannelExtract (6)
+    // ImageChannelExtract (15)
     { true, 1, nullptr },
-    // ImageChannelPack (7)
+    // ImageChannelPack (16)
     { true, 1, nullptr },
-    // ImageNormalizeScalar (8)
+    // ImageNormalizeScalar (17)
     { true, 1, nullptr },
-    // ImagePaletteLut (9)
+    // ImagePaletteLut (18)
     { true, 1, nullptr },
-    // ImageRawExport (10)
+    // ImageRawExport (19)
     { true, 1, nullptr },
-    // ImageRawImport (11)
+    // ImageRawImport (20)
     { true, 1, nullptr },
-    // ImageSpatial2DExport (12)
+    // ImageSpatial2DExport (21)
     { true, 1, nullptr },
-    // ImageSpatial2DImport (13)
+    // ImageSpatial2DImport (22)
     { true, 1, nullptr },
 
-    // NoiseInjection (14)
+    // MeshAttributeRegionCommit (23)
     { true, 1, nullptr },
-    // PackedArrayExport (15)
+    // MeshBoundsSync (24)
     { true, 1, nullptr },
-    
-    // Stencil_Moore_R1 (16)
+    // MeshSkinRegionCommit (25)
+    { true, 1, nullptr },
+    // MeshStreamPack (26)
+    { true, 1, nullptr },
+    // MeshStreamUnpack (27)
+    { true, 1, nullptr },
+    // MeshSurfaceExport (28)
+    { true, 1, nullptr },
+    // MeshSurfaceImport (29)
+    { true, 1, nullptr },
+    // MeshSurfaceScatter (30)
+    { true, 1, nullptr },
+    // MeshUVProjection (31)
+    { true, 1, nullptr },
+    // MeshVertexColorMap (32)
+    { true, 1, nullptr },
+    // MeshVertexDeform (33)
+    { true, 1, nullptr },
+    // MeshVertexRegionCommit (34)
+    { true, 1, nullptr },
+    // MultiMeshBufferSync (35)
+    { true, 1, nullptr },
+
+    // NoiseInjection (36)
+    { true, 1, nullptr },
+    // NormalRecalc (37)
+    { true, 1, nullptr },
+    // PackedArrayExport (38)
+    { true, 1, nullptr },
+    // SkeletonPoseBridge (39)
+    { true, 1, nullptr },
+    // SpringBoneChain (40)
+    { true, 1, nullptr },
+
+    // Stencil_Moore_R1 (41)
     { true, 6, stencil_labels },
-    // Stencil_Moore_R2, R3 (17, 18)
+    // Stencil_Moore_R2, R3 (42, 43)
     { false, 0, nullptr },
     { false, 0, nullptr },
-    // Stencil_VonNeumann_R1, R2, R3 (19, 20, 21)
+    // Stencil_VonNeumann_R1, R2, R3 (44, 45, 46)
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
-    
-    // ValueAccumulation (22)
+
+    // TangentRecalc (47)
+    { true, 1, nullptr },
+    // Transform3DBatch (48)
+    { true, 1, nullptr },
+    // TwoBoneIK (49)
+    { true, 1, nullptr },
+    // ValueAccumulation (50)
     { true, 1, nullptr }
 }};
 

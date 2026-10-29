@@ -8,12 +8,18 @@
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
 // --- Logics ---
+#include "../transform_logic/blend_shape_evaluate_transform_logic.h"
 #include "../transform_logic/boundary_constraint_transform_logic.h"
 #include "../transform_logic/bounds_extraction_transform_logic.h"
+#include "../transform_logic/collision_shape_mesh_sync_transform_logic.h"
+#include "../transform_logic/cpu_linear_blend_skinning_transform_logic.h"
 #include "../transform_logic/data_scatter_transform_logic.h"
 #include "../transform_logic/data_sort_transform_logic.h"
 #include "../transform_logic/euler_integration_transform_logic.h"
+#include "../transform_logic/fabrik_chain_ik_transform_logic.h"
+#include "../transform_logic/face_center_and_area_transform_logic.h"
 #include "../transform_logic/fast_noise_lite_transform_logic.h"
+#include "../transform_logic/forward_kinematics_chain_transform_logic.h"
 #include "../transform_logic/image_channel_extract_transform_logic.h"
 #include "../transform_logic/image_channel_pack_transform_logic.h"
 #include "../transform_logic/image_normalize_scalar_transform_logic.h"
@@ -22,13 +28,28 @@
 #include "../transform_logic/image_raw_import_transform_logic.h"
 #include "../transform_logic/image_spatial2d_export_transform_logic.h"
 #include "../transform_logic/image_spatial2d_import_transform_logic.h"
+#include "../transform_logic/mesh_attribute_region_commit_transform_logic.h"
+#include "../transform_logic/mesh_bounds_sync_transform_logic.h"
+#include "../transform_logic/mesh_skin_region_commit_transform_logic.h"
+#include "../transform_logic/mesh_stream_pack_transform_logic.h"
+#include "../transform_logic/mesh_stream_unpack_transform_logic.h"
+#include "../transform_logic/mesh_surface_export_transform_logic.h"
+#include "../transform_logic/mesh_surface_import_transform_logic.h"
+#include "../transform_logic/mesh_surface_scatter_transform_logic.h"
+#include "../transform_logic/mesh_uv_projection_transform_logic.h"
+#include "../transform_logic/mesh_vertex_color_map_transform_logic.h"
 #include "../transform_logic/mesh_vertex_deform_transform_logic.h"
 #include "../transform_logic/mesh_vertex_region_commit_transform_logic.h"
+#include "../transform_logic/multi_mesh_buffer_sync_transform_logic.h"
 #include "../transform_logic/noise_injection_transform_logic.h"
 #include "../transform_logic/normal_recalc_transform_logic.h"
 #include "../transform_logic/packed_array_export_transform_logic.h"
+#include "../transform_logic/skeleton_pose_bridge_transform_logic.h"
 #include "../transform_logic/spring_bone_chain_transform_logic.h"
 #include "../transform_logic/stencil_convolution_transform_logic.h"
+#include "../transform_logic/tangent_recalc_transform_logic.h"
+#include "../transform_logic/transform_3d_batch_transform_logic.h"
+#include "../transform_logic/two_bone_ik_transform_logic.h"
 #include "../transform_logic/value_accumulation_transform_logic.h"
 
 // --- Views & Strategies ---
@@ -78,12 +99,21 @@ namespace {
     template <typename T_Resolver> struct KernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
     
     template <TransformLogicID ID, typename T_Concrete, typename T_Strategy> struct TransformLogicResolver { static constexpr bool is_valid = false; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BlendShapeEvaluate_1Shape, C, S>  { using Type = BlendShapeEvaluateTransformLogic<C, 1>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BlendShapeEvaluate_2Shapes, C, S> { using Type = BlendShapeEvaluateTransformLogic<C, 2>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BlendShapeEvaluate_4Shapes, C, S> { using Type = BlendShapeEvaluateTransformLogic<C, 4>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BlendShapeEvaluate_8Shapes, C, S> { using Type = BlendShapeEvaluateTransformLogic<C, 8>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BoundaryConstraint, C, S> { using Type = BoundaryConstraintTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::BoundsExtraction, C, S> { using Type = BoundsExtractionTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::CollisionShapeMeshSync, C, S> { using Type = CollisionShapeMeshSyncTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::CPULinearBlendSkinning, C, S> { using Type = CPULinearBlendSkinningTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::DataScatter, C, S> { using Type = DataScatterTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::DataSort, C, S> { using Type = DataSortTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::EulerIntegration, C, S> { using Type = EulerIntegrationTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::FabrikChainIK, C, S> { using Type = FabrikChainIKTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::FaceCenterAndArea, C, S> { using Type = FaceCenterAndAreaTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::FastNoiseLite, C, S> { using Type = FastNoiseLiteTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ForwardKinematicsChain, C, S> { using Type = ForwardKinematicsChainTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageChannelExtract, C, S> { using Type = ImageChannelExtractTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageChannelPack, C, S> { using Type = ImageChannelPackTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageNormalizeScalar, C, S> { using Type = ImageNormalizeScalarTransformLogic<C>; static constexpr bool is_valid = true; };
@@ -92,10 +122,22 @@ namespace {
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageRawImport, C, S> { using Type = ImageRawImportTransformLogic; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageSpatial2DExport, C, S> { using Type = ImageSpatial2DExportTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageSpatial2DImport, C, S> { using Type = ImageSpatial2DImportTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshAttributeRegionCommit, C, S> { using Type = MeshAttributeRegionCommitTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshBoundsSync, C, S> { using Type = MeshBoundsSyncTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshSkinRegionCommit, C, S> { using Type = MeshSkinRegionCommitTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshStreamPack, C, S> { using Type = MeshStreamPackTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshStreamUnpack, C, S> { using Type = MeshStreamUnpackTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshSurfaceExport, C, S> { using Type = MeshSurfaceExportTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshSurfaceImport, C, S> { using Type = MeshSurfaceImportTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshSurfaceScatter, C, S> { using Type = MeshSurfaceScatterTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshUVProjection, C, S> { using Type = MeshUVProjectionTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshVertexColorMap, C, S> { using Type = MeshVertexColorMapTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshVertexDeform, C, S> { using Type = MeshVertexDeformTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MeshVertexRegionCommit, C, S> { using Type = MeshVertexRegionCommitTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::MultiMeshBufferSync, C, S> { using Type = MultiMeshBufferSyncTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::NoiseInjection, C, S> { using Type = NoiseInjectionTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::NormalRecalc, C, S> { using Type = NormalRecalcTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SkeletonPoseBridge, C, S> { using Type = SkeletonPoseBridgeTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SpringBoneChain, C, S> { using Type = SpringBoneChainTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::PackedArrayExport, C, S> { using Type = PackedArrayExportTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::Stencil_Moore_R1, C, S> { 
@@ -128,7 +170,11 @@ namespace {
         using Type = StencilConvolutionTransformLogic<C, S, K_SIZE>; 
         static constexpr bool is_valid = true; 
     };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::TangentRecalc, C, S> { using Type = TangentRecalcTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::Transform3DBatch, C, S> { using Type = Transform3DBatchTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::TwoBoneIK, C, S> { using Type = TwoBoneIKTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ValueAccumulation, C, S> { using Type = ValueAccumulationTransformLogic<C>; static constexpr bool is_valid = true; };
+    
     template <TransformLogicID LogicID, typename C, typename S> struct LogicKernelExtractor : KernelExtractorImpl<TransformLogicResolver<LogicID, C, S>> {};
 
     template <MemoryStrategy ID> struct StrategyResolver { static constexpr bool is_valid = false; };
