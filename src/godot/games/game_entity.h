@@ -58,6 +58,7 @@ public:
 
     void set_gameplay_style(const godot::Ref<GameplayStyle>& p_style);
     godot::Ref<GameplayStyle> get_gameplay_style() const;
+    godot::Ref<GameplayStyle> get_resolved_gameplay_style() const;
 
     // DOD Accessors for strict internal state
     bool get_entity_is_paused() const;
@@ -88,7 +89,7 @@ public:
     // Variant hashing. Refactoring `consequences` into a tightly packed POD Struct 
     // (e.g., `EntityCommand`) or an integer bitmask will significantly improve throughput.
     virtual void action_consequences(int score, const godot::Dictionary& consequences);
-    void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle);
+    virtual void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle);
     
     virtual godot::Dictionary save_data() const;
     virtual void load_data(const godot::Dictionary& data);

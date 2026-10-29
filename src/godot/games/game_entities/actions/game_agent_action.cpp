@@ -3,6 +3,7 @@
 #include <godot_cpp/variant/utility_functions.hpp>
 
 // Explicit includes for static resolution
+#include "../../gameplay/gameplay_style.h"
 #include "../game_piece.h"
 #include "game_interaction.h"
 
@@ -278,6 +279,8 @@ void GameAgentAction::complete_action(int margin_of_victory) {
 }
 
 void GameAgentAction::action_consequences(int score, const godot::Dictionary& consequences) {
+    GameEntity::action_consequences(score, consequences);
+
     if (consequences.has("step_sequence")) {
         godot::Variant step_val = consequences["step_sequence"];
         if (step_val.get_type() == godot::Variant::STRING) {
@@ -384,6 +387,18 @@ void GameAgentAction::action_consequences(int score, const godot::Dictionary& co
     }
 }
 
+void GameAgentAction::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    GameEntity::apply_gameplay_style(newStyle);
+
+    if (_resolved_gameplay_style.is_valid()) {
+        for (int i = 0; i < game_pieces.size(); ++i) {
+            if (GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i])) {
+                piece->apply_gameplay_style(_resolved_gameplay_style);
+            }
+        }
+    }
+}
+
 void GameAgentAction::apply_action_value() {
     emit_signal("action_applied", get_current_value());
 }
@@ -428,10 +443,14 @@ godot::TypedArray<godot::String> GameAgentAction::gather_game_piece_titles() con
 }
 
 int GameAgentAction::add_game_piece(GamePiece* new_game_piece) {
+    if (!new_game_piece) return -1;
     int id = get_game_piece_id(new_game_piece);
     if (id < 0) {
         id = game_pieces.size();
         game_pieces.append(new_game_piece);
+        if (_resolved_gameplay_style.is_valid()) {
+            new_game_piece->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("game_piece_added", new_game_piece);
     }
     return id;

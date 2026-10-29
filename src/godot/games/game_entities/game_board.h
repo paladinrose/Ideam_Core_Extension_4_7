@@ -74,6 +74,7 @@ public:
     virtual void game_continue() override;
     virtual void game_end() override;
     virtual void exit_game() override;
+    virtual void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) override;
     
     // DOD NOTE: This `game_process` implementation relies on virtual dispatches 
     // (`game_process()` calls) across heterogeneous objects scattered in memory. 

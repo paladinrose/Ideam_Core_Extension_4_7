@@ -10,6 +10,7 @@
 // Explicit includes for strict typing
 #include "game_entities/game_board.h"
 #include "scene_transition.h"
+#include "gameplay/gameplay_rule.h"
 #include "gameplay/gameplay_style.h"
 #include "game_entities/actions/game_interaction.h"
 
@@ -134,6 +135,7 @@ void Game::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_gameplay_style", "style"), &Game::set_gameplay_style);
     godot::ClassDB::bind_method(godot::D_METHOD("get_gameplay_style"), &Game::get_gameplay_style);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_resolved_gameplay_style"), &Game::get_resolved_gameplay_style);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "gameplay_style", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayStyle"), "set_gameplay_style", "get_gameplay_style");
     // ADD_SIGNAL
 
@@ -329,6 +331,8 @@ void Game::set_gameplay_style(const godot::Ref<GameplayStyle>& p_style) {
 }
 godot::Ref<GameplayStyle> Game::get_gameplay_style() const { return gameplay_style; }
 
+godot::Ref<GameplayStyle> Game::get_resolved_gameplay_style() const { return resolved_gameplay_style; }
+
 void Game::set_game_hub_ID(int p_id) { 
     if (p_id == game_hub_ID) return;
     game_hub_ID = p_id; 
@@ -390,6 +394,10 @@ void Game::start_game() {
 
     if (unload_game_menu_scene_on_start && game_menu_scene) {
         game_menu_scene->queue_free();
+    }
+
+    if (resolved_gameplay_style.is_null() && gameplay_style.is_valid()) {
+        apply_gameplay_style(godot::Ref<GameplayStyle>());
     }
 
     godot::Array boards = loaded_game_boards.values();
@@ -532,6 +540,12 @@ void Game::game_board_load_complete(godot::Node* game_board_node) {
         loaded_board->set_owner(get_tree()->get_edited_scene_root());
     }
 
+    if (resolved_gameplay_style.is_null() && gameplay_style.is_valid()) {
+        apply_gameplay_style(godot::Ref<GameplayStyle>());
+    } else if (resolved_gameplay_style.is_valid()) {
+        loaded_board->apply_gameplay_style(resolved_gameplay_style);
+    }
+
     // Process frame await equivalent
     call_deferred("emit_signal", "game_board_loaded", this, loaded_board);
 
@@ -592,21 +606,103 @@ GameInteraction* Game::request_game_interaction() {
             available_interaction->set_name("Interaction " + godot::String::num_int64(interactions_pool.size()));
             interactions_pool.append(available_interaction);
             add_child(available_interaction);
+            if (resolved_gameplay_style.is_valid()) {
+                available_interaction->apply_gameplay_style(resolved_gameplay_style);
+            }
         }
     }
         
     return available_interaction;
 }
 
+void Game::_apply_resolved_rules_to_game() {
+    if (!resolved_gameplay_style.is_valid()) {
+        return;
+    }
+
+    godot::TypedArray<GameplayRule> style_rules = resolved_gameplay_style->get_rules();
+    for (int i = 0; i < style_rules.size(); ++i) {
+        godot::Ref<GameplayRule> rule(godot::Object::cast_to<GameplayRule>(style_rules[i]));
+        if (!rule.is_valid() || !rule->applies_to_self()) {
+            continue;
+        }
+
+        godot::StringName target_cls = rule->get_target_class();
+        if (!target_cls.is_empty() && !is_class(godot::String(target_cls))) {
+            continue;
+        }
+
+        godot::StringName target_group = rule->get_target_title_or_group();
+        if (!target_group.is_empty()) {
+            godot::String group_str(target_group);
+            if (title != group_str && get_name() != target_group && !is_in_group(target_group)) {
+                continue;
+            }
+        }
+
+        godot::StringName target_prop = rule->get_target_property();
+        if (target_prop.is_empty()) {
+            continue;
+        }
+
+        godot::Variant rule_val = rule->get_value();
+        switch (rule->get_operation()) {
+            case RuleOp::SET: {
+                set(target_prop, rule_val);
+                break;
+            }
+            case RuleOp::ADD: {
+                godot::Variant current = get(target_prop);
+                if (current.get_type() == godot::Variant::FLOAT || rule_val.get_type() == godot::Variant::FLOAT) {
+                    set(target_prop, static_cast<double>(current) + static_cast<double>(rule_val));
+                } else if (current.get_type() == godot::Variant::INT) {
+                    set(target_prop, static_cast<int64_t>(current) + static_cast<int64_t>(rule_val));
+                }
+                break;
+            }
+            case RuleOp::MULTIPLY: {
+                godot::Variant current = get(target_prop);
+                if (current.get_type() == godot::Variant::FLOAT || rule_val.get_type() == godot::Variant::FLOAT) {
+                    set(target_prop, static_cast<double>(current) * static_cast<double>(rule_val));
+                } else if (current.get_type() == godot::Variant::INT) {
+                    set(target_prop, static_cast<int64_t>(current) * static_cast<int64_t>(rule_val));
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
+
 void Game::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    // 1. Merge incoming style with this Game's local gameplay_style
     if (newStyle.is_valid()) {
-        resolved_gameplay_style = newStyle->duplicate(true);
+        resolved_gameplay_style = newStyle->merge_with_child(gameplay_style);
+    } else if (gameplay_style.is_valid()) {
+        resolved_gameplay_style.instantiate();
         resolved_gameplay_style->apply_style(gameplay_style);
-        
-        godot::Array boards = loaded_game_boards.values();
-        for (int i = 0; i < boards.size(); ++i) {
-            GameBoard* board = godot::Object::cast_to<GameBoard>(boards[i]);
-            if (board) board->apply_gameplay_style(resolved_gameplay_style);
+    } else {
+        resolved_gameplay_style.unref();
+        return;
+    }
+
+    // 2. Apply any local/self rules targeting the Game node itself (e.g., maximum_interactions, time_scale, save_options)
+    _apply_resolved_rules_to_game();
+
+    // 3. Cascade resolved_gameplay_style down to all loaded GameBoards and pooled GameInteractions
+    godot::Array boards = loaded_game_boards.values();
+    for (int i = 0; i < boards.size(); ++i) {
+        GameBoard* board = godot::Object::cast_to<GameBoard>(boards[i]);
+        if (board) {
+            board->apply_gameplay_style(resolved_gameplay_style);
+        }
+    }
+
+    for (int i = 0; i < interactions_pool.size(); ++i) {
+        GameInteraction* interaction = godot::Object::cast_to<GameInteraction>(interactions_pool[i]);
+        if (interaction) {
+            interaction->apply_gameplay_style(resolved_gameplay_style);
         }
     }
 }

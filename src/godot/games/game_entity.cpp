@@ -49,6 +49,7 @@ void GameEntity::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_gameplay_style", "style"), &GameEntity::set_gameplay_style);
     godot::ClassDB::bind_method(godot::D_METHOD("get_gameplay_style"), &GameEntity::get_gameplay_style);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_resolved_gameplay_style"), &GameEntity::get_resolved_gameplay_style);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "gameplay_style", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayStyle"), "set_gameplay_style", "get_gameplay_style");
     ADD_SIGNAL(godot::MethodInfo("gameplay_style_changed", godot::PropertyInfo(godot::Variant::OBJECT, "gameplay_style", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayStyle")));
 
@@ -153,6 +154,8 @@ void GameEntity::set_gameplay_style(const godot::Ref<GameplayStyle>& p_style) {
     emit_signal("gameplay_style_changed", gameplay_style);
 }
 godot::Ref<GameplayStyle> GameEntity::get_gameplay_style() const { return gameplay_style; }
+
+godot::Ref<GameplayStyle> GameEntity::get_resolved_gameplay_style() const { return _resolved_gameplay_style; }
 
 void GameEntity::set_entity_is_paused(bool p_paused) { 
     if (entity_is_paused == p_paused) return;
@@ -277,11 +280,20 @@ void GameEntity::action_consequences(int score, const godot::Dictionary& consequ
 }
 
 void GameEntity::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    // 1. Merge parent resolved style with this entity's local gameplay_style
     if (newStyle.is_valid()) {
-        _resolved_gameplay_style = godot::Ref<GameplayStyle>(godot::Object::cast_to<GameplayStyle>(newStyle->duplicate(true).ptr()));
-        if (gameplay_style.is_valid()) {
-            _resolved_gameplay_style->apply_style(gameplay_style); 
-        }
+        _resolved_gameplay_style = newStyle->merge_with_child(gameplay_style);
+    } else if (gameplay_style.is_valid()) {
+        _resolved_gameplay_style.instantiate();
+        _resolved_gameplay_style->apply_style(gameplay_style);
+    } else {
+        _resolved_gameplay_style.unref();
+        return;
+    }
+
+    // 2. Evaluate and apply all matching rules in _resolved_gameplay_style to this entity
+    if (_resolved_gameplay_style.is_valid()) {
+        _resolved_gameplay_style->apply_rules_to_entity(this, true);
     }
 }
 

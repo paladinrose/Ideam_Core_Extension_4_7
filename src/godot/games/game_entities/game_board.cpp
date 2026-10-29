@@ -2,6 +2,7 @@
 #include <godot_cpp/core/class_db.hpp>
 
 #include "../game.h"
+#include "../gameplay/gameplay_style.h"
 #include "game_agent.h"
 #include "game_piece.h"
 
@@ -96,6 +97,9 @@ int GameBoard::add_game_agent(GameAgent* new_game_agent) {
     if (id < 0) {
         id = game_agents.size();
         game_agents.append(new_game_agent);
+        if (_resolved_gameplay_style.is_valid()) {
+            new_game_agent->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("game_agent_added", new_game_agent);
     }
     return id;
@@ -141,6 +145,9 @@ int GameBoard::add_game_piece(GamePiece* new_game_piece) {
     if (id < 0) {
         id = game_pieces.size();
         game_pieces.append(new_game_piece);
+        if (_resolved_gameplay_style.is_valid()) {
+            new_game_piece->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("game_piece_added", new_game_piece);
     }
     return id;
@@ -246,6 +253,23 @@ void GameBoard::exit_game() {
         if (GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i])) piece->exit_game();
     }
     GameEntity::exit_game();
+}
+
+void GameBoard::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    GameEntity::apply_gameplay_style(newStyle);
+
+    if (_resolved_gameplay_style.is_valid()) {
+        for (int i = 0; i < game_agents.size(); ++i) {
+            if (GameAgent* agent = godot::Object::cast_to<GameAgent>(game_agents[i])) {
+                agent->apply_gameplay_style(_resolved_gameplay_style);
+            }
+        }
+        for (int i = 0; i < game_pieces.size(); ++i) {
+            if (GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i])) {
+                piece->apply_gameplay_style(_resolved_gameplay_style);
+            }
+        }
+    }
 }
 
 void GameBoard::game_process(double delta) {

@@ -86,6 +86,7 @@ public:
     
     // GameEntity Overrides
     virtual void action_consequences(int score, const godot::Dictionary& consequences) override;
+    virtual void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) override;
     
     void apply_action_value();
     void _finalize_current_step();

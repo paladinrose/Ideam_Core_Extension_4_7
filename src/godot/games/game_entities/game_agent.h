@@ -174,7 +174,7 @@ public:
     void stop_interacting(int action_id);
 
     // Consequences
-    void action_consequences(int score, const godot::Dictionary& consequences);
+    virtual void action_consequences(int score, const godot::Dictionary& consequences) override;
 
     // Game Piece Functions
     godot::TypedArray<godot::String> gather_game_piece_titles() const;
@@ -192,6 +192,7 @@ public:
     virtual void game_continue() override;
     virtual void game_end() override;
     virtual void exit_game() override;
+    virtual void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) override;
     virtual void game_process(double delta) override;
     virtual void game_process_clear() override;
     virtual godot::Dictionary save_data() const override;

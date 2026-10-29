@@ -4,6 +4,7 @@
 
 #include "../game.h"
 #include "../game_property.h"
+#include "../gameplay/gameplay_style.h"
 #include "actions/game_piece_action.h"
 #include "game_agent.h"
 #include "actions/game_interaction.h"
@@ -403,7 +404,7 @@ int GamePiece::add_property(GameProperty* property) {
 bool GamePiece::has_property_name(const godot::String& property_name) const {
     for (int i = 0; i < game_properties.size(); ++i) {
         GameProperty* prop = godot::Object::cast_to<GameProperty>(game_properties[i]);
-        if (prop && prop->get_name() == property_name) return true;
+        if (prop && (prop->get_title() == property_name || prop->get_name() == property_name)) return true;
     }
     return false;
 }
@@ -419,7 +420,7 @@ GameProperty* GamePiece::get_property(const godot::String& property_name) const 
 int GamePiece::get_property_id(const godot::String& property_name) const {
     for (int i = 0; i < game_properties.size(); ++i) {
         GameProperty* prop = godot::Object::cast_to<GameProperty>(game_properties[i]);
-        if (prop && prop->get_name() == property_name) return i;
+        if (prop && (prop->get_title() == property_name || prop->get_name() == property_name)) return i;
     }
     return -1;
 }
@@ -445,7 +446,7 @@ void GamePiece::exhaust_property(GameProperty* game_property) {
 
 bool GamePiece::remove_property(GameProperty* game_property) {
     if (!game_property) return false;
-    int id = get_property_id(game_property->get_name());
+    int id = game_properties.find(game_property);
     return remove_property_at(id);
 }
 
@@ -487,6 +488,9 @@ int GamePiece::add_sub_piece(GamePiece* sub_piece) {
         
         id = sub_game_pieces.size();
         sub_game_pieces.append(sub_piece);
+        if (_resolved_gameplay_style.is_valid()) {
+            sub_piece->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("sub_piece_added", sub_piece);
     }
     return id;
@@ -699,6 +703,22 @@ void GamePiece::action_consequences(int score, const godot::Dictionary& conseque
             godot::String prop_setting = "property_" + prop->get_name();
             if (consequences.has(prop_setting)) {
                 prop->action_consequences(score, consequences[prop_setting]);
+            }
+        }
+    }
+}
+
+void GamePiece::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    if (game_properties.size() == 0) {
+        collect_properties();
+    }
+
+    GameEntity::apply_gameplay_style(newStyle);
+
+    if (_resolved_gameplay_style.is_valid()) {
+        for (int i = 0; i < sub_game_pieces.size(); ++i) {
+            if (GamePiece* sub = godot::Object::cast_to<GamePiece>(sub_game_pieces[i])) {
+                sub->apply_gameplay_style(_resolved_gameplay_style);
             }
         }
     }

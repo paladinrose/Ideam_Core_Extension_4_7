@@ -8,6 +8,7 @@
 #include "../game.h"
 #include "../game_player.h"
 #include "../game_property.h"
+#include "../gameplay/gameplay_style.h"
 #include "../../utilities/node_retargeter.h"
 #include "../../utilities/signal_connector.h"
 
@@ -349,6 +350,9 @@ int GameAgent::add_action(GameAgentAction* new_action) {
     if (id < 0) {
         id = actions.size();
         actions.append(new_action);
+        if (_resolved_gameplay_style.is_valid()) {
+            new_action->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("action_added", new_action);
     }
     return id;
@@ -708,6 +712,9 @@ int GameAgent::add_game_piece(GamePiece* new_game_piece) {
     if (id < 0) {
         id = game_pieces.size();
         game_pieces.append(new_game_piece);
+        if (_resolved_gameplay_style.is_valid()) {
+            new_game_piece->apply_gameplay_style(_resolved_gameplay_style);
+        }
         emit_signal("game_piece_added", new_game_piece);
         
         if (!new_game_piece->is_connected("agent_requested", godot::Callable(this, "handle_agent_request"))) {
@@ -837,6 +844,23 @@ void GameAgent::exit_game() {
         if (piece) piece->exit_game();
     }
     GameEntity::exit_game();
+}
+
+void GameAgent::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
+    GameEntity::apply_gameplay_style(newStyle);
+
+    if (_resolved_gameplay_style.is_valid()) {
+        for (int i = 0; i < actions.size(); ++i) {
+            if (GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[i])) {
+                action->apply_gameplay_style(_resolved_gameplay_style);
+            }
+        }
+        for (int i = 0; i < game_pieces.size(); ++i) {
+            if (GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i])) {
+                piece->apply_gameplay_style(_resolved_gameplay_style);
+            }
+        }
+    }
 }
 
 void GameAgent::game_process(double delta) {

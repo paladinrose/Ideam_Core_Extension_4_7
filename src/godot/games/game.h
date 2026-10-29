@@ -96,6 +96,8 @@ private:
 
     bool _is_ready = false;
 
+    void _apply_resolved_rules_to_game();
+
 public:
     Game();
     ~Game();
@@ -159,6 +161,7 @@ public:
 
     void set_gameplay_style(const godot::Ref<GameplayStyle>& p_style);
     godot::Ref<GameplayStyle> get_gameplay_style() const;
+    godot::Ref<GameplayStyle> get_resolved_gameplay_style() const;
 
     void set_game_hub_ID(int p_id);
     int get_game_hub_ID() const;

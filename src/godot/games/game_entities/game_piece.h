@@ -100,6 +100,7 @@ public:
     virtual void game_process(double delta) override;
     virtual void game_process_clear() override;
     virtual void action_consequences(int score, const godot::Dictionary& consequences) override;
+    virtual void apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) override;
     
     virtual godot::Dictionary save_data() const override;
     virtual void load_data(const godot::Dictionary& data) override;
