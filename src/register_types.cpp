@@ -143,6 +143,17 @@
 
 #include "godot/games/game_entities/actions/game_interaction.h"
 
+// --- Gameplay ---
+#include "godot/games/gameplay/gameplay_resource.h"
+#include "godot/games/gameplay/gameplay_accessibility_option.h"
+#include "godot/games/gameplay/gameplay_audio_option.h"
+#include "godot/games/gameplay/gameplay_graphics_option.h"
+#include "godot/games/gameplay/gameplay_difficulty.h"
+#include "godot/games/gameplay/gameplay_control_map.h"
+#include "godot/games/gameplay/gameplay_mode.h"
+#include "godot/games/gameplay/gameplay_rule.h"
+#include "godot/games/gameplay/gameplay_style.h"
+
 // --- Games UI ---
 #include "godot/games/ui/game_hub_ui.h"
 #include "godot/games/ui/game_menu.h"
@@ -289,6 +300,16 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GamePieceAction);
         GDREGISTER_CLASS(ideam::godot_ext::GameInteraction);
 
+        // --- Gameplay ---
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayResource);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayAccessibilityOption);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayAudioOption);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayGraphicsOption);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayDifficulty);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayControlMap);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayMode);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayRule);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayStyle);
         // --- Games UI ---
         GDREGISTER_CLASS(ideam::godot_ext::GameHubUI);
         GDREGISTER_CLASS(ideam::godot_ext::GameMenu);

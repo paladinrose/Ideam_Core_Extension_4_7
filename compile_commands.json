@@ -7218,6 +7218,12 @@
         "output": "src\\godot\\games\\gameplay\\gameplay_accessibility_option.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_audio_option.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_audio_option.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\gameplay\\gameplay_audio_option.cpp",
+        "output": "src\\godot\\games\\gameplay\\gameplay_audio_option.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_control_map.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_control_map.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\gameplay\\gameplay_control_map.cpp",
@@ -7228,6 +7234,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\gameplay\\gameplay_difficulty.cpp",
         "output": "src\\godot\\games\\gameplay\\gameplay_difficulty.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_graphics_option.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_graphics_option.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\gameplay\\gameplay_graphics_option.cpp",
+        "output": "src\\godot\\games\\gameplay\\gameplay_graphics_option.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_mode.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_mode.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -7246,6 +7258,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\gameplay\\gameplay_resource.cpp",
         "output": "src\\godot\\games\\gameplay\\gameplay_resource.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_rule.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_rule.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\gameplay\\gameplay_rule.cpp",
+        "output": "src\\godot\\games\\gameplay\\gameplay_rule.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\games\\gameplay\\gameplay_style.windows.template_debug.x86_64.obj /c src\\godot\\games\\gameplay\\gameplay_style.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
