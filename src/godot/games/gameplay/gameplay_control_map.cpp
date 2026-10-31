@@ -1422,7 +1422,7 @@ void GameplayControlMap::set_custom_channel_value(
     _set_active_device_if_auto(ControlDeviceFamily::DEVICE_CUSTOM_USB_HID);
 
     if (custom_channel_to_action_map.has(ch_str)) {
-        godot::StringName mapped_action(godot::String(custom_channel_to_action_map[ch_str]));
+        godot::StringName mapped_action = godot::StringName(godot::String(custom_channel_to_action_map[ch_str]));
         if (normalized >= 0.0f) {
             _update_semantic_action_state(mapped_action, normalized);
         } else {
@@ -1677,7 +1677,7 @@ void GameplayControlMap::feed_vr_controller_state(
             godot::String gesture_key = (p_tracker_index == 0) ? "swing_left" : "swing_right";
             emit_signal("vr_gesture_detected", godot::StringName(gesture_key), p_tracker_index, speed);
             if (vr_gesture_to_action_map.has(gesture_key)) {
-                godot::StringName mapped_act(godot::String(vr_gesture_to_action_map[gesture_key]));
+                godot::StringName mapped_act = godot::StringName(godot::String(vr_gesture_to_action_map[gesture_key]));
                 _update_semantic_action_state(mapped_act, 1.0f, true);
             }
         }

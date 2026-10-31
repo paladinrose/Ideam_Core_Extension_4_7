@@ -10,6 +10,8 @@ class GameplayPerspective;
 class GameplayDifficulty;
 class GameplayControlMap;
 class GameplayAccessibilityOption;
+class GameplayAudioOption;
+class GameplayGraphicsOption;
 
 /**
  * DOD NOTE: GameplayMode acts as a collection of gameplay-altering components. 
@@ -29,6 +31,8 @@ private:
     godot::TypedArray<GameplayDifficulty> difficulties;
     godot::TypedArray<GameplayControlMap> control_maps;
     godot::TypedArray<GameplayAccessibilityOption> accessibility_options;
+    godot::TypedArray<GameplayAudioOption> audio_options;
+    godot::TypedArray<GameplayGraphicsOption> graphics_options;
 
 public:
     GameplayMode();
@@ -46,6 +50,12 @@ public:
 
     void set_accessibility_options(const godot::TypedArray<GameplayAccessibilityOption> &p_options);
     godot::TypedArray<GameplayAccessibilityOption> get_accessibility_options() const;
+
+    void set_audio_options(const godot::TypedArray<GameplayAudioOption> &p_options);
+    godot::TypedArray<GameplayAudioOption> get_audio_options() const;
+
+    void set_graphics_options(const godot::TypedArray<GameplayGraphicsOption> &p_options);
+    godot::TypedArray<GameplayGraphicsOption> get_graphics_options() const;
 
     // Class Functions
     

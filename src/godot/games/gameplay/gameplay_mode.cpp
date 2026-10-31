@@ -6,6 +6,8 @@
 #include "gameplay_difficulty.h"
 #include "gameplay_control_map.h"
 #include "gameplay_accessibility_option.h"
+#include "gameplay_audio_option.h"
+#include "gameplay_graphics_option.h"
 
 namespace ideam::godot_ext {
 
@@ -29,6 +31,16 @@ void GameplayMode::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("set_accessibility_options", "accessibility_options"), &GameplayMode::set_accessibility_options);
     godot::ClassDB::bind_method(godot::D_METHOD("get_accessibility_options"), &GameplayMode::get_accessibility_options);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::ARRAY, "accessibility_options", godot::PROPERTY_HINT_TYPE_STRING, "24/34:GameplayAccessibilityOption"), "set_accessibility_options", "get_accessibility_options");
+
+    // Audio Options Property
+    godot::ClassDB::bind_method(godot::D_METHOD("set_audio_options", "audio_options"), &GameplayMode::set_audio_options);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_audio_options"), &GameplayMode::get_audio_options);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::ARRAY, "audio_options", godot::PROPERTY_HINT_TYPE_STRING, "24/34:GameplayAudioOption"), "set_audio_options", "get_audio_options");
+
+    // Graphics Options Property
+    godot::ClassDB::bind_method(godot::D_METHOD("set_graphics_options", "graphics_options"), &GameplayMode::set_graphics_options);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_graphics_options"), &GameplayMode::get_graphics_options);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::ARRAY, "graphics_options", godot::PROPERTY_HINT_TYPE_STRING, "24/34:GameplayGraphicsOption"), "set_graphics_options", "get_graphics_options");
 
     // Methods
     godot::ClassDB::bind_method(godot::D_METHOD("apply_mode", "other"), &GameplayMode::apply_mode);
@@ -68,6 +80,20 @@ void GameplayMode::set_accessibility_options(const godot::TypedArray<GameplayAcc
     emit_changed();
 }
 godot::TypedArray<GameplayAccessibilityOption> GameplayMode::get_accessibility_options() const { return accessibility_options; }
+
+void GameplayMode::set_audio_options(const godot::TypedArray<GameplayAudioOption> &p_options) { 
+    if (p_options == audio_options) return;
+    audio_options = p_options; 
+    emit_changed();
+}
+godot::TypedArray<GameplayAudioOption> GameplayMode::get_audio_options() const { return audio_options; }
+
+void GameplayMode::set_graphics_options(const godot::TypedArray<GameplayGraphicsOption> &p_options) { 
+    if (p_options == graphics_options) return;
+    graphics_options = p_options; 
+    emit_changed();
+}
+godot::TypedArray<GameplayGraphicsOption> GameplayMode::get_graphics_options() const { return graphics_options; }
 
 // Class Functions
 void GameplayMode::apply_mode(const godot::Ref<GameplayMode> &p_other) {
@@ -125,6 +151,34 @@ void GameplayMode::apply_mode(const godot::Ref<GameplayMode> &p_other) {
             GameplayAccessibilityOption *oao_obj = godot::Object::cast_to<GameplayAccessibilityOption>(other_ao[j]);
             if (oao_obj && ao_obj->get_title() == oao_obj->get_title()) {
                 ao_obj->apply_accessibility_option(oao_obj);
+            }
+        }
+    }
+
+    // Apply Audio Options
+    godot::TypedArray<GameplayAudioOption> other_audio = p_other->get_audio_options();
+    for (int i = 0; i < audio_options.size(); ++i) {
+        GameplayAudioOption *au_obj = godot::Object::cast_to<GameplayAudioOption>(audio_options[i]);
+        if (!au_obj) continue;
+
+        for (int j = 0; j < other_audio.size(); ++j) {
+            GameplayAudioOption *oau_obj = godot::Object::cast_to<GameplayAudioOption>(other_audio[j]);
+            if (oau_obj && au_obj->get_title() == oau_obj->get_title()) {
+                au_obj->apply_audio_option(oau_obj);
+            }
+        }
+    }
+
+    // Apply Graphics Options
+    godot::TypedArray<GameplayGraphicsOption> other_graphics = p_other->get_graphics_options();
+    for (int i = 0; i < graphics_options.size(); ++i) {
+        GameplayGraphicsOption *go_obj = godot::Object::cast_to<GameplayGraphicsOption>(graphics_options[i]);
+        if (!go_obj) continue;
+
+        for (int j = 0; j < other_graphics.size(); ++j) {
+            GameplayGraphicsOption *ogo_obj = godot::Object::cast_to<GameplayGraphicsOption>(other_graphics[j]);
+            if (ogo_obj && go_obj->get_title() == ogo_obj->get_title()) {
+                go_obj->apply_graphics_option(ogo_obj);
             }
         }
     }
