@@ -1529,6 +1529,8 @@ godot::TypedArray<GameplayRule> GameplayPerspective::collect_rules() const {
         fov_rule->set_target_property(godot::StringName("camera_fov"));
         fov_rule->set_operation(RuleOp::SET);
         fov_rule->set_value(fov);
+        fov_rule->set_value(fov);
+        fov_rule->set_cascade_layer(RuleCascadeLayer::LAYER_MODE);
         fov_rule->set_priority(40);
         collected.append(fov_rule);
     }
@@ -1544,6 +1546,7 @@ godot::TypedArray<GameplayRule> GameplayPerspective::collect_rules() const {
         arm_rule->set_target_property(godot::StringName("camera_arm_length"));
         arm_rule->set_operation(RuleOp::SET);
         arm_rule->set_value(arm_length);
+        arm_rule->set_cascade_layer(RuleCascadeLayer::LAYER_MODE);
         arm_rule->set_priority(40);
         collected.append(arm_rule);
     }

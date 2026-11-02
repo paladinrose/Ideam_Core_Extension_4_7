@@ -1,15 +1,21 @@
 #include "ideam_games_plugin.h"
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/classes/editor_interface.hpp>
+#include <godot_cpp/classes/editor_selection.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/scroll_container.hpp>
 #include <godot_cpp/classes/viewport.hpp>
 #include <godot_cpp/classes/v_box_container.hpp>
 
-// Include our previously ported plugins
+// Include entity & Phase 4 gameplay editor plugins
 #include "editor/game_agent_editor_inspector_plugin.h"
 #include "editor/game_agent_action_editor_inspector_plugin.h"
+#include "editor/gameplay_rule_editor_inspector_plugin.h"
+#include "editor/gameplay_resource_editor_inspector_plugin.h"
+#include "editor/gameplay_style_cascade_dock.h"
+#include "editor/gameplay_editor_debugger_plugin.h"
+#include "game.h"
 #include "game_entities/game_agent.h"
 
 namespace ideam::godot_ext {
@@ -20,6 +26,9 @@ void IdeamGamesPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("open_agent_action_tool"), &IdeamGamesPlugin::open_agent_action_tool);
     godot::ClassDB::bind_method(godot::D_METHOD("close_agent_action_tool"), &IdeamGamesPlugin::close_agent_action_tool);
     godot::ClassDB::bind_method(godot::D_METHOD("_scene_change", "new_root"), &IdeamGamesPlugin::_scene_change);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_editor_selection_changed"), &IdeamGamesPlugin::_on_editor_selection_changed);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_cascade_dock"), &IdeamGamesPlugin::get_cascade_dock);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_gameplay_debugger"), &IdeamGamesPlugin::get_gameplay_debugger);
 
     // Static bindings so the ecosystem can call these without an instance reference
     godot::ClassDB::bind_static_method("IdeamGamesPlugin", godot::D_METHOD("open_action_tool_window", "agent", "editor"), &IdeamGamesPlugin::open_action_tool_window);
@@ -40,22 +49,47 @@ IdeamGamesPlugin::~IdeamGamesPlugin() {
 
 void IdeamGamesPlugin::_enter_tree() {
     // Call base class template setup
-    validate_script_templates(); 
-    
+    validate_script_templates();
+
     // Call our specialized template setups
     validate_game_script_templates();
     check_for_project_tools();
 
-    // Instantiate native C++ inspector plugins
-    agent_editor = memnew(GameAgentEditorInspectorPlugin);
+    // 1. Instantiate native C++ entity inspector plugins
+    agent_editor.instantiate();
     add_inspector_plugin(agent_editor);
 
-    agent_action_editor = memnew(GameAgentActionEditorInspectorPlugin);
+    agent_action_editor.instantiate();
     add_inspector_plugin(agent_action_editor);
 
+    // 2. Instantiate Phase 4 GameplayRule & GameplayResource inspector plugins
+    gameplay_rule_editor.instantiate();
+    add_inspector_plugin(gameplay_rule_editor);
+
+    gameplay_resource_editor.instantiate();
+    add_inspector_plugin(gameplay_resource_editor);
+
+    // 3. Instantiate Phase 4 GameplayStyleCascadeDock bottom panel
+    cascade_dock = memnew(GameplayStyleCascadeDock);
+    cascade_dock_button = add_control_to_bottom_panel(cascade_dock, "Gameplay Cascade");
+
+    // 4. Instantiate Phase 4 GameplayEditorDebuggerPlugin
+    gameplay_debugger.instantiate();
+    add_debugger_plugin(gameplay_debugger);
+
+    // 5. Connect scene & selection change listeners
     if (!is_connected("scene_changed", godot::Callable(this, "_scene_change"))) {
         connect("scene_changed", godot::Callable(this, "_scene_change"));
     }
+
+    if (get_editor_interface() && get_editor_interface()->get_selection()) {
+        godot::EditorSelection* sel = get_editor_interface()->get_selection();
+        if (!sel->is_connected("selection_changed", godot::Callable(this, "_on_editor_selection_changed"))) {
+            sel->connect("selection_changed", godot::Callable(this, "_on_editor_selection_changed"));
+        }
+    }
+
+    _sync_cascade_dock_with_selection();
 }
 
 void IdeamGamesPlugin::_exit_tree() {
@@ -63,8 +97,44 @@ void IdeamGamesPlugin::_exit_tree() {
         disconnect("scene_changed", godot::Callable(this, "_scene_change"));
     }
 
-    remove_inspector_plugin(agent_editor);
-    remove_inspector_plugin(agent_action_editor);
+    if (get_editor_interface() && get_editor_interface()->get_selection()) {
+        godot::EditorSelection* sel = get_editor_interface()->get_selection();
+        if (sel->is_connected("selection_changed", godot::Callable(this, "_on_editor_selection_changed"))) {
+            sel->disconnect("selection_changed", godot::Callable(this, "_on_editor_selection_changed"));
+        }
+    }
+
+    if (cascade_dock) {
+        remove_control_from_bottom_panel(cascade_dock);
+        memdelete(cascade_dock);
+        cascade_dock = nullptr;
+        cascade_dock_button = nullptr;
+    }
+
+    if (gameplay_debugger.is_valid()) {
+        remove_debugger_plugin(gameplay_debugger);
+        gameplay_debugger.unref();
+    }
+
+    if (gameplay_resource_editor.is_valid()) {
+        remove_inspector_plugin(gameplay_resource_editor);
+        gameplay_resource_editor.unref();
+    }
+
+    if (gameplay_rule_editor.is_valid()) {
+        remove_inspector_plugin(gameplay_rule_editor);
+        gameplay_rule_editor.unref();
+    }
+
+    if (agent_action_editor.is_valid()) {
+        remove_inspector_plugin(agent_action_editor);
+        agent_action_editor.unref();
+    }
+
+    if (agent_editor.is_valid()) {
+        remove_inspector_plugin(agent_editor);
+        agent_editor.unref();
+    }
 }
 
 void IdeamGamesPlugin::open_agent_action_tool() {
@@ -113,7 +183,7 @@ void IdeamGamesPlugin::check_for_project_tools() {
     if (godot::ResourceLoader::get_singleton()->exists(GAME_SETTINGS_PATH) && godot::DirAccess::dir_exists_absolute("res://addons/ideam_project_tools")) {
         godot::TypedArray<godot::String> settings_paths;
         godot::Ref<godot::FileAccess> paths_file = godot::FileAccess::open(SETTINGS_PATHS, godot::FileAccess::READ);
-        
+
         bool has_settings = false;
 
         if (paths_file.is_valid()) {
@@ -132,7 +202,8 @@ void IdeamGamesPlugin::check_for_project_tools() {
             paths_file = godot::FileAccess::open(SETTINGS_PATHS, godot::FileAccess::WRITE);
             if (paths_file.is_valid()) {
                 for (int i = 0; i < settings_paths.size(); ++i) {
-                    paths_file->store_line(settings_paths[i]);
+                    godot::String path_line = settings_paths[i];
+                    paths_file->store_line(path_line);
                 }
                 paths_file->close();
             }
@@ -140,11 +211,11 @@ void IdeamGamesPlugin::check_for_project_tools() {
     }
 }
 
-// DRy (Don't Repeat Yourself) helper to clean up the massive validation block
+// DRY helper to clean up the validation block
 void IdeamGamesPlugin::_create_template(const godot::String& folder_name, const godot::String& default_file_name) {
     godot::String base_path = "res://script_templates/";
     godot::String folder_path = base_path + folder_name;
-    
+
     godot::Ref<godot::DirAccess> dir = godot::DirAccess::open(base_path);
     if (dir.is_valid() && !dir->dir_exists(folder_name)) {
         dir->make_dir(folder_name);
@@ -154,7 +225,7 @@ void IdeamGamesPlugin::_create_template(const godot::String& folder_name, const 
     if (template_dir.is_valid() && !template_dir->file_exists("default_template.gd")) {
         godot::String source_path = "res://addons/ideam_games/resources/" + default_file_name;
         godot::Ref<godot::FileAccess> default_text = godot::FileAccess::open(source_path, godot::FileAccess::READ);
-        
+
         if (default_text.is_valid()) {
             godot::Ref<godot::FileAccess> new_template = godot::FileAccess::open(folder_path + "/default_template.gd", godot::FileAccess::WRITE);
             if (new_template.is_valid()) {
@@ -177,8 +248,60 @@ void IdeamGamesPlugin::validate_game_script_templates() {
 }
 
 void IdeamGamesPlugin::_scene_change(godot::Node* new_root) {
-    if (agent_editor.is_valid()) {
+    if (agent_action_editor.is_valid()) {
         agent_action_editor->set_editor_root(godot::Object::cast_to<godot::Control>(new_root));
+    }
+
+    if (cascade_dock) {
+        if (Game* game = godot::Object::cast_to<Game>(new_root)) {
+            cascade_dock->set_inspected_style(game->get_style());
+            if (gameplay_debugger.is_valid()) {
+                gameplay_debugger->set_target_style(game->get_style());
+                if (game->get_style().is_valid()) {
+                    gameplay_debugger->set_target_control_map(game->get_style()->get_control_map());
+                }
+            }
+        }
+        cascade_dock->set_inspected_node(new_root);
+    }
+}
+
+void IdeamGamesPlugin::_on_editor_selection_changed() {
+    _sync_cascade_dock_with_selection();
+}
+
+void IdeamGamesPlugin::_sync_cascade_dock_with_selection() {
+    if (!cascade_dock || !get_editor_interface()) {
+        return;
+    }
+
+    godot::EditorSelection* sel = get_editor_interface()->get_selection();
+    if (!sel) {
+        return;
+    }
+
+    godot::TypedArray<godot::Node> selected_nodes = sel->get_selected_nodes();
+    if (!selected_nodes.is_empty()) {
+        godot::Node* primary_node = godot::Object::cast_to<godot::Node>(selected_nodes[0]);
+        if (primary_node) {
+            cascade_dock->set_inspected_node(primary_node);
+
+            // Walk ancestors to find owning Game's GameplayStyle if not yet bound
+            godot::Node* curr = primary_node;
+            while (curr != nullptr) {
+                if (Game* game = godot::Object::cast_to<Game>(curr)) {
+                    if (game->get_style().is_valid()) {
+                        cascade_dock->set_inspected_style(game->get_style());
+                        if (gameplay_debugger.is_valid()) {
+                            gameplay_debugger->set_target_style(game->get_style());
+                            gameplay_debugger->set_target_control_map(game->get_style()->get_control_map());
+                        }
+                    }
+                    break;
+                }
+                curr = curr->get_parent();
+            }
+        }
     }
 }
 

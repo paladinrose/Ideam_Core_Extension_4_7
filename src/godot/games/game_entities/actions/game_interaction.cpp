@@ -2,11 +2,8 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/callable.hpp>
 
-// Explicit includes for static resolution
-#include "../game_agent.h"
-#include "../game_piece.h"
-#include "game_agent_action.h"
-#include "game_piece_action.h"
+
+
 
 namespace ideam::godot_ext {
 
@@ -193,7 +190,8 @@ void GameInteraction::evaluate_interaction(int sequence_id, GameAgent* stepped_a
         competition_value += score_participant(participant);
     }
     
-    int score_diff = instigator_value - competition_value;
+    int score_diff = GameplayRule::evaluate_interaction_score_for_object(this, instigator_value, competition_value);
+    score_diff = GameplayRule::scale_consequence_score_for_object(this, score_diff);
     
     if (instigator.size() > 1) {
         participant = instigator;

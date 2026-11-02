@@ -755,6 +755,7 @@ godot::TypedArray<GameplayRule> GameplayAudioOption::collect_rules() const {
         hearing_rule->set_target_property(godot::StringName("HearingRange"));
         hearing_rule->set_operation(RuleOp::MULTIPLY);
         hearing_rule->set_value(ai_hearing_sensitivity_multiplier);
+        hearing_rule->set_cascade_layer(RuleCascadeLayer::LAYER_MODE);
         hearing_rule->set_priority(50);
         collected.append(hearing_rule);
     }

@@ -1179,6 +1179,15 @@ godot::TypedArray<GameplayRule> GameplayAccessibilityOption::collect_rules() con
         collected.append(health_rule);
     }
 
+    // Stamp all rules synthesized or associated with GameplayAccessibilityOption into LAYER_PLAYER_ACCESSIBILITY
+    for (int i = 0; i < collected.size(); ++i) {
+        if (GameplayRule *r = godot::Object::cast_to<GameplayRule>(collected[i])) {
+            if (r->get_cascade_layer() == RuleCascadeLayer::LAYER_BASE) {
+                r->set_cascade_layer(RuleCascadeLayer::LAYER_PLAYER_ACCESSIBILITY);
+            }
+        }
+    }
+
     return collected;
 }
 

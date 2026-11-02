@@ -617,62 +617,10 @@ GameInteraction* Game::request_game_interaction() {
 
 void Game::_apply_resolved_rules_to_game() {
     if (!resolved_gameplay_style.is_valid()) {
+        GameplayRule::revert_all_from_object(this);
         return;
     }
-
-    godot::TypedArray<GameplayRule> style_rules = resolved_gameplay_style->get_rules();
-    for (int i = 0; i < style_rules.size(); ++i) {
-        godot::Ref<GameplayRule> rule(godot::Object::cast_to<GameplayRule>(style_rules[i]));
-        if (!rule.is_valid() || !rule->applies_to_self()) {
-            continue;
-        }
-
-        godot::StringName target_cls = rule->get_target_class();
-        if (!target_cls.is_empty() && !is_class(godot::String(target_cls))) {
-            continue;
-        }
-
-        godot::StringName target_group = rule->get_target_title_or_group();
-        if (!target_group.is_empty()) {
-            godot::String group_str(target_group);
-            if (title != group_str && get_name() != target_group && !is_in_group(target_group)) {
-                continue;
-            }
-        }
-
-        godot::StringName target_prop = rule->get_target_property();
-        if (target_prop.is_empty()) {
-            continue;
-        }
-
-        godot::Variant rule_val = rule->get_value();
-        switch (rule->get_operation()) {
-            case RuleOp::SET: {
-                set(target_prop, rule_val);
-                break;
-            }
-            case RuleOp::ADD: {
-                godot::Variant current = get(target_prop);
-                if (current.get_type() == godot::Variant::FLOAT || rule_val.get_type() == godot::Variant::FLOAT) {
-                    set(target_prop, static_cast<double>(current) + static_cast<double>(rule_val));
-                } else if (current.get_type() == godot::Variant::INT) {
-                    set(target_prop, static_cast<int64_t>(current) + static_cast<int64_t>(rule_val));
-                }
-                break;
-            }
-            case RuleOp::MULTIPLY: {
-                godot::Variant current = get(target_prop);
-                if (current.get_type() == godot::Variant::FLOAT || rule_val.get_type() == godot::Variant::FLOAT) {
-                    set(target_prop, static_cast<double>(current) * static_cast<double>(rule_val));
-                } else if (current.get_type() == godot::Variant::INT) {
-                    set(target_prop, static_cast<int64_t>(current) * static_cast<int64_t>(rule_val));
-                }
-                break;
-            }
-            default:
-                break;
-        }
-    }
+    resolved_gameplay_style->apply_rules_to_object(this, true, true);
 }
 
 void Game::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
@@ -684,6 +632,7 @@ void Game::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) {
         resolved_gameplay_style->apply_style(gameplay_style);
     } else {
         resolved_gameplay_style.unref();
+        GameplayRule::revert_all_from_object(this);
         return;
     }
 

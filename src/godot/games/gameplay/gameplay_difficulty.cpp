@@ -1261,6 +1261,14 @@ godot::TypedArray<GameplayRule> GameplayDifficulty::collect_rules() const {
             collected.append(time_rule);
         }
     }
+    // Stamp all rules synthesized or associated with GameplayDifficulty into LAYER_DIFFICULTY
+    for (int i = 0; i < collected.size(); ++i) {
+        if (GameplayRule *r = godot::Object::cast_to<GameplayRule>(collected[i])) {
+            if (r->get_cascade_layer() == RuleCascadeLayer::LAYER_BASE) {
+                r->set_cascade_layer(RuleCascadeLayer::LAYER_DIFFICULTY);
+            }
+        }
+    }
 
     return collected;
 }

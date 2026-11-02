@@ -288,6 +288,7 @@ void GameEntity::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle)
         _resolved_gameplay_style->apply_style(gameplay_style);
     } else {
         _resolved_gameplay_style.unref();
+        GameplayRule::revert_all_from_object(this);
         return;
     }
 

@@ -770,6 +770,7 @@ godot::TypedArray<GameplayRule> GameplayGraphicsOption::collect_rules() const {
         debris_rule->set_target_property(godot::StringName("DebrisBudget"));
         debris_rule->set_operation(RuleOp::MULTIPLY);
         debris_rule->set_value(debris_budget_multiplier);
+        debris_rule->set_cascade_layer(RuleCascadeLayer::LAYER_MODE);
         debris_rule->set_priority(50);
         collected.append(debris_rule);
     }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gameplay_resource.h"
+#include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 
 namespace ideam::godot_ext {
@@ -12,12 +13,14 @@ class GameplayControlMap;
 class GameplayAccessibilityOption;
 class GameplayAudioOption;
 class GameplayGraphicsOption;
+class GameplayRule;
 
 /**
- * DOD NOTE: GameplayMode acts as a collection of gameplay-altering components. 
- * Storing these in separate TypedArrays of Objects (AoS) creates a fragmented memory 
- * profile. In a high-performance C++26 environment, these should be refactored 
- * into a single contiguous Block of Memory (SoA) where components are stored as 
+ * DOD NOTE: GameplayMode acts as a collection of gameplay-altering components
+ * representing the Mode Layer (RuleCascadeLayer::LAYER_MODE) in the GameplayStyle cascade.
+ * Storing these in separate TypedArrays of Objects (AoS) creates a fragmented memory
+ * profile. In a high-performance C++26 environment, these should be refactored
+ * into a single contiguous Block of Memory (SoA) where components are stored as
  * raw POD data, minimizing cache misses during mode initialization and updates.
  */
 class GameplayMode : public GameplayResource {
@@ -57,15 +60,26 @@ public:
     void set_graphics_options(const godot::TypedArray<GameplayGraphicsOption> &p_options);
     godot::TypedArray<GameplayGraphicsOption> get_graphics_options() const;
 
-    // Class Functions
-    
+    // --- Cascade & Mode Functions ---
+
     /**
-     * DOD NOTE: This application logic utilizes nested loops and string-based comparisons 
-     * for 'title' matching. This is an O(N*M) operation that stalls the CPU prefetcher. 
-     * Using integer-based Component IDs or StringNames stored in contiguous memory 
-     * would allow for much faster, cache-friendly lookups.
+     * Merges `p_other`'s domain options into this mode by matching `matches_identity()`
+     * (and appending any new option resources not yet present).
      */
     void apply_mode(const godot::Ref<GameplayMode> &p_other);
+
+    /**
+     * Gathers all active GameplayRules contributed by this GameplayMode:
+     * 1. Associated rules on the GameplayMode itself (stamped with RuleCascadeLayer::LAYER_MODE if unset)
+     * 2. Synthesized and associated rules from all enabled perspectives, difficulties,
+     *    control_maps, accessibility_options, audio_options, and graphics_options.
+     */
+    virtual godot::TypedArray<GameplayRule> collect_rules() const override;
+
+    // --- Persistence & GameplayResource Overrides ---
+    virtual void apply_resource(const godot::Ref<GameplayResource> &p_other) override;
+    virtual godot::Dictionary save_resource() const override;
+    virtual void load_resource(const godot::Dictionary &p_data) override;
 };
 
 } // namespace ideam::godot_ext

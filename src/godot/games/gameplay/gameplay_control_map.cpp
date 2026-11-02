@@ -2229,6 +2229,7 @@ godot::TypedArray<GameplayRule> GameplayControlMap::collect_rules() const {
         buf_rule->set_target_property(godot::StringName("input_buffer_window"));
         buf_rule->set_operation(RuleOp::SET);
         buf_rule->set_value(input_buffer_window);
+        buf_rule->set_cascade_layer(RuleCascadeLayer::LAYER_PLAYER_ACCESSIBILITY);
         buf_rule->set_priority(40 + priority);
         collected.append(buf_rule);
     }

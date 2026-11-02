@@ -1,17 +1,21 @@
 #pragma once
 
 #include "../../game_entity.h"
+
+#include "../game_agent.h"
+#include "../game_piece.h"
+
+#include "../../gameplay/gameplay_rule.h"
+
+#include "game_agent_action.h"
+#include "game_piece_action.h"
+
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 
 namespace ideam::godot_ext {
 
-// Forward Declarations
-class GameAgent;
-class GamePiece;
-class GameAgentAction;
-class GamePieceAction;
 
 // DOD NOTE: GameInteraction heavily relies on loosely-typed Godot Arrays 
 // containing mixed types (e.g., `[GameEntity*, int action_id]`). This forces 
