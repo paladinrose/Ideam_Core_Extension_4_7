@@ -16,6 +16,7 @@
 
 #include "../game.h"
 #include "../game_entity.h"
+#include "../gameplay/gameplay_mode.h"
 
 namespace ideam::godot_ext {
 
@@ -146,12 +147,42 @@ void GameplayEditorDebuggerPlugin::_resolve_active_resources_from_editor() {
         return;
     }
     godot::Node *scene_root = godot::EditorInterface::get_singleton()->get_edited_scene_root();
-    if (Game *game = godot::Object::cast_to<Game>(scene_root)) {
-        if (_target_style.is_null()) {
-            _target_style = game->get_style();
+    if (!scene_root) {
+        return;
+    }
+
+    if (_target_style.is_null()) {
+        if (Game *game = godot::Object::cast_to<Game>(scene_root)) {
+            _target_style = game->get_gameplay_style();
+            if (_target_style.is_null()) {
+                _target_style = game->get_resolved_gameplay_style();
+            }
+        } else if (GameEntity *entity = godot::Object::cast_to<GameEntity>(scene_root)) {
+            _target_style = entity->get_gameplay_style();
+            if (_target_style.is_null()) {
+                _target_style = entity->get_resolved_gameplay_style();
+            }
         }
-        if (_target_style.is_valid() && _target_control_map.is_null()) {
-            _target_control_map = _target_style->get_control_map();
+    }
+
+    if (_target_style.is_valid() && _target_control_map.is_null()) {
+        godot::TypedArray<GameplayMode> modes = _target_style->get_modes();
+        for (int i = 0; i < modes.size(); ++i) {
+            GameplayMode *mode = godot::Object::cast_to<GameplayMode>(modes[i]);
+            if (!mode || !mode->get_enabled()) {
+                continue;
+            }
+            godot::TypedArray<GameplayControlMap> control_maps = mode->get_control_maps();
+            for (int j = 0; j < control_maps.size(); ++j) {
+                GameplayControlMap *cmap = godot::Object::cast_to<GameplayControlMap>(control_maps[j]);
+                if (cmap && cmap->get_enabled()) {
+                    _target_control_map = godot::Ref<GameplayControlMap>(cmap);
+                    break;
+                }
+            }
+            if (_target_control_map.is_valid()) {
+                break;
+            }
         }
     }
 #endif
@@ -398,6 +429,23 @@ godot::Control *GameplayEditorDebuggerPlugin::_build_simulator_tab(int32_t p_ses
     return scroll;
 }
 
+// Helper in anonymous namespace or static helper in gameplay_editor_debugger_plugin.cpp
+static void _apply_rule_to_scene_tree_recursive(
+    godot::Node *p_node,
+    const godot::Ref<GameplayRule> &p_rule,
+    bool p_is_root
+) {
+    if (!p_node || p_rule.is_null()) {
+        return;
+    }
+    p_rule->apply_to_object(p_node, p_is_root);
+
+    int32_t child_count = p_node->get_child_count();
+    for (int32_t i = 0; i < child_count; ++i) {
+        _apply_rule_to_scene_tree_recursive(p_node->get_child(i), p_rule, false);
+    }
+}
+
 void GameplayEditorDebuggerPlugin::broadcast_hot_reload_style(
     const godot::Ref<GameplayStyle> &p_style
 ) {
@@ -407,12 +455,18 @@ void GameplayEditorDebuggerPlugin::broadcast_hot_reload_style(
         style = _target_style;
     }
 
-    // 1. Apply in-editor to edited scene root if it's a Game
+    // 1. Apply in-editor to edited scene root if it's a Game / GameEntity (or generic Node)
 #ifdef TOOLS_ENABLED
     if (style.is_valid() && godot::EditorInterface::get_singleton()) {
         godot::Node *scene_root = godot::EditorInterface::get_singleton()->get_edited_scene_root();
         if (scene_root) {
-            style->apply_to_node(scene_root);
+            if (Game *game = godot::Object::cast_to<Game>(scene_root)) {
+                game->apply_gameplay_style(style);
+            } else if (GameEntity *entity = godot::Object::cast_to<GameEntity>(scene_root)) {
+                entity->apply_gameplay_style(style);
+            } else {
+                style->apply_rules_to_object(scene_root, true, true);
+            }
         }
     }
 #endif
@@ -450,7 +504,7 @@ void GameplayEditorDebuggerPlugin::broadcast_hot_reload_rule(
     if (godot::EditorInterface::get_singleton()) {
         godot::Node *scene_root = godot::EditorInterface::get_singleton()->get_edited_scene_root();
         if (scene_root) {
-            p_rule->apply_to_node(scene_root, true);
+            _apply_rule_to_scene_tree_recursive(scene_root, p_rule, true);
         }
     }
 #endif
@@ -521,14 +575,24 @@ void GameplayEditorDebuggerPlugin::inject_vr_controller_state(
 ) {
     _resolve_active_resources_from_editor();
     if (_target_control_map.is_valid()) {
+        int tracker_index = 1; // Default: 1 = Right Hand
+        if (p_tracker_hand == godot::StringName("left_hand") ||
+            p_tracker_hand == godot::StringName("left")) {
+            tracker_index = 0; // 0 = Left Hand
+        } else if (p_tracker_hand == godot::StringName("head") ||
+                   p_tracker_hand == godot::StringName("hmd")) {
+            tracker_index = 2; // 2 = Head / HMD
+        }
+
         _target_control_map->feed_vr_controller_state(
-            p_tracker_hand,
+            tracker_index,
             p_pose,
             p_linear_velocity,
+            godot::Vector3(), // p_angular_velocity
             p_thumbstick,
             p_trigger,
             p_grip,
-            p_button_mask
+            static_cast<uint32_t>(p_button_mask)
         );
     }
 

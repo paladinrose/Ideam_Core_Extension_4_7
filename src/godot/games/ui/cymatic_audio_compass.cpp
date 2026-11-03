@@ -12,10 +12,7 @@
 #include <godot_cpp/variant/packed_vector2_array.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 
-#include "../../game_entities/game_agent.h"
-#include "../../game_entities/game_board.h"
-#include "../../game_entities/game_piece.h"
-#include "../../game_property.h"
+
 
 namespace ideam::godot_ext {
 

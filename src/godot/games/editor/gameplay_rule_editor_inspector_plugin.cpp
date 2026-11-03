@@ -13,8 +13,8 @@
 #include <godot_cpp/variant/dictionary.hpp>
 
 #include "../game.h"
-#include "../game_entities/game_entity.h"
-#include "../game_entities/properties/game_property.h"
+#include "../game_entity.h"
+#include "../game_property.h"
 
 namespace ideam::godot_ext {
 
@@ -173,10 +173,10 @@ void GameplayRuleEditorInspectorPlugin::_parse_begin(godot::Object *p_object) {
     int class_bit = spec % 10;
 
     godot::String scope_badge = "*";
-    RuleTargetScope sc = rule->get_target_scope();
-    if (sc == RuleTargetScope::SCOPE_SELF) {
+    RuleScope sc = rule->get_scope();
+    if (sc == RuleScope::SELF) {
         scope_badge = ":host";
-    } else if (sc == RuleTargetScope::SCOPE_SELF_AND_DESCENDANTS) {
+    } else if (sc == RuleScope::ALL) {
         scope_badge = ":host, *";
     }
 
@@ -185,11 +185,11 @@ void GameplayRuleEditorInspectorPlugin::_parse_begin(godot::Object *p_object) {
         case RuleCascadeLayer::LAYER_BASE: layer_badge = "@layer base"; break;
         case RuleCascadeLayer::LAYER_MODE: layer_badge = "@layer mode"; break;
         case RuleCascadeLayer::LAYER_DIFFICULTY: layer_badge = "@layer difficulty"; break;
-        case RuleCascadeLayer::LAYER_ACCESSIBILITY: layer_badge = "@layer accessibility"; break;
-        case RuleCascadeLayer::LAYER_USER_OVERRIDE: layer_badge = "@layer override"; break;
+        case RuleCascadeLayer::LAYER_PLAYER_ACCESSIBILITY: layer_badge = "@layer accessibility"; break;
+        case RuleCascadeLayer::LAYER_INLINE_LOCAL: layer_badge = "@layer override"; break;
         default: break;
     }
-    if (rule->get_important()) {
+    if (rule->get_is_important()) {
         layer_badge += " !important";
     }
 

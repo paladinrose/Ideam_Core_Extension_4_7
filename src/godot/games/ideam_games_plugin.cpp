@@ -15,8 +15,11 @@
 #include "editor/gameplay_resource_editor_inspector_plugin.h"
 #include "editor/gameplay_style_cascade_dock.h"
 #include "editor/gameplay_editor_debugger_plugin.h"
+
 #include "game.h"
 #include "game_entities/game_agent.h"
+#include "game_entity.h"
+#include "gameplay/gameplay_mode.h"
 
 namespace ideam::godot_ext {
 
@@ -247,22 +250,55 @@ void IdeamGamesPlugin::validate_game_script_templates() {
     _create_template("Game_Player", "default_game_player_template.txt");
 }
 
+static godot::Ref<GameplayControlMap> _resolve_control_map_from_style(
+    const godot::Ref<GameplayStyle>& p_style
+) {
+    if (p_style.is_null()) {
+        return godot::Ref<GameplayControlMap>();
+    }
+    godot::TypedArray<GameplayMode> modes = p_style->get_modes();
+    for (int i = 0; i < modes.size(); ++i) {
+        GameplayMode* mode = godot::Object::cast_to<GameplayMode>(modes[i]);
+        if (!mode || !mode->get_enabled()) {
+            continue;
+        }
+        godot::TypedArray<GameplayControlMap> control_maps = mode->get_control_maps();
+        for (int j = 0; j < control_maps.size(); ++j) {
+            GameplayControlMap* cmap = godot::Object::cast_to<GameplayControlMap>(control_maps[j]);
+            if (cmap && cmap->get_enabled()) {
+                return godot::Ref<GameplayControlMap>(cmap);
+            }
+        }
+    }
+    return godot::Ref<GameplayControlMap>();
+}
+
 void IdeamGamesPlugin::_scene_change(godot::Node* new_root) {
     if (agent_action_editor.is_valid()) {
         agent_action_editor->set_editor_root(godot::Object::cast_to<godot::Control>(new_root));
     }
 
     if (cascade_dock) {
+        cascade_dock->set_scene_root(new_root);
+        cascade_dock->inspect_node(new_root);
+    }
+
+    if (gameplay_debugger.is_valid() && new_root) {
+        godot::Ref<GameplayStyle> style;
         if (Game* game = godot::Object::cast_to<Game>(new_root)) {
-            cascade_dock->set_inspected_style(game->get_style());
-            if (gameplay_debugger.is_valid()) {
-                gameplay_debugger->set_target_style(game->get_style());
-                if (game->get_style().is_valid()) {
-                    gameplay_debugger->set_target_control_map(game->get_style()->get_control_map());
-                }
+            style = game->get_gameplay_style();
+            if (style.is_null()) {
+                style = game->get_resolved_gameplay_style();
+            }
+        } else if (GameEntity* entity = godot::Object::cast_to<GameEntity>(new_root)) {
+            style = entity->get_gameplay_style();
+            if (style.is_null()) {
+                style = entity->get_resolved_gameplay_style();
             }
         }
-        cascade_dock->set_inspected_node(new_root);
+
+        gameplay_debugger->set_target_style(style);
+        gameplay_debugger->set_target_control_map(_resolve_control_map_from_style(style));
     }
 }
 
@@ -284,18 +320,30 @@ void IdeamGamesPlugin::_sync_cascade_dock_with_selection() {
     if (!selected_nodes.is_empty()) {
         godot::Node* primary_node = godot::Object::cast_to<godot::Node>(selected_nodes[0]);
         if (primary_node) {
-            cascade_dock->set_inspected_node(primary_node);
+            cascade_dock->inspect_node(primary_node);
 
-            // Walk ancestors to find owning Game's GameplayStyle if not yet bound
+            // Walk ancestors to find owning Game or GameEntity's GameplayStyle
             godot::Node* curr = primary_node;
             while (curr != nullptr) {
+                godot::Ref<GameplayStyle> style;
                 if (Game* game = godot::Object::cast_to<Game>(curr)) {
-                    if (game->get_style().is_valid()) {
-                        cascade_dock->set_inspected_style(game->get_style());
-                        if (gameplay_debugger.is_valid()) {
-                            gameplay_debugger->set_target_style(game->get_style());
-                            gameplay_debugger->set_target_control_map(game->get_style()->get_control_map());
-                        }
+                    style = game->get_gameplay_style();
+                    if (style.is_null()) {
+                        style = game->get_resolved_gameplay_style();
+                    }
+                } else if (GameEntity* entity = godot::Object::cast_to<GameEntity>(curr)) {
+                    style = entity->get_gameplay_style();
+                    if (style.is_null()) {
+                        style = entity->get_resolved_gameplay_style();
+                    }
+                }
+
+                if (style.is_valid()) {
+                    if (gameplay_debugger.is_valid()) {
+                        gameplay_debugger->set_target_style(style);
+                        gameplay_debugger->set_target_control_map(
+                            _resolve_control_map_from_style(style)
+                        );
                     }
                     break;
                 }

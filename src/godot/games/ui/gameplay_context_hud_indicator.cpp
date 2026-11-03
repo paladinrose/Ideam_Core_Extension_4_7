@@ -17,11 +17,6 @@
 #include <godot_cpp/variant/packed_color_array.hpp>
 #include <godot_cpp/variant/packed_vector2_array.hpp>
 
-#include "../../game.h"
-#include "../../game_entities/actions/game_agent_action.h"
-#include "../../game_entities/game_agent.h"
-#include "../../game_entities/game_board.h"
-
 namespace ideam::godot_ext {
 
 void GameplayContextHUDIndicator::_bind_methods() {

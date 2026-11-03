@@ -12,16 +12,17 @@
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
-#include "../../gameplay/gameplay_control_map.h"
-#include "../../gameplay/gameplay_mode.h"
-#include "../../gameplay/gameplay_style.h"
+#include "../gameplay/gameplay_control_map.h"
+#include "../gameplay/gameplay_mode.h"
+#include "../gameplay/gameplay_style.h"
+
+#include "../game.h"
+#include "../game_entities/actions/game_agent_action.h"
+#include "../game_entities/game_agent.h"
+#include "../game_entities/game_board.h"
 
 namespace ideam::godot_ext {
 
-// Forward Declarations
-class Game;
-class GameBoard;
-class GameAgent;
 
 /**
  * DOD NOTE: Flat POD action prompt state used by GameplayContextHUDIndicator

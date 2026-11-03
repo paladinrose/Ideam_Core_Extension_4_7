@@ -275,7 +275,7 @@ void DifficultyProfileRadar::_notification(int p_what) {
         ring.resize(n + 1);
         for (int i = 0; i <= n; ++i) {
             int idx = i % n;
-            float angle = -Math_PI * 0.5f + (Math_TAU * static_cast<float>(idx)) / static_cast<float>(n);
+            float angle = -godot::Math::PI * 0.5f + (godot::Math::TAU * static_cast<float>(idx)) / static_cast<float>(n);
             ring.set(i, center + godot::Vector2(std::cos(angle), std::sin(angle)) * p_radius);
         }
         return ring;
@@ -303,7 +303,7 @@ void DifficultyProfileRadar::_notification(int p_what) {
     int font_size = get_theme_default_font_size() > 0 ? get_theme_default_font_size() - 2 : 12;
 
     for (int i = 0; i < n; ++i) {
-        float angle = -Math_PI * 0.5f + (Math_TAU * static_cast<float>(i)) / static_cast<float>(n);
+        float angle = -godot::Math::PI * 0.5f + (godot::Math::TAU * static_cast<float>(i)) / static_cast<float>(n);
         godot::Vector2 dir(std::cos(angle), std::sin(angle));
         draw_line(center, center + dir * max_r, grid_col, 1.0f);
 
@@ -327,7 +327,7 @@ void DifficultyProfileRadar::_notification(int p_what) {
     raw_poly.resize(n);
     raw_outline.resize(n + 1);
     for (int i = 0; i < n; ++i) {
-        float angle = -Math_PI * 0.5f + (Math_TAU * static_cast<float>(i)) / static_cast<float>(n);
+        float angle = -godot::Math::PI * 0.5f + (godot::Math::TAU * static_cast<float>(i)) / static_cast<float>(n);
         float norm = godot::Math::clamp(raw_scalars[i] / max_scalar_radius, 0.05f, 1.0f);
         godot::Vector2 pt = center + godot::Vector2(std::cos(angle), std::sin(angle)) * (max_r * norm);
         raw_poly.set(i, pt);
@@ -346,7 +346,7 @@ void DifficultyProfileRadar::_notification(int p_what) {
         godot::PackedVector2Array eff_outline;
         eff_outline.resize(n + 1);
         for (int i = 0; i < n; ++i) {
-            float angle = -Math_PI * 0.5f + (Math_TAU * static_cast<float>(i)) / static_cast<float>(n);
+            float angle = -godot::Math::PI * 0.5f + (godot::Math::TAU * static_cast<float>(i)) / static_cast<float>(n);
             float norm = godot::Math::clamp(eff_scalars[i] / max_scalar_radius, 0.05f, 1.0f);
             godot::Vector2 pt = center + godot::Vector2(std::cos(angle), std::sin(angle)) * (max_r * norm);
             eff_outline.set(i, pt);

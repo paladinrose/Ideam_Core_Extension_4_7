@@ -13,13 +13,14 @@
 #include <godot_cpp/variant/string_name.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 
-#include "../../../controls/circular_gauge.h"
+#include "../../controls/circular_gauge.h"
+#include "../game_entity.h"
+#include "../game_entities/game_piece.h"
+#include "../game_property.h"
+#include "../game_property_modifier.h"
+#include "../gameplay/gameplay_rule.h"
 
 namespace ideam::godot_ext {
-
-// Forward Declarations
-class GameEntity;
-class GameProperty;
 
 /**
  * DOD NOTE: Extracting PropertyGaugeDisplayMode at namespace scope with explicit

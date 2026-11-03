@@ -11,12 +11,6 @@
 #include <godot_cpp/variant/packed_vector2_array.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 
-#include "../../game_entity.h"
-#include "../../game_entities/game_piece.h"
-#include "../../game_property.h"
-#include "../../game_property_modifier.h"
-#include "../../gameplay/gameplay_rule.h"
-
 namespace ideam::godot_ext {
 
 void GamePropertyGauge::_bind_methods() {

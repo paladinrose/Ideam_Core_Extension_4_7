@@ -262,13 +262,13 @@ void PerspectiveFrustumVisualizer::_draw_side_elevation_view(
 
     // Pitch constraint arc around pivot
     float arc_r = godot::Math::min(p_rect.size.x, p_rect.size.y) * 0.34f;
-    float min_rad = Math_PI + godot::Math::deg_to_rad(min_pitch);
-    float max_rad = Math_PI + godot::Math::deg_to_rad(max_pitch);
+    float min_rad = godot::Math::PI + godot::Math::deg_to_rad(min_pitch);
+    float max_rad = godot::Math::PI + godot::Math::deg_to_rad(max_pitch);
     draw_arc(pivot_pt, arc_r, min_rad, max_rad, 32, godot::Color(p_frustum_col.r, p_frustum_col.g, p_frustum_col.b, 0.65f), 2.0f);
 
     // Active camera boom at default_pitch_degrees
     float boom_r = godot::Math::clamp(arm_len / 6.0f, 0.15f, 1.0f) * arc_r;
-    float pitch_rad = Math_PI + godot::Math::deg_to_rad(pitch_deg);
+    float pitch_rad = godot::Math::PI + godot::Math::deg_to_rad(pitch_deg);
     godot::Vector2 cam_pt = pivot_pt + godot::Vector2(std::cos(pitch_rad), std::sin(pitch_rad)) * boom_r;
 
     draw_line(pivot_pt, cam_pt, p_rig_col, 2.0f);

@@ -340,10 +340,14 @@ void GameplayStyleCascadeDock::_populate_computed_properties_pane(
 
         godot::Label *val_lbl = memnew(godot::Label);
         if (p_modified) {
-            val_lbl->set_text(p_base_str + "  ->  " + p_computed_str);
+            val_lbl->set_text(
+                godot::String(p_base_str) + godot::String("  ->  ") + godot::String(p_computed_str)
+            );
             val_lbl->set_modulate(godot::Color(0.35f, 0.95f, 0.62f, 1.0f));
         } else {
-            val_lbl->set_text(p_computed_str + " (unmodified)");
+            val_lbl->set_text(
+                godot::String(p_computed_str) + godot::String(" (unmodified)")
+            );
             val_lbl->set_modulate(godot::Color(0.75f, 0.80f, 0.86f, 0.85f));
         }
         val_lbl->set_h_size_flags(Control::SIZE_EXPAND_FILL);

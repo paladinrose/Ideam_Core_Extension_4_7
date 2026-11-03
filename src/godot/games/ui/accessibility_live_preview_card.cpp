@@ -228,10 +228,10 @@ void AccessibilityLivePreviewCard::_notification(int p_what) {
     // 3. Center Reticle & Optional Cymatic Visual Sound Indicator Arc
     godot::Vector2 hud_center(canvas_rect.position.x + canvas_rect.size.x * 0.50f, canvas_rect.position.y + canvas_rect.size.y * 0.44f);
     float ret_r = 6.0f * godot::Math::clamp(reticle_sc, 0.5f, 2.5f);
-    draw_arc(hud_center, ret_r, 0.0f, Math_TAU, 24, godot::Color(1.0f, 1.0f, 1.0f, 0.9f), 1.5f);
+    draw_arc(hud_center, ret_r, 0.0f, godot::Math::TAU, 24, godot::Color(1.0f, 1.0f, 1.0f, 0.9f), 1.5f);
 
     if (show_cymatic_sound_ring && sound_ind) {
-        draw_arc(hud_center, 38.0f, Math_PI * 0.75f, Math_PI * 1.25f, 24, xform(enemy_col), 4.0f);
+        draw_arc(hud_center, 38.0f, godot::Math::PI * 0.75f, godot::Math::PI * 1.25f, 24, xform(enemy_col), 4.0f);
     }
 
     // 4. Closed Caption Preview Box at Bottom

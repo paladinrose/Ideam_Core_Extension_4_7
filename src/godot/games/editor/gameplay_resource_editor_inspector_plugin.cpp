@@ -14,10 +14,10 @@
 #include "../gameplay/gameplay_control_map.h"
 #include "../gameplay/gameplay_difficulty.h"
 #include "../gameplay/gameplay_perspective.h"
-#include "../ui/options/accessibility_live_preview_card.h"
-#include "../ui/options/control_stick_deadzone_visualizer.h"
-#include "../ui/options/difficulty_profile_radar.h"
-#include "../ui/options/perspective_frustum_visualizer.h"
+#include "../ui/accessibility_live_preview_card.h"
+#include "../ui/control_stick_deadzone_visualizer.h"
+#include "../ui/difficulty_profile_radar.h"
+#include "../ui/perspective_frustum_visualizer.h"
 
 namespace ideam::godot_ext {
 

@@ -13,16 +13,18 @@
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector3.hpp>
 
-#include "../../../controls/circular_gauge.h"
-#include "../../../controls/heatmap_grid.h"
-#include "../../gameplay/gameplay_accessibility_option.h"
-#include "../../gameplay/gameplay_audio_option.h"
+#include "../../controls/circular_gauge.h"
+#include "../../controls/heatmap_grid.h"
+#include "../gameplay/gameplay_accessibility_option.h"
+#include "../gameplay/gameplay_audio_option.h"
+
+#include "../game_entities/game_agent.h"
+#include "../game_entities/game_board.h"
+#include "../game_entities/game_piece.h"
+#include "../game_property.h"
 
 namespace ideam::godot_ext {
 
-// Forward Declarations
-class GameBoard;
-class GameAgent;
 
 /**
  * DOD NOTE: Extracting CymaticAudioCompass enums at namespace scope with explicit

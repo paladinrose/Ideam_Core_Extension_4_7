@@ -357,11 +357,11 @@ void ControlStickDeadzoneVisualizer::_draw_stick_gate(
 
     // Background disc & outer boundary
     draw_circle(p_center, p_radius, p_bg_col);
-    draw_arc(p_center, p_radius, 0.0f, Math_TAU, 64, p_grid_col, 1.5f);
+    draw_arc(p_center, p_radius, 0.0f, godot::Math::TAU, 64, p_grid_col, 1.5f);
 
     // Outer saturation ring
     float outer_r = p_radius * godot::Math::clamp(p_outer_dz, 0.1f, 1.0f);
-    draw_arc(p_center, outer_r, 0.0f, Math_TAU, 64, godot::Color(p_act_col.r, p_act_col.g, p_act_col.b, 0.4f), 1.25f);
+    draw_arc(p_center, outer_r, 0.0f, godot::Math::TAU, 64, godot::Color(p_act_col.r, p_act_col.g, p_act_col.b, 0.4f), 1.25f);
 
     // Inner deadzone visualization (axial crossband vs. radial disc)
     float inner_r = p_radius * godot::Math::clamp(p_inner_dz, 0.0f, 0.95f);
@@ -370,7 +370,7 @@ void ControlStickDeadzoneVisualizer::_draw_stick_gate(
         draw_rect(godot::Rect2(p_center.x - p_radius, p_center.y - inner_r, p_radius * 2.0f, inner_r * 2.0f), p_dz_col, true);
     } else if (inner_r > 0.5f) {
         draw_circle(p_center, inner_r, p_dz_col);
-        draw_arc(p_center, inner_r, 0.0f, Math_TAU, 48, godot::Color(p_dz_col.r, p_dz_col.g, p_dz_col.b, 0.85f), 1.25f);
+        draw_arc(p_center, inner_r, 0.0f, godot::Math::TAU, 48, godot::Color(p_dz_col.r, p_dz_col.g, p_dz_col.b, 0.85f), 1.25f);
     }
 
     // Center hairlines
@@ -392,7 +392,7 @@ void ControlStickDeadzoneVisualizer::_draw_stick_gate(
             draw_string(
                 font,
                 godot::Vector2(p_center.x - p_radius, p_center.y - p_radius - 6.0f),
-                p_title + " (DZ: " + godot::String::num(p_inner_dz, 2) + ")",
+                godot::String(p_title) + " (DZ: " + godot::String::num(p_inner_dz, 2) + ")",
                 godot::HORIZONTAL_ALIGNMENT_CENTER,
                 p_radius * 2.0f,
                 font_size,
