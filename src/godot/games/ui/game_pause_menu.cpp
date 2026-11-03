@@ -589,10 +589,10 @@ void GamePauseMenu::refresh_pause_telemetry() {
     if (context_status_label != nullptr) {
         godot::String board_str = (active_board && !active_board->get_title().is_empty())
             ? active_board->get_title()
-            : (active_board ? active_board->get_name() : godot::String("No Active Board"));
+            : (active_board ? godot::String(active_board->get_name()) : godot::String("No Active Board"));
         godot::String agent_str = (controlled_agent && !controlled_agent->get_title().is_empty())
             ? controlled_agent->get_title()
-            : (controlled_agent ? controlled_agent->get_name() : godot::String("Unassigned Agent"));
+            : (controlled_agent ? godot::String(controlled_agent->get_name()) : godot::String("Unassigned Agent"));
         context_status_label->set_text("Board: " + board_str + "  |  Agent: " + agent_str);
     }
 

@@ -51,7 +51,7 @@ public:
      * Pure static color transform helper applying Brightness/Contrast/Saturation and
      * Daltonization CVD simulation (`ColorVisionMode`) to any input `godot::Color`.
      */
-    static godot::Color simulate_accessible_color(
+    godot::Color simulate_accessible_color(
         const godot::Color &p_input,
         ColorVisionMode p_mode,
         float p_cvd_strength,

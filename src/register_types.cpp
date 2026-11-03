@@ -164,9 +164,23 @@
 #include "godot/games/ui/game_agent_action_tool.h"
 #include "godot/games/ui/game_agent_action_sequencer.h"
 
+#include "godot/games/ui/accessibility_live_preview_card.h"
+#include "godot/games/ui/control_action_rebind_matrix.h"
+#include "godot/games/ui/control_stick_deadzone_visualizer.h"
+#include "godot/games/ui/cymatic_audio_compass.h"
+#include "godot/games/ui/difficulty_profile_radar.h"
+#include "godot/games/ui/gameplay_context_hud_indicator.h"
+#include "godot/games/ui/game_property_gauge.h"
+#include "godot/games/ui/perspective_frustum_visualizer.h"
+
 // --- Games Editors ---
 #include "godot/games/editor/game_agent_editor_inspector_plugin.h"
 #include "godot/games/editor/game_agent_action_editor_inspector_plugin.h"
+
+#include "godot/games/editor/gameplay_editor_debugger_plugin.h"
+#include "godot/games/editor/gameplay_resource_editor_inspector_plugin.h"
+#include "godot/games/editor/gameplay_rule_editor_inspector_plugin.h"
+#include "godot/games/editor/gameplay_style_cascade_dock.h"
 
 using namespace godot;
 using namespace ideam::core;
@@ -310,6 +324,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GameplayMode);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayRule);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayStyle);
+
         // --- Games UI ---
         GDREGISTER_CLASS(ideam::godot_ext::GameHubUI);
         GDREGISTER_CLASS(ideam::godot_ext::GameMenu);
@@ -319,6 +334,15 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentActionTool);
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentActionSequencer);
+
+        GDREGISTER_CLASS(ideam::godot_ext::AccessibilityLivePreviewCard);
+        GDREGISTER_CLASS(ideam::godot_ext::ControlActionRebindMatrix);
+        GDREGISTER_CLASS(ideam::godot_ext::ControlStickDeadzoneVisualizer);
+        GDREGISTER_CLASS(ideam::godot_ext::CymaticAudioCompass);
+        GDREGISTER_CLASS(ideam::godot_ext::DifficultyProfileRadar);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayContextHUDIndicator);
+        GDREGISTER_CLASS(ideam::godot_ext::GamePropertyGauge);
+        GDREGISTER_CLASS(ideam::godot_ext::PerspectiveFrustumVisualizer);
 
         // --- Native Task Registration ---
         IdeamTaskRegistry::init();
@@ -349,6 +373,10 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // --- Games Editors ---
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentEditorInspectorPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentActionEditorInspectorPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayEditorDebuggerPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayResourceEditorInspectorPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayRuleEditorInspectorPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayStyleCascadeDock);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamGamesPlugin);
     }
 }

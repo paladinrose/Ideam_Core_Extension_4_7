@@ -7200,6 +7200,30 @@
         "output": "src\\godot\\games\\scene_transition.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\games\\editor\\gameplay_editor_debugger_plugin.windows.template_debug.x86_64.obj /c src\\godot\\games\\editor\\gameplay_editor_debugger_plugin.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\editor\\gameplay_editor_debugger_plugin.cpp",
+        "output": "src\\godot\\games\\editor\\gameplay_editor_debugger_plugin.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\editor\\gameplay_resource_editor_inspector_plugin.windows.template_debug.x86_64.obj /c src\\godot\\games\\editor\\gameplay_resource_editor_inspector_plugin.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\editor\\gameplay_resource_editor_inspector_plugin.cpp",
+        "output": "src\\godot\\games\\editor\\gameplay_resource_editor_inspector_plugin.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\editor\\gameplay_rule_editor_inspector_plugin.windows.template_debug.x86_64.obj /c src\\godot\\games\\editor\\gameplay_rule_editor_inspector_plugin.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\editor\\gameplay_rule_editor_inspector_plugin.cpp",
+        "output": "src\\godot\\games\\editor\\gameplay_rule_editor_inspector_plugin.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\editor\\gameplay_style_cascade_dock.windows.template_debug.x86_64.obj /c src\\godot\\games\\editor\\gameplay_style_cascade_dock.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\editor\\gameplay_style_cascade_dock.cpp",
+        "output": "src\\godot\\games\\editor\\gameplay_style_cascade_dock.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\games\\editor\\game_agent_action_editor_inspector_plugin.windows.template_debug.x86_64.obj /c src\\godot\\games\\editor\\game_agent_action_editor_inspector_plugin.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\editor\\game_agent_action_editor_inspector_plugin.cpp",
@@ -7308,10 +7332,46 @@
         "output": "src\\godot\\games\\game_entities\\actions\\game_piece_action.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\games\\ui\\accessibility_live_preview_card.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\accessibility_live_preview_card.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\accessibility_live_preview_card.cpp",
+        "output": "src\\godot\\games\\ui\\accessibility_live_preview_card.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\games\\ui\\chapter_select.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\chapter_select.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\ui\\chapter_select.cpp",
         "output": "src\\godot\\games\\ui\\chapter_select.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\control_action_rebind_matrix.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\control_action_rebind_matrix.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\control_action_rebind_matrix.cpp",
+        "output": "src\\godot\\games\\ui\\control_action_rebind_matrix.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\control_stick_deadzone_visualizer.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\control_stick_deadzone_visualizer.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\control_stick_deadzone_visualizer.cpp",
+        "output": "src\\godot\\games\\ui\\control_stick_deadzone_visualizer.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\cymatic_audio_compass.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\cymatic_audio_compass.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\cymatic_audio_compass.cpp",
+        "output": "src\\godot\\games\\ui\\cymatic_audio_compass.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\difficulty_profile_radar.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\difficulty_profile_radar.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\difficulty_profile_radar.cpp",
+        "output": "src\\godot\\games\\ui\\difficulty_profile_radar.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\gameplay_context_hud_indicator.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\gameplay_context_hud_indicator.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\gameplay_context_hud_indicator.cpp",
+        "output": "src\\godot\\games\\ui\\gameplay_context_hud_indicator.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\games\\ui\\game_agent_action_sequencer.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\game_agent_action_sequencer.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -7348,6 +7408,18 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\games\\ui\\game_pause_menu.cpp",
         "output": "src\\godot\\games\\ui\\game_pause_menu.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\game_property_gauge.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\game_property_gauge.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\game_property_gauge.cpp",
+        "output": "src\\godot\\games\\ui\\game_property_gauge.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\games\\ui\\perspective_frustum_visualizer.windows.template_debug.x86_64.obj /c src\\godot\\games\\ui\\perspective_frustum_visualizer.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\games\\ui\\perspective_frustum_visualizer.cpp",
+        "output": "src\\godot\\games\\ui\\perspective_frustum_visualizer.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\graphs\\graph_composer.windows.template_debug.x86_64.obj /c src\\godot\\graphs\\graph_composer.cpp /TP /std:c++17 /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
