@@ -10,6 +10,8 @@
 
 // --- Utilities ---
 #include "godot/utilities/ideam_undo_redo.h"
+#include "godot/utilities/node_retargeter.h"
+#include "godot/utilities/signal_connector.h"
 
 // --- Controls ---
 #include "godot/controls/runtime_resource_picker.h"
@@ -143,6 +145,11 @@
 
 #include "godot/games/game_entities/actions/game_interaction.h"
 
+#include "godot/games/game_property.h"
+#include "godot/games/game_property_modifier.h"
+
+#include "godot/games/scene_transition.h"
+
 // --- Gameplay ---
 #include "godot/games/gameplay/gameplay_resource.h"
 #include "godot/games/gameplay/gameplay_accessibility_option.h"
@@ -196,6 +203,8 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         
         // --- Utilities ---
         GDREGISTER_CLASS(ideam::godot_ext::IdeamUndoRedo);
+        GDREGISTER_CLASS(ideam::godot_ext::NodeRetargeter);
+        GDREGISTER_CLASS(ideam::godot_ext::SignalConnector);
 
         // --- Controls ---
         GDREGISTER_CLASS(ideam::godot_ext::RuntimeResourcePicker);
@@ -314,6 +323,10 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GamePieceAction);
         GDREGISTER_CLASS(ideam::godot_ext::GameInteraction);
 
+        GDREGISTER_CLASS(ideam::godot_ext::GameProperty);
+        GDREGISTER_CLASS(ideam::godot_ext::GamePropertyModifier);
+        GDREGISTER_CLASS(ideam::godot_ext::SceneTransition);
+        
         // --- Gameplay ---
         GDREGISTER_CLASS(ideam::godot_ext::GameplayResource);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayAccessibilityOption);
