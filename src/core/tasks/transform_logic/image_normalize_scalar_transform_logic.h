@@ -45,6 +45,7 @@ struct alignas(64) ImageNormalizeScalarTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Image Normalize Scalar";
+    static constexpr std::string_view ui_category  = "Image";
 
     // --- Configuration State (64-byte Cache-Aligned) ---
     uint32_t buffer_id           = INVALID_ID;

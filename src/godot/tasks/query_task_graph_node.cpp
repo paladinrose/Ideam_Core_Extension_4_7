@@ -90,7 +90,8 @@ void QueryTaskGraphNode::_rebuild_dynamic_ui() {
         }
     }
 
-    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix();
+    StringName domain = res.is_valid() ? res->get_plugin_domain() : StringName("Core");
+    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix(domain);
     String logic_str = String::num_int64(get_logic_id());
     
     if (matrix.has(logic_str)) {
@@ -113,7 +114,9 @@ void QueryTaskGraphNode::_rebuild_ports() {
     input_port_signatures.clear();
     output_port_signatures.clear();
 
-    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix();
+    Ref<QueryTaskResource> res = get_query_task_resource();
+    StringName domain = res.is_valid() ? res->get_plugin_domain() : StringName("Core");
+    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix(domain);
     String logic_str = String::num_int64(get_logic_id());
     if (!matrix.has(logic_str)) return;
     
@@ -182,15 +185,19 @@ uint64_t QueryTaskGraphNode::_calculate_flat_index() const {
     uint32_t s_id = static_cast<uint32_t>(strategy_dropdown->get_selected_id());
     uint32_t t_id = static_cast<uint32_t>(type_dropdown->get_selected_id());
 
-    // Matrix Dimensions: O_COUNT (2) * V_COUNT (16) * S_COUNT (9) * T_COUNT (17)
-    return (o_id * core::QueryTaskRegistry::O_COUNT) + (v_id * core::QueryTaskRegistry::V_COUNT) + (s_id * core::QueryTaskRegistry::S_COUNT) + t_id;
-    //return (o_id * 2448) + (v_id * 153) + (s_id * 17) + t_id;
+    // Matrix Strides: (Op * V_COUNT * S_COUNT * T_COUNT) + (View * S_COUNT * T_COUNT) + (Strategy * T_COUNT) + Type
+    constexpr uint64_t O_STRIDE = core::QueryTaskRegistry::V_COUNT * core::QueryTaskRegistry::S_COUNT * core::QueryTaskRegistry::T_COUNT;
+    constexpr uint64_t V_STRIDE = core::QueryTaskRegistry::S_COUNT * core::QueryTaskRegistry::T_COUNT;
+    constexpr uint64_t S_STRIDE = core::QueryTaskRegistry::T_COUNT;
+    return (o_id * O_STRIDE) + (v_id * V_STRIDE) + (s_id * S_STRIDE) + t_id;
 }
 
 void QueryTaskGraphNode::_update_matrix_guardrails() {
     if (!op_dropdown || !view_dropdown || !strategy_dropdown || !type_dropdown) return;
 
-    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix();
+    Ref<QueryTaskResource> res = get_query_task_resource();
+    StringName domain = res.is_valid() ? res->get_plugin_domain() : StringName("Core");
+    Dictionary matrix = core::IdeamTaskRegistry::get_ui_query_matrix(domain);
     String logic_str = String::num_int64(get_logic_id());
     
     if (!matrix.has(logic_str)) return;
@@ -205,6 +212,10 @@ void QueryTaskGraphNode::_update_matrix_guardrails() {
     uint32_t current_s = static_cast<uint32_t>(strategy_dropdown->get_selected_id());
     uint32_t current_t = static_cast<uint32_t>(type_dropdown->get_selected_id());
 
+    constexpr uint64_t O_STRIDE = core::QueryTaskRegistry::V_COUNT * core::QueryTaskRegistry::S_COUNT * core::QueryTaskRegistry::T_COUNT;
+    constexpr uint64_t V_STRIDE = core::QueryTaskRegistry::S_COUNT * core::QueryTaskRegistry::T_COUNT;
+    constexpr uint64_t S_STRIDE = core::QueryTaskRegistry::T_COUNT;
+
     // Helper to evaluate if a flat index exists in the valid hashes
     auto is_valid = [&](uint64_t hash) -> bool {
         for (int i = 0; i < valid_hashes.size(); ++i) {
@@ -217,25 +228,25 @@ void QueryTaskGraphNode::_update_matrix_guardrails() {
 
     // Evaluate and prune Ops based on current View & Strategy & Type
     for (int o = 0; o < op_dropdown->get_item_count(); ++o) {
-        uint64_t test_hash = (o * core::QueryTaskRegistry::O_COUNT) + (current_v * core::QueryTaskRegistry::V_COUNT) + (current_s * core::QueryTaskRegistry::S_COUNT) + current_t;
+        uint64_t test_hash = (o * O_STRIDE) + (current_v * V_STRIDE) + (current_s * S_STRIDE) + current_t;
         op_dropdown->set_item_disabled(o, !is_valid(test_hash));
     }
 
     // Evaluate and prune Views based on current Op & Strategy & Type
     for (int v = 0; v < view_dropdown->get_item_count(); ++v) {
-        uint64_t test_hash = (current_o * core::QueryTaskRegistry::O_COUNT) + (v * core::QueryTaskRegistry::V_COUNT) + (current_s * core::QueryTaskRegistry::S_COUNT) + current_t;
+        uint64_t test_hash = (current_o * O_STRIDE) + (v * V_STRIDE) + (current_s * S_STRIDE) + current_t;
         view_dropdown->set_item_disabled(v, !is_valid(test_hash));
     }
 
     // Evaluate and prune Strategies based on current Op & View & Type
     for (int s = 0; s < strategy_dropdown->get_item_count(); ++s) {
-        uint64_t test_hash = (current_o * core::QueryTaskRegistry::O_COUNT) + (current_v * core::QueryTaskRegistry::V_COUNT) + (s * core::QueryTaskRegistry::S_COUNT) + current_t;
+        uint64_t test_hash = (current_o * O_STRIDE) + (current_v * V_STRIDE) + (s * S_STRIDE) + current_t;
         strategy_dropdown->set_item_disabled(s, !is_valid(test_hash));
     }
 
     // Evaluate and prune Types based on current Op & View & Strategy
     for (int t = 0; t < type_dropdown->get_item_count(); ++t) {
-        uint64_t test_hash = (current_o * core::QueryTaskRegistry::O_COUNT) + (current_v * core::QueryTaskRegistry::V_COUNT) + (current_s * core::QueryTaskRegistry::S_COUNT) + t;
+        uint64_t test_hash = (current_o * O_STRIDE) + (current_v * V_STRIDE) + (current_s * S_STRIDE) + t;
         type_dropdown->set_item_disabled(t, !is_valid(test_hash));
     }
 

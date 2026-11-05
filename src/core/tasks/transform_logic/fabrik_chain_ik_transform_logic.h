@@ -46,7 +46,8 @@ struct alignas(64) FabrikChainIKTransformLogic {
     static constexpr size_t transient_workspace_bytes = 64;
 
     static constexpr std::string_view display_name = "FABRIK Chain IK";
-
+    static constexpr std::string_view ui_category  = "Model/Rigging";
+    
     // --- Configuration State (Strictly 64-Byte Cache-Aligned) ---
     uint32_t joint_pos_buffer_id    = INVALID_ID; // 4B: Primary joint positions buffer (Vector3)
     uint32_t target_pos_buffer_id   = INVALID_ID; // 4B: Optional target positions buffer (Vector3, 1 per chain)

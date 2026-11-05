@@ -221,6 +221,8 @@ private:
                         dict["properties"] = L_Type::get_ui_properties();
                         dict["valid_combinations"] = godot::PackedInt64Array(); 
                         dict["name"] = godot::String(L_Type::display_name.data());
+                        constexpr std::string_view cat = LogicCategoryExtractor<L_Type>::value;
+                        dict["category"] = godot::String(cat.data());
 
                         const auto& variant_info = MetadataTaskRegistry::logic_variants[static_cast<size_t>(L)];
                         if (variant_info.is_primary && variant_info.variant_count > 1) {

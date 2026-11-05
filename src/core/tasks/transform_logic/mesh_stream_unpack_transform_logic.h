@@ -58,6 +58,7 @@ struct alignas(64) MeshStreamUnpackTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Mesh Stream Unpack";
+    static constexpr std::string_view ui_category  = "Model/Mesh";
 
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t target_planar_buffer_id = INVALID_ID; // Primary write buffer (planar attribute column)

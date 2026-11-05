@@ -21,6 +21,9 @@
 #include "game_entity.h"
 #include "gameplay/gameplay_mode.h"
 
+#include "../../core/tasks/registration/ideam_task_registry.h"
+#include "../../core/tasks/domains/games/registration/games_task_domain_pack.h"
+
 namespace ideam::godot_ext {
 
 IdeamGamesPlugin* IdeamGamesPlugin::singleton = nullptr;
@@ -32,6 +35,10 @@ void IdeamGamesPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("_on_editor_selection_changed"), &IdeamGamesPlugin::_on_editor_selection_changed);
     godot::ClassDB::bind_method(godot::D_METHOD("get_cascade_dock"), &IdeamGamesPlugin::get_cascade_dock);
     godot::ClassDB::bind_method(godot::D_METHOD("get_gameplay_debugger"), &IdeamGamesPlugin::get_gameplay_debugger);
+
+    // Cross-Plugin Task Domain Handshake
+    godot::ClassDB::bind_method(godot::D_METHOD("get_task_domain_name"), &IdeamGamesPlugin::get_task_domain_name);
+    godot::ClassDB::bind_method(godot::D_METHOD("register_task_domain_pack"), &IdeamGamesPlugin::register_task_domain_pack);
 
     // Static bindings so the ecosystem can call these without an instance reference
     godot::ClassDB::bind_static_method("IdeamGamesPlugin", godot::D_METHOD("open_action_tool_window", "agent", "editor"), &IdeamGamesPlugin::open_action_tool_window);
@@ -53,6 +60,14 @@ IdeamGamesPlugin::~IdeamGamesPlugin() {
 void IdeamGamesPlugin::_enter_tree() {
     // Call base class template setup
     validate_script_templates();
+
+    // Ecosystem Handshake: Announce IdeamGames is active and offer TaskDomainPack if IdeamTasks is active
+    set_plugin_active("IdeamGames", true);
+    register_to_ecosystem("WizardSettings", "IdeamGames", GAME_SETTINGS_PATH);
+    register_to_ecosystem("TaskManifests", "IdeamGames", godot::String(core::GamesTaskDomainPack::MANIFEST_PATH));
+    if (is_plugin_active("IdeamTasks")) {
+        register_task_domain_pack();
+    }
 
     // Call our specialized template setups
     validate_game_script_templates();
@@ -137,6 +152,12 @@ void IdeamGamesPlugin::_exit_tree() {
     if (agent_editor.is_valid()) {
         remove_inspector_plugin(agent_editor);
         agent_editor.unref();
+    }
+
+    // Ecosystem Handshake: Mark IdeamGames inactive and unmount its TaskDomainPack in editor
+    set_plugin_active("IdeamGames", false);
+    if (auto* task_reg = core::IdeamTaskRegistry::get_singleton()) {
+        task_reg->set_domain_pack_active("IdeamGames", false);
     }
 }
 
@@ -351,8 +372,17 @@ void IdeamGamesPlugin::_sync_cascade_dock_with_selection() {
             }
         }
     }
+
 }
 
+void IdeamGamesPlugin::register_task_domain_pack() {
+    if (auto* task_reg = core::IdeamTaskRegistry::get_singleton()) {
+        if (!task_reg->has_domain_pack("IdeamGames")) {
+            core::GamesTaskDomainPack::register_domain();
+        }
+        task_reg->set_domain_pack_active("IdeamGames", true);
+    }
+}
 // --- Static Godot API ---
 
 godot::Window* IdeamGamesPlugin::open_action_tool_window(GameAgent* agent, godot::Object* editor) {

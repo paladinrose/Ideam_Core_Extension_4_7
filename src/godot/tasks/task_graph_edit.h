@@ -26,24 +26,49 @@ public:
         CATEGORY_MANUAL
     };
 
+    enum MenuHierarchyMode : uint32_t {
+        MENU_AXIS_FIRST = 0,   // Transform > [Image / Model] > [Logic]
+        MENU_DOMAIN_FIRST = 1, // [Image / Model] > Transform > [Logic]
+        MENU_HYBRID_AUTO = 2   // Axis-first for single-axis groups (Image/Model), Domain-first for @Promoted / Plugin packs (Games/Physics)
+    };
+
 protected:
     // --- O(1) Context Menu Cache ---
     // Maps the flat int ID emitted by PopupMenu directly to the required DOD instantiation logic.
     // std::vector guarantees contiguous memory for optimal cache prefetching during UI population.
     struct SpawnDescriptor {
-        TaskCategory category;
-        uint32_t logic_id;
+        godot::StringName plugin_domain = "Core"; // e.g., "Core", "IdeamGames"
+        TaskCategory category = CATEGORY_TRANSFORM;
+        uint32_t logic_id = 0;
         godot::StringName task_name;
     };
     std::vector<SpawnDescriptor> spawn_options_cache;
 
     // The active mask for context-aware port dragging. 
     // Default to 0 (No filter) for generic canvas right-clicks.
-    uint32_t active_filter_mask = 0; 
+    uint32_t active_filter_mask = 0;
+
+    // Controls how categories and axes are nested inside the right-click context menu.
+    MenuHierarchyMode menu_hierarchy_mode = MENU_HYBRID_AUTO;
 
     static void _bind_methods();
     virtual void _notification(int p_what) override;
     virtual void _update_theme_properties() override;
+
+    // Recursive theme helper for arbitrarily nested PopupMenu hierarchies
+    void _style_popup_menu_recursive(
+        godot::PopupMenu* p_menu,
+        const godot::Ref<godot::StyleBox>& p_panel_style,
+        const godot::Ref<godot::StyleBox>& p_hover_style
+    );
+
+    // Resolves the slash-delimited submenu path for a task based on MenuHierarchyMode and domain
+    godot::String _resolve_task_menu_path(
+        const godot::String& p_axis_name,
+        const godot::String& p_raw_category,
+        const godot::String& p_domain_prefix,
+        bool& r_is_direct_axis_item
+    ) const;
 
     // Overrides to build our hierarchical popup and instantiate DOD nodes
     virtual godot::TypedArray<godot::String> _get_new_node_types() const override;
@@ -63,6 +88,11 @@ public:
     virtual ~TaskGraphEdit() override;
 
     void _ready() override;
+
+    void set_menu_hierarchy_mode(int p_mode);
+    int get_menu_hierarchy_mode() const;
 };
 
 } // namespace ideam::godot_ext
+
+VARIANT_ENUM_CAST(ideam::godot_ext::TaskGraphEdit::MenuHierarchyMode);

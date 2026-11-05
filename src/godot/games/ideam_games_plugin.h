@@ -67,7 +67,11 @@ public:
     void _scene_change(godot::Node* new_root);
     void _on_editor_selection_changed();
 
-    // Accessors for Phase 4 DevTools
+    // --- Cross-Plugin Task Domain Handshake ---
+    godot::StringName get_task_domain_name() const { return godot::StringName("IdeamGames"); }
+    void register_task_domain_pack();
+    
+    // Accessors for DevTools
     GameplayStyleCascadeDock* get_cascade_dock() const { return cascade_dock; }
     godot::Ref<GameplayEditorDebuggerPlugin> get_gameplay_debugger() const { return gameplay_debugger; }
 

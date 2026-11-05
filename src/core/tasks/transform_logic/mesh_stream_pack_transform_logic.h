@@ -51,6 +51,7 @@ struct alignas(64) MeshStreamPackTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Mesh Stream Pack";
+    static constexpr std::string_view ui_category  = "Model/Mesh";
 
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t target_stream_buffer_id = INVALID_ID; // Target interleaved staging byte buffer

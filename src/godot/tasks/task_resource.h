@@ -42,6 +42,8 @@ protected:
     uint32_t base_logic_id = 0; 
     godot::PackedStringArray logic_variant_labels;
 
+    godot::StringName plugin_domain = "Core";
+
     static void _bind_methods();
 
 public:
@@ -72,6 +74,9 @@ public:
     
     void set_logic_variant_labels(const godot::PackedStringArray& p_labels);
     godot::PackedStringArray get_logic_variant_labels() const;
+
+    void set_plugin_domain(const godot::StringName& p_domain);
+    godot::StringName get_plugin_domain() const;
 
     void set_functional_texture(const godot::Ref<godot::Texture2D>& p_texture);
     godot::Ref<godot::Texture2D> get_functional_texture() const;

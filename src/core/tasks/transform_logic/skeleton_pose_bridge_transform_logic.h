@@ -59,6 +59,7 @@ struct alignas(64) SkeletonPoseBridgeTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Skeleton Pose Bridge";
+    static constexpr std::string_view ui_category  = "Model/Rigging";
 
     // --- Configuration State (Strictly 64-Byte Cache-Aligned) ---
     uint32_t position_buffer_id     = INVALID_ID; // 4B: Bone positions (Vector3)

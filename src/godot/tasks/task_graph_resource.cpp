@@ -338,29 +338,39 @@ std::shared_ptr<core::TaskGraphDOD> TaskGraphResource::compile_to_task_graph(
             case core::TaskTypeDOD::NATIVE_CPU:
             case core::TaskTypeDOD::QUERY_CULLER: {
                 std::unique_ptr<core::INativeTask> native_interface = nullptr;
+                core::IdeamTaskRegistry* registry = core::IdeamTaskRegistry::get_singleton();
 
                 if (auto* transform_res = godot::Object::cast_to<TransformTaskResource>(n.ptr())) {
-                    native_interface = core::TransformTaskRegistry::create(
-                        transform_res->get_logic_id(),
-                        static_cast<uint32_t>(transform_res->get_view_id()),
-                        static_cast<uint32_t>(transform_res->get_strategy_id()),
-                        static_cast<uint32_t>(transform_res->get_type_id())
-                    );
+                    if (registry) {
+                        native_interface = registry->create_transform_task(
+                            transform_res->get_plugin_domain(),
+                            transform_res->get_logic_id(),
+                            static_cast<uint32_t>(transform_res->get_view_id()),
+                            static_cast<uint32_t>(transform_res->get_strategy_id()),
+                            static_cast<uint32_t>(transform_res->get_type_id())
+                        );
+                    }
                 } else if (auto* query_res = godot::Object::cast_to<QueryTaskResource>(n.ptr())) {
-                    native_interface = core::QueryTaskRegistry::create(
-                        static_cast<uint32_t>(query_res->get_op_id()),
-                        query_res->get_logic_id(),
-                        static_cast<uint32_t>(query_res->get_view_id()),
-                        static_cast<uint32_t>(query_res->get_strategy_id()),
-                        static_cast<uint32_t>(query_res->get_type_id())
-                    );
+                    if (registry) {
+                        native_interface = registry->create_query_task(
+                            query_res->get_plugin_domain(),
+                            static_cast<uint32_t>(query_res->get_op_id()),
+                            query_res->get_logic_id(),
+                            static_cast<uint32_t>(query_res->get_view_id()),
+                            static_cast<uint32_t>(query_res->get_strategy_id()),
+                            static_cast<uint32_t>(query_res->get_type_id())
+                        );
+                    }
                 } else if (auto* meta_res = godot::Object::cast_to<MetadataTaskResource>(n.ptr())) {
-                    native_interface = core::MetadataTaskRegistry::create(
-                        meta_res->get_logic_id(),
-                        static_cast<uint32_t>(meta_res->get_view_id()),
-                        static_cast<uint32_t>(meta_res->get_strategy_id()),
-                        static_cast<uint32_t>(meta_res->get_type_id())
-                    );
+                    if (registry) {
+                        native_interface = registry->create_metadata_task(
+                            meta_res->get_plugin_domain(),
+                            meta_res->get_logic_id(),
+                            static_cast<uint32_t>(meta_res->get_view_id()),
+                            static_cast<uint32_t>(meta_res->get_strategy_id()),
+                            static_cast<uint32_t>(meta_res->get_type_id())
+                        );
+                    }
                 } else if (godot::Object::cast_to<EntryFillTaskResource>(n.ptr()) != nullptr) {
                     if (core::IdeamTaskRegistry* registry = core::IdeamTaskRegistry::get_singleton()) {
                         native_interface = registry->create(godot::StringName("Entry Fill"));

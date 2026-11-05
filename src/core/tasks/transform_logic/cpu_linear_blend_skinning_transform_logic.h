@@ -50,7 +50,8 @@ struct alignas(64) CPULinearBlendSkinningTransformLogic {
     static constexpr size_t transient_workspace_bytes = 64;
 
     static constexpr std::string_view display_name = "CPU Linear Blend Skinning";
-
+    static constexpr std::string_view ui_category  = "Model/Rigging";
+    
     // --- Configuration State (Strictly 64-Byte Cache-Aligned) ---
     uint32_t out_vertex_buffer_id     = INVALID_ID; // 4B: Primary target buffer (skinned Vector3 positions)
     uint32_t rest_vertex_buffer_id    = INVALID_ID; // 4B: Source rest-pose Vector3 positions

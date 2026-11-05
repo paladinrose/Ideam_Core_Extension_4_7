@@ -55,6 +55,7 @@ struct alignas(64) MeshVertexColorMapTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Mesh Vertex Color Map";
+    static constexpr std::string_view ui_category  = "Model/Mesh";
 
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t scalar_buffer_id  = INVALID_ID; // 4B: Source scalar/index buffer (bound to primary view if T_Scalar is numeric)

@@ -23,6 +23,10 @@ void TaskManifest::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("set_manifest_version", "p_version"), &TaskManifest::set_manifest_version);
     godot::ClassDB::bind_method(godot::D_METHOD("get_manifest_version"), &TaskManifest::get_manifest_version);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "manifest_version"), "set_manifest_version", "get_manifest_version");
+    
+    godot::ClassDB::bind_method(godot::D_METHOD("set_plugin_domain", "p_domain"), &TaskManifest::set_plugin_domain);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_plugin_domain"), &TaskManifest::get_plugin_domain);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::STRING_NAME, "plugin_domain"), "set_plugin_domain", "get_plugin_domain");
 }
 
 } // namespace ideam::core

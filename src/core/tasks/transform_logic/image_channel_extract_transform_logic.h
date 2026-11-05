@@ -44,6 +44,7 @@ struct alignas(64) ImageChannelExtractTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Image Channel Extract";
+    static constexpr std::string_view ui_category  = "Image";
 
     // --- Configuration State (64-byte Cache-Aligned) ---
     uint32_t target_column_buffer_id = INVALID_ID;

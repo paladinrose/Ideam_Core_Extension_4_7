@@ -45,6 +45,7 @@ struct alignas(64) TangentRecalcTransformLogic {
     static constexpr size_t transient_workspace_bytes = 64;
 
     static constexpr std::string_view display_name = "Tangent Recalc";
+    static constexpr std::string_view ui_category  = "Model/Mesh";
 
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t tangent_buffer_id   = INVALID_ID; // Primary target buffer (Vector4: xyz = tangent, w = sign)

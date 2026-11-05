@@ -48,6 +48,7 @@ struct alignas(64) MeshAttributeRegionCommitTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Mesh Attribute Region Commit";
+    static constexpr std::string_view ui_category  = "Model/Mesh";
 
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t attribute_buffer_id = INVALID_ID;

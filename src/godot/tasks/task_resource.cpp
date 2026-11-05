@@ -46,6 +46,10 @@ void TaskResource::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("get_logic_variant_labels"), &TaskResource::get_logic_variant_labels);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::PACKED_STRING_ARRAY, "logic_variant_labels"), "set_logic_variant_labels", "get_logic_variant_labels"); 
 
+    godot::ClassDB::bind_method(godot::D_METHOD("set_plugin_domain", "domain"), &TaskResource::set_plugin_domain);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_plugin_domain"), &TaskResource::get_plugin_domain);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::STRING_NAME, "plugin_domain"), "set_plugin_domain", "get_plugin_domain");
+
     // --- Image Preview Resource Bindings ---
     ADD_GROUP("Image Preview Pipeline", "");
 
@@ -153,6 +157,16 @@ void TaskResource::set_logic_variant_labels(const godot::PackedStringArray& p_la
     emit_changed();
 }
 godot::PackedStringArray TaskResource::get_logic_variant_labels() const { return logic_variant_labels; }
+
+void TaskResource::set_plugin_domain(const godot::StringName& p_domain) {
+    godot::StringName resolved = p_domain.is_empty() ? godot::StringName("Core") : p_domain;
+    if (resolved == plugin_domain) return;
+    plugin_domain = resolved;
+    emit_changed();
+}
+godot::StringName TaskResource::get_plugin_domain() const {
+    return plugin_domain.is_empty() ? godot::StringName("Core") : plugin_domain;
+}
 
 void TaskResource::set_functional_texture(const godot::Ref<godot::Texture2D>& p_texture) {
     if (functional_texture == p_texture) return;

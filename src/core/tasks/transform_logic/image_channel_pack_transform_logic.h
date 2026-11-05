@@ -45,6 +45,7 @@ struct alignas(64) ImageChannelPackTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Image Channel Pack";
+    static constexpr std::string_view ui_category  = "Image";
 
     // --- Configuration State (64-byte Cache-Aligned) ---
     uint32_t channel_buffer_ids[4] = {INVALID_ID, INVALID_ID, INVALID_ID, INVALID_ID};

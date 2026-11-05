@@ -12,7 +12,9 @@
 #include <godot_cpp/core/object.hpp>
 #include <godot_cpp/templates/hash_map.hpp>
 #include <godot_cpp/variant/string_name.hpp>
+#include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_string_array.hpp>
 #include <godot_cpp/classes/file_access.hpp>
 
 #include <memory>
@@ -106,18 +108,44 @@ struct TaskUIFactories {
 };
 
 struct LogicVariantGroup {
-        bool is_primary;
-        uint32_t variant_count;
-        const char* const* labels; // Pointer to an array of C-strings
-    };
+    bool is_primary;
+    uint32_t variant_count;
+    const char* const* labels; // Pointer to an array of C-strings
+};
 
 using NativeTaskFactory = std::function<std::unique_ptr<INativeTask>()>;
+
+/**
+ * @struct TaskDomainPack
+ * @brief Descriptor and dispatch table for an isolated task domain (e.g., "Core", "IdeamGames", "IdeamNarratives").
+ */
+struct TaskDomainPack {
+    godot::StringName domain_name;          // e.g., "Core", "IdeamGames", "IdeamNarratives"
+    godot::String ui_menu_prefix;           // e.g., "" for Core, "Games" for IdeamGames
+    godot::String manifest_path;            // e.g., "res://addons/ideam_games/resources/games_task_manifest.tres"
+    int expected_manifest_version = 1;
+    bool is_core = false;                   // Core is always active; companion packs depend on plugin state
+    bool is_active_in_editor = false;       // Toggled when companion plugin enters/exits tree
+
+    godot::Ref<TaskManifest> manifest;
+
+    // Lifecycle & Bake Hooks
+    void (*init_routing)() = nullptr;
+    void (*cleanup_routing)() = nullptr;
+    void (*generate_query_ui)(godot::Dictionary&) = nullptr;
+    void (*generate_transform_ui)(godot::Dictionary&) = nullptr;
+    void (*generate_metadata_ui)(godot::Dictionary&) = nullptr;
+
+    // O(1) Runtime Execution Dispatchers
+    std::unique_ptr<INativeTask> (*create_transform)(uint32_t l, uint32_t v, uint32_t s, uint32_t t) = nullptr;
+    std::unique_ptr<INativeTask> (*create_query)(uint32_t o, uint32_t l, uint32_t v, uint32_t s, uint32_t t) = nullptr;
+    std::unique_ptr<INativeTask> (*create_metadata)(uint32_t l, uint32_t v, uint32_t s, uint32_t t) = nullptr;
+};
 
 class IdeamTaskRegistry : public godot::Object {
     GDCLASS(IdeamTaskRegistry, godot::Object)
 
 private:
-
     static godot::Ref<godot::FileAccess> bake_log_file;
     
     // Global Singleton Reference
@@ -130,7 +158,10 @@ private:
     // Temporary storage for utility definitions pending bake
     godot::Dictionary pending_utility_matrix;
 
-    // Active loaded manifest
+    // Registered Domain Packs ("Core", "IdeamGames", etc.)
+    godot::HashMap<godot::StringName, TaskDomainPack> domain_packs;
+
+    // Primary Core manifest reference (aliased to domain_packs["Core"].manifest)
     godot::Ref<TaskManifest> active_manifest;
 
 protected:
@@ -143,6 +174,7 @@ public:
     static void start_bake_log();
     static void log_with_registry(const godot::String& p_message);
     static void end_bake_log();
+
     // --- Lifecycle Management ---
     static void init();
     static void cleanup();
@@ -150,16 +182,55 @@ public:
     // --- Singleton Accessors ---
     static IdeamTaskRegistry* get_singleton() { return singleton; }
 
+    // --- Domain Pack Registration & State Management ---
+    void register_domain_pack(const TaskDomainPack& p_pack);
+    bool has_domain_pack(const godot::StringName& p_domain) const;
+    void set_domain_pack_active(const godot::StringName& p_domain, bool p_active);
+    void sync_active_domains_from_config();
+
+    bool are_active_manifests_valid() const;
+    godot::PackedStringArray get_outdated_active_domains() const;
+    godot::PackedStringArray get_active_domains() const;
+    godot::String get_domain_ui_prefix(const godot::StringName& p_domain) const;
+
     // --- Task Baking ---
     void bake_manifest();
 
     // --- Active Manifest Access ---
     godot::Ref<TaskManifest> get_active_manifest() const { return active_manifest; }
+    godot::Ref<TaskManifest> get_domain_manifest(const godot::StringName& p_domain) const;
     int get_manifest_version() const;
+    int get_domain_manifest_version(const godot::StringName& p_domain) const;
 
     // --- Dynamic Creation for Manual Tasks ---
     [[nodiscard]] std::unique_ptr<INativeTask> create(const godot::StringName& p_name);
     godot::HashMap<godot::StringName, TaskUIFactories>* get_ui_factories() { return &ui_factories; }
+
+    // --- Domain-Scoped O(1) Native Task Factory Dispatchers ---
+    [[nodiscard]] std::unique_ptr<INativeTask> create_transform_task(
+        const godot::StringName& p_domain,
+        uint32_t p_logic_id,
+        uint32_t p_view_id,
+        uint32_t p_strategy_id,
+        uint32_t p_type_id
+    ) const;
+
+    [[nodiscard]] std::unique_ptr<INativeTask> create_query_task(
+        const godot::StringName& p_domain,
+        uint32_t p_op_id,
+        uint32_t p_logic_id,
+        uint32_t p_view_id,
+        uint32_t p_strategy_id,
+        uint32_t p_type_id
+    ) const;
+
+    [[nodiscard]] std::unique_ptr<INativeTask> create_metadata_task(
+        const godot::StringName& p_domain,
+        uint32_t p_logic_id,
+        uint32_t p_view_id,
+        uint32_t p_strategy_id,
+        uint32_t p_type_id
+    ) const;
 
     // --- Variadic Registration ---
     template <typename T_Task, typename T_Resource, typename T_Node, typename... Args>
@@ -188,10 +259,15 @@ public:
         pending_utility_matrix[p_name] = task_def;
     }
 
-    // --- Legacy Godot Accessors (Routes to Singleton) ---
-    static godot::Dictionary get_ui_query_matrix();
-    static godot::Dictionary get_ui_transform_matrix();
-    static godot::Dictionary get_ui_metadata_matrix();
+    // --- Domain Matrix Accessors ---
+    godot::Dictionary get_domain_query_matrix(const godot::StringName& p_domain) const;
+    godot::Dictionary get_domain_transform_matrix(const godot::StringName& p_domain) const;
+    godot::Dictionary get_domain_metadata_matrix(const godot::StringName& p_domain) const;
+
+    // --- Static / Legacy Godot Accessors (Defaults to "Core", supports optional domain) ---
+    static godot::Dictionary get_ui_query_matrix(const godot::StringName& p_domain = "Core");
+    static godot::Dictionary get_ui_transform_matrix(const godot::StringName& p_domain = "Core");
+    static godot::Dictionary get_ui_metadata_matrix(const godot::StringName& p_domain = "Core");
     static godot::Dictionary get_ui_utility_matrix();
 };
 

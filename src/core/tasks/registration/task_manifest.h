@@ -2,6 +2,7 @@
 
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
 namespace ideam::core {
 
@@ -13,6 +14,9 @@ private:
     godot::Dictionary transform_matrix;
     godot::Dictionary metadata_matrix;
     godot::Dictionary utility_matrix;
+
+    godot::StringName plugin_domain = "Core";
+    
     int manifest_version = 0;
 
 protected:
@@ -37,6 +41,9 @@ public:
 
     void set_utility_matrix(const godot::Dictionary& p_matrix) { utility_matrix = p_matrix; }
     godot::Dictionary get_utility_matrix() const { return utility_matrix; }
+
+    void set_plugin_domain(const godot::StringName& p_domain) { plugin_domain = p_domain; }
+    godot::StringName get_plugin_domain() const { return plugin_domain; }
 
     void set_manifest_version(int p_version) { manifest_version = p_version; }
     int get_manifest_version() const { return manifest_version; }

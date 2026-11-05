@@ -56,6 +56,7 @@ struct alignas(64) CollisionShapeMeshSyncTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Collision Shape Mesh Sync";
+    static constexpr std::string_view ui_category  = "Model/Physics";
 
     // --- Configuration State (Strictly 64-Byte Cache-Aligned) ---
     uint32_t vertex_buffer_id      = INVALID_ID; // 4B: Primary Vector3 vertex buffer (or float heightmap)

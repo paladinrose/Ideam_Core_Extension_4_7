@@ -41,7 +41,8 @@ struct alignas(64) FaceCenterAndAreaTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Face Center & Area";
-
+    static constexpr std::string_view ui_category  = "Model/Mesh";
+    
     // --- Configuration State (64-Byte Cache-Aligned) ---
     uint32_t face_center_buffer_id = INVALID_ID; // Optional/Primary Vector3 per-face centroid output
     uint32_t face_normal_buffer_id = INVALID_ID; // Optional Vector3 per-face unit normal output

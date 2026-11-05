@@ -4,13 +4,29 @@
 #include "../memory/memory_manager_dod.h"
 #include "task_selection_command_pod.h"
 #include "task_graph_command_pod.h"
+
+#include <string_view>
+#include <type_traits>
 #include <godot_cpp/variant/variant.hpp>
 #include <godot_cpp/classes/image.hpp>
 #include <cassert>
 
 namespace ideam::core {
 
+/**
+ * LogicCategoryExtractor
+ * Compile-time extractor returning T_Logic::ui_category if defined on a logic struct,
+ * or falling back to "General" so unannotated structs require zero boilerplate.
+ */
+template <typename T, typename = void>
+struct LogicCategoryExtractor {
+    static constexpr std::string_view value = "General";
+};
 
+template <typename T>
+struct LogicCategoryExtractor<T, std::void_t<decltype(T::ui_category)>> {
+    static constexpr std::string_view value = T::ui_category;
+};
 
 /**
  * TaskContextPOD

@@ -41,6 +41,7 @@ struct alignas(64) SpringBoneChainTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Spring Bone Chain";
+    static constexpr std::string_view ui_category  = "Model/Rigging";
 
     // --- Configuration State (Strictly 64-Byte Cache-Aligned) ---
     uint32_t tip_pos_buffer_id         = INVALID_ID; // 4B: SwapView: Read = Prev/Current, Write = Next

@@ -74,7 +74,8 @@ void TransformTaskGraphNode::_rebuild_dynamic_ui() {
         }
     }
     
-    Dictionary matrix = core::IdeamTaskRegistry::get_ui_transform_matrix();
+    StringName domain = res.is_valid() ? res->get_plugin_domain() : StringName("Core");
+    Dictionary matrix = core::IdeamTaskRegistry::get_ui_transform_matrix(domain);
     String logic_str = String::num_int64(get_logic_id());
     
     if (matrix.has(logic_str)) {
@@ -92,14 +93,18 @@ uint64_t TransformTaskGraphNode::_calculate_flat_index() const {
     uint32_t s_id = static_cast<uint32_t>(strategy_dropdown->get_selected_id());
     uint32_t t_id = static_cast<uint32_t>(type_dropdown->get_selected_id());
 
-    // Matrix Dimensions: V_COUNT (16) * S_COUNT (9) * T_COUNT (17)
-    return (v_id * core::TransformTaskRegistry::V_COUNT) + (s_id * core::TransformTaskRegistry::S_COUNT) + t_id;
+    // Matrix Strides: (View * S_COUNT * T_COUNT) + (Strategy * T_COUNT) + Type
+    constexpr uint64_t V_STRIDE = core::TransformTaskRegistry::S_COUNT * core::TransformTaskRegistry::T_COUNT;
+    constexpr uint64_t S_STRIDE = core::TransformTaskRegistry::T_COUNT;
+    return (v_id * V_STRIDE) + (s_id * S_STRIDE) + t_id;
 }
 
 void TransformTaskGraphNode::_update_matrix_guardrails() {
     if (!view_dropdown || !strategy_dropdown || !type_dropdown) return;
 
-    Dictionary matrix = core::IdeamTaskRegistry::get_ui_transform_matrix();
+    Ref<TransformTaskResource> res = get_transform_task_resource();
+    StringName domain = res.is_valid() ? res->get_plugin_domain() : StringName("Core");
+    Dictionary matrix = core::IdeamTaskRegistry::get_ui_transform_matrix(domain);
     String logic_str = String::num_int64(get_logic_id());
     
     if (!matrix.has(logic_str)) return;
@@ -113,6 +118,9 @@ void TransformTaskGraphNode::_update_matrix_guardrails() {
     uint32_t current_s = static_cast<uint32_t>(strategy_dropdown->get_selected_id());
     uint32_t current_t = static_cast<uint32_t>(type_dropdown->get_selected_id());
 
+    constexpr uint64_t V_STRIDE = core::TransformTaskRegistry::S_COUNT * core::TransformTaskRegistry::T_COUNT;
+    constexpr uint64_t S_STRIDE = core::TransformTaskRegistry::T_COUNT;
+
     // Helper to evaluate if a flat index exists in the valid hashes
     auto is_valid = [&](uint64_t hash) -> bool {
         for (int i = 0; i < valid_hashes.size(); ++i) {
@@ -125,19 +133,19 @@ void TransformTaskGraphNode::_update_matrix_guardrails() {
 
     // Evaluate and prune Views based on current Strategy & Type
     for (int v = 0; v < view_dropdown->get_item_count(); ++v) {
-        uint64_t test_hash = (v * core::TransformTaskRegistry::V_COUNT) + (current_s * core::TransformTaskRegistry::S_COUNT) + current_t;
+        uint64_t test_hash = (v * V_STRIDE) + (current_s * S_STRIDE) + current_t;
         view_dropdown->set_item_disabled(v, !is_valid(test_hash));
     }
 
     // Evaluate and prune Strategies based on current View & Type
     for (int s = 0; s < strategy_dropdown->get_item_count(); ++s) {
-        uint64_t test_hash = (current_v * core::TransformTaskRegistry::V_COUNT) + (s * core::TransformTaskRegistry::S_COUNT) + current_t;
+        uint64_t test_hash = (current_v * V_STRIDE) + (s * S_STRIDE) + current_t;
         strategy_dropdown->set_item_disabled(s, !is_valid(test_hash));
     }
 
     // Evaluate and prune Types based on current View & Strategy
     for (int t = 0; t < type_dropdown->get_item_count(); ++t) {
-        uint64_t test_hash = (current_v * core::TransformTaskRegistry::V_COUNT) + (current_s * core::TransformTaskRegistry::S_COUNT) + t;
+        uint64_t test_hash = (current_v * V_STRIDE) + (current_s * S_STRIDE) + t;
         type_dropdown->set_item_disabled(t, !is_valid(test_hash));
     }
 
