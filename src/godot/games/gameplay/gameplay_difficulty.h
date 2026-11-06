@@ -103,8 +103,8 @@ private:
     bool permadeath_enabled = false;
 
     // --- 5. Rule Synthesis Target Selectors ---
-    godot::StringName enemy_group_tag = godot::StringName("RedRobot");
-    godot::StringName enemy_weapon_group_tag = godot::StringName("HeavyCannon");
+    godot::StringName enemy_group_tag = godot::StringName("Enemy");
+    godot::StringName enemy_weapon_group_tag = godot::StringName("EnemyWeapon");
     godot::StringName player_group_tag = godot::StringName("Player");
     godot::StringName puzzle_group_tag = godot::StringName("Puzzle");
 

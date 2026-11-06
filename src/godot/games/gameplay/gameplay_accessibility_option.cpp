@@ -402,8 +402,6 @@ GameplayAccessibilityOption::GameplayAccessibilityOption() {
     set_category(godot::StringName("Accessibility"));
     set_config_section("accessibility");
 
-    // Default target groups for TPS demo & general 3D action games
-    highlight_target_groups.append(godot::StringName("RedRobot"));
     highlight_target_groups.append(godot::StringName("Enemy"));
     highlight_target_groups.append(godot::StringName("Door"));
     highlight_target_groups.append(godot::StringName("Interactable"));

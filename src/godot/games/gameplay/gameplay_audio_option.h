@@ -98,7 +98,7 @@ private:
     bool dynamic_reverb_enabled = true;
     int cymatic_simulation_frequency_hz = 60;
     float ai_hearing_sensitivity_multiplier = 1.0f;
-    godot::StringName enemy_group_tag = godot::StringName("RedRobot");
+    godot::StringName enemy_group_tag = godot::StringName("Enemy");
 
     // Internal helper to apply volume and mute state to a named AudioServer bus
     void _apply_bus_state(godot::AudioServer *p_audio_server, const godot::StringName &p_bus_name, float p_linear_volume, bool p_muted) const;

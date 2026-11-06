@@ -50,13 +50,13 @@ enum AimAssistMode : int32_t {
 };
 
 /**
- * DOD NOTE: GameplayAccessibilityOption encapsulates a comprehensive suite of visual,
+ * GameplayAccessibilityOption encapsulates a comprehensive suite of visual,
  * UI/Theme, shader, motion/photosensitivity, audio/cymatic, and motor/cognitive
  * accessibility settings.
  *
  * Beyond direct Godot Server/Scene application (`apply_to_scene`), this class bridges
  * into the `GameplayStyle` cascade by overriding `collect_rules()`. When enabled,
- * motor and cognitive assists (such as slowing enemy `RedRobot` movement/charge speed
+ * motor and cognitive assists (such as slowing enemy movement/charge speed
  * or boosting player survivability) automatically synthesize `!important` `GameplayRule`
  * declarations that outweigh standard `GameplayDifficulty` rules.
  */
@@ -131,8 +131,8 @@ private:
     bool auto_fire_on_hold = false;
     bool single_stick_camera_assist = false;
 
-    godot::StringName enemy_group_tag = godot::StringName("RedRobot");
-    godot::StringName enemy_weapon_group_tag = godot::StringName("HeavyCannon");
+    godot::StringName enemy_group_tag = godot::StringName("Enemy");
+    godot::StringName enemy_weapon_group_tag = godot::StringName("EnemyWeapon");
     godot::StringName player_group_tag = godot::StringName("Player");
 
     // Internal scene-traversal helpers

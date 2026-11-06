@@ -514,7 +514,7 @@ godot::Color CymaticAudioCompass::_resolve_category_color(int32_t p_category) co
 
 void CymaticAudioCompass::_poll_board_and_cymatic_telemetry() {
     float sensitivity_mult = 1.0f;
-    godot::StringName enemy_tag("RedRobot");
+    godot::StringName enemy_tag("Enemy");
     if (audio_option.is_valid()) {
         sensitivity_mult = audio_option->get_ai_hearing_sensitivity_multiplier();
         if (!audio_option->get_enemy_group_tag().is_empty()) {
