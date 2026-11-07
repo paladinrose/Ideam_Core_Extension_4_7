@@ -165,6 +165,46 @@ DOMAINS = [
             },
         ],
     },
+    {
+        "domain_name": "IdeamNarratives",
+        "base_dir": Path("src/core/tasks/domains/narratives"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/narratives/registration/narratives_task_domain_pack.h"
+        ),
+        "version_const": "NARRATIVES_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Narratives Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "narratives_query_task_registry.h",
+                "header_include": "narratives_query_logic_sub_registry.h",
+                "enum_prefix": "NarrativesQueryLogicID",
+                "struct_prefix": "NarrativesQueryLogicSubRegistry",
+            },
+            {
+                "name": "Narratives Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "narratives_metadata_task_registry.h",
+                "header_include": "narratives_metadata_logic_sub_registry.h",
+                "enum_prefix": "NarrativesMetadataLogicID",
+                "struct_prefix": "NarrativesMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Narratives Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "narratives_transform_task_registry.h",
+                "header_include": "narratives_transform_logic_sub_registry.h",
+                "enum_prefix": "NarrativesTransformLogicID",
+                "struct_prefix": "NarrativesTransformLogicSubRegistry",
+            },
+        ],
+    },
 ]
 
 
