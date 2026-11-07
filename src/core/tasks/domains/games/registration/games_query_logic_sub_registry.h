@@ -8,7 +8,10 @@
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
 // --- Games Query Logics ---
-// #include "../query_logic/your_games_query_logic.h"
+#include "../query_logic/action_competition_conflict_query_logic.h"
+#include "../query_logic/agent_exclusivity_filter_query_logic.h"
+#include "../query_logic/gameplay_rule_selector_query_logic.h"
+#include "../query_logic/property_exhausted_or_locked_query_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -58,6 +61,10 @@ namespace {
     // --- GamesQueryLogicResolver Specializations ---
     template <GamesQueryLogicID ID, typename T_Concrete, typename T_Strategy>
     struct GamesQueryLogicResolver { static constexpr bool is_valid = false; };
+    template <typename C, typename S> struct GamesQueryLogicResolver<GamesQueryLogicID::ActionCompetitionConflict, C, S> { using Type = ActionCompetitionConflictQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GamesQueryLogicResolver<GamesQueryLogicID::AgentExclusivityFilter, C, S> { using Type = AgentExclusivityFilterQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GamesQueryLogicResolver<GamesQueryLogicID::GameplayRuleSelector, C, S> { using Type = GameplayRuleSelectorQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GamesQueryLogicResolver<GamesQueryLogicID::PropertyExhaustedOrLocked, C, S> { using Type = PropertyExhaustedOrLockedQueryLogic<C>; static constexpr bool is_valid = true; };
 
     template <GamesQueryLogicID LogicID, typename C, typename S>
     struct GamesQueryLogicKernelExtractor : GamesQueryKernelExtractorImpl<GamesQueryLogicResolver<LogicID, C, S>> {};
@@ -97,6 +104,7 @@ template <GamesQueryLogicID L>
 struct GamesQueryLogicSubRegistry {
     static std::array<GamesQueryTaskFactoryFn, GamesQueryTaskRegistry::SUB_MATRIX_SIZE> factories;
 
+    // Fast-path: Instantiates C++ function pointers for runtime execution
     static void init_execution_routing() {
         _fill_matrix<false>(std::make_index_sequence<GamesQueryTaskRegistry::SUB_MATRIX_SIZE>{}, nullptr);
     }
@@ -105,9 +113,20 @@ struct GamesQueryLogicSubRegistry {
         factories.fill(nullptr);
     }
 
+    // Heavy-path: Allocates Godot Dictionaries for the Editor UI
     static void generate_ui_matrices(godot::Dictionary& p_matrix) {
         IdeamTaskRegistry::log_with_registry(godot::vformat("    -> [GamesQuery] Evaluating LogicID: %d", static_cast<int64_t>(L)));
         _fill_matrix<true>(std::make_index_sequence<GamesQueryTaskRegistry::SUB_MATRIX_SIZE>{}, &p_matrix);
+
+        // POST-EVALUATION METRIC GATHERING
+        godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
+        if (p_matrix.has(logic_key)) {
+            godot::Dictionary dict = p_matrix[logic_key];
+            godot::PackedInt64Array combos = dict["valid_combinations"];
+            IdeamTaskRegistry::log_with_registry(godot::vformat("      -> SUCCESS: LogicID %d appended with %d valid combinations.", static_cast<int64_t>(L), combos.size()));
+        } else {
+            IdeamTaskRegistry::log_with_registry(godot::vformat("      -> FAILURE: LogicID %d resulted in 0 valid combinations. Key not created.", static_cast<int64_t>(L)));
+        }
     }
 
 private:
@@ -122,6 +141,7 @@ private:
         constexpr size_t S_COUNT = GamesQueryTaskRegistry::S_COUNT;
         constexpr size_t V_COUNT = GamesQueryTaskRegistry::V_COUNT;
 
+        // Decode the flat index back into 4D coordinates
         constexpr size_t T = FlatIdx % T_COUNT;
         constexpr size_t S = (FlatIdx / T_COUNT) % S_COUNT;
         constexpr size_t V = (FlatIdx / (T_COUNT * S_COUNT)) % V_COUNT;
@@ -135,6 +155,7 @@ private:
         using Traits = NativeMemoryTraits<MemTypeEnum>;
         using ConcreteType = typename Traits::ConcreteType;
 
+        // --- FAST-FAIL TIER 1: Base Resolution ---
         using ResolvedStrategy = GamesQueryStrategyResolver<StrategyEnum>;
         if constexpr (!ResolvedStrategy::is_valid) return;
         using T_Strategy = typename ResolvedStrategy::Type;
@@ -148,31 +169,44 @@ private:
         using V_Type = typename ResolvedView::Type;
         using V_Traits = ViewTraits<V_Type>;
 
+        // --- FAST-FAIL TIER 2: Deep DOD Intersection ---
         constexpr bool is_fully_valid = []() consteval {
+            // 1. Is the requested Operation (CULL or ADD) supported by this Logic struct?
             if constexpr (OpEnum == QueryOp::CULL && !L_Type::supports_cull) return false;
             if constexpr (OpEnum == QueryOp::ADD && !L_Type::supports_addition) return false;
 
+            // 2. Does the View support the Strategy?
             constexpr ViewStrategies iter_strategy_mask = to_view_strategy_mask(StrategyEnum);
             if ((V_Traits::supported_strategies & iter_strategy_mask) == ViewStrategies::NONE) return false;
 
+            // 3. Does the Primitive DataType align across Logic and View requirements?
             constexpr DataType iter_type_mask = Traits::DataFlag;
             if ((L_Type::required_types & iter_type_mask) == DataType::NONE) return false;
             if ((V_Traits::supported_types & iter_type_mask) == DataType::NONE) return false;
 
+            // 4. Deep DOD Validation via Types (Capabilities, Layouts, Types, Dimensions, Kernels)
             return QueryLogicValidator::validate<L_Type, V_Type>();
         }();
 
+        // --- FACTORY GENERATION ---
         if constexpr (is_fully_valid) {
             if constexpr (!BuildUI) {
+                // Hot-Path Execution Routing
                 factories[FlatIdx] = []() -> INativeTask* {
                     return new QueryTask<L_Type, OpEnum, V_Type, T_Strategy>();
                 };
             } else {
+                // Cold-Path UI Collection
                 if (p_matrix) {
+                    IdeamTaskRegistry::log_with_registry(
+                        godot::vformat("        -> Valid Combo: T=%d, S=%d, V=%d, O=%d (FlatIdx: %d)", T, S, V, O, FlatIdx)
+                    );
+
                     godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
 
                     if (!p_matrix->has(logic_key)) {
                         godot::Dictionary dict;
+                        // Instantiate the property array exactly once per logic struct type
                         dict["properties"] = L_Type::get_ui_properties();
                         dict["valid_combinations"] = godot::PackedInt64Array();
                         dict["name"] = godot::String(L_Type::display_name.data());
@@ -194,6 +228,7 @@ private:
                         (*p_matrix)[logic_key] = dict;
                     }
 
+                    // Map this valid 4D configuration hash (FlatIdx) so the UI knows it's an allowed permutation
                     godot::Dictionary dict = (*p_matrix)[logic_key];
                     godot::PackedInt64Array combos = dict["valid_combinations"];
                     combos.push_back(static_cast<int64_t>(FlatIdx));

@@ -11,7 +11,8 @@
 #include "../../../../memory/views/view_traits.h"
 
 // --- Games Metadata Logics ---
-// #include "../metadata_logic/your_games_metadata_logic.h"
+#include "../metadata_logic/board_presence_partition_metadata_logic.h"
+#include "../metadata_logic/gameplay_rule_specificity_metadata_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -61,6 +62,8 @@ namespace {
     // --- GamesMetadataLogicResolver Specializations ---
     template <GamesMetadataLogicID ID, typename T_Concrete, typename T_Strategy>
     struct GamesMetadataLogicResolver { static constexpr bool is_valid = false; };
+    template <typename C, typename S> struct GamesMetadataLogicResolver<GamesMetadataLogicID::BoardPresencePartition, C, S> { using Type = BoardPresencePartitionMetadataLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GamesMetadataLogicResolver<GamesMetadataLogicID::GameplayRuleSpecificity, C, S> { using Type = GameplayRuleSpecificityMetadataLogic<C>; static constexpr bool is_valid = true; };
 
     template <GamesMetadataLogicID LogicID, typename C, typename S>
     struct GamesMetadataLogicKernelExtractor : GamesMetadataKernelExtractorImpl<GamesMetadataLogicResolver<LogicID, C, S>> {};
@@ -100,6 +103,7 @@ template <GamesMetadataLogicID L>
 struct GamesMetadataLogicSubRegistry {
     static std::array<GamesMetadataTaskFactoryFn, GamesMetadataTaskRegistry::SUB_MATRIX_SIZE> factories;
 
+    // Fast-path: Instantiates C++ function pointers for runtime execution
     static void init_execution_routing() {
         _fill_matrix<false>(std::make_index_sequence<GamesMetadataTaskRegistry::SUB_MATRIX_SIZE>{}, nullptr);
     }
@@ -108,9 +112,19 @@ struct GamesMetadataLogicSubRegistry {
         factories.fill(nullptr);
     }
 
+    // Heavy-path: Allocates Godot Dictionaries for the Editor UI
     static void generate_ui_matrices(godot::Dictionary& p_matrix) {
         IdeamTaskRegistry::log_with_registry(godot::vformat("    -> [GamesMetadata] Evaluating LogicID: %d", static_cast<int64_t>(L)));
         _fill_matrix<true>(std::make_index_sequence<GamesMetadataTaskRegistry::SUB_MATRIX_SIZE>{}, &p_matrix);
+
+        godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
+        if (p_matrix.has(logic_key)) {
+            godot::Dictionary dict = p_matrix[logic_key];
+            godot::PackedInt64Array combos = dict["valid_combinations"];
+            IdeamTaskRegistry::log_with_registry(godot::vformat("      -> SUCCESS: LogicID %d appended with %d valid combinations.", static_cast<int64_t>(L), combos.size()));
+        } else {
+            IdeamTaskRegistry::log_with_registry(godot::vformat("      -> FAILURE: LogicID %d resulted in 0 valid combinations. Key not created.", static_cast<int64_t>(L)));
+        }
     }
 
 private:
@@ -135,6 +149,7 @@ private:
         using Traits = NativeMemoryTraits<MemTypeEnum>;
         using ConcreteType = typename Traits::ConcreteType;
 
+        // --- FAST-FAIL TIER 1: Base Resolution ---
         using ResolvedStrategy = GamesMetadataStrategyResolver<StrategyEnum>;
         if constexpr (!ResolvedStrategy::is_valid) return;
         using T_Strategy = typename ResolvedStrategy::Type;
@@ -148,28 +163,40 @@ private:
         using V_Type = typename ResolvedView::Type;
         using V_Traits = ViewTraits<V_Type>;
 
+        // --- FAST-FAIL TIER 2: Deep DOD Intersection ---
         constexpr bool is_fully_valid = []() consteval {
+            // 1. Does the View support this Strategy at all?
             constexpr ViewStrategies iter_strategy_mask = to_view_strategy_mask(StrategyEnum);
             if ((V_Traits::supported_strategies & iter_strategy_mask) == ViewStrategies::NONE) return false;
 
+            // 2. Does the primitive type satisfy both the View and the Logic?
             constexpr DataType iter_type_mask = Traits::DataFlag;
             if ((L_Type::required_types & iter_type_mask) == DataType::NONE) return false;
             if ((V_Traits::supported_types & iter_type_mask) == DataType::NONE) return false;
 
+            // 3. Deep DOD Validation via Types (Capabilities, Layouts, Types, Dimensions, Kernels)
             return MetadataLogicValidator::validate<L_Type, V_Type>();
         }();
 
+        // --- FACTORY GENERATION ---
         if constexpr (is_fully_valid) {
             if constexpr (!BuildUI) {
+                // Hot-Path Execution Routing
                 factories[FlatIdx] = []() -> INativeTask* {
                     return new MetadataTask<L_Type, V_Type, T_Strategy>();
                 };
             } else {
+                // Cold-Path UI Collection
                 if (p_matrix) {
+                    IdeamTaskRegistry::log_with_registry(
+                        godot::vformat("        -> Valid Combo: T=%d, S=%d, V=%d(FlatIdx: %d)", T, S, V, FlatIdx)
+                    );
+
                     godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
 
                     if (!p_matrix->has(logic_key)) {
                         godot::Dictionary dict;
+                        // Instantiate the property array exactly once per logic struct type
                         dict["properties"] = L_Type::get_ui_properties();
                         dict["valid_combinations"] = godot::PackedInt64Array();
                         dict["name"] = godot::String(L_Type::display_name.data());
@@ -191,6 +218,7 @@ private:
                         (*p_matrix)[logic_key] = dict;
                     }
 
+                    // Map this valid 3D configuration hash (FlatIdx) so the UI knows it's an allowed permutation
                     godot::Dictionary dict = (*p_matrix)[logic_key];
                     godot::PackedInt64Array combos = dict["valid_combinations"];
                     combos.push_back(static_cast<int64_t>(FlatIdx));

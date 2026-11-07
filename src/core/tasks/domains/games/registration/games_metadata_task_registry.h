@@ -12,8 +12,9 @@ namespace ideam::core {
 
 // --- Compile-Time Coordinates for IdeamGames Metadata Tasks ---
 enum class GamesMetadataLogicID : uint32_t {
-    // Add Games Metadata Logic IDs here in alphabetical order
-    Count = 0
+    BoardPresencePartition = 0,
+    GameplayRuleSpecificity,
+    Count
 };
 
 using GamesMetadataTaskFactoryFn = INativeTask* (*)();
@@ -28,10 +29,13 @@ public:
 
     static const std::array<LogicVariantGroup, STORAGE_COUNT> logic_variants;
 
+    // --- DOD Matrix Bounds (3D Sub-Matrix) ---
+    // Metadata tasks lack the 'QueryOp' dimension.
     static constexpr size_t SUB_MATRIX_SIZE = V_COUNT * S_COUNT * T_COUNT;
 
     using SubMatrix = std::array<GamesMetadataTaskFactoryFn, SUB_MATRIX_SIZE>;
 
+    // --- The O(1) Multi-Dimensional Factory Routers ---
     static std::array<const SubMatrix*, STORAGE_COUNT> logic_matrices;
 
     // --- Lifecycle Management ---

@@ -4,13 +4,18 @@
 
 namespace ideam::core {
 
+// --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, GamesMetadataTaskRegistry::STORAGE_COUNT> GamesMetadataTaskRegistry::logic_variants = {{
-    { false, 0, nullptr }
+    // BoardPresencePartition (0)
+    { true, 1, nullptr },
+    // GameplayRuleSpecificity (1)
+    { true, 1, nullptr }
 }};
 
 std::array<const GamesMetadataTaskRegistry::SubMatrix*, GamesMetadataTaskRegistry::STORAGE_COUNT> GamesMetadataTaskRegistry::logic_matrices = {};
 
-namespace {
+namespace { // Translation Unit Firewall
+    // --- Execution Routing (Fast Path) ---
     template <size_t... Is>
     void init_routing_all_sub_registries(std::index_sequence<Is...>) {
         (GamesMetadataLogicSubRegistry<static_cast<GamesMetadataLogicID>(Is)>::init_execution_routing(), ...);
@@ -22,6 +27,7 @@ namespace {
         (GamesMetadataLogicSubRegistry<static_cast<GamesMetadataLogicID>(Is)>::cleanup_execution_routing(), ...);
     }
 
+    // --- UI Matrices (Heavy Path) ---
     template <size_t... Is>
     void generate_ui_all_sub_registries(godot::Dictionary& p_matrix, std::index_sequence<Is...>) {
         (void)p_matrix;
@@ -30,6 +36,7 @@ namespace {
 } // namespace
 
 void GamesMetadataTaskRegistry::init_execution_routing() {
+    // Compiles into consecutive fast-path init calls and pointer assignments
     init_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
 }
 
@@ -40,10 +47,12 @@ void GamesMetadataTaskRegistry::cleanup_execution_routing() {
 
 void GamesMetadataTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
     IdeamTaskRegistry::log_with_registry("  -> GamesMetadataTaskRegistry: Unrolling templates for L_COUNT = " + godot::itos(L_COUNT));
+    // Rips through valid template permutations to build the Godot Inspector UI
     generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
     IdeamTaskRegistry::log_with_registry("  -> GamesMetadataTaskRegistry: Template unrolling complete.");
 }
 
+// --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> GamesMetadataTaskRegistry::create(
     uint32_t p_logic_id,
     uint32_t p_view_id,
@@ -54,9 +63,11 @@ std::unique_ptr<INativeTask> GamesMetadataTaskRegistry::create(
         return nullptr;
     }
 
+    // 1. O(1) Cache-line hit for the sub-registry pointer
     const SubMatrix* sub_matrix = logic_matrices[p_logic_id];
     if (!sub_matrix) return nullptr;
 
+    // 2. O(1) Flat Index Math (Dropped the L dimension)
     size_t flat_idx =
         p_view_id * (S_COUNT * T_COUNT) +
         p_strategy_id * (T_COUNT) +

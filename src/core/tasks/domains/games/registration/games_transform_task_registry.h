@@ -12,8 +12,19 @@ namespace ideam::core {
 
 // --- Compile-Time Coordinates for IdeamGames Transform Tasks ---
 enum class GamesTransformLogicID : uint32_t {
-    // Add Games Transform Logic IDs here in alphabetical order
-    Count = 0
+    AgentActionSequenceStep = 0,
+    AgentPossessionTransformBlend,
+    ConsequenceRingDrain,
+    ControlMapInputFilter,
+    EntityTimeScaleCascade,
+    GameEntitySnapshotSync,
+    GameplayRuleApply,
+    InteractionTugOfWarResolve,
+    PieceActionScoreRefresh,
+    PropertyModifierAggregate,
+    PropertyModifierTick,
+    PropertyRangeClampAndExhaust,
+    Count
 };
 
 using GamesTransformTaskFactoryFn = INativeTask* (*)();

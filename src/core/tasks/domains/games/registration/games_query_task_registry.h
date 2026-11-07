@@ -13,14 +13,18 @@ namespace ideam::core {
 
 // --- Compile-Time Coordinates for IdeamGames Query Tasks ---
 enum class GamesQueryLogicID : uint32_t {
-    // Add Games Query Logic IDs here in alphabetical order
-    Count = 0
+    ActionCompetitionConflict = 0,
+    AgentExclusivityFilter,
+    GameplayRuleSelector,
+    PropertyExhaustedOrLocked,
+    Count
 };
 
 using GamesQueryTaskFactoryFn = INativeTask* (*)();
 
 class GamesQueryTaskRegistry {
 public:
+    // --- DOD Matrix Bounds (4D Sub-Matrix) ---
     static constexpr size_t O_COUNT = 2; // 0 = CULL, 1 = ADD
     static constexpr size_t L_COUNT = static_cast<size_t>(GamesQueryLogicID::Count);
     static constexpr size_t STORAGE_COUNT = (L_COUNT > 0) ? L_COUNT : 1;
@@ -34,6 +38,7 @@ public:
 
     using SubMatrix = std::array<GamesQueryTaskFactoryFn, SUB_MATRIX_SIZE>;
 
+    // --- The O(1) Multi-Dimensional Factory Routers ---
     static std::array<const SubMatrix*, STORAGE_COUNT> logic_matrices;
 
     // --- Lifecycle Management ---
