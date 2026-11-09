@@ -24,7 +24,7 @@
 #include "../ui/spline_canvas_base.h"
 #include "../ui/spline_control_base.h"
 #include "spline_4d_resource.h"
-#include "spline_node_4d.h"
+#include "spline_node4d.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/check_box.hpp>

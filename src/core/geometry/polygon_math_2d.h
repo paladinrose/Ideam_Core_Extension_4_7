@@ -6,8 +6,8 @@
  *
  * MIGRATION NOTE: Moved from src/core/splines/polygon_math_2d.h into src/core/geometry/
  * so both IdeamSplines, IdeamTiles, IdeamCymatics, and GeometryDOD can share triangulation,
- * point-in-polygon, intersection, convex hull, and parametric polygon vertex generation
- * without cross-plugin dependencies.
+ * point-in-polygon, intersection, convex hull, polygon offsetting, and parametric polygon
+ * vertex generation without cross-plugin dependencies.
  */
 
 #include "geometry_common.h"
@@ -17,6 +17,15 @@
 #include <vector>
 
 namespace ideam::core {
+
+/**
+ * Corner join style for inward/outward 2D polygon offsetting (`PolygonMath2D::offset_polygon`).
+ */
+enum class JoinStyle2D : uint8_t {
+    MITER = 0, // Sharp miter corner clamped to p_miter_limit
+    BEVEL = 1, // Flat bevel chamfer across the corner
+    ROUND = 2  // Circular arc fan connecting the two offset edge normals
+};
 
 template <FloatingPointScalar T = float>
 struct PolygonMath2D {
@@ -122,7 +131,7 @@ struct PolygonMath2D {
     ) noexcept;
 
     // ========================================================================
-    // Triangulation & Convex Hull
+    // Triangulation, Convex Hull & Polygon Offsetting
     // ========================================================================
 
     /**
@@ -152,6 +161,18 @@ struct PolygonMath2D {
      */
     [[nodiscard]] static std::vector<Vec2> convex_hull(std::span<const Vec2> p_points);
 
+    /**
+     * Offsets a closed 2D polygon outward (p_delta > 0) or inward (p_delta < 0)
+     * along vertex bisector normals using MITER, BEVEL, or ROUND corner joins.
+     * Used for Wallpaper Tile grout/mortar margins, collision hull inflation, and SplinePolygon2D offsets.
+     */
+    [[nodiscard]] static std::vector<Vec2> offset_polygon(
+        std::span<const Vec2> p_polygon,
+        T p_delta,
+        JoinStyle2D p_join = JoinStyle2D::MITER,
+        T p_miter_limit = static_cast<T>(2.0)
+    );
+
     // ========================================================================
     // Parametric 2D Polygon Vertex Generators (Shared by Spline2D & Tiles)
     // ========================================================================
@@ -180,33 +201,6 @@ struct PolygonMath2D {
         T p_inner_radius = static_cast<T>(0.25),
         T p_angle_offset = static_cast<T>(0.0)
     );
-
-    // ========================================================================
-    // [SPECULATIVE / FUTURE PHASE] Advanced 2D Polygon Algorithms
-    // ========================================================================
-    /*
-     * 1. Ramer-Douglas-Peucker (RDP) & Visvalingam-Whyatt Polyline Simplification:
-     *    - Useful when flattening dense Spline2D curves or Marching Squares contours
-     *      into low-vertex collision/navigation polygons:
-     *        [[nodiscard]] static std::vector<Vec2> simplify_rdp(std::span<const Vec2> p_polyline, T p_epsilon, bool p_closed = false);
-     *
-     * 2. Polygon Inward/Outward Offset & Miter/Round Buffering (Straight Skeleton):
-     *    - Needed for Wallpaper Tile grout lines / mortar margins and SplineCorridor2D expansion:
-     *        enum class JoinStyle2D : uint8_t { MITER = 0, BEVEL = 1, ROUND = 2 };
-     *        [[nodiscard]] static std::vector<std::vector<Vec2>> offset_polygon(
-     *            std::span<const Vec2> p_polygon, T p_delta, JoinStyle2D p_join = JoinStyle2D::MITER, T p_miter_limit = static_cast<T>(2.0));
-     *
-     * 3. Rotating Calipers Minimum-Area Oriented Bounding Box (OBB2D):
-     *    - Aligns wallpaper lattice seed orientation with a SplinePolygon2D's principal axis:
-     *        [[nodiscard]] static void compute_minimum_area_obb(
-     *            std::span<const Vec2> p_convex_hull, Vec2& r_center, Vec2& r_extents, T& r_rotation_rad) noexcept;
-     *
-     * 4. 2D Visibility Polygon (Radial Sweep-Line):
-     *    - Computes exact line-of-sight / acoustic diffraction polygon from an observer origin
-     *      for GameAgent perception and CymaticAudioCompass:
-     *        [[nodiscard]] static std::vector<Vec2> compute_visibility_polygon(
-     *            const Vec2& p_origin, std::span<const Segment2D<T>> p_occluders, T p_max_radius);
-     */
 
 private:
     [[nodiscard]] static bool snip(

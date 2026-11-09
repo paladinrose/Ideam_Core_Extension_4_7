@@ -109,6 +109,43 @@
 #include "core/tasks/registration/ideam_task_registry.h"
 #include "core/tasks/registration/task_manifest.h"
 
+// --- Splines ---
+#include "godot/splines/spline_resource.h"
+#include "godot/splines/ui/spline_canvas_base.h"
+#include "godot/splines/ui/spline_control_base.h"
+#include "godot/splines/ui/spline_point_field.h"
+#include "godot/splines/ui/spline_section_field.h"
+
+#include "godot/splines/spline_1d/spline_1d_resource.h"
+#include "godot/splines/spline_1d/spline_node.h"
+#include "godot/splines/spline_1d/spline_1d_control.h"
+
+#include "godot/splines/spline_2d/spline_2d_resource.h"
+#include "godot/splines/spline_2d/spline_node2d.h"
+#include "godot/splines/spline_2d/spline_polygon_2d.h"
+#include "godot/splines/spline_2d/spline_2d_control.h"
+
+#include "godot/splines/spline_3d/spline_3d_resource.h"
+#include "godot/splines/spline_3d/spline_node3d.h"
+#include "godot/splines/spline_3d/spline_3d_control.h"
+
+#include "godot/splines/spline_4d/spline_4d_resource.h"
+#include "godot/splines/spline_4d/spline_node4d.h"
+#include "godot/splines/spline_4d/spline_4d_control.h"
+
+#include "godot/splines/editor/spline_editor_inspector_base.h"
+#include "godot/splines/editor/spline_1d_resource_inspector.h"
+#include "godot/splines/editor/spline_2d_resource_inspector.h"
+#include "godot/splines/editor/spline_3d_resource_inspector.h"
+#include "godot/splines/editor/spline_4d_resource_inspector.h"
+#include "godot/splines/ideam_splines_plugin.h"
+
+// --- Tiles (Resources & SceneTree Nodes) ---
+#include "godot/tiles/tiling_resource.h"
+#include "godot/tiles/wallpaper_tiling_resource.h"
+#include "godot/tiles/composite_tiling_resource.h"
+#include "godot/tiles/tiling_region_node_2d.h"
+#include "godot/tiles/tiling_surface_node_3d.h"
 
 // --- Narratives ---
 #include "godot/narratives/narreme.h"
@@ -290,6 +327,39 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::EntryFillTaskResource);
         GDREGISTER_CLASS(ideam::godot_ext::EntryFillTaskGraphNode);
 
+        // --- Splines (Resources, SceneTree Nodes & Runtime/Editor UI Controls) ---
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline1DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline2DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline4DResource);
+
+        GDREGISTER_CLASS(ideam::godot_ext::SplineNode);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineNode2D);
+        GDREGISTER_CLASS(ideam::godot_ext::SplinePolygon2D);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineNode4D);
+
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineCanvasBase);
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineControlBase);
+        GDREGISTER_CLASS(ideam::godot_ext::SplinePointField);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineSectionField);
+
+        GDREGISTER_CLASS(ideam::godot_ext::Spline1DEqualizerCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline1DControl);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline2DCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline2DControl);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline3DControl);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline4DWChannelCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline4DControl);
+
+        // --- Tiles (Resources & SceneTree Nodes) ---
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::TilingResource);
+        GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingResource);
+        GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingResource);
+        GDREGISTER_CLASS(ideam::godot_ext::TilingRegionNode2D);
+        GDREGISTER_CLASS(ideam::godot_ext::TilingSurfaceNode3D);
+
         // --- Narratives ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::Narreme);
 
@@ -382,6 +452,14 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // Tasks tooling
         GDREGISTER_CLASS(ideam::godot_ext::TaskGraphInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamTasksPlugin);
+
+        // Splines tooling
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineEditorInspectorBase);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline1DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline2DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline3DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline4DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamSplinesPlugin);
 
         // --- Games Editors ---
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentEditorInspectorPlugin);

@@ -260,6 +260,162 @@ std::vector<PolygonIntersectionEventPOD<T>> CSGMath2D<T>::find_polygon_intersect
     return events;
 }
 
+template <FloatingPointScalar T>
+void CSGMath2D<T>::weld_polygons_along_seam(
+    std::span<std::vector<Vec2>> r_left_tiles,
+    std::span<std::vector<Vec2>> r_right_tiles,
+    std::span<const Vec2> p_seam_polyline,
+    T p_weld_tolerance
+) {
+    if (p_seam_polyline.size() < 2) return;
+
+    const AABB2D<T> seam_aabb = PolygonMath2D<T>::compute_aabb(p_seam_polyline).grown(p_weld_tolerance * static_cast<T>(4.0));
+
+    auto clip_and_weld_side = [&](std::span<std::vector<Vec2>> r_tiles, T p_side_sign) {
+        for (auto& poly : r_tiles) {
+            if (poly.size() < 3) continue;
+
+            const AABB2D<T> tile_aabb = PolygonMath2D<T>::compute_aabb(poly);
+            if (!tile_aabb.intersects(seam_aabb)) continue;
+
+            // Find the closest seam segment to the tile centroid to orient the local half-plane clip
+            const Vec2 center = PolygonMath2D<T>::centroid(poly);
+            size_t best_seg   = 0;
+            Vec2 closest_pt   = p_seam_polyline[0];
+            T best_dist_sq    = std::numeric_limits<T>::max();
+
+            for (size_t s = 0; s + 1 < p_seam_polyline.size(); ++s) {
+                const Vec2& a = p_seam_polyline[s];
+                const Vec2& b = p_seam_polyline[s + 1];
+                const Vec2 cand = PolygonMath2D<T>::closest_point_on_segment(a, b, center);
+                const Vec2 diff = center - cand;
+                const T d2 = glm::dot(diff, diff);
+                if (d2 < best_dist_sq) {
+                    best_dist_sq = d2;
+                    best_seg = s;
+                    closest_pt = cand;
+                }
+            }
+
+            // Clip against any seam segments whose bounding box overlaps this tile
+            for (size_t s = 0; s + 1 < p_seam_polyline.size(); ++s) {
+                const Vec2& a = p_seam_polyline[s];
+                const Vec2& b = p_seam_polyline[s + 1];
+                AABB2D<T> seg_box;
+                seg_box.expand_to(a);
+                seg_box.expand_to(b);
+                if (!tile_aabb.grown(p_weld_tolerance).intersects(seg_box)) continue;
+
+                // Only clip against the dominant local segment or segments that actually intersect the polygon
+                bool intersects_seg = (s == best_seg);
+                if (!intersects_seg) {
+                    Vec2 hit;
+                    for (size_t e = 0; e < poly.size(); ++e) {
+                        if (PolygonMath2D<T>::line_intersection(poly[e], poly[(e + 1) % poly.size()], a, b, hit)) {
+                            intersects_seg = true;
+                            break;
+                        }
+                    }
+                }
+                if (!intersects_seg) continue;
+
+                const Vec2 seg_dir = b - a;
+                const T len_sq = glm::dot(seg_dir, seg_dir);
+                if (len_sq <= GeometryConstants<T>::SQ_EPSILON) continue;
+
+                // Left normal of directed segment (a -> b) is (-dy, dx)
+                const Vec2 inside_normal = GeometryKernelMath<T>::perp_ccw(seg_dir) *
+                                           (p_side_sign / std::sqrt(len_sq));
+                poly = clip_polygon_half_plane(poly, a, inside_normal);
+                if (poly.size() < 3) {
+                    poly.clear();
+                    break;
+                }
+            }
+
+            if (poly.size() < 3) continue;
+
+            // Snap vertices within p_weld_tolerance of the seam polyline or its vertices
+            for (auto& v : poly) {
+                // First check exact polyline vertices so both left & right tiles snap to identical bend coordinates
+                bool snapped_to_vert = false;
+                for (const auto& sv : p_seam_polyline) {
+                    if (glm::distance(v, sv) <= p_weld_tolerance) {
+                        v = sv;
+                        snapped_to_vert = true;
+                        break;
+                    }
+                }
+                if (!snapped_to_vert) {
+                    Vec2 proj;
+                    const T dist = PolygonMath2D<T>::distance_to_boundary(
+                        p_seam_polyline, v, &proj, nullptr, false
+                    );
+                    if (dist <= p_weld_tolerance) {
+                        v = proj;
+                    }
+                }
+            }
+
+            // Insert any intermediate seam bend vertices that lie along a clipped polygon edge
+            // so left and right tiles share exact T-junction-free vertices along curved seams.
+            std::vector<Vec2> welded;
+            welded.reserve(poly.size() + 4);
+            for (size_t i = 0; i < poly.size(); ++i) {
+                const Vec2& v0 = poly[i];
+                const Vec2& v1 = poly[(i + 1) % poly.size()];
+                welded.push_back(v0);
+
+                const T edge_len = glm::distance(v0, v1);
+                if (edge_len <= p_weld_tolerance) continue;
+
+                struct InsertedSeamVert {
+                    T t;
+                    Vec2 pt;
+                };
+                std::vector<InsertedSeamVert> mids;
+                for (const auto& sv : p_seam_polyline) {
+                    if (glm::distance(sv, v0) <= p_weld_tolerance ||
+                        glm::distance(sv, v1) <= p_weld_tolerance) {
+                        continue;
+                    }
+                    T t_param = static_cast<T>(0.0);
+                    const Vec2 on_edge = PolygonMath2D<T>::closest_point_on_segment(v0, v1, sv, &t_param);
+                    if (t_param > static_cast<T>(0.01) && t_param < static_cast<T>(0.99) &&
+                        glm::distance(sv, on_edge) <= p_weld_tolerance * static_cast<T>(2.0)) {
+                        mids.push_back({t_param, sv});
+                    }
+                }
+                if (!mids.empty()) {
+                    std::sort(mids.begin(), mids.end(), [](const InsertedSeamVert& lhs, const InsertedSeamVert& rhs) {
+                        return lhs.t < rhs.t;
+                    });
+                    for (const auto& m : mids) {
+                        welded.push_back(m.pt);
+                    }
+                }
+            }
+
+            // Deduplicate consecutive near-identical vertices
+            std::vector<Vec2> cleaned;
+            cleaned.reserve(welded.size());
+            for (const auto& pt : welded) {
+                if (cleaned.empty() || glm::distance(cleaned.back(), pt) > GeometryConstants<T>::EPSILON) {
+                    cleaned.push_back(pt);
+                }
+            }
+            if (cleaned.size() > 2 && glm::distance(cleaned.front(), cleaned.back()) <= GeometryConstants<T>::EPSILON) {
+                cleaned.pop_back();
+            }
+
+            poly = (cleaned.size() >= 3) ? std::move(cleaned) : std::vector<Vec2>{};
+        }
+    };
+
+    clip_and_weld_side(r_left_tiles,  static_cast<T>(1.0));
+    clip_and_weld_side(r_right_tiles, static_cast<T>(-1.0));
+}
+
 // Explicit Instantiations
 template struct CSGMath2D<float>;
 template struct CSGMath2D<double>;

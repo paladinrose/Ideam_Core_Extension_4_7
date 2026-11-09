@@ -2,14 +2,15 @@
 
 /**
  * csg_2d.h
- * 2D Polygon Clipping, Half-Plane Splitting, Boundary Cell Classification, and Boolean CSG.
+ * 2D Polygon Clipping, Half-Plane Splitting, Boundary Cell Classification, Seam Welding, and Boolean CSG.
  *
  * Directly supports:
  *   1. TileDOD Wave 2 (WallpaperLatticeCullQuery): Classifying fundamental domain cells
  *      into FULLY_INSIDE (InteriorBitmask, >90% of tiles needing zero clipping),
  *      FULLY_OUTSIDE, or STRADDLING_BOUNDARY (BoundarySeamBitmask).
  *   2. TileDOD Wave 3 (WallpaperBoundaryClipTransform): Clipping boundary tiles against
- *      Spline2D segments or convex cells via Sutherland-Hodgman.
+ *      Spline2D segments or convex cells via Sutherland-Hodgman, and welding left/right
+ *      tile polygons water-tightly along a shared Spline2D seam curve.
  *   3. Spline2D boolean operations (combine_polygons, subtract_polygons, intersect_polygons).
  */
 
@@ -118,7 +119,7 @@ struct CSGMath2D {
     ) noexcept;
 
     // ========================================================================
-    // Pairwise Polygon Intersection & Convex Boolean Operations
+    // Pairwise Polygon Intersection & Topological Seam Welding
     // ========================================================================
 
     /**
@@ -129,39 +130,19 @@ struct CSGMath2D {
         std::span<const Vec2> p_poly_b
     );
 
-    // ========================================================================
-    // [SPECULATIVE / FUTURE PHASE] Non-Convex Martinez-Rueda CSG & Seam Welding
-    // ========================================================================
-    /*
-     * 1. Martinez-Rueda-Feito Sweep-Line Boolean CSG (General Non-Convex & Multi-Contour):
-     *    - Fulfills the commented-out stubs in src/core/splines/spline_2d.h
-     *      (combine_polygons, subtract_polygons, intersect_polygons) and supports holes/islands.
-     *    - Can operate over a pre-allocated transient workspace from MemoryManagerDOD:
-     *        [[nodiscard]] static std::vector<std::vector<Vec2>> boolean_operation(
-     *            std::span<const Vec2> p_subject,
-     *            std::span<const Vec2> p_clip,
-     *            CSGOperation2D p_op,
-     *            void* p_transient_workspace = nullptr,
-     *            size_t p_workspace_bytes = 0
-     *        );
-     *
-     * 2. Topological Seam Welding Along a Spline2D Curve:
-     *    - Clips Group A's boundary tiles against the left normal of a Spline2D seam and
-     *      Group B's boundary tiles against the right normal, inserting shared vertices at
-     *      Spline2D subdivision points so the resulting mesh and navigation graph are watertight:
-     *        static void weld_polygons_along_seam(
-     *            std::span<std::vector<Vec2>> r_left_tiles,
-     *            std::span<std::vector<Vec2>> r_right_tiles,
-     *            std::span<const Vec2> p_seam_polyline,
-     *            T p_weld_tolerance = GeometryConstants<T>::WELD_EPSILON
-     *        );
-     *
-     * 3. 2D Minkowski Sum & Difference (for NavMesh Obstacle Expansion):
-     *        [[nodiscard]] static std::vector<Vec2> minkowski_sum_convex(
-     *            std::span<const Vec2> p_convex_a,
-     *            std::span<const Vec2> p_convex_b
-     *        );
+    /**
+     * Topological Seam Welding Along a Spline2D Curve:
+     * Clips Group A's boundary tiles (`r_left_tiles`) against the left normal of `p_seam_polyline`
+     * and Group B's boundary tiles (`r_right_tiles`) against the right normal, snapping shared
+     * vertices and inserting intermediate polyline bend points so the resulting mesh and
+     * navigation graph are watertight with zero T-junction cracks.
      */
+    static void weld_polygons_along_seam(
+        std::span<std::vector<Vec2>> r_left_tiles,
+        std::span<std::vector<Vec2>> r_right_tiles,
+        std::span<const Vec2> p_seam_polyline,
+        T p_weld_tolerance = GeometryConstants<T>::WELD_EPSILON
+    );
 };
 
 } // namespace ideam::core

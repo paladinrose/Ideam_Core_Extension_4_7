@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * spline_node_4d.h
+ * spline_node4d.h
  * SceneTree 4D Spline Evaluator, 3D+W Path Follower, Color Gradient Driver & 4D Gizmo Host (`godot::Node3D`).
  *
  * Extends the `SplineNode` / `SplineNode3D` protocol into 4D space:
@@ -30,7 +30,7 @@
 #include <godot_cpp/variant/vector4.hpp>
 
 #include "../spline_1d/spline_node.h"
-#include "../spline_3d/spline_node_3d.h"
+#include "../spline_3d/spline_node3d.h"
 #include "spline_4d_resource.h"
 #include "../../utilities/node_retargeter.h"
 #include "../../utilities/signal_connector.h"

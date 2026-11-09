@@ -1,4 +1,4 @@
-#include "spline_node_4d.h"
+#include "spline_node4d.h"
 
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/core/math.hpp>

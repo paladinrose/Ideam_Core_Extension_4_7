@@ -325,6 +325,106 @@ std::vector<typename PolygonMath2D<T>::Vec2> PolygonMath2D<T>::convex_hull(std::
 }
 
 template <FloatingPointScalar T>
+std::vector<typename PolygonMath2D<T>::Vec2> PolygonMath2D<T>::offset_polygon(
+    std::span<const Vec2> p_polygon,
+    T p_delta,
+    JoinStyle2D p_join,
+    T p_miter_limit
+) {
+    if (p_polygon.size() < 3) {
+        return std::vector<Vec2>(p_polygon.begin(), p_polygon.end());
+    }
+
+    // Strip duplicate closing vertex if present
+    size_t n = p_polygon.size();
+    if (n > 3 && glm::distance(p_polygon.front(), p_polygon.back()) < GeometryConstants<T>::WELD_EPSILON) {
+        n -= 1;
+    }
+
+    const std::span<const Vec2> ring = p_polygon.subspan(0, n);
+    if (std::abs(p_delta) <= GeometryConstants<T>::EPSILON) {
+        return std::vector<Vec2>(ring.begin(), ring.end());
+    }
+
+    // Determine polygon winding so outward normal always points toward exterior
+    // For CCW winding (signed area > 0), outward unit normal of edge (dx, dy) is (dy, -dx) / len.
+    const T signed_a = area(ring);
+    const T outward_sign = (signed_a >= static_cast<T>(0.0)) ? static_cast<T>(1.0) : static_cast<T>(-1.0);
+
+    std::vector<Vec2> edge_normals(n);
+    for (size_t i = 0; i < n; ++i) {
+        const Vec2 edge = ring[(i + 1) % n] - ring[i];
+        const T len_sq = glm::dot(edge, edge);
+        if (len_sq > GeometryConstants<T>::SQ_EPSILON) {
+            const T inv_len = static_cast<T>(1.0) / std::sqrt(len_sq);
+            edge_normals[i] = Vec2(edge.y, -edge.x) * (inv_len * outward_sign);
+        } else {
+            edge_normals[i] = Vec2(static_cast<T>(0.0), static_cast<T>(1.0));
+        }
+    }
+
+    const T max_miter = std::max(static_cast<T>(1.0), p_miter_limit);
+    std::vector<Vec2> result;
+    result.reserve(n * 2);
+
+    for (size_t i = 0; i < n; ++i) {
+        const Vec2& n_prev = edge_normals[(i + n - 1) % n];
+        const Vec2& n_curr = edge_normals[i];
+        const Vec2& v      = ring[i];
+
+        // Cosine of angle between adjacent normals
+        const T cos_theta = std::clamp(glm::dot(n_prev, n_curr), static_cast<T>(-1.0), static_cast<T>(1.0));
+        const T denom     = static_cast<T>(1.0) + cos_theta; // = 2 * cos^2(theta / 2)
+
+        // Check if corner is convex relative to offset direction
+        const T cross_n = GeometryKernelMath<T>::cross_2d(n_prev, n_curr) * outward_sign *
+                          (p_delta >= static_cast<T>(0.0) ? static_cast<T>(1.0) : static_cast<T>(-1.0));
+        const bool is_outer_turn = (cross_n < -GeometryConstants<T>::EPSILON);
+
+        if (p_join == JoinStyle2D::BEVEL && is_outer_turn) {
+            result.push_back(v + n_prev * p_delta);
+            result.push_back(v + n_curr * p_delta);
+            continue;
+        }
+
+        if (p_join == JoinStyle2D::ROUND && is_outer_turn) {
+            const T a0 = std::atan2(n_prev.y, n_prev.x);
+            T a1       = std::atan2(n_curr.y, n_curr.x);
+            T diff     = a1 - a0;
+            while (diff >  GeometryConstants<T>::PI) diff -= GeometryConstants<T>::TAU;
+            while (diff < -GeometryConstants<T>::PI) diff += GeometryConstants<T>::TAU;
+
+            const int steps = std::clamp(static_cast<int>(std::ceil(std::abs(diff) / static_cast<T>(0.35))), 2, 8);
+            for (int s = 0; s <= steps; ++s) {
+                const T t = static_cast<T>(s) / static_cast<T>(steps);
+                const T ang = a0 + diff * t;
+                result.push_back(v + Vec2(std::cos(ang), std::sin(ang)) * p_delta);
+            }
+            continue;
+        }
+
+        // Default MITER (or inner reflex corner)
+        if (denom > GeometryConstants<T>::EPSILON) {
+            const T miter_scale = std::sqrt(static_cast<T>(2.0) / denom);
+            const Vec2 bisector = glm::normalize(n_prev + n_curr);
+            if (miter_scale <= max_miter || !is_outer_turn) {
+                result.push_back(v + bisector * (p_delta * std::min(miter_scale, max_miter)));
+            } else {
+                // Miter limit exceeded on outer turn -> bevel fallback
+                result.push_back(v + n_prev * p_delta);
+                result.push_back(v + n_curr * p_delta);
+            }
+        } else {
+            // 180-degree spike fallback
+            result.push_back(v + n_prev * p_delta);
+            result.push_back(v + n_curr * p_delta);
+        }
+    }
+
+    return result;
+}
+
+template <FloatingPointScalar T>
 std::vector<typename PolygonMath2D<T>::Vec2> PolygonMath2D<T>::generate_rectangle_vertices(
     const Vec2& p_center,
     const Vec2& p_size
