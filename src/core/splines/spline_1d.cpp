@@ -1,65 +1,84 @@
 #include "spline_1d.h"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 namespace ideam::core {
 
 template <typename T>
-std::vector<T> Spline1D<T>::get_percents_at_value(T p_value, int p_samples) const {
+std::vector<T> Spline1D<T>::get_percents_at_value(T p_value, int p_samples, bool p_weighted) const {
     std::vector<T> percents;
-
-    if (this->points.size() < 2) {
+    if (this->points.size() < 2 || this->sections.empty()) {
         return percents;
     }
 
-    for (size_t i = 0; i < this->points.size() - 1; ++i) {
-        T a = this->points[i].point.x;
-        T c = this->points[i + 1].point.x;
-        T b = static_cast<T>(-1.0);
+    if (p_samples < 4) p_samples = 4;
 
-        // Check if the value falls within the bounds of this segment's endpoints
-        if ((p_value >= a && p_value <= c) || (p_value <= a && p_value >= c)) {
-            
-            // Dummy variable required by get_section_at_percent, 
-            // though here we calculate the percent manually.
-            T a_per = static_cast<T>(i) / static_cast<T>(this->points.size() - 1); 
-            T c_per = static_cast<T>(i + 1) / static_cast<T>(this->points.size() - 1);
-            T b_per = static_cast<T>(-1.0);
+    for (size_t sec_idx = 0; sec_idx < this->sections.size(); ++sec_idx) {
+        const CurveType ctype = this->sections[sec_idx].curve_type;
 
-            // Binary search the segment
-            for (int j = 0; j < p_samples; ++j) {
-                b_per = (a_per + c_per) * static_cast<T>(0.5);
-                b = this->get_point(b_per).x;
-
-                if (p_value > b) {
-                    if (c > a) { a = b; a_per = b_per; } 
-                    else       { c = b; c_per = b_per; }
-                } 
-                else if (p_value < b) {
-                    if (c > a) { c = b; c_per = b_per; } 
-                    else       { a = b; a_per = b_per; }
-                } 
-                else {
-                    percents.push_back(b_per);
-                    break;
-                }
+        if (ctype == CurveType::STEP) {
+            const T v0 = this->points[sec_idx].point.x;
+            if (std::abs(v0 - p_value) <= GeometryConstants<T>::EPSILON) {
+                percents.push_back(this->section_local_to_global_percent(sec_idx, static_cast<T>(0.0), p_weighted));
             }
+            continue;
+        }
 
-            // If we exhausted samples without a perfect match, pick the closest bound
-            if (p_value != b) {
-                T diff_c = std::abs(c - p_value);
-                T diff_a = std::abs(a - p_value);
-                
-                if (diff_c < diff_a) {
-                    percents.push_back(c_per);
+        // Subdivide section over local_t in [0, 1] so cubic overshoot extrema are bracketed accurately
+        const int coarse_steps = (ctype == CurveType::LINEAR) ? 1 : 8;
+        const T inv_coarse = static_cast<T>(1.0) / static_cast<T>(coarse_steps);
+
+        T t_prev = static_cast<T>(0.0);
+        T y_prev = this->evaluate_section(sec_idx, t_prev).x;
+
+        for (int k = 1; k <= coarse_steps; ++k) {
+            const T t_curr = static_cast<T>(k) * inv_coarse;
+            const T y_curr = this->evaluate_section(sec_idx, t_curr).x;
+
+            const bool crosses = (p_value >= y_prev && p_value <= y_curr) ||
+                                 (p_value <= y_prev && p_value >= y_curr);
+
+            if (crosses) {
+                if (std::abs(y_curr - y_prev) <= GeometryConstants<T>::SQ_EPSILON) {
+                    percents.push_back(this->section_local_to_global_percent(sec_idx, t_prev, p_weighted));
+                } else if (ctype == CurveType::LINEAR) {
+                    const T local_hit = std::clamp((p_value - y_prev) / (y_curr - y_prev), static_cast<T>(0.0), static_cast<T>(1.0));
+                    percents.push_back(this->section_local_to_global_percent(sec_idx, local_hit, p_weighted));
                 } else {
-                    percents.push_back(a_per);
+                    // Bisection refinement on local_t in [t_prev, t_curr]
+                    T lo_t = t_prev;
+                    T hi_t = t_curr;
+                    T lo_y = y_prev;
+                    T hi_y = y_curr;
+                    T mid_t = (lo_t + hi_t) * static_cast<T>(0.5);
+
+                    for (int iter = 0; iter < p_samples; ++iter) {
+                        mid_t = (lo_t + hi_t) * static_cast<T>(0.5);
+                        const T mid_y = this->evaluate_section(sec_idx, mid_t).x;
+
+                        if (std::abs(mid_y - p_value) <= GeometryConstants<T>::EPSILON) {
+                            break;
+                        }
+
+                        if ((p_value >= lo_y && p_value <= mid_y) || (p_value <= lo_y && p_value >= mid_y)) {
+                            hi_t = mid_t;
+                            hi_y = mid_y;
+                        } else {
+                            lo_t = mid_t;
+                            lo_y = mid_y;
+                        }
+                        (void)hi_y;
+                    }
+                    percents.push_back(this->section_local_to_global_percent(sec_idx, mid_t, p_weighted));
                 }
             }
+
+            t_prev = t_curr;
+            y_prev = y_curr;
         }
     }
 
-    // Ensure we don't return duplicate hits at exact segment boundaries
+    std::sort(percents.begin(), percents.end());
     auto last = std::unique(percents.begin(), percents.end(), [](T l, T r) {
         return std::abs(l - r) < static_cast<T>(0.0001);
     });
@@ -69,29 +88,21 @@ std::vector<T> Spline1D<T>::get_percents_at_value(T p_value, int p_samples) cons
 }
 
 template <typename T>
-T Spline1D<T>::get_min_value() const noexcept {
+T Spline1D<T>::get_min_value(bool p_use_smoothed) const noexcept {
     if (this->points.empty()) return static_cast<T>(0.0);
-    
-    T min_val = this->points[0].point.x;
-    for (size_t i = 1; i < this->points.size(); ++i) {
-        if (this->points[i].point.x < min_val) {
-            min_val = this->points[i].point.x;
-        }
-    }
-    return min_val;
+
+    VecType min_b, max_b;
+    this->get_min_max(min_b, max_b, p_use_smoothed);
+    return min_b.x;
 }
 
 template <typename T>
-T Spline1D<T>::get_max_value() const noexcept {
+T Spline1D<T>::get_max_value(bool p_use_smoothed) const noexcept {
     if (this->points.empty()) return static_cast<T>(0.0);
-    
-    T max_val = this->points[0].point.x;
-    for (size_t i = 1; i < this->points.size(); ++i) {
-        if (this->points[i].point.x > max_val) {
-            max_val = this->points[i].point.x;
-        }
-    }
-    return max_val;
+
+    VecType min_b, max_b;
+    this->get_min_max(min_b, max_b, p_use_smoothed);
+    return max_b.x;
 }
 
 template <typename T>
@@ -115,7 +126,7 @@ Spline1D<T> Spline1D<T>::create_equidistant(size_t p_count, CurveType p_type) {
     Spline1D<T> spline;
     if (p_count < 2) p_count = 2;
 
-    T inv = static_cast<T>(1.0) / static_cast<T>(p_count - 1);
+    const T inv = static_cast<T>(1.0) / static_cast<T>(p_count - 1);
     for (size_t i = 0; i < p_count; ++i) {
         spline.add_point(VecType(inv * static_cast<T>(i)), p_type);
     }

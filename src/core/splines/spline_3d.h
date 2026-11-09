@@ -1,57 +1,46 @@
 #pragma once
 
 #include "spline_base.h"
+#include "../geometry/parallel_transport_3d.h"
 #include <vector>
 
 namespace ideam::core {
 
 /**
  * Spline3D
- * Represents a curve in 3D space. Includes spatial transformation 
- * utilities and hierarchical proximity lookups.
+ * Represents a curve in 3D space. Includes spatial transformation
+ * utilities, hierarchical proximity lookups, and twist-free Bishop frame generation.
  */
 template <typename T = float>
 class Spline3D : public SplineBase<3, T> {
 public:
-    using VecType = typename SplineBase<3, T>::VecType;
+    using VecType   = typename SplineBase<3, T>::VecType;
+    using FrameType = CurveFrame3DPOD<T>;
 
     Spline3D() = default;
-    virtual ~Spline3D() = default;
+    ~Spline3D() override = default;
 
-    // --- 3D Spline Evaluation ---
-
-    /**
-     * Subdivides the spline into a dense array of flattened line segments.
-     * Required for generating processable paths or drawing debug lines.
-     */
-    [[nodiscard]] std::vector<VecType> get_smoothed_points(int p_max_subdivisions = 10) const;
-
-    // --- Spatial Queries ---
+    // --- 3D Parallel Transport / Moving Frames (Backed by ParallelTransport3D<T>) ---
 
     /**
-     * Calculates the Axis-Aligned Bounding Box (AABB) of the spline.
-     * @param r_min The minimum bounds will be written here.
-     * @param r_max The maximum bounds will be written here.
-     * @param p_use_smoothed If true, evaluates the actual curve rather than just the anchors.
+     * Generates a twist-free sequence of Rotation-Minimizing Bishop Frames along the 3D spline
+     * using exact analytic section tangents (`evaluate_section_derivative`).
      */
-    void get_min_max(VecType& r_min, VecType& r_max, bool p_use_smoothed = false) const;
-
-    /**
-     * Uses hierarchical sampling to estimate the closest point on the continuous spline 
-     * to a given coordinate in 3D space.
-     */
-    [[nodiscard]] VecType get_closest_point_on_spline(const VecType& p_point, int p_samples = 10, int* r_closest_anchor_before = nullptr) const;
+    [[nodiscard]] std::vector<FrameType> compute_bishop_frames(
+        int p_subdivisions_per_section = 10,
+        const VecType& p_initial_up = VecType(static_cast<T>(0), static_cast<T>(1), static_cast<T>(0))
+    ) const;
 
     // --- Spatial Transformations ---
 
     /**
-     * Rotates all control points around the calculated center of the spline's bounding box[cite: 1].
+     * Rotates all control points and handles around the center of the spline's bounding box.
      * @param p_euler_angles Rotation in radians (X, Y, Z).
      */
     void rotate_spline(const VecType& p_euler_angles);
 
     /**
-     * Scales all control points outward/inward relative to the spline's bounding box center[cite: 1].
+     * Scales all control points and handles outward/inward relative to the spline's bounding box center.
      */
     void scale_spline(const VecType& p_scale);
 };
