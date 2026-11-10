@@ -1,5 +1,6 @@
 #include "spline_resource.h"
 #include "ideam_splines_plugin.h"
+#include "../geometry/ideam_geometry_plugin.h"
 
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/variant/callable.hpp>
@@ -24,15 +25,6 @@ void SplineResource::_bind_methods() {
     // --- Signals ---
     ADD_SIGNAL(MethodInfo("structure_changed"));
     ADD_SIGNAL(MethodInfo("section_weights_changed"));
-
-    // --- Undo/Redo Injection Property (Hidden from Inspector UI & .tres serialization) ---
-    ClassDB::bind_method(D_METHOD("set_undo_redo", "undo_redo"), &SplineResource::set_undo_redo);
-    ClassDB::bind_method(D_METHOD("get_undo_redo"), &SplineResource::get_undo_redo);
-    ADD_PROPERTY(
-        PropertyInfo(Variant::OBJECT, "undo_redo", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE),
-        "set_undo_redo",
-        "get_undo_redo"
-    );
 
     // --- Dimension & Counts ---
     ClassDB::bind_method(D_METHOD("get_dimension"), &SplineResource::get_dimension);
@@ -133,9 +125,6 @@ void SplineResource::_bind_methods() {
         "get_section_weights_array"
     );
 
-    ClassDB::bind_method(D_METHOD("get_snapshot_state"), &SplineResource::get_snapshot_state);
-    ClassDB::bind_method(D_METHOD("apply_snapshot_state", "state"), &SplineResource::apply_snapshot_state);
-
     // --- Shared Undo/Redo Commit Actions ---
     ClassDB::bind_method(D_METHOD("commit_set_wrap", "wrap"), &SplineResource::commit_set_wrap);
     ClassDB::bind_method(D_METHOD("commit_set_section_curve_type", "section_index", "type"), &SplineResource::commit_set_section_curve_type);
@@ -144,28 +133,11 @@ void SplineResource::_bind_methods() {
     ClassDB::bind_method(D_METHOD("commit_set_point_use_fore_handle", "index", "enable"), &SplineResource::commit_set_point_use_fore_handle);
     ClassDB::bind_method(D_METHOD("commit_remove_point", "index"), &SplineResource::commit_remove_point);
     ClassDB::bind_method(D_METHOD("commit_clear"), &SplineResource::commit_clear);
-    ClassDB::bind_method(
-        D_METHOD("commit_snapshot_action", "action_name", "before_state", "after_state"),
-        &SplineResource::commit_snapshot_action
-    );
 }
 
-SplineResource::SplineResource() {
-    undo_redo.instantiate();
-}
+SplineResource::SplineResource() = default;
 
-SplineResource::~SplineResource() {
-}
-
-void SplineResource::set_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo) {
-    if (p_undo_redo.is_valid()) {
-        undo_redo = p_undo_redo;
-    }
-}
-
-godot::Ref<IdeamUndoRedo> SplineResource::get_undo_redo() const {
-    return _resolve_undo_redo();
-}
+SplineResource::~SplineResource() = default;
 
 godot::Ref<IdeamUndoRedo> SplineResource::_resolve_undo_redo() const {
     if (undo_redo.is_null()) {
@@ -173,8 +145,10 @@ godot::Ref<IdeamUndoRedo> SplineResource::_resolve_undo_redo() const {
     }
 #ifdef TOOLS_ENABLED
     if (godot::Engine::get_singleton() && godot::Engine::get_singleton()->is_editor_hint()) {
-        if (godot::EditorUndoRedoManager *ed_ur = IdeamSplinesPlugin::get_static_undo_redo()) {
-            undo_redo->set_editor_undo_redo(ed_ur);
+        if (godot::EditorUndoRedoManager *sp_ur = IdeamSplinesPlugin::get_static_undo_redo()) {
+            undo_redo->set_editor_undo_redo(sp_ur);
+        } else if (godot::EditorUndoRedoManager *geom_ur = IdeamGeometryPlugin::get_static_undo_redo()) {
+            undo_redo->set_editor_undo_redo(geom_ur);
         }
     }
 #endif
@@ -254,18 +228,6 @@ void SplineResource::commit_clear() {
     clear();
     const godot::Dictionary after = get_snapshot_state();
     commit_snapshot_action("Clear Spline", before, after);
-}
-
-void SplineResource::commit_snapshot_action(
-    const godot::String &p_action_name,
-    const godot::Dictionary &p_before_state,
-    const godot::Dictionary &p_after_state
-) {
-    godot::Ref<IdeamUndoRedo> ur = _resolve_undo_redo();
-    ur->create_action(p_action_name, godot::UndoRedo::MERGE_DISABLE, this);
-    ur->add_do_method(godot::Callable(this, "apply_snapshot_state").bind(p_after_state));
-    ur->add_undo_method(godot::Callable(this, "apply_snapshot_state").bind(p_before_state));
-    ur->commit_action(true);
 }
 
 } // namespace ideam::godot_ext

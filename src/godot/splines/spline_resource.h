@@ -5,18 +5,11 @@
  * Abstract Godot Resource base class shared across Spline1DResource, Spline2DResource,
  * Spline3DResource, and Spline4DResource.
  *
- * Centralizes all dimension-agnostic spline state and tooling protocols:
- *   1. Godot-exposed CurveType (`SplineCurveType`) and handle bitmask (`SplineHandleFlags`) enums.
- *   2. Shared topological queries & mutators (`wrap`, `default_curve_type`, `default_weight`,
- *      per-section `curve_type`, `weight`, and `length`, per-point `use_back_handle` / `use_fore_handle`,
- *      `remove_point`, `clear`, and `get_section_at_percent`).
- *   3. Compact packed-array serialization helpers (`handle_flags`, `section_types`, `section_weights`).
- *   4. Unified `IdeamUndoRedo` integration (pre-instantiated so `IdeamEditorInspectorPlugin::_parse_begin`
- *      always detects a non-NIL `undo_redo` property, with automatic fallback to `IdeamSplinesPlugin`
- *      in the Editor and runtime `UndoRedo` in-game) plus `commit_*` action wrappers.
+ * Inherits from `GeometryResource` (`src/godot/geometry/geometry_resource.h`) so all
+ * splines share the unified `IdeamUndoRedo` injection and snapshot serialization protocol
+ * with `Polygon2DResource`, `VoronoiDiagram2DResource`, `SDFGrid2DResource`, and `TilingResource`.
  */
 
-#include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
@@ -26,7 +19,7 @@
 #include <godot_cpp/variant/vector2.hpp>
 
 #include "../../core/splines/spline_base.h"
-#include "../utilities/ideam_undo_redo.h"
+#include "../geometry/geometry_resource.h"
 
 namespace ideam::godot_ext {
 
@@ -51,38 +44,25 @@ enum SplineHandleFlags : uint8_t {
     HANDLE_USE_BOTH = HANDLE_USE_BACK | HANDLE_USE_FORE
 };
 
-class SplineResource : public godot::Resource {
-    GDCLASS(SplineResource, godot::Resource)
+class SplineResource : public GeometryResource {
+    GDCLASS(SplineResource, GeometryResource)
 
 protected:
     static void _bind_methods();
 
-    // Pre-instantiated so IdeamEditorInspectorPlugin::_parse_begin sees a non-NIL property
-    // and injects EditorUndoRedoManager when inspected in the Editor.
-    mutable godot::Ref<IdeamUndoRedo> undo_redo;
-
-    /**
-     * Ensures `undo_redo` is valid and (when running in the Godot Editor) bound to
-     * `IdeamSplinesPlugin::get_static_undo_redo()` if not already injected.
-     */
-    godot::Ref<IdeamUndoRedo> _resolve_undo_redo() const;
+    godot::Ref<IdeamUndoRedo> _resolve_undo_redo() const override;
 
 public:
     SplineResource();
     ~SplineResource() override;
 
     // ========================================================================
-    // Undo/Redo Injection & Management
-    // ========================================================================
-
-    void set_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo);
-    godot::Ref<IdeamUndoRedo> get_undo_redo() const;
-
-    // ========================================================================
     // Dimension-Agnostic Virtual Interface (Implemented by 1D..4D Subclasses)
     // ========================================================================
 
     [[nodiscard]] virtual int get_dimension() const { return 0; }
+    [[nodiscard]] int get_geometry_dimension() const override { return get_dimension(); }
+
     [[nodiscard]] virtual int get_point_count() const { return 0; }
     [[nodiscard]] virtual int get_length() const { return 0; }
     [[nodiscard]] virtual int get_section_count() const { return 0; }
@@ -172,13 +152,6 @@ public:
     [[nodiscard]] virtual godot::PackedFloat32Array get_section_weights_array() const { return {}; }
     virtual void set_section_weights_array(const godot::PackedFloat32Array &p_weights) {}
 
-    /**
-     * Captures or restores the complete serialized state of the spline as a Dictionary.
-     * Used by undo/redo snapshot transactions (e.g., committing a continuous gizmo/control drag).
-     */
-    [[nodiscard]] virtual godot::Dictionary get_snapshot_state() const { return {}; }
-    virtual void apply_snapshot_state(const godot::Dictionary &p_state) {}
-
     // ========================================================================
     // Shared Undo/Redo Commit Wrappers
     // ========================================================================
@@ -190,11 +163,6 @@ public:
     void commit_set_point_use_fore_handle(int p_index, bool p_enable);
     void commit_remove_point(int p_index);
     void commit_clear();
-    void commit_snapshot_action(
-        const godot::String &p_action_name,
-        const godot::Dictionary &p_before_state,
-        const godot::Dictionary &p_after_state
-    );
 };
 
 } // namespace ideam::godot_ext

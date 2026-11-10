@@ -6,6 +6,7 @@
  *
  * Responsibilities:
  *   - Manages the "IdeamSplines" active-plugin handshake in `.ideam_registry.cfg`.
+ *   - Registers `SplinesTaskDomainPack` with `IdeamTaskRegistry` when `IdeamTasks` is active.
  *   - Exposes static EditorUndoRedoManager and IdeamUndoRedo helpers for SplineResource,
  *     Controls, Inspectors, and 3D Gizmos.
  *   - Registers all four dimensional spline resource inspectors (`Spline1DResourceInspector`,
@@ -47,10 +48,6 @@ private:
     godot::Ref<Spline3DResourceInspector> spline_3d_inspector;
     godot::Ref<Spline4DResourceInspector> spline_4d_inspector;
 
-    // [FUTURE PHASE] 3D & 4D Viewport Gizmo Plugin References:
-    // godot::Ref<Spline3DGizmo> spline_3d_gizmo_plugin;
-    // godot::Ref<Spline4DGizmo> spline_4d_gizmo_plugin;
-
 public:
     IdeamSplinesPlugin();
     ~IdeamSplinesPlugin() override;
@@ -61,8 +58,11 @@ public:
     void _enter_tree() override;
     void _exit_tree() override;
 
-    // --- Cross-Plugin Ecosystem Queries ---
+    // --- Cross-Plugin Ecosystem & TaskDomainPack Handshake ---
     [[nodiscard]] godot::StringName get_plugin_domain_name() const { return godot::StringName("IdeamSplines"); }
+    void register_task_domain_pack();
+
+    [[nodiscard]] bool is_geometry_handshake_available() const { return is_plugin_active("IdeamGeometry"); }
     [[nodiscard]] bool is_tiles_handshake_available() const { return is_plugin_active("IdeamTiles"); }
     [[nodiscard]] bool is_tasks_handshake_available() const { return is_plugin_active("IdeamTasks"); }
 

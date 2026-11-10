@@ -1,5 +1,8 @@
 #include "ideam_splines_plugin.h"
 
+#include "../../core/tasks/domains/splines/registration/splines_task_domain_pack.h"
+#include "../../core/tasks/registration/ideam_task_registry.h"
+
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -8,6 +11,8 @@ IdeamSplinesPlugin *IdeamSplinesPlugin::singleton = nullptr;
 
 void IdeamSplinesPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("get_plugin_domain_name"), &IdeamSplinesPlugin::get_plugin_domain_name);
+    godot::ClassDB::bind_method(godot::D_METHOD("register_task_domain_pack"), &IdeamSplinesPlugin::register_task_domain_pack);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_geometry_handshake_available"), &IdeamSplinesPlugin::is_geometry_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tiles_handshake_available"), &IdeamSplinesPlugin::is_tiles_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamSplinesPlugin::is_tasks_handshake_available);
 
@@ -40,9 +45,13 @@ IdeamSplinesPlugin::~IdeamSplinesPlugin() {
 void IdeamSplinesPlugin::_enter_tree() {
     validate_script_templates();
 
-    // 1. Ecosystem Handshake: Announce IdeamSplines is active
+    // 1. Ecosystem Handshake: Announce IdeamSplines is active & register SplinesTaskDomainPack
     set_plugin_active("IdeamSplines", true);
     register_to_ecosystem("WizardSettings", "IdeamSplines", godot::String(SPLINES_SETTINGS_PATH.data()));
+    register_to_ecosystem("TaskManifests", "IdeamSplines", godot::String(core::SplinesTaskDomainPack::MANIFEST_PATH));
+    if (is_plugin_active("IdeamTasks")) {
+        register_task_domain_pack();
+    }
 
     // 2. Instantiate and register all 1D-4D Spline Resource Inspector Plugins
     spline_1d_inspector.instantiate();
@@ -56,10 +65,6 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     spline_4d_inspector.instantiate();
     add_inspector_plugin(spline_4d_inspector);
-
-    // [FUTURE PHASE] 3D/4D Viewport Gizmos & SplineDOD TaskDomainPack Registration:
-    // - Register Spline3DGizmo and Spline4DGizmo via add_node_3d_gizmo_plugin().
-    // - If is_plugin_active("IdeamTasks"), register SplinesTaskDomainPack.
 }
 
 void IdeamSplinesPlugin::_exit_tree() {
@@ -80,10 +85,19 @@ void IdeamSplinesPlugin::_exit_tree() {
         spline_1d_inspector.unref();
     }
 
-    // [FUTURE PHASE] Unregister 3D/4D gizmos and task domain packs here.
-
-    // Ecosystem Handshake: Mark IdeamSplines inactive
     set_plugin_active("IdeamSplines", false);
+    if (auto *task_reg = core::IdeamTaskRegistry::get_singleton()) {
+        task_reg->set_domain_pack_active("IdeamSplines", false);
+    }
+}
+
+void IdeamSplinesPlugin::register_task_domain_pack() {
+    if (auto *task_reg = core::IdeamTaskRegistry::get_singleton()) {
+        if (!task_reg->has_domain_pack("IdeamSplines")) {
+            core::SplinesTaskDomainPack::register_domain();
+        }
+        task_reg->set_domain_pack_active("IdeamSplines", true);
+    }
 }
 
 #ifdef TOOLS_ENABLED

@@ -108,8 +108,22 @@
 // --- Task registration ---
 #include "core/tasks/registration/ideam_task_registry.h"
 #include "core/tasks/registration/task_manifest.h"
+#include "core/tasks/domains/geometry/registration/geometry_task_domain_pack.h"
+#include "core/tasks/domains/splines/registration/splines_task_domain_pack.h"
+#include "core/tasks/domains/tiles/registration/tiles_task_domain_pack.h"
 
-// --- Splines ---
+// --- Geometry (Shared Resources, 2D Canvas Base, DOD Bridge, Inspectors & Plugin) ---
+#include "godot/geometry/geometry_resource.h"
+#include "godot/geometry/resources/polygon_2d_resource.h"
+#include "godot/geometry/resources/voronoi_diagram_2d_resource.h"
+#include "godot/geometry/resources/sdf_grid_2d_resource.h"
+#include "godot/geometry/ui/geometry_canvas_2d_base.h"
+#include "godot/geometry/editor/geometry_editor_inspector_base.h"
+#include "godot/geometry/ideam_geometry_plugin.h"
+#include "godot/tasks/domains/geometry/data_oriented_geometry.h"
+#include "godot/tasks/domains/geometry/geometry_task_host.h"
+
+// --- Splines (Resources, SceneTree Nodes, DOD Bridge, UI & Plugin) ---
 #include "godot/splines/spline_resource.h"
 #include "godot/splines/ui/spline_canvas_base.h"
 #include "godot/splines/ui/spline_control_base.h"
@@ -139,13 +153,26 @@
 #include "godot/splines/editor/spline_3d_resource_inspector.h"
 #include "godot/splines/editor/spline_4d_resource_inspector.h"
 #include "godot/splines/ideam_splines_plugin.h"
+#include "godot/tasks/domains/splines/data_oriented_splines.h"
+#include "godot/tasks/domains/splines/spline_task_host.h"
 
-// --- Tiles (Resources & SceneTree Nodes) ---
+// --- Tiles (Resources, SceneTree Nodes, DOD Bridge, UI Controls, Inspectors & Plugin) ---
 #include "godot/tiles/tiling_resource.h"
 #include "godot/tiles/wallpaper_tiling_resource.h"
 #include "godot/tiles/composite_tiling_resource.h"
 #include "godot/tiles/tiling_region_node_2d.h"
 #include "godot/tiles/tiling_surface_node_3d.h"
+#include "godot/tiles/ui/tile_fundamental_domain_canvas.h"
+#include "godot/tiles/ui/tiling_region_preview_canvas.h"
+#include "godot/tiles/ui/wallpaper_group_selector_control.h"
+#include "godot/tiles/ui/wallpaper_tiling_control.h"
+#include "godot/tiles/ui/composite_tiling_control.h"
+#include "godot/tiles/editor/tiling_editor_inspector_base.h"
+#include "godot/tiles/editor/wallpaper_tiling_resource_inspector.h"
+#include "godot/tiles/editor/composite_tiling_resource_inspector.h"
+#include "godot/tiles/ideam_tiles_plugin.h"
+#include "godot/tasks/domains/tiles/data_oriented_tiling.h"
+#include "godot/tasks/domains/tiles/tile_task_host.h"
 
 // --- Narratives ---
 #include "godot/narratives/narreme.h"
@@ -327,12 +354,25 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::EntryFillTaskResource);
         GDREGISTER_CLASS(ideam::godot_ext::EntryFillTaskGraphNode);
 
-        // --- Splines (Resources, SceneTree Nodes & Runtime/Editor UI Controls) ---
+        // --- Geometry (Base Resource, Shared Geometry Resources, DOD Bridge & Base 2D Canvas) ---
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::GeometryResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Polygon2DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::VoronoiDiagram2DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedGeometry);
+        GDREGISTER_CLASS(ideam::godot_ext::GeometryTaskHost);
+
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::GeometryCanvas2DBase);
+        GDREGISTER_CLASS(ideam::godot_ext::Polygon2DCanvas);
+
+        // --- Splines (Resources, SceneTree Nodes, DOD Bridge & Runtime/Editor UI Controls) ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineResource);
         GDREGISTER_CLASS(ideam::godot_ext::Spline1DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Spline2DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Spline3DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Spline4DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedSplines);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineTaskHost);
 
         GDREGISTER_CLASS(ideam::godot_ext::SplineNode);
         GDREGISTER_CLASS(ideam::godot_ext::SplineNode2D);
@@ -353,12 +393,20 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Spline4DWChannelCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::Spline4DControl);
 
-        // --- Tiles (Resources & SceneTree Nodes) ---
+        // --- Tiles (Resources, SceneTree Nodes, DOD Bridge & Runtime/Editor UI Controls) ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::TilingResource);
         GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingResource);
         GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingResource);
         GDREGISTER_CLASS(ideam::godot_ext::TilingRegionNode2D);
         GDREGISTER_CLASS(ideam::godot_ext::TilingSurfaceNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedTiling);
+        GDREGISTER_CLASS(ideam::godot_ext::TileTaskHost);
+
+        GDREGISTER_CLASS(ideam::godot_ext::TileFundamentalDomainCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::TilingRegionPreviewCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::WallpaperGroupSelectorControl);
+        GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingControl);
+        GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingControl);
 
         // --- Narratives ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::Narreme);
@@ -429,6 +477,9 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         // --- Native Task Registration ---
         IdeamTaskRegistry::init();
+        GeometryTaskDomainPack::register_domain();
+        SplinesTaskDomainPack::register_domain();
+        TilesTaskDomainPack::register_domain();
     }
 
     // ========================================================================
@@ -453,6 +504,11 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::TaskGraphInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamTasksPlugin);
 
+        // Geometry tooling (Base Inspector must be registered before Splines/Tiles Inspectors)
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::GeometryEditorInspectorBase);
+        GDREGISTER_CLASS(ideam::godot_ext::Polygon2DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamGeometryPlugin);
+
         // Splines tooling
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SplineEditorInspectorBase);
         GDREGISTER_CLASS(ideam::godot_ext::Spline1DResourceInspector);
@@ -460,6 +516,12 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Spline3DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::Spline4DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamSplinesPlugin);
+
+        // Tiles tooling
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::TilingEditorInspectorBase);
+        GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamTilesPlugin);
 
         // --- Games Editors ---
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentEditorInspectorPlugin);

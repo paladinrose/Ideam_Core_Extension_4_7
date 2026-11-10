@@ -5,18 +5,11 @@
  * Abstract Godot Resource base class shared across `WallpaperTilingResource` and
  * `CompositeTilingResource` (`src/godot/tiles/`).
  *
- * Mirrors the exact architectural conventions of `SplineResource` (`src/godot/splines/spline_resource.h`):
- *   1. Godot-exposed enums (`WallpaperGroupType`, `TilingAuthoringModeType`, `TilingShapePresetType`,
- *      `TilingEdgeShapeType`, `TilingCoverageModeType`, `TilingStitchModeType`, `TilingPortDirectionType`)
- *      mapped 1:1 to `ideam::core` enums in `src/core/geometry/symmetry_2d.h` and `src/core/tiles/tile_common.h`.
- *   2. Pre-instantiated `mutable godot::Ref<IdeamUndoRedo> undo_redo` property so
- *      `IdeamEditorInspectorPlugin::_parse_begin` automatically injects `EditorUndoRedoManager`
- *      when inspected in the Godot Editor, while falling back cleanly to runtime `UndoRedo` in-game.
- *   3. Snapshot dictionary serialization (`get_snapshot_state`, `apply_snapshot_state`) and
- *      `commit_snapshot_action` for single-step Undo/Redo of continuous canvas/gizmo drags.
+ * Inherits from `GeometryResource` (`src/godot/geometry/geometry_resource.h`) so all
+ * tiling resources share the unified `IdeamUndoRedo` injection and snapshot serialization
+ * protocol with `Polygon2DResource`, `VoronoiDiagram2DResource`, and `SplineResource`.
  */
 
-#include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_int32_array.hpp>
@@ -25,7 +18,7 @@
 
 #include "../../core/geometry/symmetry_2d.h"
 #include "../../core/tiles/tile_common.h"
-#include "../utilities/ideam_undo_redo.h"
+#include "../geometry/geometry_resource.h"
 
 namespace ideam::godot_ext {
 
@@ -86,7 +79,7 @@ enum TilingShapePresetType : int32_t {
 };
 
 /**
- * Godot-facing enum for `core::TactileEdgeShape` (`J`, `U`, `S`, `I`).
+ * Godot-facing enum for `core::TactileEdgeShape` (`J, U, S, I`).
  */
 enum TilingEdgeShapeType : int32_t {
     EDGE_SHAPE_J = static_cast<int32_t>(core::TactileEdgeShape::EDGE_J),
@@ -96,77 +89,60 @@ enum TilingEdgeShapeType : int32_t {
 };
 
 /**
- * Godot-facing enum for `core::TilingCoverageMode`.
+ * Godot-facing enum for `core::TilingBoundaryCoverageMode`.
  */
 enum TilingCoverageModeType : int32_t {
-    COVERAGE_STRICT_INTERIOR      = static_cast<int32_t>(core::TilingCoverageMode::STRICT_INTERIOR),
-    COVERAGE_CENTROID_INSIDE      = static_cast<int32_t>(core::TilingCoverageMode::CENTROID_INSIDE),
-    COVERAGE_INCLUDE_STRADDLING   = static_cast<int32_t>(core::TilingCoverageMode::INCLUDE_STRADDLING),
-    COVERAGE_CLIP_EXACT_TO_SPLINE = static_cast<int32_t>(core::TilingCoverageMode::CLIP_EXACT_TO_SPLINE)
+    COVERAGE_STRICT_INTERIOR       = static_cast<int32_t>(core::TilingBoundaryCoverageMode::STRICT_INTERIOR),
+    COVERAGE_CENTROID_INSIDE       = static_cast<int32_t>(core::TilingBoundaryCoverageMode::CENTROID_INSIDE),
+    COVERAGE_INCLUDE_STRADDLING    = static_cast<int32_t>(core::TilingBoundaryCoverageMode::INCLUDE_STRADDLING),
+    COVERAGE_CLIP_EXACT_TO_SPLINE  = static_cast<int32_t>(core::TilingBoundaryCoverageMode::CLIP_EXACT_TO_SPLINE)
 };
 
 /**
- * Godot-facing enum for `core::TilingStitchMode`.
+ * Godot-facing enum for `core::TilingSeamStitchMode`.
  */
 enum TilingStitchModeType : int32_t {
-    STITCH_QUAD_BRIDGE              = static_cast<int32_t>(core::TilingStitchMode::QUAD_BRIDGE),
-    STITCH_TOPOLOGICAL_SEAM_WELD    = static_cast<int32_t>(core::TilingStitchMode::TOPOLOGICAL_SEAM_WELD),
-    STITCH_CURVILINEAR_METRIC_MORPH = static_cast<int32_t>(core::TilingStitchMode::CURVILINEAR_METRIC_MORPH)
+    STITCH_QUAD_BRIDGE              = static_cast<int32_t>(core::TilingSeamStitchMode::QUAD_BRIDGE_CELLS),
+    STITCH_TOPOLOGICAL_SEAM_WELD    = static_cast<int32_t>(core::TilingSeamStitchMode::TOPOLOGICAL_SEAM_WELD),
+    STITCH_CURVILINEAR_METRIC_MORPH = static_cast<int32_t>(core::TilingSeamStitchMode::CURVILINEAR_METRIC_MORPH)
 };
 
 /**
- * Godot-facing enum for `core::TilePortDirection`.
+ * Godot-facing enum for `core::TileEdgePortDirection` (`SymmetryNeighbor.Direction`).
  */
 enum TilingPortDirectionType : int32_t {
-    PORT_DIR_FREE     = static_cast<int32_t>(core::TilePortDirection::PORT_FREE),
-    PORT_DIR_IN_ONLY  = static_cast<int32_t>(core::TilePortDirection::PORT_IN_ONLY),
-    PORT_DIR_OUT_ONLY = static_cast<int32_t>(core::TilePortDirection::PORT_OUT_ONLY),
-    PORT_DIR_CLOSED   = static_cast<int32_t>(core::TilePortDirection::PORT_CLOSED)
+    PORT_DIR_FREE     = static_cast<int32_t>(core::TileEdgePortDirection::BIDIRECTIONAL),
+    PORT_DIR_IN_ONLY  = static_cast<int32_t>(core::TileEdgePortDirection::IN_ONLY),
+    PORT_DIR_OUT_ONLY = static_cast<int32_t>(core::TileEdgePortDirection::OUT_ONLY),
+    PORT_DIR_CLOSED   = static_cast<int32_t>(core::TileEdgePortDirection::CLOSED)
 };
 
-class TilingResource : public godot::Resource {
-    GDCLASS(TilingResource, godot::Resource)
+class TilingResource : public GeometryResource {
+    GDCLASS(TilingResource, GeometryResource)
 
 protected:
     static void _bind_methods();
-
-    // Pre-instantiated so IdeamEditorInspectorPlugin::_parse_begin detects a non-NIL `undo_redo`
-    // property and injects EditorUndoRedoManager when inspected in the Editor.
-    mutable godot::Ref<IdeamUndoRedo> undo_redo;
-
-    [[nodiscard]] godot::Ref<IdeamUndoRedo> _resolve_undo_redo() const;
 
 public:
     TilingResource();
     ~TilingResource() override;
 
-    // --- Undo/Redo Injection & Management ---
-    void set_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo);
-    [[nodiscard]] godot::Ref<IdeamUndoRedo> get_undo_redo() const;
+    [[nodiscard]] int get_geometry_dimension() const override { return 2; }
 
-    // --- Shared Polymorphic Tiling Interface ---
+    // ========================================================================
+    // Shared Polymorphic Tiling Interface
+    // ========================================================================
+
     [[nodiscard]] virtual int get_vertex_count() const { return 0; }
     [[nodiscard]] virtual int get_aspect_count() const { return 0; }
     [[nodiscard]] virtual int get_edge_shape_count() const { return 0; }
 
     [[nodiscard]] virtual godot::PackedVector2Array get_prototile_outline(int p_subdivisions = 12) const {
-        (void)p_subdivisions;
         return {};
     }
     [[nodiscard]] virtual godot::PackedInt32Array get_prototile_triangles(int p_subdivisions = 12) const {
-        (void)p_subdivisions;
         return {};
     }
-
-    // --- Snapshot State & Undo/Redo Transaction Helpers ---
-    [[nodiscard]] virtual godot::Dictionary get_snapshot_state() const { return {}; }
-    virtual void apply_snapshot_state(const godot::Dictionary &p_state) { (void)p_state; }
-
-    void commit_snapshot_action(
-        const godot::String &p_action_name,
-        const godot::Dictionary &p_before_state,
-        const godot::Dictionary &p_after_state
-    );
 };
 
 } // namespace ideam::godot_ext

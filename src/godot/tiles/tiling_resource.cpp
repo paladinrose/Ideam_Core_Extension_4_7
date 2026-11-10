@@ -1,7 +1,5 @@
 #include "tiling_resource.h"
 
-#include <godot_cpp/variant/callable.hpp>
-
 namespace ideam::godot_ext {
 
 void TilingResource::_bind_methods() {
@@ -71,15 +69,6 @@ void TilingResource::_bind_methods() {
     ADD_SIGNAL(MethodInfo("topology_changed"));
     ADD_SIGNAL(MethodInfo("prototile_changed"));
 
-    // --- Undo/Redo Injection Property (Hidden from Inspector & .tres serialization) ---
-    ClassDB::bind_method(D_METHOD("set_undo_redo", "undo_redo"), &TilingResource::set_undo_redo);
-    ClassDB::bind_method(D_METHOD("get_undo_redo"), &TilingResource::get_undo_redo);
-    ADD_PROPERTY(
-        PropertyInfo(Variant::OBJECT, "undo_redo", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE),
-        "set_undo_redo",
-        "get_undo_redo"
-    );
-
     // --- Shared Polymorphic Methods ---
     ClassDB::bind_method(D_METHOD("get_vertex_count"), &TilingResource::get_vertex_count);
     ClassDB::bind_method(D_METHOD("get_aspect_count"), &TilingResource::get_aspect_count);
@@ -94,48 +83,10 @@ void TilingResource::_bind_methods() {
         &TilingResource::get_prototile_triangles,
         DEFVAL(12)
     );
-
-    ClassDB::bind_method(D_METHOD("get_snapshot_state"), &TilingResource::get_snapshot_state);
-    ClassDB::bind_method(D_METHOD("apply_snapshot_state", "state"), &TilingResource::apply_snapshot_state);
-    ClassDB::bind_method(
-        D_METHOD("commit_snapshot_action", "action_name", "before_state", "after_state"),
-        &TilingResource::commit_snapshot_action
-    );
 }
 
-TilingResource::TilingResource() {
-    undo_redo.instantiate();
-}
+TilingResource::TilingResource() = default;
 
 TilingResource::~TilingResource() = default;
-
-void TilingResource::set_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo) {
-    if (p_undo_redo.is_valid()) {
-        undo_redo = p_undo_redo;
-    }
-}
-
-godot::Ref<IdeamUndoRedo> TilingResource::get_undo_redo() const {
-    return _resolve_undo_redo();
-}
-
-godot::Ref<IdeamUndoRedo> TilingResource::_resolve_undo_redo() const {
-    if (undo_redo.is_null()) {
-        undo_redo.instantiate();
-    }
-    return undo_redo;
-}
-
-void TilingResource::commit_snapshot_action(
-    const godot::String &p_action_name,
-    const godot::Dictionary &p_before_state,
-    const godot::Dictionary &p_after_state
-) {
-    godot::Ref<IdeamUndoRedo> ur = _resolve_undo_redo();
-    ur->create_action(p_action_name, godot::UndoRedo::MERGE_DISABLE, this);
-    ur->add_do_method(godot::Callable(this, "apply_snapshot_state").bind(p_after_state));
-    ur->add_undo_method(godot::Callable(this, "apply_snapshot_state").bind(p_before_state));
-    ur->commit_action(true);
-}
 
 } // namespace ideam::godot_ext
