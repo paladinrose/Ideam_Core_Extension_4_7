@@ -39,6 +39,7 @@ struct alignas(64) StencilConvolutionTransformLogic {
     static constexpr size_t transient_workspace_bytes = KernelSize * sizeof(T);
 
     static constexpr std::string_view display_name = "Stencil Convolution";
+    static constexpr std::string_view ui_category  = "Math";
     
     // --- Configuration ---
     uint32_t grid_buffer_id = INVALID_ID;

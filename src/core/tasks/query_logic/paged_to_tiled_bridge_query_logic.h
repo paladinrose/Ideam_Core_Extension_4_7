@@ -35,6 +35,7 @@ struct PagedToTiledBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Paged to Tiled Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
     
     const MemoryBufferSelectionPOD* source_selection = nullptr; 
     uint32_t target_buffer_id = 0;

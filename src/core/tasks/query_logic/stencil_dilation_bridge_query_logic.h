@@ -39,6 +39,7 @@ struct StencilDilationBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Stencil Dilation Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
     
     int32_t radius = 1;
 

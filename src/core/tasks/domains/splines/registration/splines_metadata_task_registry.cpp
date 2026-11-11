@@ -1,51 +1,81 @@
 #include "splines_metadata_task_registry.h"
-#include "../metadata_logic/spline_arc_length_lut_metadata_logic.h"
-#include "../../../metadata_task.h"
-
-#include <godot_cpp/variant/packed_int64_array.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
+#include "splines_metadata_logic_sub_registry.h"
+#include <utility>
 
 namespace ideam::core {
 
-const std::array<LogicVariantGroup, SplinesMetadataTaskRegistry::STORAGE_COUNT>
-SplinesMetadataTaskRegistry::logic_variants = {{
+// --- Populate the Variant Map ---
+const std::array<LogicVariantGroup, SplinesMetadataTaskRegistry::STORAGE_COUNT> SplinesMetadataTaskRegistry::logic_variants = {{
+    // SplineArcLengthLUT (0)
     { true, 1, nullptr }
 }};
 
-void SplinesMetadataTaskRegistry::init_execution_routing() {}
+std::array<const SplinesMetadataTaskRegistry::SubMatrix*, SplinesMetadataTaskRegistry::STORAGE_COUNT> SplinesMetadataTaskRegistry::logic_matrices = {};
 
-void SplinesMetadataTaskRegistry::cleanup_execution_routing() {}
+namespace { // Translation Unit Firewall
+    // --- Execution Routing (Fast Path) ---
+    template <size_t... Is>
+    void init_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (SplinesMetadataLogicSubRegistry<static_cast<SplinesMetadataLogicID>(Is)>::init_execution_routing(), ...);
+        ((SplinesMetadataTaskRegistry::logic_matrices[Is] = &SplinesMetadataLogicSubRegistry<static_cast<SplinesMetadataLogicID>(Is)>::factories), ...);
+    }
 
-void SplinesMetadataTaskRegistry::generate_ui_matrices(godot::Dictionary &p_matrix) {
-    godot::StringName key("0");
-    godot::Dictionary dict;
-    dict["properties"] = SplineArcLengthLUTMetadataLogic<>::get_ui_properties();
-    dict["name"]       = godot::String(SplineArcLengthLUTMetadataLogic<>::display_name.data());
-    dict["category"]   = godot::String(SplineArcLengthLUTMetadataLogic<>::ui_category.data());
+    template <size_t... Is>
+    void cleanup_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (SplinesMetadataLogicSubRegistry<static_cast<SplinesMetadataLogicID>(Is)>::cleanup_execution_routing(), ...);
+    }
 
-    godot::PackedInt64Array combos;
-    const size_t flat_idx =
-        static_cast<size_t>(MemoryView::StencilView) * (S_COUNT * T_COUNT) +
-        static_cast<size_t>(MemoryStrategy::FlatStrategy) * T_COUNT +
-        static_cast<size_t>(MemoryTypes::INT32);
-    combos.push_back(static_cast<int64_t>(flat_idx));
-    dict["valid_combinations"] = combos;
-    p_matrix[key] = dict;
+    // --- UI Matrices (Heavy Path) ---
+    template <size_t... Is>
+    void generate_ui_all_sub_registries(godot::Dictionary& p_matrix, std::index_sequence<Is...>) {
+        (void)p_matrix;
+        (SplinesMetadataLogicSubRegistry<static_cast<SplinesMetadataLogicID>(Is)>::generate_ui_matrices(p_matrix), ...);
+    }
+} // namespace
+
+void SplinesMetadataTaskRegistry::init_execution_routing() {
+    // Compiles into consecutive fast-path init calls and pointer assignments
+    init_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
 }
 
+void SplinesMetadataTaskRegistry::cleanup_execution_routing() {
+    cleanup_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
+    logic_matrices.fill(nullptr);
+}
+
+void SplinesMetadataTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
+    IdeamTaskRegistry::log_with_registry("  -> SplinesMetadataTaskRegistry: Unrolling templates for L_COUNT = " + godot::itos(L_COUNT));
+    // Rips through valid template permutations to build the Godot Inspector UI
+    generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
+    IdeamTaskRegistry::log_with_registry("  -> SplinesMetadataTaskRegistry: Template unrolling complete.");
+}
+
+// --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> SplinesMetadataTaskRegistry::create(
     uint32_t p_logic_id,
     uint32_t p_view_id,
     uint32_t p_strategy_id,
     uint32_t p_type_id
 ) {
-    (void)p_view_id;
-    (void)p_strategy_id;
-    (void)p_type_id;
-    if (p_logic_id == static_cast<uint32_t>(SplinesMetadataLogicID::SplineArcLengthLUT)) {
-        return std::make_unique<MetadataTask<SplineArcLengthLUTMetadataLogic<>>>();
+    if (p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
+        return nullptr;
     }
+
+    // 1. O(1) Cache-line hit for the sub-registry pointer
+    const SubMatrix* sub_matrix = logic_matrices[p_logic_id];
+    if (!sub_matrix) return nullptr;
+
+    // 2. O(1) Flat Index Math (Dropped the L dimension)
+    size_t flat_idx =
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
+        p_type_id;
+
+    // 3. Hot-path instantiation
+    if ((*sub_matrix)[flat_idx]) {
+        return std::unique_ptr<INativeTask>((*sub_matrix)[flat_idx]());
+    }
+
     return nullptr;
 }
 

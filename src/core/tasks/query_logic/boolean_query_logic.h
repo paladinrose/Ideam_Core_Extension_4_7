@@ -36,6 +36,7 @@ struct BooleanQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Boolean";
+    static constexpr std::string_view ui_category  = "Value";
     
     uint32_t target_buffer_id = 0;
     uint32_t column_id   = 0; 

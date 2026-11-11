@@ -28,6 +28,7 @@ struct HierarchicalBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Hierarchical Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
 
     // --- State Payload ---
     const MemoryBufferSelectionPOD* parent_selection = nullptr;

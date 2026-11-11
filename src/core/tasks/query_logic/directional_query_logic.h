@@ -33,6 +33,7 @@ struct DirectionalQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Directional";
+    static constexpr std::string_view ui_category  = "Spatial";
     
     enum class Comparison : uint8_t { WITHIN_ANGLE, OUTSIDE_ANGLE, FACING_EACH_OTHER, PERPENDICULAR };
 

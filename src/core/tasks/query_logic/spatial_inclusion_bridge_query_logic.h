@@ -37,6 +37,7 @@ struct SpatialInclusionBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Spatial Inclusion Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
     
     const MemoryBufferSelectionPOD* source_selection = nullptr; // The active Field grid
     uint32_t target_buffer_id = 0;

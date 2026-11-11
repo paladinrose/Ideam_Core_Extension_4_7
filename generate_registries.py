@@ -3,11 +3,55 @@ from pathlib import Path
 import re
 
 
+# Explicit overrides for multi-variant headers or non-standard enum suffixes
+EXACT_ENUM_OVERRIDES: dict[str, str] = {
+    "morphological_static": "Morphological_Static",
+    "dsu_cluster_static": "DSUCluster_Static",
+    "stencil_convolution": "Stencil_",
+    "image_palette_lut": "ImagePaletteLut",
+    "tiling_instance": "TilingInstanceTransform",
+}
+
+# Standard acronym tokens that remain uppercase inside PascalCase LogicID enums
+ACRONYM_MAP: dict[str, str] = {
+    "aabb": "AABB",
+    "rgba": "RGBA",
+    "hsva": "HSVA",
+    "dsu": "DSU",
+    "lod": "LOD",
+    "cpu": "CPU",
+    "gpu": "GPU",
+    "ik": "IK",
+    "uv": "UV",
+    "csg": "CSG",
+    "sdf": "SDF",
+    "lut": "LUT",
+    "astar": "AStar",
+    "1d": "1D",
+    "2d": "2D",
+    "3d": "3D",
+    "4d": "4D",
+    "spatial2d": "Spatial2D",
+    "spatial3d": "Spatial3D",
+    "spatial4d": "Spatial4D",
+    "wfc": "WFC",
+    "edt": "EDT",
+    "fft": "FFT",
+    "pde": "PDE",
+    "xpbd": "XPBD",
+    "obb": "OBB",
+    "rd": "RD",
+    "ssbo": "SSBO",
+}
+
+
 def get_enum_name(base_name: str) -> str:
-  """Converts a snake_case filename to the PascalCase LogicID enum."""
-  if base_name == "aabb":
-    return "AABB"
-  return "".join(word.capitalize() for word in base_name.split("_"))
+  """Converts a snake_case logic base name to the exact PascalCase LogicID enum."""
+  if base_name in EXACT_ENUM_OVERRIDES:
+    return EXACT_ENUM_OVERRIDES[base_name]
+  return "".join(
+      ACRONYM_MAP.get(word, word.capitalize()) for word in base_name.split("_")
+  )
 
 
 def increment_manifest_version(
@@ -48,16 +92,21 @@ def increment_manifest_version(
 def verify_registration_coverage(
     base_dir: Path, target: dict, logic_files: list[Path]
 ) -> int:
-  """Checks if every logic header has a matching enum entry and resolver specialization."""
+  """Checks if every logic header has a matching enum entry and resolver/dispatch specialization."""
   reg_header = base_dir / "registration" / target["registry_header"]
   sub_reg_header = base_dir / "registration" / target["header_include"]
+  reg_cpp = reg_header.with_suffix(".cpp")
 
   reg_text = reg_header.read_text(encoding="utf-8") if reg_header.exists() else ""
-  sub_reg_text = (
-      sub_reg_header.read_text(encoding="utf-8")
-      if sub_reg_header.exists()
-      else ""
-  )
+  if sub_reg_header.exists():
+    dispatch_text = sub_reg_header.read_text(encoding="utf-8")
+    dispatch_source_name = sub_reg_header.name
+  elif reg_cpp.exists():
+    dispatch_text = reg_cpp.read_text(encoding="utf-8")
+    dispatch_source_name = reg_cpp.name
+  else:
+    dispatch_text = ""
+    dispatch_source_name = target["header_include"]
 
   warnings = 0
   for logic_path in sorted(logic_files):
@@ -76,10 +125,10 @@ def verify_registration_coverage(
     resolver_pattern = re.compile(
         rf"{re.escape(target['enum_prefix'])}::{re.escape(enum_id)}"
     )
-    if sub_reg_text and not resolver_pattern.search(sub_reg_text):
+    if dispatch_text and not resolver_pattern.search(dispatch_text):
       print(
           f"  [WARN] {logic_path.name}: '{target['enum_prefix']}::{enum_id}'"
-          f" specialization not found in {sub_reg_header.name}"
+          f" specialization/dispatch not found in {dispatch_source_name}"
       )
       warnings += 1
 
@@ -205,6 +254,126 @@ DOMAINS = [
             },
         ],
     },
+    {
+        "domain_name": "IdeamGeometry",
+        "base_dir": Path("src/core/tasks/domains/geometry"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/geometry/registration/geometry_task_domain_pack.h"
+        ),
+        "version_const": "GEOMETRY_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Geometry Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "geometry_query_task_registry.h",
+                "header_include": "geometry_query_logic_sub_registry.h",
+                "enum_prefix": "GeometryQueryLogicID",
+                "struct_prefix": "GeometryQueryLogicSubRegistry",
+            },
+            {
+                "name": "Geometry Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "geometry_metadata_task_registry.h",
+                "header_include": "geometry_metadata_logic_sub_registry.h",
+                "enum_prefix": "GeometryMetadataLogicID",
+                "struct_prefix": "GeometryMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Geometry Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "geometry_transform_task_registry.h",
+                "header_include": "geometry_transform_logic_sub_registry.h",
+                "enum_prefix": "GeometryTransformLogicID",
+                "struct_prefix": "GeometryTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamSplines",
+        "base_dir": Path("src/core/tasks/domains/splines"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/splines/registration/splines_task_domain_pack.h"
+        ),
+        "version_const": "SPLINES_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Splines Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "splines_query_task_registry.h",
+                "header_include": "splines_query_logic_sub_registry.h",
+                "enum_prefix": "SplinesQueryLogicID",
+                "struct_prefix": "SplinesQueryLogicSubRegistry",
+            },
+            {
+                "name": "Splines Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "splines_metadata_task_registry.h",
+                "header_include": "splines_metadata_logic_sub_registry.h",
+                "enum_prefix": "SplinesMetadataLogicID",
+                "struct_prefix": "SplinesMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Splines Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "splines_transform_task_registry.h",
+                "header_include": "splines_transform_logic_sub_registry.h",
+                "enum_prefix": "SplinesTransformLogicID",
+                "struct_prefix": "SplinesTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamTiles",
+        "base_dir": Path("src/core/tasks/domains/tiles"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/tiles/registration/tiles_task_domain_pack.h"
+        ),
+        "version_const": "TILES_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Tiles Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "tiles_query_task_registry.h",
+                "header_include": "tiles_query_logic_sub_registry.h",
+                "enum_prefix": "TilesQueryLogicID",
+                "struct_prefix": "TilesQueryLogicSubRegistry",
+            },
+            {
+                "name": "Tiles Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "tiles_metadata_task_registry.h",
+                "header_include": "tiles_metadata_logic_sub_registry.h",
+                "enum_prefix": "TilesMetadataLogicID",
+                "struct_prefix": "TilesMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Tiles Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "tiles_transform_task_registry.h",
+                "header_include": "tiles_transform_logic_sub_registry.h",
+                "enum_prefix": "TilesTransformLogicID",
+                "struct_prefix": "TilesTransformLogicSubRegistry",
+            },
+        ],
+    },
 ]
 
 
@@ -245,10 +414,7 @@ def main():
 
       logic_dir = base_dir / target["logic_dir"]
       reg_dir = base_dir / "registration" / target["reg_dir"]
-
-      if not args.check:
-        logic_dir.mkdir(parents=True, exist_ok=True)
-        reg_dir.mkdir(parents=True, exist_ok=True)
+      sub_reg_header = base_dir / "registration" / target["header_include"]
 
       search_pattern = f"*{target['suffix']}.h"
       logic_files = sorted(logic_dir.glob(search_pattern)) if logic_dir.exists() else []
@@ -262,7 +428,25 @@ def main():
       )
 
       if args.check:
+        print(
+            f"Verified {len(logic_files)} logic header(s) for {target['name']}."
+        )
         continue
+
+      # If the domain uses direct dispatch in *_task_registry.cpp rather than a
+      # *_logic_sub_registry.h header, skip generating *_sub_registry.cpp files
+      # that would #include a non-existent sub-registry header.
+      if not sub_reg_header.exists():
+        print(
+            f"[DIRECT DISPATCH] {sub_reg_header.name} not present; verified"
+            f" {len(logic_files)} task(s) directly in"
+            f" {target['registry_header']}."
+        )
+        domain_skipped += len(logic_files)
+        continue
+
+      logic_dir.mkdir(parents=True, exist_ok=True)
+      reg_dir.mkdir(parents=True, exist_ok=True)
 
       generated_count = 0
       skipped_count = 0

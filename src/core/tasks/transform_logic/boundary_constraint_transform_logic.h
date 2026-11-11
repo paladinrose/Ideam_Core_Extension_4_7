@@ -40,6 +40,7 @@ struct alignas(64) BoundaryConstraintTransformLogic {
     static constexpr size_t transient_workspace_bytes     = 0;
 
     static constexpr std::string_view display_name = "Boundary Constraint";
+    static constexpr std::string_view ui_category  = "Spatial";
     
     // --- Configuration ---
     uint32_t position_buffer_id = INVALID_ID;

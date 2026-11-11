@@ -42,6 +42,7 @@ struct AABBQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "AABB";
+    static constexpr std::string_view ui_category  = "Spatial";
     
     godot::Vector3 box_min;
     godot::Vector3 box_max;

@@ -37,6 +37,7 @@ struct ArchetypeQueryLogic {
     static constexpr size_t MAX_SIGNATURE_SIZE = 16;
     
     static constexpr std::string_view display_name = "Archetype";
+    static constexpr std::string_view ui_category  = "ECS";
     
     uint32_t target_buffer_id = 0; 
     uint32_t required_buffer_ids[MAX_SIGNATURE_SIZE] = {0};

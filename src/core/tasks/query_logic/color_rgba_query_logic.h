@@ -32,6 +32,7 @@ struct ColorRGBAQueryLogic {
     static constexpr bool supports_addition = true;
     
     static constexpr std::string_view display_name = "Color RGBA";
+    static constexpr std::string_view ui_category  = "Image";
     
     enum class RgbaMode : uint8_t {
         CHANNELS,

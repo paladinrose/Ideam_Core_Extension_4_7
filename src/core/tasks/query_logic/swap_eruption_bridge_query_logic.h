@@ -36,6 +36,7 @@ struct SwapEruptionBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Swap Eruption Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
     
     uint32_t target_buffer_id = 0;
     uint32_t source_column_id = 0;

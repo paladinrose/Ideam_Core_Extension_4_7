@@ -1,91 +1,88 @@
 #include "geometry_transform_task_registry.h"
-#include "../transform_logic/polygon_triangulate_and_offset_transform_logic.h"
-#include "../transform_logic/csg_clip_and_seam_weld_transform_logic.h"
-#include "../transform_logic/voronoi_delaunay_dual_transform_logic.h"
-#include "../transform_logic/sdf_field_and_contour_transform_logic.h"
-#include "../../../transform_task.h"
-
-#include <godot_cpp/variant/packed_int64_array.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
+#include "geometry_transform_logic_sub_registry.h"
+#include <utility>
 
 namespace ideam::core {
 
-const std::array<LogicVariantGroup, GeometryTransformTaskRegistry::STORAGE_COUNT>
-GeometryTransformTaskRegistry::logic_variants = {{
+// --- Populate the Variant Map ---
+const std::array<LogicVariantGroup, GeometryTransformTaskRegistry::STORAGE_COUNT> GeometryTransformTaskRegistry::logic_variants = {{
+    // PolygonTriangulateAndOffset (0)
     { true, 1, nullptr },
+    // CSGClipAndSeamWeld (1)
     { true, 1, nullptr },
+    // VoronoiDelaunayDual (2)
     { true, 1, nullptr },
+    // SDFFieldAndContour (3)
     { true, 1, nullptr }
 }};
 
-void GeometryTransformTaskRegistry::init_execution_routing() {}
+std::array<const GeometryTransformTaskRegistry::SubMatrix*, GeometryTransformTaskRegistry::STORAGE_COUNT> GeometryTransformTaskRegistry::logic_matrices = {};
 
-void GeometryTransformTaskRegistry::cleanup_execution_routing() {}
+namespace { // Translation Unit Firewall
+    // --- Execution Routing (Fast Path) ---
+    template <size_t... Is>
+    void init_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (GeometryTransformLogicSubRegistry<static_cast<GeometryTransformLogicID>(Is)>::init_execution_routing(), ...);
+        ((GeometryTransformTaskRegistry::logic_matrices[Is] = &GeometryTransformLogicSubRegistry<static_cast<GeometryTransformLogicID>(Is)>::factories), ...);
+    }
 
-namespace {
+    template <size_t... Is>
+    void cleanup_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (GeometryTransformLogicSubRegistry<static_cast<GeometryTransformLogicID>(Is)>::cleanup_execution_routing(), ...);
+    }
 
-template <typename T_Logic>
-void append_transform_ui_entry(
-    godot::Dictionary &r_matrix,
-    GeometryTransformLogicID p_id,
-    MemoryTypes p_default_type
-) {
-    godot::StringName key(godot::String::num_int64(static_cast<int64_t>(p_id)));
-    godot::Dictionary dict;
-    dict["properties"] = T_Logic::get_ui_properties();
-    dict["name"]       = godot::String(T_Logic::display_name.data());
-    dict["category"]   = godot::String(T_Logic::ui_category.data());
-
-    godot::PackedInt64Array combos;
-    const size_t flat_idx =
-        static_cast<size_t>(MemoryView::SingleElementView) *
-            (GeometryTransformTaskRegistry::S_COUNT * GeometryTransformTaskRegistry::T_COUNT) +
-        static_cast<size_t>(MemoryStrategy::FlatStrategy) * GeometryTransformTaskRegistry::T_COUNT +
-        static_cast<size_t>(p_default_type);
-    combos.push_back(static_cast<int64_t>(flat_idx));
-    dict["valid_combinations"] = combos;
-    r_matrix[key] = dict;
-}
-
+    // --- UI Matrices (Heavy Path) ---
+    template <size_t... Is>
+    void generate_ui_all_sub_registries(godot::Dictionary& p_matrix, std::index_sequence<Is...>) {
+        (void)p_matrix;
+        (GeometryTransformLogicSubRegistry<static_cast<GeometryTransformLogicID>(Is)>::generate_ui_matrices(p_matrix), ...);
+    }
 } // namespace
 
-void GeometryTransformTaskRegistry::generate_ui_matrices(godot::Dictionary &p_matrix) {
-    append_transform_ui_entry<PolygonTriangulateAndOffsetTransformLogic<>>(
-        p_matrix, GeometryTransformLogicID::PolygonTriangulateAndOffset, MemoryTypes::INT32
-    );
-    append_transform_ui_entry<CSGClipAndSeamWeldTransformLogic<>>(
-        p_matrix, GeometryTransformLogicID::CSGClipAndSeamWeld, MemoryTypes::INT32
-    );
-    append_transform_ui_entry<VoronoiDelaunayDualTransformLogic<>>(
-        p_matrix, GeometryTransformLogicID::VoronoiDelaunayDual, MemoryTypes::INT32
-    );
-    append_transform_ui_entry<SDFFieldAndContourTransformLogic<>>(
-        p_matrix, GeometryTransformLogicID::SDFFieldAndContour, MemoryTypes::FLOAT32
-    );
+void GeometryTransformTaskRegistry::init_execution_routing() {
+    // Compiles into consecutive fast-path init calls and pointer assignments
+    init_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
 }
 
+void GeometryTransformTaskRegistry::cleanup_execution_routing() {
+    cleanup_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
+    logic_matrices.fill(nullptr);
+}
+
+void GeometryTransformTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
+    IdeamTaskRegistry::log_with_registry("  -> GeometryTransformTaskRegistry: Unrolling templates for L_COUNT = " + godot::itos(L_COUNT));
+    // Rips through valid template permutations to build the Godot Inspector UI
+    generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
+    IdeamTaskRegistry::log_with_registry("  -> GeometryTransformTaskRegistry: Template unrolling complete.");
+}
+
+// --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> GeometryTransformTaskRegistry::create(
     uint32_t p_logic_id,
     uint32_t p_view_id,
     uint32_t p_strategy_id,
     uint32_t p_type_id
 ) {
-    (void)p_view_id;
-    (void)p_strategy_id;
-    (void)p_type_id;
-    switch (static_cast<GeometryTransformLogicID>(p_logic_id)) {
-        case GeometryTransformLogicID::PolygonTriangulateAndOffset:
-            return std::make_unique<TransformTask<PolygonTriangulateAndOffsetTransformLogic<>>>();
-        case GeometryTransformLogicID::CSGClipAndSeamWeld:
-            return std::make_unique<TransformTask<CSGClipAndSeamWeldTransformLogic<>>>();
-        case GeometryTransformLogicID::VoronoiDelaunayDual:
-            return std::make_unique<TransformTask<VoronoiDelaunayDualTransformLogic<>>>();
-        case GeometryTransformLogicID::SDFFieldAndContour:
-            return std::make_unique<TransformTask<SDFFieldAndContourTransformLogic<>>>();
-        default:
-            return nullptr;
+    if (p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
+        return nullptr;
     }
+
+    // 1. O(1) Cache-line hit for the sub-registry pointer
+    const SubMatrix* sub_matrix = logic_matrices[p_logic_id];
+    if (!sub_matrix) return nullptr;
+
+    // 2. O(1) Flat Index Math (Dropped the L dimension)
+    size_t flat_idx =
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
+        p_type_id;
+
+    // 3. Hot-path instantiation
+    if ((*sub_matrix)[flat_idx]) {
+        return std::unique_ptr<INativeTask>((*sub_matrix)[flat_idx]());
+    }
+
+    return nullptr;
 }
 
 } // namespace ideam::core

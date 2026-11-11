@@ -35,6 +35,7 @@ struct alignas(64) PackedArrayExportTransformLogic {
     static constexpr size_t transient_workspace_bytes = 0;
 
     static constexpr std::string_view display_name = "Packed Array Export";
+    static constexpr std::string_view ui_category  = "Memory Routing";
 
     // --- Configuration ---
     uint32_t export_target_buffer_id = INVALID_ID; // The mapped Godot PackedArray

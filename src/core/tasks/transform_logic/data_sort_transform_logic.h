@@ -43,6 +43,7 @@ struct DataSortTransformLogic {
     static constexpr size_t transient_workspace_bytes     = 0; // Output vector is externally provided via Graph Port
     
     static constexpr std::string_view display_name = "Data Sort";
+    static constexpr std::string_view ui_category  = "Memory Routing";
     
     // --- Configuration ---
     SortDirection direction = SortDirection::ASCENDING;

@@ -69,6 +69,7 @@
 #include "godot/memory/grant_part_view.h"
 
 #include "godot/memory/memory_buffer_selection_resource.h"
+#include "godot/memory/memory_buffer_selection_view.h"
 #include "godot/memory/grant_request_window.h"
 #include "godot/memory/memory_inspectors.h"
 
@@ -105,10 +106,12 @@
 #include "godot/tasks/entry_fill_task_graph_node.h"
 #include "godot/tasks/entry_fill_task_resource.h"
 
-// --- Task registration ---
+// --- Task Registration & Domain Packs ---
 #include "core/tasks/registration/ideam_task_registry.h"
 #include "core/tasks/registration/task_manifest.h"
+#include "core/tasks/domains/games/registration/games_task_domain_pack.h"
 #include "core/tasks/domains/geometry/registration/geometry_task_domain_pack.h"
+#include "core/tasks/domains/narratives/registration/narratives_task_domain_pack.h"
 #include "core/tasks/domains/splines/registration/splines_task_domain_pack.h"
 #include "core/tasks/domains/tiles/registration/tiles_task_domain_pack.h"
 
@@ -174,7 +177,7 @@
 #include "godot/tasks/domains/tiles/data_oriented_tiling.h"
 #include "godot/tasks/domains/tiles/tile_task_host.h"
 
-// --- Narratives ---
+// --- Narratives (Resources, Helpers, DOD Bridge & Plugin) ---
 #include "godot/narratives/narreme.h"
 #include "godot/narratives/narremes/character.h"
 #include "godot/narratives/narremes/location.h"
@@ -190,7 +193,11 @@
 #include "godot/narratives/helpers/narrative_condition.h"
 #include "godot/narratives/helpers/plot_event.h"
 
-// --- Games Plugin ---
+#include "godot/narratives/ideam_narratives_plugin.h"
+#include "godot/tasks/domains/narratives/data_oriented_narrative.h"
+#include "godot/tasks/domains/narratives/narrative_task_host.h"
+
+// --- Games Plugin & DOD Bridge ---
 #include "godot/games/ideam_games_plugin.h"
 
 #include "godot/games/game_hub.h"
@@ -213,6 +220,8 @@
 #include "godot/games/game_property_modifier.h"
 
 #include "godot/games/scene_transition.h"
+#include "godot/tasks/domains/games/data_oriented_game.h"
+#include "godot/tasks/domains/games/data_oriented_game_board.h"
 
 // --- Gameplay ---
 #include "godot/games/gameplay/gameplay_resource.h"
@@ -222,6 +231,7 @@
 #include "godot/games/gameplay/gameplay_difficulty.h"
 #include "godot/games/gameplay/gameplay_control_map.h"
 #include "godot/games/gameplay/gameplay_mode.h"
+#include "godot/games/gameplay/gameplay_perspective.h"
 #include "godot/games/gameplay/gameplay_rule.h"
 #include "godot/games/gameplay/gameplay_style.h"
 
@@ -315,6 +325,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::TiledSoAVisualizer);
 
         GDREGISTER_CLASS(ideam::godot_ext::MemoryBufferSelectionResource);
+        GDREGISTER_CLASS(ideam::godot_ext::MemoryBufferSelectionView);
         GDREGISTER_CLASS(ideam::godot_ext::MemoryGrantResource);
         GDREGISTER_CLASS(ideam::godot_ext::MemoryGrantView);
 
@@ -408,10 +419,12 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingControl);
         GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingControl);
 
-        // --- Narratives ---
+        // --- Narratives & DOD Bridge ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::Narreme);
 
         GDREGISTER_CLASS(ideam::godot_ext::Narrative);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedNarrative);
+        GDREGISTER_CLASS(ideam::godot_ext::NarrativeTaskHost);
         GDREGISTER_CLASS(ideam::godot_ext::Character);
         GDREGISTER_CLASS(ideam::godot_ext::Location);
         GDREGISTER_CLASS(ideam::godot_ext::Prop);
@@ -426,15 +439,17 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Narrative_Condition);
         GDREGISTER_CLASS(ideam::godot_ext::Plot_Event);
 
-        // --- Games ---
+        // --- Games & DOD Bridge ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::GameEntity);
         
         GDREGISTER_CLASS(ideam::godot_ext::GameHub);
         GDREGISTER_CLASS(ideam::godot_ext::Game);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedGame);
         GDREGISTER_CLASS(ideam::godot_ext::GamePlayer);
         GDREGISTER_CLASS(ideam::godot_ext::GamePlayerProfile);
         GDREGISTER_CLASS(ideam::godot_ext::GamePlayerManager);
         GDREGISTER_CLASS(ideam::godot_ext::GameBoard);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedGameBoard);
         GDREGISTER_CLASS(ideam::godot_ext::GameAgent);
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentAction);
         GDREGISTER_CLASS(ideam::godot_ext::GamePiece);
@@ -453,6 +468,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GameplayDifficulty);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayControlMap);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayMode);
+        GDREGISTER_CLASS(ideam::godot_ext::GameplayPerspective);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayRule);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayStyle);
 
@@ -475,9 +491,11 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GamePropertyGauge);
         GDREGISTER_CLASS(ideam::godot_ext::PerspectiveFrustumVisualizer);
 
-        // --- Native Task Registration ---
+        // --- Native Task & Domain Pack Registration ---
         IdeamTaskRegistry::init();
+        GamesTaskDomainPack::register_domain();
         GeometryTaskDomainPack::register_domain();
+        NarrativesTaskDomainPack::register_domain();
         SplinesTaskDomainPack::register_domain();
         TilesTaskDomainPack::register_domain();
     }
@@ -522,6 +540,9 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamTilesPlugin);
+
+        // Narratives tooling
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamNarrativesPlugin);
 
         // --- Games Editors ---
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentEditorInspectorPlugin);

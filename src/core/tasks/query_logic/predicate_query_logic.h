@@ -32,6 +32,7 @@ struct PredicateQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Predicate";
+    static constexpr std::string_view ui_category  = "Value";
     
     enum class Comparison : uint8_t { 
         EQUAL, NOT_EQUAL, LESS, LESS_EQUAL, GREATER, GREATER_EQUAL,

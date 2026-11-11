@@ -1,91 +1,88 @@
 #include "tiles_transform_task_registry.h"
-#include "../transform_logic/tiling_instance_transform_logic.h"
-#include "../transform_logic/tiling_boundary_clip_and_seam_stitch_transform_logic.h"
-#include "../transform_logic/tiling_hexize_and_border_extract_transform_logic.h"
-#include "../transform_logic/tiling_quotient_astar_and_flow_field_transform_logic.h"
-#include "../../../transform_task.h"
-
-#include <godot_cpp/variant/packed_int64_array.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
+#include "tiles_transform_logic_sub_registry.h"
+#include <utility>
 
 namespace ideam::core {
 
-const std::array<LogicVariantGroup, TilesTransformTaskRegistry::STORAGE_COUNT>
-TilesTransformTaskRegistry::logic_variants = {{
+// --- Populate the Variant Map ---
+const std::array<LogicVariantGroup, TilesTransformTaskRegistry::STORAGE_COUNT> TilesTransformTaskRegistry::logic_variants = {{
+    // TilingInstanceTransform (0)
     { true, 1, nullptr },
+    // TilingBoundaryClipAndSeamStitch (1)
     { true, 1, nullptr },
+    // TilingHexizeAndBorderExtract (2)
     { true, 1, nullptr },
+    // TilingQuotientAStarAndFlowField (3)
     { true, 1, nullptr }
 }};
 
-void TilesTransformTaskRegistry::init_execution_routing() {}
+std::array<const TilesTransformTaskRegistry::SubMatrix*, TilesTransformTaskRegistry::STORAGE_COUNT> TilesTransformTaskRegistry::logic_matrices = {};
 
-void TilesTransformTaskRegistry::cleanup_execution_routing() {}
+namespace { // Translation Unit Firewall
+    // --- Execution Routing (Fast Path) ---
+    template <size_t... Is>
+    void init_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (TilesTransformLogicSubRegistry<static_cast<TilesTransformLogicID>(Is)>::init_execution_routing(), ...);
+        ((TilesTransformTaskRegistry::logic_matrices[Is] = &TilesTransformLogicSubRegistry<static_cast<TilesTransformLogicID>(Is)>::factories), ...);
+    }
 
-namespace {
+    template <size_t... Is>
+    void cleanup_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (TilesTransformLogicSubRegistry<static_cast<TilesTransformLogicID>(Is)>::cleanup_execution_routing(), ...);
+    }
 
-template <typename T_Logic>
-void append_tiles_transform_ui_entry(
-    godot::Dictionary &r_matrix,
-    TilesTransformLogicID p_id,
-    MemoryTypes p_default_type
-) {
-    godot::StringName key(godot::String::num_int64(static_cast<int64_t>(p_id)));
-    godot::Dictionary dict;
-    dict["properties"] = T_Logic::get_ui_properties();
-    dict["name"]       = godot::String(T_Logic::display_name.data());
-    dict["category"]   = godot::String(T_Logic::ui_category.data());
-
-    godot::PackedInt64Array combos;
-    const size_t flat_idx =
-        static_cast<size_t>(MemoryView::SingleElementView) *
-            (TilesTransformTaskRegistry::S_COUNT * TilesTransformTaskRegistry::T_COUNT) +
-        static_cast<size_t>(MemoryStrategy::FlatStrategy) * TilesTransformTaskRegistry::T_COUNT +
-        static_cast<size_t>(p_default_type);
-    combos.push_back(static_cast<int64_t>(flat_idx));
-    dict["valid_combinations"] = combos;
-    r_matrix[key] = dict;
-}
-
+    // --- UI Matrices (Heavy Path) ---
+    template <size_t... Is>
+    void generate_ui_all_sub_registries(godot::Dictionary& p_matrix, std::index_sequence<Is...>) {
+        (void)p_matrix;
+        (TilesTransformLogicSubRegistry<static_cast<TilesTransformLogicID>(Is)>::generate_ui_matrices(p_matrix), ...);
+    }
 } // namespace
 
-void TilesTransformTaskRegistry::generate_ui_matrices(godot::Dictionary &p_matrix) {
-    append_tiles_transform_ui_entry<TilingInstanceTransformLogic<>>(
-        p_matrix, TilesTransformLogicID::TilingInstanceTransform, MemoryTypes::INT32
-    );
-    append_tiles_transform_ui_entry<TilingBoundaryClipAndSeamStitchTransformLogic<>>(
-        p_matrix, TilesTransformLogicID::TilingBoundaryClipAndSeamStitch, MemoryTypes::INT32
-    );
-    append_tiles_transform_ui_entry<TilingHexizeAndBorderExtractTransformLogic<>>(
-        p_matrix, TilesTransformLogicID::TilingHexizeAndBorderExtract, MemoryTypes::INT32
-    );
-    append_tiles_transform_ui_entry<TilingQuotientAStarAndFlowFieldTransformLogic<>>(
-        p_matrix, TilesTransformLogicID::TilingQuotientAStarAndFlowField, MemoryTypes::INT32
-    );
+void TilesTransformTaskRegistry::init_execution_routing() {
+    // Compiles into consecutive fast-path init calls and pointer assignments
+    init_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
 }
 
+void TilesTransformTaskRegistry::cleanup_execution_routing() {
+    cleanup_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
+    logic_matrices.fill(nullptr);
+}
+
+void TilesTransformTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
+    IdeamTaskRegistry::log_with_registry("  -> TilesTransformTaskRegistry: Unrolling templates for L_COUNT = " + godot::itos(L_COUNT));
+    // Rips through valid template permutations to build the Godot Inspector UI
+    generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
+    IdeamTaskRegistry::log_with_registry("  -> TilesTransformTaskRegistry: Template unrolling complete.");
+}
+
+// --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> TilesTransformTaskRegistry::create(
     uint32_t p_logic_id,
     uint32_t p_view_id,
     uint32_t p_strategy_id,
     uint32_t p_type_id
 ) {
-    (void)p_view_id;
-    (void)p_strategy_id;
-    (void)p_type_id;
-    switch (static_cast<TilesTransformLogicID>(p_logic_id)) {
-        case TilesTransformLogicID::TilingInstanceTransform:
-            return std::make_unique<TransformTask<TilingInstanceTransformLogic<>>>();
-        case TilesTransformLogicID::TilingBoundaryClipAndSeamStitch:
-            return std::make_unique<TransformTask<TilingBoundaryClipAndSeamStitchTransformLogic<>>>();
-        case TilesTransformLogicID::TilingHexizeAndBorderExtract:
-            return std::make_unique<TransformTask<TilingHexizeAndBorderExtractTransformLogic<>>>();
-        case TilesTransformLogicID::TilingQuotientAStarAndFlowField:
-            return std::make_unique<TransformTask<TilingQuotientAStarAndFlowFieldTransformLogic<>>>();
-        default:
-            return nullptr;
+    if (p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
+        return nullptr;
     }
+
+    // 1. O(1) Cache-line hit for the sub-registry pointer
+    const SubMatrix* sub_matrix = logic_matrices[p_logic_id];
+    if (!sub_matrix) return nullptr;
+
+    // 2. O(1) Flat Index Math (Dropped the L dimension)
+    size_t flat_idx =
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
+        p_type_id;
+
+    // 3. Hot-path instantiation
+    if ((*sub_matrix)[flat_idx]) {
+        return std::unique_ptr<INativeTask>((*sub_matrix)[flat_idx]());
+    }
+
+    return nullptr;
 }
 
 } // namespace ideam::core

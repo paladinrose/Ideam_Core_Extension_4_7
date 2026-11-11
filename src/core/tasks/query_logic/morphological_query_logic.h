@@ -41,6 +41,7 @@ struct MorphologicalQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Morphological";
+    static constexpr std::string_view ui_category  = "Stencil";
     
     int32_t radius = 1;
 

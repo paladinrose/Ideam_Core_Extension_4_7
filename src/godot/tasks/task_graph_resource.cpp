@@ -10,6 +10,11 @@
 #include "../../core/tasks/registration/query_task_registry.h"
 #include "../../core/tasks/registration/transform_task_registry.h"
 
+#include <godot_cpp/classes/rd_shader_file.hpp>
+#include <godot_cpp/classes/rd_shader_spirv.hpp>
+#include <godot_cpp/classes/rendering_device.hpp>
+#include <godot_cpp/classes/rendering_server.hpp>
+#include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <algorithm>
 #include <vector>
@@ -30,6 +35,25 @@ inline core::BufferAccessMode resolve_access_mode(int p_ui_access_mode) noexcept
         case 3:  return core::BufferAccessMode::READ_WRITE;
         default: return core::BufferAccessMode::READ;
     }
+}
+
+/**
+ * Extracts a godot::RID from a Variant that may store either a native Variant::RID
+ * or a raw 64-bit integer RID handle (Variant::INT).
+ */
+inline godot::RID extract_rid_from_variant(const godot::Variant& p_var) noexcept {
+    if (p_var.get_type() == godot::Variant::RID) {
+        return p_var;
+    }
+    if (p_var.get_type() == godot::Variant::INT) {
+        const uint64_t raw_id = static_cast<uint64_t>(static_cast<int64_t>(p_var));
+        if (raw_id != 0) {
+            godot::RID rid;
+            *(reinterpret_cast<uint64_t*>(&rid)) = raw_id;
+            return rid;
+        }
+    }
+    return godot::RID();
 }
 
 } // namespace
@@ -413,6 +437,130 @@ std::shared_ptr<core::TaskGraphDOD> TaskGraphResource::compile_to_task_graph(
                         ui_name, "' (class: ", n->get_class(), ", logic_id: ", n->get_logic_id(), ")"
                     );
                 }
+                break;
+            }
+            case core::TaskTypeDOD::COMPUTE_GPU: {
+                godot::RenderingDevice* rd = p_manager ? p_manager->get_rendering_device() : nullptr;
+                if (!rd && godot::RenderingServer::get_singleton()) {
+                    rd = godot::RenderingServer::get_singleton()->get_rendering_device();
+                }
+
+                // 1. Resolve Compute Pipeline RID
+                godot::RID pipeline_rid;
+                if (props.has("pipeline_rid")) {
+                    pipeline_rid = extract_rid_from_variant(props["pipeline_rid"]);
+                } else if (props.has("pipeline_rid_id")) {
+                    pipeline_rid = extract_rid_from_variant(props["pipeline_rid_id"]);
+                }
+
+                if (!pipeline_rid.is_valid() && rd) {
+                    godot::RID shader_rid;
+                    if (props.has("shader_rid")) {
+                        shader_rid = extract_rid_from_variant(props["shader_rid"]);
+                    } else if (props.has("shader_spirv")) {
+                        godot::Ref<godot::RDShaderSPIRV> spirv = props["shader_spirv"];
+                        if (spirv.is_valid()) {
+                            shader_rid = rd->shader_create_from_spirv(spirv);
+                        }
+                    } else {
+                        godot::Ref<godot::RDShaderFile> shader_file;
+                        const char* shader_keys[] = { "shader_file", "compute_shader", "shader_path" };
+                        for (const char* key : shader_keys) {
+                            if (!props.has(key)) continue;
+                            godot::Variant val = props[key];
+                            if (val.get_type() == godot::Variant::OBJECT) {
+                                shader_file = val;
+                            } else if (val.get_type() == godot::Variant::STRING || val.get_type() == godot::Variant::STRING_NAME) {
+                                godot::String path = val;
+                                if (!path.is_empty() && godot::ResourceLoader::get_singleton()) {
+                                    shader_file = godot::ResourceLoader::get_singleton()->load(path);
+                                }
+                            }
+                            if (shader_file.is_valid()) break;
+                        }
+
+                        if (shader_file.is_valid()) {
+                            godot::Ref<godot::RDShaderSPIRV> spirv = shader_file->get_spirv();
+                            if (spirv.is_valid()) {
+                                shader_rid = rd->shader_create_from_spirv(spirv);
+                            }
+                        }
+                    }
+
+                    if (shader_rid.is_valid()) {
+                        pipeline_rid = rd->compute_pipeline_create(shader_rid);
+                    }
+                }
+
+                // 2. Resolve Workgroup Dispatch Dimensions (dx, dy, dz)
+                uint32_t dx = 1;
+                uint32_t dy = 1;
+                uint32_t dz = 1;
+
+                const char* group_vec_keys[] = { "dispatch_groups", "workgroups" };
+                for (const char* key : group_vec_keys) {
+                    if (!props.has(key)) continue;
+                    godot::Variant v = props[key];
+                    if (v.get_type() == godot::Variant::VECTOR3I) {
+                        godot::Vector3i wg = v;
+                        dx = static_cast<uint32_t>(std::max(1, wg.x));
+                        dy = static_cast<uint32_t>(std::max(1, wg.y));
+                        dz = static_cast<uint32_t>(std::max(1, wg.z));
+                        break;
+                    } else if (v.get_type() == godot::Variant::VECTOR3) {
+                        godot::Vector3 wg = v;
+                        dx = static_cast<uint32_t>(std::max(1, static_cast<int>(wg.x)));
+                        dy = static_cast<uint32_t>(std::max(1, static_cast<int>(wg.y)));
+                        dz = static_cast<uint32_t>(std::max(1, static_cast<int>(wg.z)));
+                        break;
+                    }
+                }
+
+                const bool has_explicit_dx = props.has("dispatch_x");
+                if (has_explicit_dx) {
+                    dx = static_cast<uint32_t>(std::max<int64_t>(1, static_cast<int64_t>(props["dispatch_x"])));
+                }
+                if (props.has("dispatch_y")) {
+                    dy = static_cast<uint32_t>(std::max<int64_t>(1, static_cast<int64_t>(props["dispatch_y"])));
+                }
+                if (props.has("dispatch_z")) {
+                    dz = static_cast<uint32_t>(std::max<int64_t>(1, static_cast<int64_t>(props["dispatch_z"])));
+                }
+
+                // Derive 1D workgroup count from primary GrantPart selection when local_size_x is provided
+                const bool auto_dispatch = props.has("auto_dispatch_from_selection")
+                    ? static_cast<bool>(props["auto_dispatch_from_selection"])
+                    : !has_explicit_dx;
+                if (auto_dispatch && !dod_parts.empty() && dod_parts[0].selection.element_count > 0) {
+                    int64_t local_size_x = 0;
+                    if (props.has("local_size_x")) {
+                        local_size_x = static_cast<int64_t>(props["local_size_x"]);
+                    } else if (props.has("workgroup_size_x")) {
+                        local_size_x = static_cast<int64_t>(props["workgroup_size_x"]);
+                    }
+                    if (local_size_x > 0) {
+                        const int64_t elem_count = dod_parts[0].selection.element_count;
+                        dx = static_cast<uint32_t>((elem_count + local_size_x - 1) / local_size_x);
+                    }
+                }
+
+                if (props.has("transient_bytes")) {
+                    const uint32_t transient_req = static_cast<uint32_t>(
+                        std::max<int64_t>(0, static_cast<int64_t>(props["transient_bytes"]))
+                    );
+                    if (transient_req > 0) {
+                        task_graph->set_node_transient_requirement(core_id, transient_req);
+                    }
+                }
+
+                if (!pipeline_rid.is_valid()) {
+                    godot::UtilityFunctions::printerr(
+                        "TaskGraph Compiler: COMPUTE_GPU node '", ui_name,
+                        "' compiled without a valid pipeline_rid (provide 'pipeline_rid', 'shader_rid', 'shader_spirv', or 'shader_file')."
+                    );
+                }
+
+                task_graph->configure_gpu_task(core_id, pipeline_rid, dx, dy, dz);
                 break;
             }
             case core::TaskTypeDOD::GODOT_REFLECTION: {

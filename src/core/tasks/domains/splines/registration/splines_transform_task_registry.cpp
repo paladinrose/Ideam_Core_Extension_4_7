@@ -1,91 +1,88 @@
 #include "splines_transform_task_registry.h"
-#include "../transform_logic/spline_batch_evaluate_transform_logic.h"
-#include "../transform_logic/spline_flatten_to_polyline_transform_logic.h"
-#include "../transform_logic/spline_bishop_frame_sweep_transform_logic.h"
-#include "../transform_logic/spline_closest_point_project_transform_logic.h"
-#include "../../../transform_task.h"
-
-#include <godot_cpp/variant/packed_int64_array.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/string_name.hpp>
+#include "splines_transform_logic_sub_registry.h"
+#include <utility>
 
 namespace ideam::core {
 
-const std::array<LogicVariantGroup, SplinesTransformTaskRegistry::STORAGE_COUNT>
-SplinesTransformTaskRegistry::logic_variants = {{
+// --- Populate the Variant Map ---
+const std::array<LogicVariantGroup, SplinesTransformTaskRegistry::STORAGE_COUNT> SplinesTransformTaskRegistry::logic_variants = {{
+    // SplineBatchEvaluate (0)
     { true, 1, nullptr },
+    // SplineFlattenToPolyline (1)
     { true, 1, nullptr },
+    // SplineBishopFrameSweep (2)
     { true, 1, nullptr },
+    // SplineClosestPointProject (3)
     { true, 1, nullptr }
 }};
 
-void SplinesTransformTaskRegistry::init_execution_routing() {}
+std::array<const SplinesTransformTaskRegistry::SubMatrix*, SplinesTransformTaskRegistry::STORAGE_COUNT> SplinesTransformTaskRegistry::logic_matrices = {};
 
-void SplinesTransformTaskRegistry::cleanup_execution_routing() {}
+namespace { // Translation Unit Firewall
+    // --- Execution Routing (Fast Path) ---
+    template <size_t... Is>
+    void init_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (SplinesTransformLogicSubRegistry<static_cast<SplinesTransformLogicID>(Is)>::init_execution_routing(), ...);
+        ((SplinesTransformTaskRegistry::logic_matrices[Is] = &SplinesTransformLogicSubRegistry<static_cast<SplinesTransformLogicID>(Is)>::factories), ...);
+    }
 
-namespace {
+    template <size_t... Is>
+    void cleanup_routing_all_sub_registries(std::index_sequence<Is...>) {
+        (SplinesTransformLogicSubRegistry<static_cast<SplinesTransformLogicID>(Is)>::cleanup_execution_routing(), ...);
+    }
 
-template <typename T_Logic>
-void append_spline_transform_ui_entry(
-    godot::Dictionary &r_matrix,
-    SplinesTransformLogicID p_id,
-    MemoryTypes p_default_type
-) {
-    godot::StringName key(godot::String::num_int64(static_cast<int64_t>(p_id)));
-    godot::Dictionary dict;
-    dict["properties"] = T_Logic::get_ui_properties();
-    dict["name"]       = godot::String(T_Logic::display_name.data());
-    dict["category"]   = godot::String(T_Logic::ui_category.data());
-
-    godot::PackedInt64Array combos;
-    const size_t flat_idx =
-        static_cast<size_t>(MemoryView::SingleElementView) *
-            (SplinesTransformTaskRegistry::S_COUNT * SplinesTransformTaskRegistry::T_COUNT) +
-        static_cast<size_t>(MemoryStrategy::FlatStrategy) * SplinesTransformTaskRegistry::T_COUNT +
-        static_cast<size_t>(p_default_type);
-    combos.push_back(static_cast<int64_t>(flat_idx));
-    dict["valid_combinations"] = combos;
-    r_matrix[key] = dict;
-}
-
+    // --- UI Matrices (Heavy Path) ---
+    template <size_t... Is>
+    void generate_ui_all_sub_registries(godot::Dictionary& p_matrix, std::index_sequence<Is...>) {
+        (void)p_matrix;
+        (SplinesTransformLogicSubRegistry<static_cast<SplinesTransformLogicID>(Is)>::generate_ui_matrices(p_matrix), ...);
+    }
 } // namespace
 
-void SplinesTransformTaskRegistry::generate_ui_matrices(godot::Dictionary &p_matrix) {
-    append_spline_transform_ui_entry<SplineBatchEvaluateTransformLogic<>>(
-        p_matrix, SplinesTransformLogicID::SplineBatchEvaluate, MemoryTypes::INT32
-    );
-    append_spline_transform_ui_entry<SplineFlattenToPolylineTransformLogic<>>(
-        p_matrix, SplinesTransformLogicID::SplineFlattenToPolyline, MemoryTypes::INT32
-    );
-    append_spline_transform_ui_entry<SplineBishopFrameSweepTransformLogic<>>(
-        p_matrix, SplinesTransformLogicID::SplineBishopFrameSweep, MemoryTypes::INT32
-    );
-    append_spline_transform_ui_entry<SplineClosestPointProjectTransformLogic<>>(
-        p_matrix, SplinesTransformLogicID::SplineClosestPointProject, MemoryTypes::INT32
-    );
+void SplinesTransformTaskRegistry::init_execution_routing() {
+    // Compiles into consecutive fast-path init calls and pointer assignments
+    init_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
 }
 
+void SplinesTransformTaskRegistry::cleanup_execution_routing() {
+    cleanup_routing_all_sub_registries(std::make_index_sequence<L_COUNT>{});
+    logic_matrices.fill(nullptr);
+}
+
+void SplinesTransformTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
+    IdeamTaskRegistry::log_with_registry("  -> SplinesTransformTaskRegistry: Unrolling templates for L_COUNT = " + godot::itos(L_COUNT));
+    // Rips through valid template permutations to build the Godot Inspector UI
+    generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
+    IdeamTaskRegistry::log_with_registry("  -> SplinesTransformTaskRegistry: Template unrolling complete.");
+}
+
+// --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> SplinesTransformTaskRegistry::create(
     uint32_t p_logic_id,
     uint32_t p_view_id,
     uint32_t p_strategy_id,
     uint32_t p_type_id
 ) {
-    (void)p_view_id;
-    (void)p_strategy_id;
-    (void)p_type_id;
-    switch (static_cast<SplinesTransformLogicID>(p_logic_id)) {
-        case SplinesTransformLogicID::SplineBatchEvaluate:
-            return std::make_unique<TransformTask<SplineBatchEvaluateTransformLogic<>>>();
-        case SplinesTransformLogicID::SplineFlattenToPolyline:
-            return std::make_unique<TransformTask<SplineFlattenToPolylineTransformLogic<>>>();
-        case SplinesTransformLogicID::SplineBishopFrameSweep:
-            return std::make_unique<TransformTask<SplineBishopFrameSweepTransformLogic<>>>();
-        case SplinesTransformLogicID::SplineClosestPointProject:
-            return std::make_unique<TransformTask<SplineClosestPointProjectTransformLogic<>>>();
-        default:
-            return nullptr;
+    if (p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
+        return nullptr;
     }
+
+    // 1. O(1) Cache-line hit for the sub-registry pointer
+    const SubMatrix* sub_matrix = logic_matrices[p_logic_id];
+    if (!sub_matrix) return nullptr;
+
+    // 2. O(1) Flat Index Math (Dropped the L dimension)
+    size_t flat_idx =
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
+        p_type_id;
+
+    // 3. Hot-path instantiation
+    if ((*sub_matrix)[flat_idx]) {
+        return std::unique_ptr<INativeTask>((*sub_matrix)[flat_idx]());
+    }
+
+    return nullptr;
 }
 
 } // namespace ideam::core

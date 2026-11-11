@@ -35,6 +35,7 @@ struct alignas(64) DataScatterTransformLogic {
     static constexpr size_t transient_workspace_bytes     = 0;
 
     static constexpr std::string_view display_name = "Data Scatter";
+    static constexpr std::string_view ui_category  = "Memory Routing";
     
     // --- Configuration ---
     uint32_t target_buffer_id = INVALID_ID; 

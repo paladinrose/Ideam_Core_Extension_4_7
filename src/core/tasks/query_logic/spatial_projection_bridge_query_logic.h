@@ -40,6 +40,7 @@ struct SpatialProjectionBridgeQueryLogic {
     static constexpr bool supports_addition = true;
 
     static constexpr std::string_view display_name = "Spatial Projection Bridge";
+    static constexpr std::string_view ui_category  = "Bridge";
     
     const MemoryBufferSelectionPOD* source_selection = nullptr; // Physical objects
     uint32_t target_buffer_id = 0;
