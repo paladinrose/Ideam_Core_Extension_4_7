@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Ideam.Unity.UI.ObjectSelectorField name="GameAssetField" Label="Game Asset" />
-    <ui:Toggle label="Start Game On Load" name="IsStartupGameToggle" />
-    <ui:Button text="Load" display-tooltip-when-elided="true" name="LoadButton" />
-</ui:UXML>

@@ -57,7 +57,7 @@ void RadialContainer3D::refit_children_3d() {
     }
     for (int i = 0; i < n; ++i) {
         if (auto *child = godot::Object::cast_to<godot::Node3D>(get_child(i))) {
-            const float angle = (Math_TAU * static_cast<float>(i)) / static_cast<float>(n);
+            const float angle = (godot::Math::TAU * static_cast<float>(i)) / static_cast<float>(n);
             child->set_position(godot::Vector3(std::cos(angle) * static_cast<float>(radius_), 0.0f, std::sin(angle) * static_cast<float>(radius_)));
         }
     }

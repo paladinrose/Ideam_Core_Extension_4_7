@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Slider picking-mode="Ignore" label="Weight" value="1" high-value="1" name="WeightField" show-input-field="true" />
-    <Ideam.Unity.UI.DropList name="RiggingDrop" Label="Rigging" />
-    <Ideam.Unity.UI.DropList name="GroupsDrop" Label="Groups" />
-    <Ideam.Unity.UI.DropList name="GesturesDrop" Label="Gestures" />
-</ui:UXML>

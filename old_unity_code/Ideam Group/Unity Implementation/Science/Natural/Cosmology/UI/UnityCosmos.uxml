@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <Ideam.Unity.UI.ObjectSelectorField name="CosmicCameraField" Label="Cosmic Camera" />
-    <Ideam.Unity.UI.ObjectSelectorField name="JukeboxField" Label="Cosmic Jukebox" />
-    <Ideam.Unity.UI.ObjectSelectorField name="LanguageAssetField" Label="Cosmic Language Asset" />
-    <Ideam.Unity.UI.DropList name="CosmicObjectSelector" Label="Cosmic Objects" />
-    <ui:VisualElement name="SelectedCosmicObjectElement" />
-    <Ideam.Unity.UI.DropList name="GameSelector" Label="Games" />
-    <ui:VisualElement name="SelectedGameElement" />
-</ui:UXML>
