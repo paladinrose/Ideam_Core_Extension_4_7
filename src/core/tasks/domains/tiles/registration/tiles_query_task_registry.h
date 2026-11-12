@@ -14,6 +14,7 @@ namespace ideam::core {
 // --- Compile-Time Coordinates for IdeamTiles Query Tasks ---
 enum class TilesQueryLogicID : uint32_t {
     TilingLatticeCullAndMask = 0,
+    TilingPieceMovementRuleEval,
     Count
 };
 

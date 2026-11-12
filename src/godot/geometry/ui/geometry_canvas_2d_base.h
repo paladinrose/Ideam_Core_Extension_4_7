@@ -6,8 +6,8 @@
  * in `src/godot/geometry/ui/`.
  *
  * Serves as the shared 2D visual canvas engine across all geometry-centric Ideam plugins:
- *   1. `Polygon2DCanvas` (`src/godot/geometry/ui/`): Direct 2D polygon vertex & ear-clipped
- *      triangulation editor (`POINT_STYLE_SQUARE`, `DRAG_AXIS_FREE_2D`).
+ *   1. `Polygon2DCanvas`, `Voronoi2DCanvas`, `SDFGrid2DCanvas`, `GeometryCSGPreviewCanvas`
+ *      (`src/godot/geometry/ui/`).
  *   2. `SplineCanvasBase` (`src/godot/splines/ui/`): Base for `Spline1DEqualizerCanvas`,
  *      `Spline2DCanvas`, and `Spline4DWChannelCanvas`.
  *   3. `TileFundamentalDomainCanvas` & `TilingRegionPreviewCanvas` (`src/godot/tiles/ui/`):
@@ -51,7 +51,7 @@ enum GeometryCanvasAxisConstraint : int32_t {
  * Visual rendering style for anchor points on the canvas.
  */
 enum GeometryCanvasPointStyle : int32_t {
-    GEOM_POINT_STYLE_CIRCLE    = 0, // Circular Bezier/Catmull-Rom control point (Spline2D)
+    GEOM_POINT_STYLE_CIRCLE    = 0, // Circular Bezier/Catmull-Rom control point (Spline2D, Voronoi2D)
     GEOM_POINT_STYLE_SQUARE    = 1, // Crisp square vertex (Polygon2D, Tile Fundamental Domain)
     GEOM_POINT_STYLE_FADER_CAP = 2  // Graphic-equalizer horizontal slider cap + vertical slot track (Spline1D)
 };
@@ -66,7 +66,7 @@ protected:
         BASE_DRAG_POINT,
         BASE_DRAG_BACK_HANDLE,
         BASE_DRAG_FORE_HANDLE,
-        BASE_DRAG_CUSTOM // Delegated to subclass (e.g. symmetry axis handle, section weight divider)
+        BASE_DRAG_CUSTOM // Delegated to subclass (e.g. symmetry axis handle, SDF brush stroke, seam drag)
     };
 
     static void _bind_methods();
@@ -144,6 +144,7 @@ protected:
     [[nodiscard]] virtual int _get_canvas_point_count() const { return 0; }
     [[nodiscard]] virtual int _get_canvas_section_count() const { return 0; }
     [[nodiscard]] virtual bool _is_canvas_wrapped() const { return false; }
+    [[nodiscard]] virtual bool _has_non_point_content() const { return false; }
 
     [[nodiscard]] virtual godot::Vector2 _get_point_world_pos(int p_index) const = 0;
     virtual void _set_point_world_pos(int p_index, const godot::Vector2 &p_world_pos) = 0;
@@ -271,6 +272,9 @@ public:
     void set_show_grid(bool p_show);
     [[nodiscard]] bool get_show_grid() const noexcept { return show_grid; }
 
+    void set_show_point_labels(bool p_show);
+    [[nodiscard]] bool get_show_point_labels() const noexcept { return show_point_labels; }
+
     // --- Selection ---
     void set_selected_point_index(int p_index);
     [[nodiscard]] int get_selected_point_index() const noexcept { return selected_point_index; }
@@ -282,15 +286,21 @@ public:
 /**
  * Polygon2DCanvas
  * Concrete 2D interactive polygon canvas (`src/godot/geometry/ui/`) built on `GeometryCanvas2DBase`.
- * Renders ear-clipped polygon triangulation, centroid marker, signed area telemetry, and
- * supports double-click vertex insertion and right-click vertex deletion with Undo/Redo.
+ * Renders ear-clipped polygon triangulation, centroid marker, convex hull overlay, live offset
+ * contour preview (`compute_offset_polygon`), and supports double-click vertex insertion and
+ * right-click vertex deletion with Undo/Redo.
  */
 class Polygon2DCanvas : public GeometryCanvas2DBase {
     GDCLASS(Polygon2DCanvas, GeometryCanvas2DBase)
 
 private:
-    bool show_triangulation_ = true;
-    bool show_centroid_      = true;
+    bool show_triangulation_  = true;
+    bool show_centroid_       = true;
+    bool show_convex_hull_    = false;
+    bool show_offset_preview_ = false;
+    real_t preview_offset_delta_             = static_cast<real_t>(0.1);
+    GeometryJoinStyle2D preview_join_style_  = JOIN_STYLE_MITER;
+    real_t preview_miter_limit_              = static_cast<real_t>(2.0);
 
 protected:
     static void _bind_methods();
@@ -328,6 +338,21 @@ public:
 
     void set_show_centroid(bool p_show);
     [[nodiscard]] bool get_show_centroid() const noexcept { return show_centroid_; }
+
+    void set_show_convex_hull(bool p_show);
+    [[nodiscard]] bool get_show_convex_hull() const noexcept { return show_convex_hull_; }
+
+    void set_show_offset_preview(bool p_show);
+    [[nodiscard]] bool get_show_offset_preview() const noexcept { return show_offset_preview_; }
+
+    void set_preview_offset_params(
+        real_t p_delta,
+        GeometryJoinStyle2D p_join = JOIN_STYLE_MITER,
+        real_t p_miter_limit = static_cast<real_t>(2.0)
+    );
+    [[nodiscard]] real_t get_preview_offset_delta() const noexcept { return preview_offset_delta_; }
+    [[nodiscard]] GeometryJoinStyle2D get_preview_join_style() const noexcept { return preview_join_style_; }
+    [[nodiscard]] real_t get_preview_miter_limit() const noexcept { return preview_miter_limit_; }
 };
 
 } // namespace ideam::godot_ext

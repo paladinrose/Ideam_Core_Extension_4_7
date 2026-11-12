@@ -14,38 +14,57 @@ namespace { // Translation Unit Firewall
 
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, MetadataTaskRegistry::L_COUNT> MetadataTaskRegistry::logic_variants = {{
+    // AudioFrequencyOctaveBand
+    { true, 1, nullptr },
+    // BoneInfluenceGroupMask
+    { true, 1, nullptr },
+
     // DSUCluster_Static_Moore_R1
     { true, 2, dsu_static_labels },
     // DSUCluster_Static_VonNeumann_R1
     { false, 0, nullptr },
-    
+
     // DSUCluster
-    { true, 1, nullptr }, // Standard 1-to-1 logic mapping, no dropdown needed
-    
+    { true, 1, nullptr },
+
+    // GeodesicRing
+    { true, 1, nullptr },
+
     // GroupMask_1Bit
     { true, 4, group_mask_labels },
     // GroupMask_2Bit, 3Bit, 4Bit
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
-    
+
     // LOD_1Level
     { true, 4, lod_labels },
     // LOD_2Level, 3Level, 4Level
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
-    
+
+    // MaterialVariantBucket
+    { true, 1, nullptr },
+    // MeshConnectedIslands
+    { true, 1, nullptr },
+    // ParticleCameraDepthBucket
+    { true, 1, nullptr },
+
     // Partition_1
     { true, 4, partition_labels },
     // Partition_2, 3, 4
     { false, 0, nullptr },
     { false, 0, nullptr },
-    { false, 0, nullptr }
+    { false, 0, nullptr },
+
+    // PhysicsCollisionLayerAndIsland
+    { true, 1, nullptr },
+    // RDWorkgroupTilePartition
+    { true, 1, nullptr }
 }};
 
 std::array<const MetadataTaskRegistry::SubMatrix*, MetadataTaskRegistry::L_COUNT> MetadataTaskRegistry::logic_matrices = {};
-
 
 namespace { // Translation Unit Firewall
     // --- Execution Routing (Fast Path) ---
@@ -84,7 +103,6 @@ void MetadataTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
     IdeamTaskRegistry::log_with_registry("  -> MetadataTaskRegistry: Template unrolling complete.");
 }
 
-
 // --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> MetadataTaskRegistry::create(uint32_t p_logic_id, uint32_t p_view_id, uint32_t p_strategy_id, uint32_t p_type_id) {
     if (p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
@@ -96,9 +114,9 @@ std::unique_ptr<INativeTask> MetadataTaskRegistry::create(uint32_t p_logic_id, u
     if (!sub_matrix) return nullptr;
 
     // 2. O(1) Flat Index Math (Dropped the L dimension)
-    size_t flat_idx = 
-        p_view_id * (S_COUNT * T_COUNT) + 
-        p_strategy_id * (T_COUNT) + 
+    size_t flat_idx =
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
         p_type_id;
 
     if ((*sub_matrix)[flat_idx]) {

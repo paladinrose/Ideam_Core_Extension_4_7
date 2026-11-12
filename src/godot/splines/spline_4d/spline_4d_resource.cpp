@@ -88,6 +88,14 @@ void Spline4DResource::_bind_methods() {
         DEFVAL(true)
     );
 
+    ClassDB::bind_method(D_METHOD("set_color_gradient_mode", "enabled"), &Spline4DResource::set_color_gradient_mode);
+    ClassDB::bind_method(D_METHOD("get_color_gradient_mode"), &Spline4DResource::get_color_gradient_mode);
+    ADD_PROPERTY(
+        PropertyInfo(Variant::BOOL, "color_gradient_mode"),
+        "set_color_gradient_mode",
+        "get_color_gradient_mode"
+    );
+
     // --- 4D Serialized Packed Arrays ---
     ADD_GROUP("Serialized Arrays", "");
 
@@ -250,6 +258,12 @@ int Spline4DResource::get_length() const {
 
 int Spline4DResource::get_section_count() const {
     return static_cast<int>(core_spline.get_section_count());
+}
+
+void Spline4DResource::set_color_gradient_mode(bool p_enabled) {
+    if (color_gradient_mode == p_enabled) return;
+    color_gradient_mode = p_enabled;
+    emit_changed();
 }
 
 void Spline4DResource::set_wrap(bool p_wrap) {
@@ -762,7 +776,8 @@ void Spline4DResource::set_section_weights_array(const godot::PackedFloat32Array
 
 godot::Dictionary Spline4DResource::get_snapshot_state() const {
     godot::Dictionary state;
-    state["wrap"]               = get_wrap();
+    state["wrap"]                = get_wrap();
+    state["color_gradient_mode"] = color_gradient_mode;
     state["default_curve_type"] = static_cast<int>(get_default_curve_type());
     state["default_weight"]     = get_default_weight();
     state["points"]             = get_points_array();
@@ -793,6 +808,9 @@ void Spline4DResource::apply_snapshot_state(const godot::Dictionary &p_state) {
     }
     if (p_state.has("wrap")) {
         set_wrap(static_cast<bool>(p_state["wrap"]));
+    }
+    if (p_state.has("color_gradient_mode")) {
+        color_gradient_mode = static_cast<bool>(p_state["color_gradient_mode"]);
     }
     _apply_pending_arrays();
     emit_signal("structure_changed");
@@ -1069,6 +1087,7 @@ void Spline4DResource::setup_color_gradient(
         );
     }
 
+    color_gradient_mode = true;
     if (p_convert_to_hsva) {
         core_spline = CoreSpline::create_gradient(cols);
     } else {

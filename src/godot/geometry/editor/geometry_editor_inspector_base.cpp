@@ -3,6 +3,9 @@
 #include "../geometry_resource.h"
 #include "../ideam_geometry_plugin.h"
 #include "../ui/geometry_canvas_2d_base.h"
+#include "../ui/polygon_2d_control.h"
+#include "../ui/voronoi_2d_canvas.h"
+#include "../ui/sdf_grid_2d_canvas.h"
 #include "../../splines/ideam_splines_plugin.h"
 #include "../../tiles/ideam_tiles_plugin.h"
 
@@ -105,9 +108,67 @@ godot::Control *Polygon2DResourceInspector::_create_inspector_control(godot::Obj
     Polygon2DResource *poly = godot::Object::cast_to<Polygon2DResource>(p_object);
     if (!poly) return nullptr;
 
-    Polygon2DCanvas *canvas = memnew(Polygon2DCanvas);
-    canvas->set_polygon_resource(godot::Ref<Polygon2DResource>(poly));
-    return canvas;
+    Polygon2DControl *ctrl = memnew(Polygon2DControl);
+    ctrl->set_polygon_resource(godot::Ref<Polygon2DResource>(poly));
+    return ctrl;
+}
+
+bool Polygon2DResourceInspector::_is_managed_property(
+    godot::Object *p_object,
+    const godot::String &p_name
+) const {
+    (void)p_object;
+    return p_name == "vertices" || p_name == "closed";
+}
+
+// ============================================================================
+// VoronoiDiagram2DResourceInspector Implementation (`Section 3.2`)
+// ============================================================================
+
+bool VoronoiDiagram2DResourceInspector::_can_handle(godot::Object *p_object) {
+    return p_object != nullptr && godot::Object::cast_to<VoronoiDiagram2DResource>(p_object) != nullptr;
+}
+
+godot::Control *VoronoiDiagram2DResourceInspector::_create_inspector_control(godot::Object *p_object) {
+    VoronoiDiagram2DResource *vor = godot::Object::cast_to<VoronoiDiagram2DResource>(p_object);
+    if (!vor) return nullptr;
+
+    Voronoi2DControl *ctrl = memnew(Voronoi2DControl);
+    ctrl->set_voronoi_resource(godot::Ref<VoronoiDiagram2DResource>(vor));
+    return ctrl;
+}
+
+bool VoronoiDiagram2DResourceInspector::_is_managed_property(
+    godot::Object *p_object,
+    const godot::String &p_name
+) const {
+    (void)p_object;
+    return p_name == "sites" || p_name == "clip_bounds";
+}
+
+// ============================================================================
+// SDFGrid2DResourceInspector Implementation (`Section 3.2`)
+// ============================================================================
+
+bool SDFGrid2DResourceInspector::_can_handle(godot::Object *p_object) {
+    return p_object != nullptr && godot::Object::cast_to<SDFGrid2DResource>(p_object) != nullptr;
+}
+
+godot::Control *SDFGrid2DResourceInspector::_create_inspector_control(godot::Object *p_object) {
+    SDFGrid2DResource *sdf = godot::Object::cast_to<SDFGrid2DResource>(p_object);
+    if (!sdf) return nullptr;
+
+    SDFGrid2DControl *ctrl = memnew(SDFGrid2DControl);
+    ctrl->set_sdf_grid_resource(godot::Ref<SDFGrid2DResource>(sdf));
+    return ctrl;
+}
+
+bool SDFGrid2DResourceInspector::_is_managed_property(
+    godot::Object *p_object,
+    const godot::String &p_name
+) const {
+    (void)p_object;
+    return p_name == "grid_values" || p_name == "resolution" || p_name == "iso_value";
 }
 
 } // namespace ideam::godot_ext

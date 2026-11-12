@@ -56,12 +56,26 @@ void IdeamGeometryPlugin::_enter_tree() {
         register_task_domain_pack();
     }
 
-    // 2. Register shared Geometry Resource Inspectors
+    // 2. Register shared Geometry Resource Inspectors (Section 3.2)
     polygon_2d_inspector.instantiate();
     add_inspector_plugin(polygon_2d_inspector);
+
+    voronoi_2d_inspector.instantiate();
+    add_inspector_plugin(voronoi_2d_inspector);
+
+    sdf_grid_2d_inspector.instantiate();
+    add_inspector_plugin(sdf_grid_2d_inspector);
 }
 
 void IdeamGeometryPlugin::_exit_tree() {
+    if (sdf_grid_2d_inspector.is_valid()) {
+        remove_inspector_plugin(sdf_grid_2d_inspector);
+        sdf_grid_2d_inspector.unref();
+    }
+    if (voronoi_2d_inspector.is_valid()) {
+        remove_inspector_plugin(voronoi_2d_inspector);
+        voronoi_2d_inspector.unref();
+    }
     if (polygon_2d_inspector.is_valid()) {
         remove_inspector_plugin(polygon_2d_inspector);
         polygon_2d_inspector.unref();

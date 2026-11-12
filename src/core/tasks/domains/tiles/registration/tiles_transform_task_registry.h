@@ -16,6 +16,8 @@ enum class TilesTransformLogicID : uint32_t {
     TilingBoundaryClipAndSeamStitch,
     TilingHexizeAndBorderExtract,
     TilingQuotientAStarAndFlowField,
+    TilingDualGraphWFC,
+    TilingBoardSpaceGenerate,
     Count
 };
 

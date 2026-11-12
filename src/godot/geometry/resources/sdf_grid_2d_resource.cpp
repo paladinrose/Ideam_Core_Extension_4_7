@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 namespace ideam::godot_ext {
 
@@ -19,6 +20,10 @@ void SDFGrid2DResource::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_world_bounds", "bounds"), &SDFGrid2DResource::set_world_bounds);
     ClassDB::bind_method(D_METHOD("get_world_bounds"), &SDFGrid2DResource::get_world_bounds);
     ADD_PROPERTY(PropertyInfo(Variant::RECT2, "world_bounds"), "set_world_bounds", "get_world_bounds");
+
+    ClassDB::bind_method(D_METHOD("set_iso_value", "iso_value"), &SDFGrid2DResource::set_iso_value);
+    ClassDB::bind_method(D_METHOD("get_iso_value"), &SDFGrid2DResource::get_iso_value);
+    ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "iso_value"), "set_iso_value", "get_iso_value");
 
     ClassDB::bind_method(D_METHOD("set_grid_values", "values"), &SDFGrid2DResource::set_grid_values);
     ClassDB::bind_method(D_METHOD("get_grid_values"), &SDFGrid2DResource::get_grid_values);
@@ -64,10 +69,72 @@ void SDFGrid2DResource::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("sample_distance", "world_pos"), &SDFGrid2DResource::sample_distance);
     ClassDB::bind_method(D_METHOD("sample_gradient", "world_pos"), &SDFGrid2DResource::sample_gradient);
+    ClassDB::bind_method(D_METHOD("get_min_max_distance"), &SDFGrid2DResource::get_min_max_distance);
     ClassDB::bind_method(
         D_METHOD("extract_iso_contour_segments", "iso_value"),
         &SDFGrid2DResource::extract_iso_contour_segments,
         DEFVAL(0.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("extract_iso_contour_polygons", "iso_value", "weld_tolerance"),
+        &SDFGrid2DResource::extract_iso_contour_polygons,
+        DEFVAL(0.0f),
+        DEFVAL(1e-3f)
+    );
+
+    // --- HeatmapGrid Bridge ---
+    ClassDB::bind_method(
+        D_METHOD("to_heatmap_byte_array", "min_val", "max_val"),
+        &SDFGrid2DResource::to_heatmap_byte_array,
+        DEFVAL(-2.0f),
+        DEFVAL(2.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("sync_to_heatmap_grid", "heatmap", "min_val", "max_val"),
+        &SDFGrid2DResource::sync_to_heatmap_grid,
+        DEFVAL(-2.0f),
+        DEFVAL(2.0f)
+    );
+
+    // --- IdeamUndoRedo Commit Wrappers ---
+    ClassDB::bind_method(D_METHOD("commit_set_resolution", "resolution"), &SDFGrid2DResource::commit_set_resolution);
+    ClassDB::bind_method(D_METHOD("commit_set_world_bounds", "bounds"), &SDFGrid2DResource::commit_set_world_bounds);
+    ClassDB::bind_method(D_METHOD("commit_set_iso_value", "iso_value"), &SDFGrid2DResource::commit_set_iso_value);
+    ClassDB::bind_method(
+        D_METHOD("commit_clear_field", "fill_value"),
+        &SDFGrid2DResource::commit_clear_field,
+        DEFVAL(1000.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_stamp_circle", "center", "radius", "mode", "smooth_k"),
+        &SDFGrid2DResource::commit_stamp_circle,
+        DEFVAL(SDF_COMBINE_UNION),
+        DEFVAL(0.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_stamp_box", "center", "half_extents", "mode", "smooth_k"),
+        &SDFGrid2DResource::commit_stamp_box,
+        DEFVAL(SDF_COMBINE_UNION),
+        DEFVAL(0.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_stamp_segment", "a", "b", "radius", "mode", "smooth_k"),
+        &SDFGrid2DResource::commit_stamp_segment,
+        DEFVAL(0.1f),
+        DEFVAL(SDF_COMBINE_UNION),
+        DEFVAL(0.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_stamp_polygon", "polygon", "mode", "smooth_k"),
+        &SDFGrid2DResource::commit_stamp_polygon,
+        DEFVAL(SDF_COMBINE_UNION),
+        DEFVAL(0.0f)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_evaluate_chladni_field", "mode_n", "mode_m", "amp_a", "amp_b"),
+        &SDFGrid2DResource::commit_evaluate_chladni_field,
+        DEFVAL(1.0f),
+        DEFVAL(-1.0f)
     );
 }
 
@@ -104,8 +171,8 @@ SDFGrid2DResource::Vec2 SDFGrid2DResource::_world_to_grid_coord(const godot::Vec
     const float u  = (p_world.x - world_bounds_.position.x) / sx;
     const float v  = (p_world.y - world_bounds_.position.y) / sy;
     return Vec2(
-        u * static_cast<float>( std::max(1, resolution_.x - 1) ),
-        v * static_cast<float>( std::max(1, resolution_.y - 1) )
+        u * static_cast<float>(std::max(1, resolution_.x - 1)),
+        v * static_cast<float>(std::max(1, resolution_.y - 1))
     );
 }
 
@@ -139,6 +206,7 @@ godot::Dictionary SDFGrid2DResource::get_snapshot_state() const {
     godot::Dictionary d;
     d["resolution"]   = resolution_;
     d["world_bounds"] = world_bounds_;
+    d["iso_value"]    = iso_value_;
     d["grid_values"]  = get_grid_values();
     return d;
 }
@@ -150,9 +218,15 @@ void SDFGrid2DResource::apply_snapshot_state(const godot::Dictionary &p_state) {
     if (p_state.has("world_bounds")) {
         world_bounds_ = p_state["world_bounds"];
     }
+    if (p_state.has("iso_value")) {
+        iso_value_ = static_cast<float>(p_state["iso_value"]);
+    }
     _ensure_allocated();
     if (p_state.has("grid_values")) {
         set_grid_values(p_state["grid_values"]);
+    } else {
+        emit_signal("geometry_changed");
+        emit_changed();
     }
 }
 
@@ -168,6 +242,13 @@ void SDFGrid2DResource::set_resolution(const godot::Vector2i &p_resolution) {
 void SDFGrid2DResource::set_world_bounds(const godot::Rect2 &p_bounds) {
     if (world_bounds_ == p_bounds) return;
     world_bounds_ = p_bounds;
+    emit_signal("geometry_changed");
+    emit_changed();
+}
+
+void SDFGrid2DResource::set_iso_value(float p_iso_value) {
+    if (std::abs(iso_value_ - p_iso_value) <= 1e-6f) return;
+    iso_value_ = p_iso_value;
     emit_signal("geometry_changed");
     emit_changed();
 }
@@ -345,6 +426,20 @@ godot::Vector2 SDFGrid2DResource::sample_gradient(const godot::Vector2 &p_world_
     return godot::Vector2(g.x, g.y);
 }
 
+godot::Vector2 SDFGrid2DResource::get_min_max_distance() const noexcept {
+    if (grid_values_.empty()) return godot::Vector2(0.0f, 0.0f);
+    float mn = std::numeric_limits<float>::max();
+    float mx = std::numeric_limits<float>::lowest();
+    for (float v : grid_values_) {
+        if (std::isfinite(v) && std::abs(v) < 500.0f) {
+            mn = std::min(mn, v);
+            mx = std::max(mx, v);
+        }
+    }
+    if (mn > mx) return godot::Vector2(0.0f, 0.0f);
+    return godot::Vector2(mn, mx);
+}
+
 godot::PackedVector2Array SDFGrid2DResource::extract_iso_contour_segments(float p_iso_value) const {
     godot::PackedVector2Array out;
     if (grid_values_.empty()) return out;
@@ -370,6 +465,184 @@ godot::PackedVector2Array SDFGrid2DResource::extract_iso_contour_segments(float 
         out.set(static_cast<int64_t>(i * 2u + 1u), godot::Vector2(segs[i].end.x, segs[i].end.y));
     }
     return out;
+}
+
+godot::TypedArray<Polygon2DResource> SDFGrid2DResource::extract_iso_contour_polygons(
+    float p_iso_value,
+    float p_weld_tolerance
+) const {
+    godot::TypedArray<Polygon2DResource> result;
+    const godot::PackedVector2Array seg_pts = extract_iso_contour_segments(p_iso_value);
+    const int64_t num_segs = seg_pts.size() / 2;
+    if (num_segs <= 0) return result;
+
+    const float tol_sq = std::max(1e-8f, p_weld_tolerance * p_weld_tolerance);
+    std::vector<bool> used(static_cast<size_t>(num_segs), false);
+
+    for (int64_t i = 0; i < num_segs; ++i) {
+        if (used[static_cast<size_t>(i)]) continue;
+        used[static_cast<size_t>(i)] = true;
+
+        godot::PackedVector2Array chain;
+        chain.push_back(seg_pts[i * 2]);
+        chain.push_back(seg_pts[i * 2 + 1]);
+
+        bool extended = true;
+        while (extended) {
+            extended = false;
+            const godot::Vector2 head = chain[0];
+            const godot::Vector2 tail = chain[chain.size() - 1];
+
+            for (int64_t j = 0; j < num_segs; ++j) {
+                if (used[static_cast<size_t>(j)]) continue;
+                const godot::Vector2 a = seg_pts[j * 2];
+                const godot::Vector2 b = seg_pts[j * 2 + 1];
+
+                if (tail.distance_squared_to(a) <= tol_sq) {
+                    chain.push_back(b);
+                    used[static_cast<size_t>(j)] = true;
+                    extended = true;
+                    break;
+                }
+                if (tail.distance_squared_to(b) <= tol_sq) {
+                    chain.push_back(a);
+                    used[static_cast<size_t>(j)] = true;
+                    extended = true;
+                    break;
+                }
+                if (head.distance_squared_to(b) <= tol_sq) {
+                    chain.insert(0, a);
+                    used[static_cast<size_t>(j)] = true;
+                    extended = true;
+                    break;
+                }
+                if (head.distance_squared_to(a) <= tol_sq) {
+                    chain.insert(0, b);
+                    used[static_cast<size_t>(j)] = true;
+                    extended = true;
+                    break;
+                }
+            }
+        }
+
+        if (chain.size() >= 3) {
+            const bool is_closed_loop = chain[0].distance_squared_to(chain[chain.size() - 1]) <= tol_sq * 4.0f;
+            if (is_closed_loop && chain.size() > 3) {
+                chain.remove_at(chain.size() - 1);
+            }
+            godot::Ref<Polygon2DResource> poly;
+            poly.instantiate();
+            poly->set_closed(is_closed_loop);
+            poly->set_vertices(chain);
+            result.push_back(poly);
+        }
+    }
+
+    return result;
+}
+
+godot::PackedByteArray SDFGrid2DResource::to_heatmap_byte_array(float p_min_val, float p_max_val) const {
+    godot::PackedByteArray out;
+    out.resize(static_cast<int64_t>(grid_values_.size()));
+    const float span = std::max(1e-5f, p_max_val - p_min_val);
+    for (size_t i = 0; i < grid_values_.size(); ++i) {
+        const float norm = std::clamp((grid_values_[i] - p_min_val) / span, 0.0f, 1.0f);
+        out.set(static_cast<int64_t>(i), static_cast<uint8_t>(std::round(norm * 255.0f)));
+    }
+    return out;
+}
+
+void SDFGrid2DResource::sync_to_heatmap_grid(
+    HeatmapGrid *p_heatmap,
+    float p_min_val,
+    float p_max_val
+) const {
+    if (!p_heatmap) return;
+    p_heatmap->set_columns( std::max(1, resolution_.x) );
+    p_heatmap->set_data(to_heatmap_byte_array(p_min_val, p_max_val));
+}
+
+void SDFGrid2DResource::commit_set_resolution(const godot::Vector2i &p_resolution) {
+    const godot::Vector2i clamped(std::max(2, p_resolution.x), std::max(2, p_resolution.y));
+    if (resolution_ == clamped) return;
+    const godot::Dictionary before = get_snapshot_state();
+    set_resolution(clamped);
+    commit_snapshot_action("Set SDF Grid Resolution", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_set_world_bounds(const godot::Rect2 &p_bounds) {
+    if (world_bounds_ == p_bounds) return;
+    const godot::Dictionary before = get_snapshot_state();
+    set_world_bounds(p_bounds);
+    commit_snapshot_action("Set SDF World Bounds", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_set_iso_value(float p_iso_value) {
+    if (std::abs(iso_value_ - p_iso_value) <= 1e-6f) return;
+    const godot::Dictionary before = get_snapshot_state();
+    set_iso_value(p_iso_value);
+    commit_snapshot_action("Set SDF Iso-Contour Threshold", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_clear_field(float p_fill_value) {
+    const godot::Dictionary before = get_snapshot_state();
+    clear_field(p_fill_value);
+    commit_snapshot_action("Clear SDF Field", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_stamp_circle(
+    const godot::Vector2 &p_center,
+    float p_radius,
+    GeometrySDFCombineMode p_mode,
+    float p_smooth_k
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    stamp_circle(p_center, p_radius, p_mode, p_smooth_k);
+    commit_snapshot_action("Stamp SDF Circle", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_stamp_box(
+    const godot::Vector2 &p_center,
+    const godot::Vector2 &p_half_extents,
+    GeometrySDFCombineMode p_mode,
+    float p_smooth_k
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    stamp_box(p_center, p_half_extents, p_mode, p_smooth_k);
+    commit_snapshot_action("Stamp SDF Box", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_stamp_segment(
+    const godot::Vector2 &p_a,
+    const godot::Vector2 &p_b,
+    float p_radius,
+    GeometrySDFCombineMode p_mode,
+    float p_smooth_k
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    stamp_segment(p_a, p_b, p_radius, p_mode, p_smooth_k);
+    commit_snapshot_action("Stamp SDF Capsule Segment", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_stamp_polygon(
+    const godot::PackedVector2Array &p_polygon,
+    GeometrySDFCombineMode p_mode,
+    float p_smooth_k
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    stamp_polygon(p_polygon, p_mode, p_smooth_k);
+    commit_snapshot_action("Stamp SDF Polygon", before, get_snapshot_state());
+}
+
+void SDFGrid2DResource::commit_evaluate_chladni_field(
+    float p_mode_n,
+    float p_mode_m,
+    float p_amp_a,
+    float p_amp_b
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    evaluate_chladni_field(p_mode_n, p_mode_m, p_amp_a, p_amp_b);
+    commit_snapshot_action("Evaluate Chladni Standing-Wave Field", before, get_snapshot_state());
 }
 
 } // namespace ideam::godot_ext

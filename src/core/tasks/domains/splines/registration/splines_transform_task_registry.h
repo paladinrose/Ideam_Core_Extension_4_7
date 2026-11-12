@@ -16,6 +16,11 @@ enum class SplinesTransformLogicID : uint32_t {
     SplineFlattenToPolyline,
     SplineBishopFrameSweep,
     SplineClosestPointProject,
+    SplineMeshExtrudeAndDeform,
+    SplineCurvilinearCageDeform,
+    SplineVectorFieldSwirl,
+    Spline1DInverseRootSolve,
+    Spline4DColorGradientMap,
     Count
 };
 

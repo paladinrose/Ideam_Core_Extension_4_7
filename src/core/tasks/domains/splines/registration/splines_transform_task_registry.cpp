@@ -13,6 +13,16 @@ const std::array<LogicVariantGroup, SplinesTransformTaskRegistry::STORAGE_COUNT>
     // SplineBishopFrameSweep (2)
     { true, 1, nullptr },
     // SplineClosestPointProject (3)
+    { true, 1, nullptr },
+    // SplineMeshExtrudeAndDeform (4)
+    { true, 1, nullptr },
+    // SplineCurvilinearCageDeform (5)
+    { true, 1, nullptr },
+    // SplineVectorFieldSwirl (6)
+    { true, 1, nullptr },
+    // Spline1DInverseRootSolve (7)
+    { true, 1, nullptr },
+    // Spline4DColorGradientMap (8)
     { true, 1, nullptr }
 }};
 

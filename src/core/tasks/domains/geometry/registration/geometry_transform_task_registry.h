@@ -16,6 +16,12 @@ enum class GeometryTransformLogicID : uint32_t {
     CSGClipAndSeamWeld,
     VoronoiDelaunayDual,
     SDFFieldAndContour,
+    SDFJumpFloodEDT,
+    SDFMarchingCubesExtract_Moore_R1,
+    SDFMarchingCubesExtract_VonNeumann_R1,
+    DelaunayNavMeshBuild,
+    ConvexHullAndOBBFit,
+    SpatialVoronoiTerritoryControl,
     Count
 };
 

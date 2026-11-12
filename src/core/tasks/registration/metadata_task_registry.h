@@ -12,26 +12,29 @@ namespace ideam::core {
 
 // --- Compile-Time Coordinates (The O(1) Indices) ---
 enum class MetadataLogicID : uint32_t {
-    DSUCluster_Static_Moore_R1 = 0,
+    AudioFrequencyOctaveBand = 0,
+    BoneInfluenceGroupMask,
+    DSUCluster_Static_Moore_R1,
     DSUCluster_Static_VonNeumann_R1,
-    
     DSUCluster,
-    
+    GeodesicRing,
     GroupMask_1Bit,
     GroupMask_2Bit,
     GroupMask_3Bit,
     GroupMask_4Bit,
-    
     LOD_1Level,
     LOD_2Level,
     LOD_3Level,
     LOD_4Level,
-    
+    MaterialVariantBucket,
+    MeshConnectedIslands,
+    ParticleCameraDepthBucket,
     Partition_1,
     Partition_2,
     Partition_3,
     Partition_4,
-    
+    PhysicsCollisionLayerAndIsland,
+    RDWorkgroupTilePartition,
     Count
 };
 
@@ -39,12 +42,11 @@ using MetadataTaskFactoryFn = INativeTask* (*)();
 
 class MetadataTaskRegistry {
 public:
-
     static constexpr size_t L_COUNT = static_cast<size_t>(MetadataLogicID::Count);
     static constexpr size_t V_COUNT = static_cast<size_t>(MemoryView::Count);
     static constexpr size_t S_COUNT = static_cast<size_t>(MemoryStrategy::Count);
     static constexpr size_t T_COUNT = static_cast<size_t>(MemoryTypes::Count);
-    
+
     static const std::array<LogicVariantGroup, L_COUNT> logic_variants;
 
     // --- DOD Matrix Bounds (3D Sub-Matrix) ---
@@ -55,7 +57,7 @@ public:
 
     // --- The O(1) Multi-Dimensional Factory Routers ---
     static std::array<const SubMatrix*, L_COUNT> logic_matrices;
-    
+
     /**
      * ui_metadata_matrix Data Schema (Exported to Godot):
      * {
@@ -68,14 +70,13 @@ public:
     //static godot::Dictionary ui_metadata_matrix;
 
     // --- Lifecycle Management ---
-    
+
     // Fast-path: Instantiates C++ function pointers for runtime execution
     static void init_execution_routing();
     static void cleanup_execution_routing();
 
     // Heavy-path: Allocates Godot Dictionaries for the Editor UI (Call ONLY when baking manifest)
     static void generate_ui_matrices(godot::Dictionary& p_matrix);
-    
 
     static std::unique_ptr<INativeTask> create(uint32_t p_logic_id, uint32_t p_view_id, uint32_t p_strategy_id, uint32_t p_type_id);
 };

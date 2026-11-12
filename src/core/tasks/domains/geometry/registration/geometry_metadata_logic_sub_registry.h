@@ -12,6 +12,7 @@
 
 // --- Geometry Metadata Logics ---
 #include "../metadata_logic/spatial_hash_partition_metadata_logic.h"
+#include "../metadata_logic/voronoi_seed_region_partition_metadata_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -56,12 +57,13 @@ namespace {
     template <typename S> struct GeometryMetadataStrategyDimExtractor<S, std::void_t<decltype(S::dimensions)>> { static constexpr size_t value = S::dimensions; };
 
     template <typename T_Resolver, typename Enable = void> struct GeometryMetadataKernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
-    template <typename T_Resolver> struct GeometryMetadataKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::Type::KERNEL_POINTS)>> { static constexpr size_t value = T_Resolver::Type::KERNEL_POINTS; static constexpr bool has_kernel = true; };
+    template <typename T_Resolver> struct GeometryMetadataKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
     // --- GeometryMetadataLogicResolver Specializations ---
     template <GeometryMetadataLogicID ID, typename T_Concrete, typename T_Strategy>
     struct GeometryMetadataLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct GeometryMetadataLogicResolver<GeometryMetadataLogicID::SpatialHashPartition, C, S> { using Type = SpatialHashPartitionMetadataLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryMetadataLogicResolver<GeometryMetadataLogicID::VoronoiSeedRegionPartition, C, S> { using Type = VoronoiSeedRegionPartitionMetadataLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <GeometryMetadataLogicID LogicID, typename C, typename S>
     struct GeometryMetadataLogicKernelExtractor : GeometryMetadataKernelExtractorImpl<GeometryMetadataLogicResolver<LogicID, C, S>> {};

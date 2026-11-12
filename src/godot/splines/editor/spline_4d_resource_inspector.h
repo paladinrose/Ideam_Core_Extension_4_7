@@ -8,8 +8,9 @@
  *   1. Identifies `Spline4DResource` instances in the Godot Inspector (`_can_handle`).
  *   2. Inherits automatic `IdeamUndoRedo` + `EditorUndoRedoManager` injection and
  *      managed-property filtering from `SplineEditorInspectorBase`.
- *   3. Instantiates and mounts `Spline4DControl` (including `Spline4DWChannelCanvas`
- *      and the alternating 4D Point/Section chain) as the resource's primary Inspector UI.
+ *   3. Instantiates and mounts `ColorSplineControl` when `color_gradient_mode` is active
+ *      on `Spline4DResource` (or provides a live mode-switcher tab/header between
+ *      `Spline4DControl` and `ColorSplineControl`).
  */
 
 #include "spline_editor_inspector_base.h"

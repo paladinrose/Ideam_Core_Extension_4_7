@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Ideam.Unity.UI.TabBar allTabs="Game,Semantics,Languages,Scenes,Boards,Agents,Narrative,Assets,Global Jukebox" />
+</ui:UXML>

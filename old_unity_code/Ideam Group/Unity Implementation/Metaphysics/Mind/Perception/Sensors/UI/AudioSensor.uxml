@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Label text="Let&apos;s Audio!" display-tooltip-when-elided="true" enable-rich-text="true" />
+</ui:UXML>

@@ -13,6 +13,7 @@ namespace ideam::core {
 // --- Compile-Time Coordinates for IdeamGeometry Metadata Tasks ---
 enum class GeometryMetadataLogicID : uint32_t {
     SpatialHashPartition = 0,
+    VoronoiSeedRegionPartition,
     Count
 };
 

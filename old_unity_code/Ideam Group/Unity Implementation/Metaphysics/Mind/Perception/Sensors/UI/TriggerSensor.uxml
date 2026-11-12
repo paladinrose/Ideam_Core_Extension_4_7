@@ -1,0 +1,3 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Ideam.Unity.UI.DropList name="CollidersInTrigger" Label="Colliders In Trigger" />
+</ui:UXML>

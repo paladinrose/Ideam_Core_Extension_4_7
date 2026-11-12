@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Toggle label="Lock Position" name="LockPositionToggle" />
+    <Ideam.Unity.UI.Vector3Field name="PositionOffsetField" focusable="false" label="Position Offset" />
+    <ui:Toggle label="Lock Rotation" name="LockRotationToggle" />
+    <Ideam.Unity.UI.Vector3Field name="RotationOffsetField" label="Rotation Offset" />
+</ui:UXML>

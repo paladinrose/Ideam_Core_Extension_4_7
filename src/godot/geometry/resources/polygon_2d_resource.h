@@ -8,7 +8,7 @@
  * Provides a shared, curve-agnostic 2D polygon/polyline data container that can be:
  *   - Produced by flattening a `Spline2DResource` or extracting a `TilingRegion2D` border.
  *   - Used as a boundary clip polygon or CSG operand in `IdeamSplines`, `IdeamTiles`, and `GeometryDOD`.
- *   - Edited directly in the Godot Inspector via `Polygon2DCanvas` (`GeometryCanvas2DBase`).
+ *   - Edited directly in the Godot Inspector via `Polygon2DControl` / `Polygon2DCanvas` (`GeometryCanvas2DBase`).
  */
 
 #include "../geometry_resource.h"
@@ -98,6 +98,7 @@ public:
 
     [[nodiscard]] godot::PackedInt32Array get_triangles() const;
     [[nodiscard]] godot::PackedVector2Array compute_convex_hull() const;
+    void replace_with_convex_hull();
     [[nodiscard]] godot::PackedVector2Array compute_offset_polygon(
         real_t p_delta,
         GeometryJoinStyle2D p_join = JOIN_STYLE_MITER,
@@ -141,6 +142,8 @@ public:
     );
 
     // --- IdeamUndoRedo Commit Wrappers ---
+    void commit_set_closed(bool p_closed);
+    void commit_clear();
     void commit_add_vertex(const godot::Vector2 &p_vertex);
     void commit_insert_vertex(int p_index, const godot::Vector2 &p_vertex);
     void commit_set_vertex(int p_index, const godot::Vector2 &p_vertex);
@@ -151,6 +154,25 @@ public:
         real_t p_miter_limit = static_cast<real_t>(2.0)
     );
     void commit_ensure_winding(GeometryWindingOrder p_desired = WINDING_COUNTER_CLOCKWISE);
+    void commit_replace_with_convex_hull();
+    void commit_create_rectangle(const godot::Vector2 &p_center, const godot::Vector2 &p_size);
+    void commit_create_regular_polygon(
+        int p_sides = 6,
+        real_t p_radius = static_cast<real_t>(0.5),
+        real_t p_angle_offset = static_cast<real_t>(0.0),
+        bool p_reverse_winding = true
+    );
+    void commit_create_star(
+        int p_sides = 5,
+        real_t p_outer_radius = static_cast<real_t>(0.5),
+        real_t p_inner_radius = static_cast<real_t>(0.25),
+        real_t p_angle_offset = static_cast<real_t>(0.0)
+    );
+    void commit_clip_half_plane(
+        const godot::Vector2 &p_plane_origin,
+        const godot::Vector2 &p_inside_normal
+    );
+    void commit_clip_convex(const godot::PackedVector2Array &p_convex_clip);
 };
 
 } // namespace ideam::godot_ext

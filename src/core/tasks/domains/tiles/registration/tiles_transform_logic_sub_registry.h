@@ -13,6 +13,8 @@
 #include "../transform_logic/tiling_boundary_clip_and_seam_stitch_transform_logic.h"
 #include "../transform_logic/tiling_hexize_and_border_extract_transform_logic.h"
 #include "../transform_logic/tiling_quotient_astar_and_flow_field_transform_logic.h"
+#include "../transform_logic/tiling_dual_graph_wfc_transform_logic.h"
+#include "../transform_logic/tiling_board_space_generate_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -66,6 +68,8 @@ namespace {
     template <typename C, typename S> struct TilesTransformLogicResolver<TilesTransformLogicID::TilingBoundaryClipAndSeamStitch, C, S> { using Type = TilingBoundaryClipAndSeamStitchTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TilesTransformLogicResolver<TilesTransformLogicID::TilingHexizeAndBorderExtract, C, S> { using Type = TilingHexizeAndBorderExtractTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TilesTransformLogicResolver<TilesTransformLogicID::TilingQuotientAStarAndFlowField, C, S> { using Type = TilingQuotientAStarAndFlowFieldTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TilesTransformLogicResolver<TilesTransformLogicID::TilingDualGraphWFC, C, S> { using Type = TilingDualGraphWFCTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TilesTransformLogicResolver<TilesTransformLogicID::TilingBoardSpaceGenerate, C, S> { using Type = TilingBoardSpaceGenerateTransformLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <TilesTransformLogicID LogicID, typename C, typename S>
     struct TilesTransformLogicKernelExtractor : TilesTransformKernelExtractorImpl<TilesTransformLogicResolver<LogicID, C, S>> {};

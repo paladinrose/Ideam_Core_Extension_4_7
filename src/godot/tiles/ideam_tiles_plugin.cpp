@@ -60,9 +60,31 @@ void IdeamTilesPlugin::_enter_tree() {
 
     composite_tiling_inspector_.instantiate();
     add_inspector_plugin(composite_tiling_inspector_);
+
+    hyperbolic_tiling_inspector_.instantiate();
+    add_inspector_plugin(hyperbolic_tiling_inspector_);
+
+    spherical_goldberg_inspector_.instantiate();
+    add_inspector_plugin(spherical_goldberg_inspector_);
+
+    // 3. Instantiate and register 3D Viewport Gizmos (GeodesicPlanetGizmo)
+    geodesic_planet_gizmo_.instantiate();
+    add_node_3d_gizmo_plugin(geodesic_planet_gizmo_);
 }
 
 void IdeamTilesPlugin::_exit_tree() {
+    if (geodesic_planet_gizmo_.is_valid()) {
+        remove_node_3d_gizmo_plugin(geodesic_planet_gizmo_);
+        geodesic_planet_gizmo_.unref();
+    }
+    if (spherical_goldberg_inspector_.is_valid()) {
+        remove_inspector_plugin(spherical_goldberg_inspector_);
+        spherical_goldberg_inspector_.unref();
+    }
+    if (hyperbolic_tiling_inspector_.is_valid()) {
+        remove_inspector_plugin(hyperbolic_tiling_inspector_);
+        hyperbolic_tiling_inspector_.unref();
+    }
     if (composite_tiling_inspector_.is_valid()) {
         remove_inspector_plugin(composite_tiling_inspector_);
         composite_tiling_inspector_.unref();

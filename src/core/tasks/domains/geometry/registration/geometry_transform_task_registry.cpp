@@ -4,6 +4,12 @@
 
 namespace ideam::core {
 
+namespace {
+    constexpr const char* r1_stencil_labels[] = {
+        "Moore (R1)", "Von Neumann (R1)"
+    };
+} // namespace
+
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, GeometryTransformTaskRegistry::STORAGE_COUNT> GeometryTransformTaskRegistry::logic_variants = {{
     // PolygonTriangulateAndOffset (0)
@@ -13,6 +19,18 @@ const std::array<LogicVariantGroup, GeometryTransformTaskRegistry::STORAGE_COUNT
     // VoronoiDelaunayDual (2)
     { true, 1, nullptr },
     // SDFFieldAndContour (3)
+    { true, 1, nullptr },
+    // SDFJumpFloodEDT (4)
+    { true, 1, nullptr },
+    // SDFMarchingCubesExtract_Moore_R1 (5)
+    { true, 2, r1_stencil_labels },
+    // SDFMarchingCubesExtract_VonNeumann_R1 (6)
+    { false, 0, nullptr },
+    // DelaunayNavMeshBuild (7)
+    { true, 1, nullptr },
+    // ConvexHullAndOBBFit (8)
+    { true, 1, nullptr },
+    // SpatialVoronoiTerritoryControl (9)
     { true, 1, nullptr }
 }};
 

@@ -9,6 +9,8 @@
 // --- Logics ---
 #include "../query_logic/aabb_query_logic.h"
 #include "../query_logic/archetype_query_logic.h"
+#include "../query_logic/audio_peak_and_onset_transient_query_logic.h"
+#include "../query_logic/backface_and_silhouette_query_logic.h"
 #include "../query_logic/bitmask_query_logic.h"
 #include "../query_logic/boolean_query_logic.h"
 #include "../query_logic/color_rgba_query_logic.h"
@@ -21,17 +23,26 @@
 #include "../query_logic/event_ring_bridge_query_logic.h"
 #include "../query_logic/frustum_query_logic.h"
 #include "../query_logic/hierarchical_bridge_query_logic.h"
+#include "../query_logic/image_gradient_magnitude_query_logic.h"
 #include "../query_logic/limit_query_logic.h"
+#include "../query_logic/mesh_edge_strain_query_logic.h"
 #include "../query_logic/morphological_query_logic.h"
 #include "../query_logic/morphological_static_query_logic.h"
 #include "../query_logic/paged_to_tiled_bridge_query_logic.h"
+#include "../query_logic/particle_lifetime_cull_query_logic.h"
+#include "../query_logic/physics_broadphase_overlap_query_logic.h"
+#include "../query_logic/physics_kinetic_energy_and_sleep_query_logic.h"
 #include "../query_logic/predicate_query_logic.h"
+#include "../query_logic/ray_triangle_intersect_query_logic.h"
+#include "../query_logic/rd_selection_bitset_compact_query_logic.h"
 #include "../query_logic/relational_bridge_query_logic.h"
+#include "../query_logic/shader_parameter_epsilon_dirty_query_logic.h"
 #include "../query_logic/spatial_inclusion_bridge_query_logic.h"
 #include "../query_logic/spatial_projection_bridge_query_logic.h"
 #include "../query_logic/stencil_dilation_bridge_query_logic.h"
 #include "../query_logic/stochastic_query_logic.h"
 #include "../query_logic/swap_eruption_bridge_query_logic.h"
+#include "../query_logic/swept_sphere_surface_query_logic.h"
 
 // --- Views & Strategies ---
 #include "../../memory/views/aosoa_view.h"
@@ -82,6 +93,8 @@ namespace {
     template <QueryLogicID ID, typename T_Concrete, typename T_Strategy> struct QueryLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::AABB, C, S> { using Type = AABBQueryLogic; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Archetype, C, S> { using Type = ArchetypeQueryLogic; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::AudioPeakAndOnsetTransient, C, S> { using Type = AudioPeakAndOnsetTransientQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::BackfaceAndSilhouette, C, S> { using Type = BackfaceAndSilhouetteQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Bitmask, C, S> { using Type = BitmaskQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Boolean, C, S> { using Type = BooleanQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ColorRGBA, C, S> { using Type = ColorRGBAQueryLogic<C>; static constexpr bool is_valid = true; };
@@ -94,46 +107,64 @@ namespace {
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::EventRingBridge, C, S> { using Type = EventRingBridgeQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Frustum, C, S> { using Type = FrustumQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::HierarchicalBridge, C, S> { using Type = HierarchicalBridgeQueryLogic; static constexpr bool is_valid = true; };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Limit, C, S> { using Type = LimitQueryLogic; static constexpr bool is_valid = true; };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological, C, S> { using Type = MorphologicalQueryLogic<C, S>; static constexpr bool is_valid = true; };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R1, C, S> { 
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ImageGradientMagnitude_Moore_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
+        using Type = ImageGradientMagnitudeQueryLogic<C, S, StaticStencilView, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R2, C, S> { 
-        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 2>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
-    };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R3, C, S> { 
-        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 3>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
-    };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R1, C, S> { 
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ImageGradientMagnitude_VonNeumann_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 1>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
+        using Type = ImageGradientMagnitudeQueryLogic<C, S, StaticStencilView, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R2, C, S> { 
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Limit, C, S> { using Type = LimitQueryLogic; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::MeshEdgeStrain, C, S> { using Type = MeshEdgeStrainQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological, C, S> { using Type = MorphologicalQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R1, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R2, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 2>();
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_Moore_R3, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 3>();
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R1, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 1>();
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R2, C, S> {
         static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 2>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
-    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R3, C, S> { 
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Morphological_Static_VonNeumann_R3, C, S> {
         static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 3>();
-        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>; 
-        static constexpr bool is_valid = true; 
+        using Type = MorphologicalStaticQueryLogic<C, S, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::PagedToTiledBridge, C, S> { using Type = PagedToTiledBridgeQueryLogic; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ParticleLifetimeCull, C, S> { using Type = ParticleLifetimeCullQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::PhysicsBroadphaseOverlap, C, S> { using Type = PhysicsBroadphaseOverlapQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::PhysicsKineticEnergyAndSleep, C, S> { using Type = PhysicsKineticEnergyAndSleepQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Predicate, C, S> { using Type = PredicateQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::RayTriangleIntersect, C, S> { using Type = RayTriangleIntersectQueryLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::RDSelectionBitsetCompact, C, S> { using Type = RDSelectionBitsetCompactQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::RelationalBridge, C, S> { using Type = RelationalBridgeQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ShaderParameterEpsilonDirty, C, S> { using Type = ShaderParameterEpsilonDirtyQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::SpatialInclusionBridge, C, S> { using Type = SpatialInclusionBridgeQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::SpatialProjectionBridge, C, S> { using Type = SpatialProjectionBridgeQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::StencilDilationBridge, C, S> { using Type = StencilDilationBridgeQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Stochastic, C, S> { using Type = StochasticQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::SwapEruptionBridge, C, S> { using Type = SwapEruptionBridgeQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::SweptSphereSurface, C, S> { using Type = SweptSphereSurfaceQueryLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <QueryLogicID LogicID, typename C, typename S> struct LogicKernelExtractor : KernelExtractorImpl<QueryLogicResolver<LogicID, C, S>> {};
 
@@ -183,7 +214,7 @@ struct QueryLogicSubRegistry {
     // Heavy-path: Allocates Godot Dictionaries for the Editor UI
     static void generate_ui_matrices(godot::Dictionary& p_matrix) {
         IdeamTaskRegistry::log_with_registry(godot::vformat("    -> Evaluating LogicID: %d", static_cast<int64_t>(L)));
-        
+
         _fill_matrix<true>(std::make_index_sequence<QueryTaskRegistry::SUB_MATRIX_SIZE>{}, &p_matrix);
 
         // POST-EVALUATION METRIC GATHERING
@@ -251,7 +282,7 @@ private:
             constexpr DataType iter_type_mask = Traits::DataFlag;
             if ((L_Type::required_types & iter_type_mask) == DataType::NONE) return false;
             if ((V_Traits::supported_types & iter_type_mask) == DataType::NONE) return false;
-            
+
             // 4. Deep DOD Validation via Types (Capabilities, Layouts, Types, Dimensions, Kernels)
             return QueryLogicValidator::validate<L_Type, V_Type>();
         }();
@@ -266,18 +297,17 @@ private:
             } else {
                 // Cold-Path UI Collection
                 if (p_matrix) {
-
                     IdeamTaskRegistry::log_with_registry(
                         godot::vformat("        -> Valid Combo: T=%d, S=%d, V=%d, O=%d (FlatIdx: %d)", T, S, V, O, FlatIdx)
                     );
-                    
+
                     godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
-                    
+
                     if (!p_matrix->has(logic_key)) {
                         godot::Dictionary dict;
                         // Instantiate the property array exactly once per logic struct type
                         dict["properties"] = L_Type::get_ui_properties();
-                        dict["valid_combinations"] = godot::PackedInt64Array(); 
+                        dict["valid_combinations"] = godot::PackedInt64Array();
                         dict["name"] = godot::String(L_Type::display_name.data());
                         constexpr std::string_view cat = LogicCategoryExtractor<L_Type>::value;
                         dict["category"] = godot::String(cat.data());
@@ -285,7 +315,7 @@ private:
                         const auto& variant_info = QueryTaskRegistry::logic_variants[static_cast<size_t>(L)];
                         if (variant_info.is_primary && variant_info.variant_count > 1) {
                             dict["variant_count"] = variant_info.variant_count;
-                            
+
                             godot::Array ui_labels;
                             for (uint32_t i = 0; i < variant_info.variant_count; ++i) {
                                 ui_labels.push_back(godot::String(variant_info.labels[i]));
@@ -300,8 +330,8 @@ private:
                     godot::Dictionary dict = (*p_matrix)[logic_key];
                     godot::PackedInt64Array combos = dict["valid_combinations"];
                     combos.push_back(static_cast<int64_t>(FlatIdx));
-                    dict["valid_combinations"] = combos; 
-                    (*p_matrix)[logic_key] = dict; 
+                    dict["valid_combinations"] = combos;
+                    (*p_matrix)[logic_key] = dict;
                 }
             }
         }
@@ -309,7 +339,7 @@ private:
 };
 
 template <QueryLogicID L>
-std::array<QueryTaskFactoryFn, QueryTaskRegistry::SUB_MATRIX_SIZE> 
+std::array<QueryTaskFactoryFn, QueryTaskRegistry::SUB_MATRIX_SIZE>
 QueryLogicSubRegistry<L>::factories = []{
     std::array<QueryTaskFactoryFn, QueryTaskRegistry::SUB_MATRIX_SIZE> arr;
     arr.fill(nullptr);

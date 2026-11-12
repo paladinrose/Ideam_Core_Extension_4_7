@@ -7,6 +7,8 @@ namespace ideam::core {
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, TilesQueryTaskRegistry::STORAGE_COUNT> TilesQueryTaskRegistry::logic_variants = {{
     // TilingLatticeCullAndMask (0)
+    { true, 1, nullptr },
+    // TilingPieceMovementRuleEval (1)
     { true, 1, nullptr }
 }};
 

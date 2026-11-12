@@ -42,6 +42,8 @@ ACRONYM_MAP: dict[str, str] = {
     "obb": "OBB",
     "rd": "RD",
     "ssbo": "SSBO",
+    "pcm": "PCM",
+    "2drd": "2DRD",
 }
 
 

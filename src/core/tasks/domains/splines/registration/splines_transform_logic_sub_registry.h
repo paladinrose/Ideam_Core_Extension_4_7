@@ -13,6 +13,11 @@
 #include "../transform_logic/spline_flatten_to_polyline_transform_logic.h"
 #include "../transform_logic/spline_bishop_frame_sweep_transform_logic.h"
 #include "../transform_logic/spline_closest_point_project_transform_logic.h"
+#include "../transform_logic/spline_mesh_extrude_and_deform_transform_logic.h"
+#include "../transform_logic/spline_curvilinear_cage_deform_transform_logic.h"
+#include "../transform_logic/spline_vector_field_swirl_transform_logic.h"
+#include "../transform_logic/spline_1d_inverse_root_solve_transform_logic.h"
+#include "../transform_logic/spline_4d_color_gradient_map_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -66,6 +71,11 @@ namespace {
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineFlattenToPolyline, C, S> { using Type = SplineFlattenToPolylineTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineBishopFrameSweep, C, S> { using Type = SplineBishopFrameSweepTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineClosestPointProject, C, S> { using Type = SplineClosestPointProjectTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineMeshExtrudeAndDeform, C, S> { using Type = SplineMeshExtrudeAndDeformTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineCurvilinearCageDeform, C, S> { using Type = SplineCurvilinearCageDeformTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineVectorFieldSwirl, C, S> { using Type = SplineVectorFieldSwirlTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::Spline1DInverseRootSolve, C, S> { using Type = Spline1DInverseRootSolveTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::Spline4DColorGradientMap, C, S> { using Type = Spline4DColorGradientMapTransformLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <SplinesTransformLogicID LogicID, typename C, typename S>
     struct SplinesTransformLogicKernelExtractor : SplinesTransformKernelExtractorImpl<SplinesTransformLogicResolver<LogicID, C, S>> {};

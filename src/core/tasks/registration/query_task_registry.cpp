@@ -6,9 +6,12 @@ namespace ideam::core {
 namespace { // Translation Unit Firewall
     // --- UI Labels for OptionButtons ---
     constexpr const char* color_labels[] = { "RGBA", "HSVA" };
-    constexpr const char* morphological_static_labels[] = { 
-        "Moore (R1)", "Moore (R2)", "Moore (R3)", 
-        "Von Neumann (R1)", "Von Neumann (R2)", "Von Neumann (R3)" 
+    constexpr const char* morphological_static_labels[] = {
+        "Moore (R1)", "Moore (R2)", "Moore (R3)",
+        "Von Neumann (R1)", "Von Neumann (R2)", "Von Neumann (R3)"
+    };
+    constexpr const char* r1_stencil_labels[] = {
+        "Moore (R1)", "Von Neumann (R1)"
     };
 } // namespace
 
@@ -18,16 +21,20 @@ const std::array<LogicVariantGroup, QueryTaskRegistry::L_COUNT> QueryTaskRegistr
     { true, 1, nullptr },
     // Archetype
     { true, 1, nullptr },
+    // AudioPeakAndOnsetTransient
+    { true, 1, nullptr },
+    // BackfaceAndSilhouette
+    { true, 1, nullptr },
     // Bitmask
     { true, 1, nullptr },
     // Boolean
     { true, 1, nullptr },
-    
+
     // ColorRGBA
     { true, 2, color_labels },
     // ColorHSVA
     { false, 0, nullptr },
-    
+
     // Component
     { true, 1, nullptr },
     // DataComparison
@@ -44,11 +51,19 @@ const std::array<LogicVariantGroup, QueryTaskRegistry::L_COUNT> QueryTaskRegistr
     { true, 1, nullptr },
     // HierarchicalBridge
     { true, 1, nullptr },
+
+    // ImageGradientMagnitude_Moore_R1
+    { true, 2, r1_stencil_labels },
+    // ImageGradientMagnitude_VonNeumann_R1
+    { false, 0, nullptr },
+
     // Limit
+    { true, 1, nullptr },
+    // MeshEdgeStrain
     { true, 1, nullptr },
     // Morphological
     { true, 1, nullptr },
-    
+
     // Morphological_Static_Moore_R1
     { true, 6, morphological_static_labels },
     // Morphological_Static_Moore_R2, R3
@@ -58,12 +73,24 @@ const std::array<LogicVariantGroup, QueryTaskRegistry::L_COUNT> QueryTaskRegistr
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
-    
+
     // PagedToTiledBridge
+    { true, 1, nullptr },
+    // ParticleLifetimeCull
+    { true, 1, nullptr },
+    // PhysicsBroadphaseOverlap
+    { true, 1, nullptr },
+    // PhysicsKineticEnergyAndSleep
     { true, 1, nullptr },
     // Predicate
     { true, 1, nullptr },
+    // RayTriangleIntersect
+    { true, 1, nullptr },
+    // RDSelectionBitsetCompact
+    { true, 1, nullptr },
     // RelationalBridge
+    { true, 1, nullptr },
+    // ShaderParameterEpsilonDirty
     { true, 1, nullptr },
     // SpatialInclusionBridge
     { true, 1, nullptr },
@@ -74,6 +101,8 @@ const std::array<LogicVariantGroup, QueryTaskRegistry::L_COUNT> QueryTaskRegistr
     // Stochastic
     { true, 1, nullptr },
     // SwapEruptionBridge
+    { true, 1, nullptr },
+    // SweptSphereSurface
     { true, 1, nullptr }
 }};
 
@@ -116,8 +145,6 @@ void QueryTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
     IdeamTaskRegistry::log_with_registry("  -> QueryTaskRegistry: Template unrolling complete.");
 }
 
-
-
 // --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> QueryTaskRegistry::create(uint32_t p_op_id, uint32_t p_logic_id, uint32_t p_view_id, uint32_t p_strategy_id, uint32_t p_type_id) {
     if (p_op_id >= O_COUNT || p_logic_id >= L_COUNT || p_view_id >= V_COUNT || p_strategy_id >= S_COUNT || p_type_id >= T_COUNT) {
@@ -129,10 +156,10 @@ std::unique_ptr<INativeTask> QueryTaskRegistry::create(uint32_t p_op_id, uint32_
     if (!sub_matrix) return nullptr;
 
     // 2. O(1) Flat Index Math (Dropped the L dimension)
-    size_t flat_idx = 
+    size_t flat_idx =
         p_op_id * (V_COUNT * S_COUNT * T_COUNT) +
-        p_view_id * (S_COUNT * T_COUNT) + 
-        p_strategy_id * (T_COUNT) + 
+        p_view_id * (S_COUNT * T_COUNT) +
+        p_strategy_id * (T_COUNT) +
         p_type_id;
 
     // 3. Hot-path instantiation

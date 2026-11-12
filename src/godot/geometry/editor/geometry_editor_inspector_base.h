@@ -2,20 +2,27 @@
 
 /**
  * geometry_editor_inspector_base.h
- * Shared base `EditorInspectorPlugin` for the IdeamGeometry, IdeamSplines, and IdeamTiles modules
+ * Shared base `EditorInspectorPlugin` and concrete Resource Inspectors for the IdeamGeometry module
  * (`src/godot/geometry/editor/`).
  *
  * Extends `IdeamEditorInspectorPlugin` to centralize:
  *   1. Automatic `EditorUndoRedoManager` resolution via `IdeamGeometryPlugin::get_static_undo_redo()`
- *      (with seamless fallback to `IdeamSplinesPlugin::get_static_undo_redo()`).
+ *      (with seamless fallback to `IdeamSplinesPlugin` and `IdeamTilesPlugin`).
  *   2. Guaranteed `IdeamUndoRedo` injection in `_parse_begin()` BEFORE the custom UI control
  *      is instantiated and mounted via `_create_inspector_control()`.
  *   3. Optional suppression of raw serialized array properties (`hide_managed_geometry_properties`)
  *      when those properties are already edited interactively in the mounted custom control.
+ *
+ * Concrete Inspectors (`Section 3.2`):
+ *   - `Polygon2DResourceInspector`: Mounts `Polygon2DControl` (wrapping `Polygon2DCanvas`).
+ *   - `VoronoiDiagram2DResourceInspector`: Mounts `Voronoi2DControl` (wrapping `Voronoi2DCanvas`).
+ *   - `SDFGrid2DResourceInspector`: Mounts `SDFGrid2DControl` (wrapping `SDFGrid2DCanvas` + `HeatmapGrid`).
  */
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
 #include "../resources/polygon_2d_resource.h"
+#include "../resources/voronoi_diagram_2d_resource.h"
+#include "../resources/sdf_grid_2d_resource.h"
 
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/object.hpp>
@@ -88,8 +95,8 @@ public:
 
 /**
  * Polygon2DResourceInspector
- * Concrete Inspector Plugin mounting a `Polygon2DCanvas` whenever a `Polygon2DResource`
- * is inspected in the Godot Editor.
+ * Concrete Inspector Plugin mounting a `Polygon2DControl` (`Polygon2DCanvas` + shape/offset/winding tools)
+ * whenever a `Polygon2DResource` is inspected in the Godot Editor.
  */
 class Polygon2DResourceInspector : public GeometryEditorInspectorBase {
     GDCLASS(Polygon2DResourceInspector, GeometryEditorInspectorBase)
@@ -98,10 +105,64 @@ protected:
     static void _bind_methods() {}
 
     [[nodiscard]] godot::Control *_create_inspector_control(godot::Object *p_object) override;
+    [[nodiscard]] bool _is_managed_property(
+        godot::Object *p_object,
+        const godot::String &p_name
+    ) const override;
 
 public:
     Polygon2DResourceInspector() = default;
     ~Polygon2DResourceInspector() override = default;
+
+    bool _can_handle(godot::Object *p_object) override;
+};
+
+/**
+ * VoronoiDiagram2DResourceInspector (`Section 3.2`)
+ * Concrete Inspector Plugin mounting a `Voronoi2DControl` (`Voronoi2DCanvas` + Lloyd relaxation,
+ * grid/Poisson seeding, `Polygon2DResource` clip boundary binding, and CSR dual graph telemetry)
+ * whenever a `VoronoiDiagram2DResource` is inspected in the Godot Editor.
+ */
+class VoronoiDiagram2DResourceInspector : public GeometryEditorInspectorBase {
+    GDCLASS(VoronoiDiagram2DResourceInspector, GeometryEditorInspectorBase)
+
+protected:
+    static void _bind_methods() {}
+
+    [[nodiscard]] godot::Control *_create_inspector_control(godot::Object *p_object) override;
+    [[nodiscard]] bool _is_managed_property(
+        godot::Object *p_object,
+        const godot::String &p_name
+    ) const override;
+
+public:
+    VoronoiDiagram2DResourceInspector() = default;
+    ~VoronoiDiagram2DResourceInspector() override = default;
+
+    bool _can_handle(godot::Object *p_object) override;
+};
+
+/**
+ * SDFGrid2DResourceInspector (`Section 3.2`)
+ * Concrete Inspector Plugin mounting an `SDFGrid2DControl` (`SDFGrid2DCanvas` + `HeatmapGrid`
+ * companion view, Marching Squares iso-contour scrubber, interactive CSG brushes, and Chladni
+ * standing-wave evaluator) whenever an `SDFGrid2DResource` is inspected in the Godot Editor.
+ */
+class SDFGrid2DResourceInspector : public GeometryEditorInspectorBase {
+    GDCLASS(SDFGrid2DResourceInspector, GeometryEditorInspectorBase)
+
+protected:
+    static void _bind_methods() {}
+
+    [[nodiscard]] godot::Control *_create_inspector_control(godot::Object *p_object) override;
+    [[nodiscard]] bool _is_managed_property(
+        godot::Object *p_object,
+        const godot::String &p_name
+    ) const override;
+
+public:
+    SDFGrid2DResourceInspector() = default;
+    ~SDFGrid2DResourceInspector() override = default;
 
     bool _can_handle(godot::Object *p_object) override;
 };

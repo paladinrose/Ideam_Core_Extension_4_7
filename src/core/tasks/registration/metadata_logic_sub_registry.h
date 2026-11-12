@@ -8,12 +8,21 @@
 #include "task_view_bridge.h"
 #include "../metadata_task.h"
 #include "../../memory/views/view_traits.h"
+
 // --- Logics ---
+#include "../metadata_logic/audio_frequency_octave_band_metadata_logic.h"
+#include "../metadata_logic/bone_influence_group_mask_metadata_logic.h"
 #include "../metadata_logic/dsu_cluster_metadata_logic.h"
 #include "../metadata_logic/dsu_cluster_static_metadata_logic.h"
+#include "../metadata_logic/geodesic_ring_metadata_logic.h"
 #include "../metadata_logic/group_mask_metadata_logic.h"
 #include "../metadata_logic/lod_metadata_logic.h"
+#include "../metadata_logic/material_variant_bucket_metadata_logic.h"
+#include "../metadata_logic/mesh_connected_islands_metadata_logic.h"
+#include "../metadata_logic/particle_camera_depth_bucket_metadata_logic.h"
 #include "../metadata_logic/partition_metadata_logic.h"
+#include "../metadata_logic/physics_collision_layer_and_island_metadata_logic.h"
+#include "../metadata_logic/rd_workgroup_tile_partition_metadata_logic.h"
 
 // --- Views & Strategies ---
 #include "../../memory/views/aosoa_view.h"
@@ -59,20 +68,23 @@ namespace {
     template <typename S> struct StrategyDimExtractor<S, std::void_t<decltype(S::dimensions)>> { static constexpr size_t value = S::dimensions; };
 
     template <typename T_Resolver, typename Enable = void> struct KernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
-    template <typename T_Resolver> struct KernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::Type::KERNEL_POINTS)>> { static constexpr size_t value = T_Resolver::Type::KERNEL_POINTS; static constexpr bool has_kernel = true; };
+    template <typename T_Resolver> struct KernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
     template <MetadataLogicID ID, typename T_Concrete, typename T_Strategy> struct MetadataLogicResolver { static constexpr bool is_valid = false; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::AudioFrequencyOctaveBand, C, S> { using Type = AudioFrequencyOctaveBandMetadataLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::BoneInfluenceGroupMask, C, S> { using Type = BoneInfluenceGroupMaskMetadataLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::DSUCluster, C, S>  { using Type = DSUClusterMetadataLogic<C>; static constexpr bool is_valid = true; };
-    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::DSUCluster_Static_Moore_R1, C, S>  { 
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::DSUCluster_Static_Moore_R1, C, S>  {
         static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
-        using Type = DSUClusterStaticMetadataLogic<C, K_SIZE>; 
-        static constexpr bool is_valid = true;  
+        using Type = DSUClusterStaticMetadataLogic<C, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::DSUCluster_Static_VonNeumann_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 1>();
-        using Type = DSUClusterStaticMetadataLogic<C, K_SIZE>; 
-        static constexpr bool is_valid = true; 
+        using Type = DSUClusterStaticMetadataLogic<C, K_SIZE>;
+        static constexpr bool is_valid = true;
     };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::GeodesicRing, C, S> { using Type = GeodesicRingMetadataLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::GroupMask_1Bit, C, S> { using Type = GroupMaskMetadataLogic<C, 1>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::GroupMask_2Bit, C, S> { using Type = GroupMaskMetadataLogic<C, 2>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::GroupMask_3Bit, C, S> { using Type = GroupMaskMetadataLogic<C, 3>; static constexpr bool is_valid = true; };
@@ -81,10 +93,15 @@ namespace {
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::LOD_2Level, C, S> { using Type = LODMetadataLogic<C, 2>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::LOD_3Level, C, S> { using Type = LODMetadataLogic<C, 3>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::LOD_4Level, C, S> { using Type = LODMetadataLogic<C, 4>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::MaterialVariantBucket, C, S> { using Type = MaterialVariantBucketMetadataLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::MeshConnectedIslands, C, S> { using Type = MeshConnectedIslandsMetadataLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::ParticleCameraDepthBucket, C, S> { using Type = ParticleCameraDepthBucketMetadataLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::Partition_1, C, S> { using Type = PartitionMetadataLogic<C, 1>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::Partition_2, C, S> { using Type = PartitionMetadataLogic<C, 2>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::Partition_3, C, S> { using Type = PartitionMetadataLogic<C, 3>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::Partition_4, C, S> { using Type = PartitionMetadataLogic<C, 4>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::PhysicsCollisionLayerAndIsland, C, S> { using Type = PhysicsCollisionLayerAndIslandMetadataLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct MetadataLogicResolver<MetadataLogicID::RDWorkgroupTilePartition, C, S> { using Type = RDWorkgroupTilePartitionMetadataLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <MetadataLogicID LogicID, typename C, typename S> struct LogicKernelExtractor : KernelExtractorImpl<MetadataLogicResolver<LogicID, C, S>> {};
 
@@ -134,7 +151,7 @@ struct MetadataLogicSubRegistry {
     // Heavy-path: Allocates Godot Dictionaries for the Editor UI
     static void generate_ui_matrices(godot::Dictionary& p_matrix) {
         IdeamTaskRegistry::log_with_registry(godot::vformat("    -> Evaluating LogicID: %d", static_cast<int64_t>(L)));
-        
+
         _fill_matrix<true>(std::make_index_sequence<MetadataTaskRegistry::SUB_MATRIX_SIZE>{}, &p_matrix);
 
         godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
@@ -208,18 +225,17 @@ private:
             } else {
                 // Cold-Path UI Collection
                 if (p_matrix) {
-
                     IdeamTaskRegistry::log_with_registry(
                         godot::vformat("        -> Valid Combo: T=%d, S=%d, V=%d(FlatIdx: %d)", T, S, V, FlatIdx)
                     );
-                    
+
                     godot::StringName logic_key(godot::String::num_int64(static_cast<int64_t>(L)));
-                    
+
                     if (!p_matrix->has(logic_key)) {
                         godot::Dictionary dict;
                         // Instantiate the property array exactly once per logic struct type
                         dict["properties"] = L_Type::get_ui_properties();
-                        dict["valid_combinations"] = godot::PackedInt64Array(); 
+                        dict["valid_combinations"] = godot::PackedInt64Array();
                         dict["name"] = godot::String(L_Type::display_name.data());
                         constexpr std::string_view cat = LogicCategoryExtractor<L_Type>::value;
                         dict["category"] = godot::String(cat.data());
@@ -227,14 +243,14 @@ private:
                         const auto& variant_info = MetadataTaskRegistry::logic_variants[static_cast<size_t>(L)];
                         if (variant_info.is_primary && variant_info.variant_count > 1) {
                             dict["variant_count"] = variant_info.variant_count;
-                            
+
                             godot::Array ui_labels;
                             for (uint32_t i = 0; i < variant_info.variant_count; ++i) {
                                 ui_labels.push_back(godot::String(variant_info.labels[i]));
                             }
                             dict["variant_labels"] = ui_labels;
                         }
-                        
+
                         (*p_matrix)[logic_key] = dict;
                     }
 
@@ -242,8 +258,8 @@ private:
                     godot::Dictionary dict = (*p_matrix)[logic_key];
                     godot::PackedInt64Array combos = dict["valid_combinations"];
                     combos.push_back(static_cast<int64_t>(FlatIdx));
-                    dict["valid_combinations"] = combos; 
-                    (*p_matrix)[logic_key] = dict; 
+                    dict["valid_combinations"] = combos;
+                    (*p_matrix)[logic_key] = dict;
                 }
             }
         }
@@ -251,7 +267,7 @@ private:
 };
 
 template <MetadataLogicID L>
-std::array<MetadataTaskFactoryFn, MetadataTaskRegistry::SUB_MATRIX_SIZE> 
+std::array<MetadataTaskFactoryFn, MetadataTaskRegistry::SUB_MATRIX_SIZE>
 MetadataLogicSubRegistry<L>::factories = []{
     std::array<MetadataTaskFactoryFn, MetadataTaskRegistry::SUB_MATRIX_SIZE> arr;
     arr.fill(nullptr);

@@ -9,6 +9,7 @@
 
 // --- Tiles Query Logics ---
 #include "../query_logic/tiling_lattice_cull_and_mask_query_logic.h"
+#include "../query_logic/tiling_piece_movement_rule_eval_query_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -59,6 +60,7 @@ namespace {
     template <TilesQueryLogicID ID, typename T_Concrete, typename T_Strategy>
     struct TilesQueryLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct TilesQueryLogicResolver<TilesQueryLogicID::TilingLatticeCullAndMask, C, S> { using Type = TilingLatticeCullAndMaskQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TilesQueryLogicResolver<TilesQueryLogicID::TilingPieceMovementRuleEval, C, S> { using Type = TilingPieceMovementRuleEvalQueryLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <TilesQueryLogicID LogicID, typename C, typename S>
     struct TilesQueryLogicKernelExtractor : TilesQueryKernelExtractorImpl<TilesQueryLogicResolver<LogicID, C, S>> {};

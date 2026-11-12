@@ -10,7 +10,8 @@
  *   - Provides static `EditorUndoRedoManager` and `IdeamUndoRedo` helpers shared across
  *     `GeometryResource`, `Polygon2DResource`, `VoronoiDiagram2DResource`, `SDFGrid2DResource`,
  *     `GeometryCanvas2DBase`, and downstream geometry plugins (`IdeamSplines`, `IdeamTiles`).
- *   - Registers `Polygon2DResourceInspector` during `_enter_tree()` and cleans it up in `_exit_tree()`.
+ *   - Registers `Polygon2DResourceInspector`, `VoronoiDiagram2DResourceInspector`, and
+ *     `SDFGrid2DResourceInspector` during `_enter_tree()` and cleans them up in `_exit_tree()`.
  */
 
 #include "../editor/ideam_editor_plugin.h"
@@ -39,6 +40,8 @@ private:
         "res://addons/ideam_geometry/resources/project_geometry_settings.res";
 
     godot::Ref<Polygon2DResourceInspector> polygon_2d_inspector;
+    godot::Ref<VoronoiDiagram2DResourceInspector> voronoi_2d_inspector;
+    godot::Ref<SDFGrid2DResourceInspector> sdf_grid_2d_inspector;
 
 public:
     IdeamGeometryPlugin();

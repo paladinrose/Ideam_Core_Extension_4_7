@@ -72,6 +72,9 @@ void GeometryCanvas2DBase::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_show_grid", "show"), &GeometryCanvas2DBase::set_show_grid);
     ClassDB::bind_method(D_METHOD("get_show_grid"), &GeometryCanvas2DBase::get_show_grid);
 
+    ClassDB::bind_method(D_METHOD("set_show_point_labels", "show"), &GeometryCanvas2DBase::set_show_point_labels);
+    ClassDB::bind_method(D_METHOD("get_show_point_labels"), &GeometryCanvas2DBase::get_show_point_labels);
+
     ClassDB::bind_method(D_METHOD("set_selected_point_index", "index"), &GeometryCanvas2DBase::set_selected_point_index);
     ClassDB::bind_method(D_METHOD("get_selected_point_index"), &GeometryCanvas2DBase::get_selected_point_index);
     ClassDB::bind_method(D_METHOD("set_selected_section_index", "index"), &GeometryCanvas2DBase::set_selected_section_index);
@@ -115,14 +118,14 @@ void GeometryCanvas2DBase::set_geometry_resource(const godot::Ref<GeometryResour
 
     _on_resource_bound();
 
-    if (auto_fit_on_change && _get_canvas_point_count() > 0) {
+    if (auto_fit_on_change && (_get_canvas_point_count() > 0 || _has_non_point_content())) {
         fit_view_to_data(allow_zoom_x, allow_zoom_y);
     }
     queue_redraw();
 }
 
 void GeometryCanvas2DBase::_on_bound_resource_changed() {
-    if (auto_fit_on_change && base_drag_state == BASE_DRAG_NONE && _get_canvas_point_count() > 0) {
+    if (auto_fit_on_change && base_drag_state == BASE_DRAG_NONE && (_get_canvas_point_count() > 0 || _has_non_point_content())) {
         fit_view_to_data(allow_zoom_x, allow_zoom_y);
     }
     queue_redraw();
@@ -233,7 +236,16 @@ void GeometryCanvas2DBase::set_auto_fit_on_change(bool p_auto_fit) {
 
 bool GeometryCanvas2DBase::_compute_world_bounds(godot::Rect2 &r_bounds) const {
     const int n = _get_canvas_point_count();
-    if (n <= 0) return false;
+    if (n <= 0) {
+        if (geometry_resource.is_valid()) {
+            const godot::Rect2 gb = geometry_resource->get_bounds_2d();
+            if (gb.size.x > 1e-4f || gb.size.y > 1e-4f) {
+                r_bounds = gb;
+                return true;
+            }
+        }
+        return false;
+    }
 
     godot::Vector2 min_pt = _get_point_world_pos(0);
     godot::Vector2 max_pt = min_pt;
@@ -296,6 +308,11 @@ void GeometryCanvas2DBase::set_point_style(GeometryCanvasPointStyle p_style) {
 
 void GeometryCanvas2DBase::set_show_grid(bool p_show) {
     show_grid = p_show;
+    queue_redraw();
+}
+
+void GeometryCanvas2DBase::set_show_point_labels(bool p_show) {
+    show_point_labels = p_show;
     queue_redraw();
 }
 
@@ -573,7 +590,7 @@ void GeometryCanvas2DBase::_draw() {
 
     _draw_grid_and_axes(plot);
 
-    if (_get_canvas_point_count() <= 0) {
+    if (_get_canvas_point_count() <= 0 && !_has_non_point_content()) {
         draw_rect(plot, Color(0.28f, 0.32f, 0.38f, 1.0f), false, 1.0f);
         if (font.is_valid()) {
             draw_string(
@@ -835,6 +852,22 @@ void Polygon2DCanvas::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_show_centroid", "show"), &Polygon2DCanvas::set_show_centroid);
     ClassDB::bind_method(D_METHOD("get_show_centroid"), &Polygon2DCanvas::get_show_centroid);
+
+    ClassDB::bind_method(D_METHOD("set_show_convex_hull", "show"), &Polygon2DCanvas::set_show_convex_hull);
+    ClassDB::bind_method(D_METHOD("get_show_convex_hull"), &Polygon2DCanvas::get_show_convex_hull);
+
+    ClassDB::bind_method(D_METHOD("set_show_offset_preview", "show"), &Polygon2DCanvas::set_show_offset_preview);
+    ClassDB::bind_method(D_METHOD("get_show_offset_preview"), &Polygon2DCanvas::get_show_offset_preview);
+
+    ClassDB::bind_method(
+        D_METHOD("set_preview_offset_params", "delta", "join_style", "miter_limit"),
+        &Polygon2DCanvas::set_preview_offset_params,
+        DEFVAL(JOIN_STYLE_MITER),
+        DEFVAL(2.0)
+    );
+    ClassDB::bind_method(D_METHOD("get_preview_offset_delta"), &Polygon2DCanvas::get_preview_offset_delta);
+    ClassDB::bind_method(D_METHOD("get_preview_join_style"), &Polygon2DCanvas::get_preview_join_style);
+    ClassDB::bind_method(D_METHOD("get_preview_miter_limit"), &Polygon2DCanvas::get_preview_miter_limit);
 }
 
 Polygon2DCanvas::Polygon2DCanvas() {
@@ -861,6 +894,29 @@ void Polygon2DCanvas::set_show_triangulation(bool p_show) {
 void Polygon2DCanvas::set_show_centroid(bool p_show) {
     show_centroid_ = p_show;
     queue_redraw();
+}
+
+void Polygon2DCanvas::set_show_convex_hull(bool p_show) {
+    show_convex_hull_ = p_show;
+    queue_redraw();
+}
+
+void Polygon2DCanvas::set_show_offset_preview(bool p_show) {
+    show_offset_preview_ = p_show;
+    queue_redraw();
+}
+
+void Polygon2DCanvas::set_preview_offset_params(
+    real_t p_delta,
+    GeometryJoinStyle2D p_join,
+    real_t p_miter_limit
+) {
+    preview_offset_delta_ = p_delta;
+    preview_join_style_   = p_join;
+    preview_miter_limit_  = p_miter_limit;
+    if (show_offset_preview_) {
+        queue_redraw();
+    }
 }
 
 int Polygon2DCanvas::_get_canvas_point_count() const {
@@ -932,8 +988,8 @@ void Polygon2DCanvas::_draw_plot_background_overlay(const godot::Rect2 &p_plot) 
     const Ref<Polygon2DResource> poly = get_polygon_resource();
     if (poly.is_null() || !poly->is_closed() || poly->get_vertex_count() < 3) return;
 
-    const PackedInt32Array tris   = poly->get_triangles();
-    const PackedVector2Array v_w  = poly->get_vertices();
+    const PackedInt32Array tris  = poly->get_triangles();
+    const PackedVector2Array v_w = poly->get_vertices();
     if (tris.size() < 3) return;
 
     PackedVector2Array scr_verts;
@@ -974,10 +1030,43 @@ void Polygon2DCanvas::_draw_plot_background_overlay(const godot::Rect2 &p_plot) 
 void Polygon2DCanvas::_draw_plot_foreground_overlay(const godot::Rect2 &p_plot) {
     using namespace godot;
     const Ref<Polygon2DResource> poly = get_polygon_resource();
-    if (poly.is_null() || poly->get_vertex_count() < 3 || !show_centroid_) return;
+    if (poly.is_null() || poly->get_vertex_count() < 3) return;
 
-    const Vector2 c_scr = world_to_screen(poly->get_centroid(), p_plot);
-    draw_circle(c_scr, 4.0f, Color(0.98f, 0.76f, 0.24f, 0.95f));
+    if (show_convex_hull_) {
+        const PackedVector2Array hull_w = poly->compute_convex_hull();
+        if (hull_w.size() >= 3) {
+            PackedVector2Array hull_scr;
+            hull_scr.resize(hull_w.size() + 1);
+            for (int64_t i = 0; i < hull_w.size(); ++i) {
+                hull_scr.set(i, world_to_screen(hull_w[i], p_plot));
+            }
+            hull_scr.set(hull_w.size(), world_to_screen(hull_w[0], p_plot));
+            draw_polyline(hull_scr, Color(0.55f, 0.94f, 0.56f, 0.85f), 1.6f, true);
+        }
+    }
+
+    if (show_offset_preview_ && std::abs(preview_offset_delta_) > 1e-5f) {
+        const PackedVector2Array off_w = poly->compute_offset_polygon(
+            preview_offset_delta_,
+            preview_join_style_,
+            preview_miter_limit_
+        );
+        if (off_w.size() >= 3) {
+            PackedVector2Array off_scr;
+            off_scr.resize(off_w.size() + 1);
+            for (int64_t i = 0; i < off_w.size(); ++i) {
+                off_scr.set(i, world_to_screen(off_w[i], p_plot));
+            }
+            off_scr.set(off_w.size(), world_to_screen(off_w[0], p_plot));
+            draw_polyline(off_scr, Color(0.98f, 0.62f, 0.26f, 0.92f), 1.8f, true);
+        }
+    }
+
+    if (show_centroid_) {
+        const Vector2 c_scr = world_to_screen(poly->get_centroid(), p_plot);
+        draw_circle(c_scr, 4.5f, Color(0.98f, 0.76f, 0.24f, 0.95f));
+        draw_circle(c_scr, 2.0f, Color(0.12f, 0.14f, 0.18f, 1.0f));
+    }
 }
 
 } // namespace ideam::godot_ext

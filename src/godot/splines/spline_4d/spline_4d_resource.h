@@ -39,6 +39,7 @@ private:
     using Vec3       = typename CoreSpline::Vec3Type;
 
     CoreSpline core_spline;
+    bool color_gradient_mode = false;
 
     // Staging caches for order-independent .tres property deserialization
     godot::PackedVector4Array pending_back_handles;
@@ -99,6 +100,9 @@ public:
     [[nodiscard]] int get_point_count() const override;
     [[nodiscard]] int get_length() const override;
     [[nodiscard]] int get_section_count() const override;
+
+    void set_color_gradient_mode(bool p_enabled);
+    [[nodiscard]] bool get_color_gradient_mode() const noexcept { return color_gradient_mode; }
 
     void set_wrap(bool p_wrap) override;
     [[nodiscard]] bool get_wrap() const override;

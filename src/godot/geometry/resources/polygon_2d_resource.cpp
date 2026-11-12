@@ -44,6 +44,7 @@ void Polygon2DResource::_bind_methods() {
     ClassDB::bind_method(D_METHOD("closest_point_on_boundary", "point"), &Polygon2DResource::closest_point_on_boundary);
     ClassDB::bind_method(D_METHOD("get_triangles"), &Polygon2DResource::get_triangles);
     ClassDB::bind_method(D_METHOD("compute_convex_hull"), &Polygon2DResource::compute_convex_hull);
+    ClassDB::bind_method(D_METHOD("replace_with_convex_hull"), &Polygon2DResource::replace_with_convex_hull);
     ClassDB::bind_method(
         D_METHOD("compute_offset_polygon", "delta", "join_style", "miter_limit"),
         &Polygon2DResource::compute_offset_polygon,
@@ -92,6 +93,8 @@ void Polygon2DResource::_bind_methods() {
     );
 
     // --- Undo/Redo Commit Wrappers ---
+    ClassDB::bind_method(D_METHOD("commit_set_closed", "closed"), &Polygon2DResource::commit_set_closed);
+    ClassDB::bind_method(D_METHOD("commit_clear"), &Polygon2DResource::commit_clear);
     ClassDB::bind_method(D_METHOD("commit_add_vertex", "vertex"), &Polygon2DResource::commit_add_vertex);
     ClassDB::bind_method(D_METHOD("commit_insert_vertex", "index", "vertex"), &Polygon2DResource::commit_insert_vertex);
     ClassDB::bind_method(D_METHOD("commit_set_vertex", "index", "vertex"), &Polygon2DResource::commit_set_vertex);
@@ -107,6 +110,29 @@ void Polygon2DResource::_bind_methods() {
         &Polygon2DResource::commit_ensure_winding,
         DEFVAL(WINDING_COUNTER_CLOCKWISE)
     );
+    ClassDB::bind_method(D_METHOD("commit_replace_with_convex_hull"), &Polygon2DResource::commit_replace_with_convex_hull);
+    ClassDB::bind_method(D_METHOD("commit_create_rectangle", "center", "size"), &Polygon2DResource::commit_create_rectangle);
+    ClassDB::bind_method(
+        D_METHOD("commit_create_regular_polygon", "sides", "radius", "angle_offset", "reverse_winding"),
+        &Polygon2DResource::commit_create_regular_polygon,
+        DEFVAL(6),
+        DEFVAL(0.5),
+        DEFVAL(0.0),
+        DEFVAL(true)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_create_star", "sides", "outer_radius", "inner_radius", "angle_offset"),
+        &Polygon2DResource::commit_create_star,
+        DEFVAL(5),
+        DEFVAL(0.5),
+        DEFVAL(0.25),
+        DEFVAL(0.0)
+    );
+    ClassDB::bind_method(
+        D_METHOD("commit_clip_half_plane", "plane_origin", "inside_normal"),
+        &Polygon2DResource::commit_clip_half_plane
+    );
+    ClassDB::bind_method(D_METHOD("commit_clip_convex", "convex_clip"), &Polygon2DResource::commit_clip_convex);
 }
 
 std::vector<Polygon2DResource::Vec2> Polygon2DResource::_to_glm_vector(const godot::PackedVector2Array &p_arr) {
@@ -268,6 +294,13 @@ godot::PackedVector2Array Polygon2DResource::compute_convex_hull() const {
     return _to_godot_array(hull);
 }
 
+void Polygon2DResource::replace_with_convex_hull() {
+    if (vertices_.size() < 3) return;
+    vertices_ = PolyMath::convex_hull(vertices_);
+    closed_   = true;
+    _mark_dirty();
+}
+
 godot::PackedVector2Array Polygon2DResource::compute_offset_polygon(
     real_t p_delta,
     GeometryJoinStyle2D p_join,
@@ -363,6 +396,20 @@ void Polygon2DResource::create_star(
     _mark_dirty();
 }
 
+void Polygon2DResource::commit_set_closed(bool p_closed) {
+    if (closed_ == p_closed) return;
+    const godot::Dictionary before = get_snapshot_state();
+    set_closed(p_closed);
+    commit_snapshot_action("Toggle Polygon Closed", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_clear() {
+    if (vertices_.empty()) return;
+    const godot::Dictionary before = get_snapshot_state();
+    clear();
+    commit_snapshot_action("Clear Polygon", before, get_snapshot_state());
+}
+
 void Polygon2DResource::commit_add_vertex(const godot::Vector2 &p_vertex) {
     const godot::Dictionary before = get_snapshot_state();
     add_vertex(p_vertex);
@@ -408,6 +455,58 @@ void Polygon2DResource::commit_ensure_winding(GeometryWindingOrder p_desired) {
     const godot::Dictionary before = get_snapshot_state();
     ensure_winding(p_desired);
     commit_snapshot_action("Ensure Polygon Winding", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_replace_with_convex_hull() {
+    if (vertices_.size() < 3) return;
+    const godot::Dictionary before = get_snapshot_state();
+    replace_with_convex_hull();
+    commit_snapshot_action("Compute Convex Hull", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_create_rectangle(const godot::Vector2 &p_center, const godot::Vector2 &p_size) {
+    const godot::Dictionary before = get_snapshot_state();
+    create_rectangle(p_center, p_size);
+    commit_snapshot_action("Create Rectangle Polygon", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_create_regular_polygon(
+    int p_sides,
+    real_t p_radius,
+    real_t p_angle_offset,
+    bool p_reverse_winding
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    create_regular_polygon(p_sides, p_radius, p_angle_offset, p_reverse_winding);
+    commit_snapshot_action("Create Regular Polygon", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_create_star(
+    int p_sides,
+    real_t p_outer_radius,
+    real_t p_inner_radius,
+    real_t p_angle_offset
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    create_star(p_sides, p_outer_radius, p_inner_radius, p_angle_offset);
+    commit_snapshot_action("Create Star Polygon", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_clip_half_plane(
+    const godot::Vector2 &p_plane_origin,
+    const godot::Vector2 &p_inside_normal
+) {
+    const godot::Dictionary before = get_snapshot_state();
+    const godot::PackedVector2Array clipped = clip_half_plane(p_plane_origin, p_inside_normal);
+    set_vertices(clipped);
+    commit_snapshot_action("Clip Polygon Against Half-Plane", before, get_snapshot_state());
+}
+
+void Polygon2DResource::commit_clip_convex(const godot::PackedVector2Array &p_convex_clip) {
+    const godot::Dictionary before = get_snapshot_state();
+    const godot::PackedVector2Array clipped = clip_convex(p_convex_clip);
+    set_vertices(clipped);
+    commit_snapshot_action("Clip Polygon Against Convex Boundary", before, get_snapshot_state());
 }
 
 } // namespace ideam::godot_ext

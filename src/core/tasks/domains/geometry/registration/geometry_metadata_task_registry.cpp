@@ -7,6 +7,8 @@ namespace ideam::core {
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, GeometryMetadataTaskRegistry::STORAGE_COUNT> GeometryMetadataTaskRegistry::logic_variants = {{
     // SpatialHashPartition (0)
+    { true, 1, nullptr },
+    // VoronoiSeedRegionPartition (1)
     { true, 1, nullptr }
 }};
 

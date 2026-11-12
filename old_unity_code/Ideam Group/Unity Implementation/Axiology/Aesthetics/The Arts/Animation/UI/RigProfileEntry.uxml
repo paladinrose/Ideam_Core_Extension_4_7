@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="/Assets/Ideam/Unity Implementation/UI/Ideos.uss" />
+    <ui:Foldout text="Entry Matching" name="EntryMatchingFoldout" value="false">
+        <Ideam.Unity.UI.DropList name="AcceptedTerms" Label="Accepted Terms" AllowMultiSelect="false" ShowSelection="false" />
+        <ui:Toggle label="Case Sensitive" name="CaseSensitive" />
+        <ui:Toggle label="Check Full Term" name="CheckFullTerm" />
+        <ui:Toggle label="Check &quot;Starts With&quot;" name="CheckStartsWith" />
+        <ui:Toggle label="Check &quot;Ends With&quot;" name="CheckEndsWith" />
+        <ui:Toggle label="Check &quot;Contains&quot;" name="CheckContains" />
+    </ui:Foldout>
+    <ui:TextField picking-mode="Ignore" label="Generated Rig Name" value="rig name" text="rig name" name="RigNameField" />
+    <Ideam.Unity.UI.FloatField focusable="true" name="RigWeightField" label="Generated Rig Weight" />
+    <ui:VisualElement style="height: 20px;" />
+    <Ideam.Unity.UI.DropList name="ConstraintsDrop" Label="Constraints" />
+    <ui:VisualElement name="SelectedConstraint" />
+    <ui:VisualElement style="height: 20px;" />
+    <Ideam.Unity.UI.DropList name="ControlsDrop" Label="Controls" />
+    <ui:VisualElement name="SelectedControl" />
+</ui:UXML>

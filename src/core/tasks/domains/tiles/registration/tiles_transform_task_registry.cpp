@@ -13,6 +13,10 @@ const std::array<LogicVariantGroup, TilesTransformTaskRegistry::STORAGE_COUNT> T
     // TilingHexizeAndBorderExtract (2)
     { true, 1, nullptr },
     // TilingQuotientAStarAndFlowField (3)
+    { true, 1, nullptr },
+    // TilingDualGraphWFC (4)
+    { true, 1, nullptr },
+    // TilingBoardSpaceGenerate (5)
     { true, 1, nullptr }
 }};
 

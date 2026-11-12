@@ -1,0 +1,26 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Ideam.Unity.UI.TabBar />
+    <ui:VisualElement name="GamePage">
+        <Ideam.Unity.UI.ObjectSelectorField name="CosmicSceneSelector" AllowMultiSelect="false" Label="Cosmic Scenes" Docked="true" />
+        <ui:Foldout text="Asset References" name="AssetReferences" value="false">
+            <ui:Foldout text="Cosmic References" name="CosmicReferences" value="false">
+                <Ideam.Unity.UI.ObjectSelectorField Label="Cosmic Reference" name="CosmicReferenceSelector" style="border-bottom-color: rgb(255, 255, 255); border-bottom-width: 1px; margin-bottom: 5px;" />
+                <ui:VisualElement name="CosmicReferenceElement" />
+            </ui:Foldout>
+            <ui:Foldout text="Global References" name="GlobalReferences" value="false">
+                <Ideam.Unity.UI.ObjectSelectorField name="GlobalReferenceSelector" Label="Global Reference" style="margin-bottom: 5px; border-bottom-color: rgb(255, 255, 255); border-bottom-width: 1px;" />
+                <ui:VisualElement name="GlobalReferenceField" />
+            </ui:Foldout>
+            <ui:Foldout text="Game Scenes" name="SceneReferences" value="false">
+                <Ideam.Unity.UI.ObjectSelectorField Label="Scenes" name="SceneSelector" style="margin-bottom: 5px; border-bottom-color: rgb(255, 255, 255); border-bottom-width: 1px;" />
+                <ui:VisualElement name="SelectedSceneElement" style="display: none;">
+                    <ui:TextField picking-mode="Ignore" label="Scene Name" value="Scene Name" text="Scene Name" readonly="true" name="SceneNameField" />
+                    <ui:Toggle label="Startup Scene" name="StartupSceneToggle" picking-mode="Ignore" />
+                    <ui:Button tabindex="-1" text="Open Scene" display-tooltip-when-elided="true" name="OpenSceneButton" />
+                    <ui:Button tabindex="-1" text="Add Scene" display-tooltip-when-elided="true" name="AddSceneButton" />
+                </ui:VisualElement>
+            </ui:Foldout>
+        </ui:Foldout>
+    </ui:VisualElement>
+    <ui:VisualElement name="AssetsPage" />
+</ui:UXML>

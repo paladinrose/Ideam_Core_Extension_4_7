@@ -6,120 +6,242 @@ namespace ideam::core {
 
 namespace { // Translation Unit Firewall
     // --- UI Labels for OptionButtons ---
-    constexpr const char* stencil_labels[] = { 
-        "Moore (R1)", "Moore (R2)", "Moore (R3)", 
-        "Von Neumann (R1)", "Von Neumann (R2)", "Von Neumann (R3)" 
+    constexpr const char* stencil_labels[] = {
+        "Moore (R1)", "Moore (R2)", "Moore (R3)",
+        "Von Neumann (R1)", "Von Neumann (R2)", "Von Neumann (R3)"
+    };
+
+    constexpr const char* r1_stencil_labels[] = {
+        "Moore (R1)", "Von Neumann (R1)"
     };
 
     constexpr const char* blend_shape_labels[] = {
-    "1 Shape", "2 Shapes", "4 Shapes", "8 Shapes"
+        "1 Shape", "2 Shapes", "4 Shapes", "8 Shapes"
     };
 } // namespace
 
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, TransformTaskRegistry::L_COUNT> TransformTaskRegistry::logic_variants = {{
-    // BlendShapeEvaluate_1Shape (0)
+    // ArmorSpallPeel
+    { true, 1, nullptr },
+    // AudioBusVolumeAndEffectSync
+    { true, 1, nullptr },
+    // AudioGeneratorProceduralPCM
+    { true, 1, nullptr },
+    // AudioPolyphonicStreamTrigger
+    { true, 1, nullptr },
+    // AudioSpectrumAnalyzerCapture
+    { true, 1, nullptr },
+
+    // BlendShapeEvaluate_1Shape
     { true, 4, blend_shape_labels },
-    // BlendShapeEvaluate_2Shapes, 4Shapes, 8Shapes (1, 2, 3)
+    // BlendShapeEvaluate_2Shapes, 4Shapes, 8Shapes
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
 
-    // BoundaryConstraint (4)
+    // BoundaryConstraint
     { true, 1, nullptr },
-    // BoundsExtraction (5)
+    // BoundsExtraction
     { true, 1, nullptr },
-    // CollisionShapeMeshSync (6)
+    // CollisionShapeMeshSync
     { true, 1, nullptr },
-    // CpuLinearBlendSkinning (7)
+    // CPULinearBlendSkinning
     { true, 1, nullptr },
-    // DataScatter (8)
+    // CustomDataPack
     { true, 1, nullptr },
-    // DataSort (9)
+    // DataScatter
     { true, 1, nullptr },
-    // EulerIntegration (10)
+    // DataSort
     { true, 1, nullptr },
-    // FabrikChainIK (11)
+    // EdgeSplitTear
     { true, 1, nullptr },
-    // FaceCenterAndArea (12)
+    // EulerIntegration
     { true, 1, nullptr },
-    // FastNoiseLite (13)
+    // FabrikChainIK
     { true, 1, nullptr },
-    // ForwardKinematicsChain (14)
+    // FaceCenterAndArea
     { true, 1, nullptr },
-
-    // ImageChannelExtract (15)
+    // FastNoiseLite
     { true, 1, nullptr },
-    // ImageChannelPack (16)
+    // ForwardKinematicsChain
     { true, 1, nullptr },
-    // ImageNormalizeScalar (17)
+    // GlobalShaderParameterSync
     { true, 1, nullptr },
-    // ImagePaletteLut (18)
+    // GPUParticlesEmitBridge
     { true, 1, nullptr },
-    // ImageRawExport (19)
+    // GridDensitySplat
     { true, 1, nullptr },
-    // ImageRawImport (20)
-    { true, 1, nullptr },
-    // ImageSpatial2DExport (21)
-    { true, 1, nullptr },
-    // ImageSpatial2DImport (22)
+    // HalfFloatPack
     { true, 1, nullptr },
 
-    // MeshAttributeRegionCommit (23)
-    { true, 1, nullptr },
-    // MeshBoundsSync (24)
-    { true, 1, nullptr },
-    // MeshSkinRegionCommit (25)
-    { true, 1, nullptr },
-    // MeshStreamPack (26)
-    { true, 1, nullptr },
-    // MeshStreamUnpack (27)
-    { true, 1, nullptr },
-    // MeshSurfaceExport (28)
-    { true, 1, nullptr },
-    // MeshSurfaceImport (29)
-    { true, 1, nullptr },
-    // MeshSurfaceScatter (30)
-    { true, 1, nullptr },
-    // MeshUVProjection (31)
-    { true, 1, nullptr },
-    // MeshVertexColorMap (32)
-    { true, 1, nullptr },
-    // MeshVertexDeform (33)
-    { true, 1, nullptr },
-    // MeshVertexRegionCommit (34)
-    { true, 1, nullptr },
-    // MultiMeshBufferSync (35)
-    { true, 1, nullptr },
-
-    // NoiseInjection (36)
-    { true, 1, nullptr },
-    // NormalRecalc (37)
-    { true, 1, nullptr },
-    // PackedArrayExport (38)
-    { true, 1, nullptr },
-    // SkeletonPoseBridge (39)
-    { true, 1, nullptr },
-    // SpringBoneChain (40)
-    { true, 1, nullptr },
-
-    // Stencil_Moore_R1 (41)
+    // ImageBilateralDenoise_Moore_R1
     { true, 6, stencil_labels },
-    // Stencil_Moore_R2, R3 (42, 43)
+    // ImageBilateralDenoise_Moore_R2, R3, VonNeumann_R1, R2, R3
     { false, 0, nullptr },
     { false, 0, nullptr },
-    // Stencil_VonNeumann_R1, R2, R3 (44, 45, 46)
     { false, 0, nullptr },
     { false, 0, nullptr },
     { false, 0, nullptr },
 
-    // TangentRecalc (47)
+    // ImageChannelExtract
     { true, 1, nullptr },
-    // Transform3DBatch (48)
+    // ImageChannelPack
     { true, 1, nullptr },
-    // TwoBoneIK (49)
+    // ImageHistogramEqualize
     { true, 1, nullptr },
-    // ValueAccumulation (50)
+    // ImageMipmapDownsample
+    { true, 1, nullptr },
+
+    // ImageMorphologicalFilter_Moore_R1
+    { true, 6, stencil_labels },
+    // ImageMorphologicalFilter_Moore_R2, R3, VonNeumann_R1, R2, R3
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+
+    // ImageNormalFromHeightmap_Moore_R1
+    { true, 2, r1_stencil_labels },
+    // ImageNormalFromHeightmap_VonNeumann_R1
+    { false, 0, nullptr },
+
+    // ImageNormalizeScalar
+    { true, 1, nullptr },
+    // ImagePaletteLut
+    { true, 1, nullptr },
+    // ImageRawExport
+    { true, 1, nullptr },
+    // ImageRawImport
+    { true, 1, nullptr },
+    // ImageSeamlessTileBlend
+    { true, 1, nullptr },
+    // ImageSpatial2DExport
+    { true, 1, nullptr },
+    // ImageSpatial2DImport
+    { true, 1, nullptr },
+    // ImageTexture2DServerUpdate
+    { true, 1, nullptr },
+    // InstanceShaderParamBatch
+    { true, 1, nullptr },
+    // JoltConvexAndHeightmapShapeSync
+    { true, 1, nullptr },
+    // JoltJointMotorAndLimitSync
+    { true, 1, nullptr },
+
+    // MeshAttributeRegionCommit
+    { true, 1, nullptr },
+    // MeshBoundsSync
+    { true, 1, nullptr },
+    // MeshHolePunchBoolean
+    { true, 1, nullptr },
+    // MeshLaplacianCurvature
+    { true, 1, nullptr },
+    // MeshSkinRegionCommit
+    { true, 1, nullptr },
+    // MeshStreamPack
+    { true, 1, nullptr },
+    // MeshStreamUnpack
+    { true, 1, nullptr },
+    // MeshSurfaceExport
+    { true, 1, nullptr },
+    // MeshSurfaceImport
+    { true, 1, nullptr },
+    // MeshSurfaceScatter
+    { true, 1, nullptr },
+    // MeshUVProjection
+    { true, 1, nullptr },
+    // MeshVertexColorMap
+    { true, 1, nullptr },
+    // MeshVertexDeform
+    { true, 1, nullptr },
+    // MeshVertexRegionCommit
+    { true, 1, nullptr },
+    // MultiMeshBufferSync
+    { true, 1, nullptr },
+
+    // NoiseInjection
+    { true, 1, nullptr },
+    // NormalRecalc
+    { true, 1, nullptr },
+    // PackedArrayExport
+    { true, 1, nullptr },
+    // ParticleEmitterClaim
+    { true, 1, nullptr },
+    // ParticleFieldAdvection
+    { true, 1, nullptr },
+    // ParticleLifetimeAndCurve
+    { true, 1, nullptr },
+    // ParticleTrailRibbonGenerate
+    { true, 1, nullptr },
+    // PhysicsBatchRaycastAndShapeCast
+    { true, 1, nullptr },
+    // PhysicsBodyStateBatchSync
+    { true, 1, nullptr },
+    // PhysicsImpulseAndForceBatch
+    { true, 1, nullptr },
+    // PlanarMeshSlice
+    { true, 1, nullptr },
+    // QuadricMeshDecimate
+    { true, 1, nullptr },
+    // RDAsyncReadbackPoll
+    { true, 1, nullptr },
+    // RDComputeDispatchIndirectPrep
+    { true, 1, nullptr },
+    // RDComputePipelineDispatch
+    { true, 1, nullptr },
+    // RDPushConstantPack
+    { true, 1, nullptr },
+    // RDStd140Std430LayoutPack
+    { true, 1, nullptr },
+    // RDStorageBufferSync
+    { true, 1, nullptr },
+    // RDTexture2DRDBridge
+    { true, 1, nullptr },
+    // RDVertexAttributeBufferBridge
+    { true, 1, nullptr },
+    // ShaderDataTexturePack
+    { true, 1, nullptr },
+    // ShaderMaterialParamSync
+    { true, 1, nullptr },
+    // SkeletonPoseBridge
+    { true, 1, nullptr },
+    // SpatialAudioAttenuationAndDoppler
+    { true, 1, nullptr },
+    // SpringBoneChain
+    { true, 1, nullptr },
+
+    // Stencil_Moore_R1
+    { true, 6, stencil_labels },
+    // Stencil_Moore_R2, R3, VonNeumann_R1, R2, R3
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+    { false, 0, nullptr },
+
+    // SurfaceHeatAblation
+    { true, 1, nullptr },
+    // SurfaceWavePDE
+    { true, 1, nullptr },
+    // TangentRecalc
+    { true, 1, nullptr },
+    // Transform3DBatch
+    { true, 1, nullptr },
+    // TwoBoneIK
+    { true, 1, nullptr },
+    // ValueAccumulation
+    { true, 1, nullptr },
+
+    // VectorFieldCurlNoise_Moore_R1
+    { true, 2, r1_stencil_labels },
+    // VectorFieldCurlNoise_VonNeumann_R1
+    { false, 0, nullptr },
+
+    // VoronoiMeshFracture
+    { true, 1, nullptr },
+    // XPBDVertexSoftBody
     { true, 1, nullptr }
 }};
 
@@ -160,9 +282,7 @@ void TransformTaskRegistry::generate_ui_matrices(godot::Dictionary& p_matrix) {
     // Rips through valid template permutations to build the Godot Inspector UI
     generate_ui_all_sub_registries(p_matrix, std::make_index_sequence<L_COUNT>{});
     IdeamTaskRegistry::log_with_registry("  -> TransformTaskRegistry: Template unrolling complete.");
-    
 }
-
 
 // --- The O(1) Dispatcher ---
 std::unique_ptr<INativeTask> TransformTaskRegistry::create(uint32_t p_logic_id, uint32_t p_view_id, uint32_t p_strategy_id, uint32_t p_type_id) {
@@ -175,7 +295,7 @@ std::unique_ptr<INativeTask> TransformTaskRegistry::create(uint32_t p_logic_id, 
     if (!sub_matrix) return nullptr;
 
     // 2. O(1) Flat Index Math (Dropped the L dimension)
-    size_t flat_idx = 
+    size_t flat_idx =
         p_view_id * (S_COUNT * T_COUNT) +
         p_strategy_id * (T_COUNT) +
         p_type_id;

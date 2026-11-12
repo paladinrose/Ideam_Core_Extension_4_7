@@ -13,6 +13,11 @@
 #include "../transform_logic/csg_clip_and_seam_weld_transform_logic.h"
 #include "../transform_logic/voronoi_delaunay_dual_transform_logic.h"
 #include "../transform_logic/sdf_field_and_contour_transform_logic.h"
+#include "../transform_logic/sdf_jump_flood_edt_transform_logic.h"
+#include "../transform_logic/sdf_marching_cubes_extract_transform_logic.h"
+#include "../transform_logic/delaunay_nav_mesh_build_transform_logic.h"
+#include "../transform_logic/convex_hull_and_obb_fit_transform_logic.h"
+#include "../transform_logic/spatial_voronoi_territory_control_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -66,6 +71,20 @@ namespace {
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::CSGClipAndSeamWeld, C, S> { using Type = CSGClipAndSeamWeldTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::VoronoiDelaunayDual, C, S> { using Type = VoronoiDelaunayDualTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SDFFieldAndContour, C, S> { using Type = SDFFieldAndContourTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SDFJumpFloodEDT, C, S> { using Type = SDFJumpFloodEDTTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SDFMarchingCubesExtract_Moore_R1, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
+        using Type = SDFMarchingCubesExtractTransformLogic<C, S, StaticStencilView, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SDFMarchingCubesExtract_VonNeumann_R1, C, S> {
+        static constexpr size_t K_SIZE = stencil_math::von_neumann_size<S::dimensions, 1>();
+        using Type = SDFMarchingCubesExtractTransformLogic<C, S, StaticStencilView, K_SIZE>;
+        static constexpr bool is_valid = true;
+    };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::DelaunayNavMeshBuild, C, S> { using Type = DelaunayNavMeshBuildTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::ConvexHullAndOBBFit, C, S> { using Type = ConvexHullAndOBBFitTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SpatialVoronoiTerritoryControl, C, S> { using Type = SpatialVoronoiTerritoryControlTransformLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <GeometryTransformLogicID LogicID, typename C, typename S>
     struct GeometryTransformLogicKernelExtractor : GeometryTransformKernelExtractorImpl<GeometryTransformLogicResolver<LogicID, C, S>> {};

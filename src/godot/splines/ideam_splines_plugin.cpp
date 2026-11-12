@@ -53,7 +53,7 @@ void IdeamSplinesPlugin::_enter_tree() {
         register_task_domain_pack();
     }
 
-    // 2. Instantiate and register all 1D-4D Spline Resource Inspector Plugins
+    // 2. Instantiate and register all 1D-4D & Tween Spline Resource Inspector Plugins
     spline_1d_inspector.instantiate();
     add_inspector_plugin(spline_1d_inspector);
 
@@ -65,9 +65,53 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     spline_4d_inspector.instantiate();
     add_inspector_plugin(spline_4d_inspector);
+
+    spline_tween_inspector.instantiate();
+    add_inspector_plugin(spline_tween_inspector);
+
+    // 3. Instantiate and register 3D, 4D, Extrude, Scatter & Corridor Viewport Gizmo Plugins
+    spline_3d_gizmo.instantiate();
+    add_node_3d_gizmo_plugin(spline_3d_gizmo);
+
+    spline_4d_gizmo.instantiate();
+    add_node_3d_gizmo_plugin(spline_4d_gizmo);
+
+    spline_extrude_gizmo.instantiate();
+    add_node_3d_gizmo_plugin(spline_extrude_gizmo);
+
+    spline_scatter_gizmo.instantiate();
+    add_node_3d_gizmo_plugin(spline_scatter_gizmo);
+
+    spline_corridor_gizmo.instantiate();
+    add_node_3d_gizmo_plugin(spline_corridor_gizmo);
 }
 
 void IdeamSplinesPlugin::_exit_tree() {
+    if (spline_corridor_gizmo.is_valid()) {
+        remove_node_3d_gizmo_plugin(spline_corridor_gizmo);
+        spline_corridor_gizmo.unref();
+    }
+    if (spline_scatter_gizmo.is_valid()) {
+        remove_node_3d_gizmo_plugin(spline_scatter_gizmo);
+        spline_scatter_gizmo.unref();
+    }
+    if (spline_extrude_gizmo.is_valid()) {
+        remove_node_3d_gizmo_plugin(spline_extrude_gizmo);
+        spline_extrude_gizmo.unref();
+    }
+    if (spline_4d_gizmo.is_valid()) {
+        remove_node_3d_gizmo_plugin(spline_4d_gizmo);
+        spline_4d_gizmo.unref();
+    }
+    if (spline_3d_gizmo.is_valid()) {
+        remove_node_3d_gizmo_plugin(spline_3d_gizmo);
+        spline_3d_gizmo.unref();
+    }
+
+    if (spline_tween_inspector.is_valid()) {
+        remove_inspector_plugin(spline_tween_inspector);
+        spline_tween_inspector.unref();
+    }
     if (spline_4d_inspector.is_valid()) {
         remove_inspector_plugin(spline_4d_inspector);
         spline_4d_inspector.unref();
