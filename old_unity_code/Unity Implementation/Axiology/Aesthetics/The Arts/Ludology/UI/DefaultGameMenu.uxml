@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="Cabinet" class="worldSpace" />
+    <ui:VisualElement name="Screen" class="worldSpace">
+        <ui:VisualElement name="GameGraphic" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; flex-shrink: 0;" />
+        <ui:Label text="Game Title" display-tooltip-when-elided="true" name="GameTitle" style="align-items: stretch; -unity-text-align: middle-center; -unity-font-definition: url(&apos;project://database/Assets/Ideam%20Group/Unity%20Implementation/UI/Fonts/Swiss911%20SDF.asset?fileID=11400000&amp;guid=6f0e1c03fdcf3b9428f9bb0603a28782&amp;type=2#Swiss911 SDF&apos;); font-size: 36px;" />
+        <ui:VisualElement name="Buttons">
+            <ui:Button text="New Game" display-tooltip-when-elided="true" name="StartGame" />
+            <ui:Button text="Save" display-tooltip-when-elided="true" name="SaveGame" />
+            <ui:Button text="Load" display-tooltip-when-elided="true" name="LoadGame" />
+            <ui:Button text="Options" display-tooltip-when-elided="true" name="OptionsButton" />
+            <ui:Button text="Return To Game" display-tooltip-when-elided="true" name="ReturnToGame" />
+            <ui:Button text="Quit" display-tooltip-when-elided="true" name="QuitGame" />
+        </ui:VisualElement>
+        <ui:VisualElement name="SaveGameMenu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(0, 0, 0); display: none;">
+            <ui:Label text="Save Game" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; font-size: 36px; -unity-font-definition: url(&apos;project://database/Assets/Ideam%20Group/Unity%20Implementation/UI/Fonts/Swiss911%20SDF.asset?fileID=11400000&amp;guid=6f0e1c03fdcf3b9428f9bb0603a28782&amp;type=2#Swiss911 SDF&apos;);" />
+            <ui:ScrollView name="SaveGamesScroll" />
+            <ui:TextField picking-mode="Ignore" label="Save Game Name" value="new game save" text="new game save" name="SaveGameName" />
+            <ui:VisualElement style="flex-direction: row; justify-content: flex-end; align-items: stretch;">
+                <ui:Button text="Save" display-tooltip-when-elided="true" name="SaveAndClose" />
+                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="ReturnFromSave" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="LoadGameMenu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(0, 0, 0); display: none;">
+            <ui:Label text="Load Game" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; font-size: 36px; -unity-font-definition: url(&apos;project://database/Assets/Ideam%20Group/Unity%20Implementation/UI/Fonts/Swiss911%20SDF.asset?fileID=11400000&amp;guid=6f0e1c03fdcf3b9428f9bb0603a28782&amp;type=2#Swiss911 SDF&apos;);" />
+            <ui:ScrollView name="LoadGamesScroll" />
+            <ui:VisualElement style="flex-direction: row; justify-content: flex-end; align-items: stretch;">
+                <ui:Button text="Load" display-tooltip-when-elided="true" name="LoadAndClose" />
+                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="ReturnFromLoad" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="OptionsMenu" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(0, 0, 0); display: none;">
+            <ui:Label text="Options" display-tooltip-when-elided="true" style="-unity-text-align: middle-center; font-size: 36px; -unity-font-definition: url(&apos;project://database/Assets/Ideam%20Group/Unity%20Implementation/UI/Fonts/Swiss911%20SDF.asset?fileID=11400000&amp;guid=6f0e1c03fdcf3b9428f9bb0603a28782&amp;type=2#Swiss911 SDF&apos;);" />
+            <ui:ScrollView name="OptionsScroll" />
+            <ui:VisualElement style="flex-direction: row; justify-content: flex-end; align-items: stretch;">
+                <ui:Button text="Apply" display-tooltip-when-elided="true" name="ApplyOptionsAndClose" />
+                <ui:Button text="Cancel" display-tooltip-when-elided="true" name="ReturnFromOptions" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

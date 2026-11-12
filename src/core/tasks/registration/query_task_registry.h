@@ -29,6 +29,7 @@ enum class QueryLogicID : uint32_t {
     EventRingBridge,
     Frustum,
     HierarchicalBridge,
+    HierarchyGenealogyStatus,
     ImageGradientMagnitude_Moore_R1,
     ImageGradientMagnitude_VonNeumann_R1,
     Limit,

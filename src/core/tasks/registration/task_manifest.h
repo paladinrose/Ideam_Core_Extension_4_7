@@ -23,7 +23,7 @@ protected:
     static void _bind_methods();
 
 public:
-    static constexpr int CURRENT_MANIFEST_VERSION = 10;
+    static constexpr int CURRENT_MANIFEST_VERSION = 11;
     static constexpr const char* MANIFEST_PATH = "res://addons/ideam_tasks/resources/task_manifest.tres";
 
     TaskManifest() = default;

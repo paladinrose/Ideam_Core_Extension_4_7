@@ -27,10 +27,14 @@
 #include "../transform_logic/face_center_and_area_transform_logic.h"
 #include "../transform_logic/fast_noise_lite_transform_logic.h"
 #include "../transform_logic/forward_kinematics_chain_transform_logic.h"
+#include "../transform_logic/gauge_batch_telemetry_transform_logic.h"
 #include "../transform_logic/global_shader_parameter_sync_transform_logic.h"
 #include "../transform_logic/gpu_particles_emit_bridge_transform_logic.h"
+#include "../transform_logic/graph_shortest_path_wavefront_transform_logic.h"
+#include "../transform_logic/graph_state_transition_transform_logic.h"
 #include "../transform_logic/grid_density_splat_transform_logic.h"
 #include "../transform_logic/half_float_pack_transform_logic.h"
+#include "../transform_logic/heatmap_grid_buffer_sync_transform_logic.h"
 #include "../transform_logic/image_bilateral_denoise_transform_logic.h"
 #include "../transform_logic/image_channel_extract_transform_logic.h"
 #include "../transform_logic/image_channel_pack_transform_logic.h"
@@ -86,6 +90,7 @@
 #include "../transform_logic/rd_vertex_attribute_buffer_bridge_transform_logic.h"
 #include "../transform_logic/shader_data_texture_pack_transform_logic.h"
 #include "../transform_logic/shader_material_param_sync_transform_logic.h"
+#include "../transform_logic/signal_and_retarget_flush_transform_logic.h"
 #include "../transform_logic/skeleton_pose_bridge_transform_logic.h"
 #include "../transform_logic/spatial_audio_attenuation_and_doppler_transform_logic.h"
 #include "../transform_logic/spring_bone_chain_transform_logic.h"
@@ -95,6 +100,7 @@
 #include "../transform_logic/tangent_recalc_transform_logic.h"
 #include "../transform_logic/transform_3d_batch_transform_logic.h"
 #include "../transform_logic/two_bone_ik_transform_logic.h"
+#include "../transform_logic/undo_redo_batch_command_record_transform_logic.h"
 #include "../transform_logic/value_accumulation_transform_logic.h"
 #include "../transform_logic/vector_field_curl_noise_transform_logic.h"
 #include "../transform_logic/voronoi_mesh_fracture_transform_logic.h"
@@ -169,10 +175,14 @@ namespace {
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::FaceCenterAndArea, C, S> { using Type = FaceCenterAndAreaTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::FastNoiseLite, C, S> { using Type = FastNoiseLiteTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ForwardKinematicsChain, C, S> { using Type = ForwardKinematicsChainTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GaugeBatchTelemetry, C, S> { using Type = GaugeBatchTelemetryTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GlobalShaderParameterSync, C, S> { using Type = GlobalShaderParameterSyncTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GPUParticlesEmitBridge, C, S> { using Type = GPUParticlesEmitBridgeTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GraphShortestPathWavefront, C, S> { using Type = GraphShortestPathWavefrontTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GraphStateTransition, C, S> { using Type = GraphStateTransitionTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::GridDensitySplat, C, S> { using Type = GridDensitySplatTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::HalfFloatPack, C, S> { using Type = HalfFloatPackTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::HeatmapGridBufferSync, C, S> { using Type = HeatmapGridBufferSyncTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ImageBilateralDenoise_Moore_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
         using Type = ImageBilateralDenoiseTransformLogic<C, S, K_SIZE>;
@@ -295,6 +305,7 @@ namespace {
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::RDVertexAttributeBufferBridge, C, S> { using Type = RDVertexAttributeBufferBridgeTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ShaderDataTexturePack, C, S> { using Type = ShaderDataTexturePackTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ShaderMaterialParamSync, C, S> { using Type = ShaderMaterialParamSyncTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SignalAndRetargetFlush, C, S> { using Type = SignalAndRetargetFlushTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SkeletonPoseBridge, C, S> { using Type = SkeletonPoseBridgeTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SpatialAudioAttenuationAndDoppler, C, S> { using Type = SpatialAudioAttenuationAndDopplerTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::SpringBoneChain, C, S> { using Type = SpringBoneChainTransformLogic<C>; static constexpr bool is_valid = true; };
@@ -333,6 +344,7 @@ namespace {
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::TangentRecalc, C, S> { using Type = TangentRecalcTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::Transform3DBatch, C, S> { using Type = Transform3DBatchTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::TwoBoneIK, C, S> { using Type = TwoBoneIKTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::UndoRedoBatchCommandRecord, C, S> { using Type = UndoRedoBatchCommandRecordTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::ValueAccumulation, C, S> { using Type = ValueAccumulationTransformLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct TransformLogicResolver<TransformLogicID::VectorFieldCurlNoise_Moore_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();

@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Ideam%20Group/Unity%20Implementation/UI/Ideos.uss?fileID=7433441132597879392&amp;guid=9ca6e243c35055a40a3d04620dff14c7&amp;type=3#Ideos" />
+    <ui:TextField picking-mode="Ignore" value="Game Piece Label" text="Game Piece Label" name="GamePieceLabelField" readonly="true" style="-unity-text-align: upper-left;" />
+    <ui:Foldout text="Information" name="GamePieceFoldout" value="false">
+        <Ideam.Unity.Axiology.Aesthetics.The_Arts.Ludology.UnityGamePiecePropertiesDrop name="PropertiesDrop" Docked="true" Label="Properties" Dropped="true" Show-Drop-Lock="false" />
+        <Ideam.Unity.Axiology.Aesthetics.The_Arts.Ludology.UnityGamePieceResourcesDrop name="ResourcesDrop" Docked="true" Label="Resources" Dropped="true" Show-Drop-Lock="false" />
+        <Ideam.Unity.UI.ObjectSelectorList name="SubPiecesList" Label="Sub-Pieces" Docked="true" Show-Drop-Lock="false" Dropped="true" />
+    </ui:Foldout>
+    <ui:Foldout text="Game" name="GameInfoFoldout" value="false">
+        <Ideam.Unity.UI.ObjectSelectorField name="GameSelector" Label="Game" />
+        <Ideam.Unity.UI.ObjectSelectorField name="GameAgentSelector" Label="Game Agent" />
+        <Ideam.Unity.UI.ObjectSelectorField name="GameBoardSelector" Label="Game Board" />
+        <Ideam.Unity.UI.ObjectSelectorField name="SemanticManagerSelector" Label="Semantic Manager" />
+        <Ideam.Unity.UI.ObjectSelectorField name="LanguageAssetSelector" Label="Language Asset" />
+    </ui:Foldout>
+</ui:UXML>

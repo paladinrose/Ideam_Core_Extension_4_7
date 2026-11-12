@@ -51,6 +51,8 @@ const std::array<LogicVariantGroup, QueryTaskRegistry::L_COUNT> QueryTaskRegistr
     { true, 1, nullptr },
     // HierarchicalBridge
     { true, 1, nullptr },
+    // HierarchyGenealogyStatus
+    { true, 1, nullptr },
 
     // ImageGradientMagnitude_Moore_R1
     { true, 2, r1_stencil_labels },

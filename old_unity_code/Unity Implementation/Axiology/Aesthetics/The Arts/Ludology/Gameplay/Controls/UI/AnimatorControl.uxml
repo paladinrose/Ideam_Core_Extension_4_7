@@ -1,0 +1,4 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Ideam.Unity.UI.DropList name="BlendShapeDataList" Label="Blendshape Data" />
+    <ui:VisualElement name="SelectedBlendShape" />
+</ui:UXML>

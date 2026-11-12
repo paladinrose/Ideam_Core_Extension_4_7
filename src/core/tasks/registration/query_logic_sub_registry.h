@@ -23,6 +23,7 @@
 #include "../query_logic/event_ring_bridge_query_logic.h"
 #include "../query_logic/frustum_query_logic.h"
 #include "../query_logic/hierarchical_bridge_query_logic.h"
+#include "../query_logic/hierarchy_genealogy_status_query_logic.h"
 #include "../query_logic/image_gradient_magnitude_query_logic.h"
 #include "../query_logic/limit_query_logic.h"
 #include "../query_logic/mesh_edge_strain_query_logic.h"
@@ -107,6 +108,7 @@ namespace {
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::EventRingBridge, C, S> { using Type = EventRingBridgeQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::Frustum, C, S> { using Type = FrustumQueryLogic<C>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::HierarchicalBridge, C, S> { using Type = HierarchicalBridgeQueryLogic; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::HierarchyGenealogyStatus, C, S> { using Type = HierarchyGenealogyStatusQueryLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct QueryLogicResolver<QueryLogicID::ImageGradientMagnitude_Moore_R1, C, S> {
         static constexpr size_t K_SIZE = stencil_math::moore_size<S::dimensions, 1>();
         using Type = ImageGradientMagnitudeQueryLogic<C, S, StaticStencilView, K_SIZE>;

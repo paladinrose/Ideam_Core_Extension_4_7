@@ -66,13 +66,21 @@ const std::array<LogicVariantGroup, TransformTaskRegistry::L_COUNT> TransformTas
     { true, 1, nullptr },
     // ForwardKinematicsChain
     { true, 1, nullptr },
+    // GaugeBatchTelemetry
+    { true, 1, nullptr },
     // GlobalShaderParameterSync
     { true, 1, nullptr },
     // GPUParticlesEmitBridge
     { true, 1, nullptr },
+    // GraphShortestPathWavefront
+    { true, 1, nullptr },
+    // GraphStateTransition
+    { true, 1, nullptr },
     // GridDensitySplat
     { true, 1, nullptr },
     // HalfFloatPack
+    { true, 1, nullptr },
+    // HeatmapGridBufferSync
     { true, 1, nullptr },
 
     // ImageBilateralDenoise_Moore_R1
@@ -205,6 +213,8 @@ const std::array<LogicVariantGroup, TransformTaskRegistry::L_COUNT> TransformTas
     { true, 1, nullptr },
     // ShaderMaterialParamSync
     { true, 1, nullptr },
+    // SignalAndRetargetFlush
+    { true, 1, nullptr },
     // SkeletonPoseBridge
     { true, 1, nullptr },
     // SpatialAudioAttenuationAndDoppler
@@ -230,6 +240,8 @@ const std::array<LogicVariantGroup, TransformTaskRegistry::L_COUNT> TransformTas
     // Transform3DBatch
     { true, 1, nullptr },
     // TwoBoneIK
+    { true, 1, nullptr },
+    // UndoRedoBatchCommandRecord
     { true, 1, nullptr },
     // ValueAccumulation
     { true, 1, nullptr },
