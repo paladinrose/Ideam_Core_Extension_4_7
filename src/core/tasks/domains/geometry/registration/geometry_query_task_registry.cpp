@@ -7,6 +7,8 @@ namespace ideam::core {
 // --- Populate the Variant Map ---
 const std::array<LogicVariantGroup, GeometryQueryTaskRegistry::STORAGE_COUNT> GeometryQueryTaskRegistry::logic_variants = {{
     // PolygonBoundaryCull (0)
+    { true, 1, nullptr },
+    // TensorSingularityAndSeed (1)
     { true, 1, nullptr }
 }};
 

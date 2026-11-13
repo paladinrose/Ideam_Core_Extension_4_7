@@ -12,6 +12,7 @@ void IdeamProceduralGenerationPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("is_tiles_handshake_available"), &IdeamProceduralGenerationPlugin::is_tiles_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_design_handshake_available"), &IdeamProceduralGenerationPlugin::is_design_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_wfc_handshake_available"), &IdeamProceduralGenerationPlugin::is_wfc_handshake_available);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_quantum_darwinism_handshake_available"), &IdeamProceduralGenerationPlugin::is_quantum_darwinism_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamProceduralGenerationPlugin::is_tasks_handshake_available);
 
 #ifdef TOOLS_ENABLED

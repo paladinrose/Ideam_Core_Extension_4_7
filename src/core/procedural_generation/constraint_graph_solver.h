@@ -4,6 +4,14 @@
  * constraint_graph_solver.h
  * Base C++26 Constraint Graph & Domain Propagation Solver (`src/core/procedural_generation/`).
  *
+ * ============================================================================
+ * ARCHITECTURAL PLAN & DESIGN NOTES
+ * ============================================================================
+ * Acts as the foundational constraint solver over `ProceduralEnvironment`.
+ * Downstream solvers (`WFCSolverCore` for forward entropy collapse and
+ * `QuantumDarwinismSolver` for einselection pointer-state conflict stabilization)
+ * share this common domain & landmark representation.
+ *
  * Provides the shared `BitmaskDomain256POD` variable table, pinned landmark initialization,
  * and minimum-entropy slot selection that `WFCSolverCore` (`src/core/wave_function_collapse/`)
  * inherits and specializes.

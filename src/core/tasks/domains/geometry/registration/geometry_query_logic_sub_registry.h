@@ -9,6 +9,7 @@
 
 // --- Geometry Query Logics ---
 #include "../query_logic/polygon_boundary_cull_query_logic.h"
+#include "../query_logic/tensor_singularity_and_seed_query_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -59,6 +60,7 @@ namespace {
     template <GeometryQueryLogicID ID, typename T_Concrete, typename T_Strategy>
     struct GeometryQueryLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct GeometryQueryLogicResolver<GeometryQueryLogicID::PolygonBoundaryCull, C, S> { using Type = PolygonBoundaryCullQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryQueryLogicResolver<GeometryQueryLogicID::TensorSingularityAndSeed, C, S> { using Type = TensorSingularityAndSeedQueryLogic<C>; static constexpr bool is_valid = true; };
 
     template <GeometryQueryLogicID LogicID, typename C, typename S>
     struct GeometryQueryLogicKernelExtractor : GeometryQueryKernelExtractorImpl<GeometryQueryLogicResolver<LogicID, C, S>> {};
@@ -98,7 +100,6 @@ template <GeometryQueryLogicID L>
 struct GeometryQueryLogicSubRegistry {
     static std::array<GeometryQueryTaskFactoryFn, GeometryQueryTaskRegistry::SUB_MATRIX_SIZE> factories;
 
-    // Fast-path: Instantiates C++ function pointers for runtime execution
     static void init_execution_routing() {
         _fill_matrix<false>(std::make_index_sequence<GeometryQueryTaskRegistry::SUB_MATRIX_SIZE>{}, nullptr);
     }
@@ -107,7 +108,6 @@ struct GeometryQueryLogicSubRegistry {
         factories.fill(nullptr);
     }
 
-    // Heavy-path: Allocates Godot Dictionaries for the Editor UI
     static void generate_ui_matrices(godot::Dictionary& p_matrix) {
         IdeamTaskRegistry::log_with_registry(godot::vformat("    -> [GeometryQuery] Evaluating LogicID: %d", static_cast<int64_t>(L)));
         _fill_matrix<true>(std::make_index_sequence<GeometryQueryTaskRegistry::SUB_MATRIX_SIZE>{}, &p_matrix);
@@ -134,7 +134,6 @@ private:
         constexpr size_t S_COUNT = GeometryQueryTaskRegistry::S_COUNT;
         constexpr size_t V_COUNT = GeometryQueryTaskRegistry::V_COUNT;
 
-        // Decode the flat index back into 4D coordinates
         constexpr size_t T = FlatIdx % T_COUNT;
         constexpr size_t S = (FlatIdx / T_COUNT) % S_COUNT;
         constexpr size_t V = (FlatIdx / (T_COUNT * S_COUNT)) % V_COUNT;
@@ -148,7 +147,6 @@ private:
         using Traits = NativeMemoryTraits<MemTypeEnum>;
         using ConcreteType = typename Traits::ConcreteType;
 
-        // --- FAST-FAIL TIER 1: Base Resolution ---
         using ResolvedStrategy = GeometryQueryStrategyResolver<StrategyEnum>;
         if constexpr (!ResolvedStrategy::is_valid) return;
         using T_Strategy = typename ResolvedStrategy::Type;
@@ -162,7 +160,6 @@ private:
         using V_Type = typename ResolvedView::Type;
         using V_Traits = ViewTraits<V_Type>;
 
-        // --- FAST-FAIL TIER 2: Deep DOD Intersection ---
         constexpr bool is_fully_valid = []() consteval {
             if constexpr (OpEnum == QueryOp::CULL && !L_Type::supports_cull) return false;
             if constexpr (OpEnum == QueryOp::ADD && !L_Type::supports_addition) return false;
@@ -177,7 +174,6 @@ private:
             return QueryLogicValidator::validate<L_Type, V_Type>();
         }();
 
-        // --- FACTORY GENERATION ---
         if constexpr (is_fully_valid) {
             if constexpr (!BuildUI) {
                 factories[FlatIdx] = []() -> INativeTask* {

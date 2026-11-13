@@ -1,3 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:TextField picking-mode="Ignore" label="Group Name" value="group name" text="group name" name="GroupNameField" />
-</ui:UXML>

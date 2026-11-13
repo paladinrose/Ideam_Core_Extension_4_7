@@ -1,0 +1,160 @@
+[gd_scene load_steps=17 format=3 uid="uid://dcnciw4bf8jqq"]
+
+[ext_resource type="Script" uid="uid://4fwf3tblhdy" path="res://addons/ideam_xr/scripts/xr_eye_fx.gd" id="1_v6wti"]
+[ext_resource type="Shader" uid="uid://dt1qj3pf5oliy" path="res://addons/ideam_xr/shaders/xr_eye_overlay.gdshader" id="2_8y5xo"]
+[ext_resource type="Script" uid="uid://cv86qscne7nm4" path="res://addons/ideam_xr/scripts/xr_eye_effect.gd" id="3_gd4bh"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_24qpj"]
+flip_faces = true
+size = Vector2(2, -2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_34xpo"]
+resource_local_to_scene = true
+render_priority = 1
+shader = ExtResource("2_8y5xo")
+shader_parameter/view_id = -1
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/override = 0.0
+shader_parameter/override_color = Color(1, 1, 1, 1)
+shader_parameter/eye_open = 0.0
+shader_parameter/eye_feather = 0.5
+shader_parameter/eye_closed_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Curve" id="Curve_twbxg"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_74bss"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_i4cpf"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_yowat"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_wsqf8"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_pis5l"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_4hqjg"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_65caj"]
+flip_faces = true
+size = Vector2(2, -2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2jmn7"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("2_8y5xo")
+shader_parameter/view_id = null
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/override = 0.0
+shader_parameter/override_color = Color(0, 0, 0, 1)
+shader_parameter/eye_open = 1.0
+shader_parameter/eye_feather = 0.5
+shader_parameter/eye_closed_color = Color(0, 0, 0, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_7daqw"]
+flip_faces = true
+size = Vector2(2, -2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7v738"]
+resource_local_to_scene = true
+render_priority = 2
+shader = ExtResource("2_8y5xo")
+shader_parameter/view_id = 1
+shader_parameter/color = Color(1, 1, 1, 0)
+shader_parameter/override = 0.0
+shader_parameter/override_color = Color(0, 0, 0, 1)
+shader_parameter/eye_open = 1.0
+shader_parameter/eye_feather = 0.5
+shader_parameter/eye_closed_color = Color(0, 0, 0, 1)
+
+[node name="XR_Eye_FX" type="Node3D" node_paths=PackedStringArray("both_eyes_overlay", "left_eye_overlay", "right_eye_overlay", "effects")]
+script = ExtResource("1_v6wti")
+both_eyes_overlay = NodePath("Both_Eyes_Overlay")
+left_eye_overlay = NodePath("Left_Eye_Overlay")
+right_eye_overlay = NodePath("Right_Eye_Overlay")
+effects = [NodePath("Both_Eyes_Overlay/Close_Eyes"), NodePath("Both_Eyes_Overlay/Open_Eyes"), NodePath("Both_Eyes_Overlay/Blink"), NodePath("Both_Eyes_Overlay/Game_Out"), NodePath("Both_Eyes_Overlay/Game_In"), NodePath("Both_Eyes_Overlay/Board_Out"), NodePath("Both_Eyes_Overlay/Board_In")]
+
+[node name="Both_Eyes_Overlay" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+cast_shadow = 0
+ignore_occlusion_culling = true
+gi_mode = 0
+mesh = SubResource("QuadMesh_24qpj")
+surface_material_override/0 = SubResource("ShaderMaterial_34xpo")
+
+[node name="Close_Eyes" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_twbxg")])
+default_effect_value = 1.0
+
+[node name="Open_Eyes" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_74bss")])
+default_effect_value = 1.0
+
+[node name="Blink" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_i4cpf")])
+default_effect_value = 1.0
+
+[node name="Game_Out" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_yowat")])
+default_effect_value = 1.0
+default_tween_time = 0.25
+
+[node name="Game_In" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_wsqf8")])
+default_effect_value = 1.0
+default_tween_time = 0.25
+
+[node name="Board_Out" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_pis5l")])
+default_effect_value = 1.0
+default_tween_time = 0.15
+
+[node name="Board_In" type="Node" parent="Both_Eyes_Overlay"]
+script = ExtResource("3_gd4bh")
+target_floats = Array[StringName]([&"eye_open"])
+target_float_curves = Array[Curve]([SubResource("Curve_4hqjg")])
+default_effect_value = 1.0
+default_tween_time = 0.15
+
+[node name="Left_Eye_Overlay" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+cast_shadow = 0
+ignore_occlusion_culling = true
+gi_mode = 0
+mesh = SubResource("QuadMesh_65caj")
+surface_material_override/0 = SubResource("ShaderMaterial_2jmn7")
+
+[node name="Right_Eye_Overlay" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+cast_shadow = 0
+ignore_occlusion_culling = true
+gi_mode = 0
+mesh = SubResource("QuadMesh_7daqw")
+surface_material_override/0 = SubResource("ShaderMaterial_7v738")
+
+[connection signal="initialized" from="." to="Both_Eyes_Overlay/Open_Eyes" method="tween_value_to" binds= [1.0, 100, 5.0]]

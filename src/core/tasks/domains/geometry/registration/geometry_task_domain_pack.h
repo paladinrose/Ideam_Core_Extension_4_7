@@ -4,7 +4,7 @@ namespace ideam::core {
 
 class GeometryTaskDomainPack {
 public:
-    static constexpr int GEOMETRY_MANIFEST_VERSION = 3;
+    static constexpr int GEOMETRY_MANIFEST_VERSION = 4;
     static constexpr const char *MANIFEST_PATH =
         "res://addons/ideam_geometry/resources/geometry_task_manifest.tres";
 

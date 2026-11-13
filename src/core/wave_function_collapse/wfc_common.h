@@ -3,6 +3,16 @@
 /**
  * wfc_common.h
  * Pure C++26 POD types for `IdeamWaveFunctionCollapse` / `IdeamWFC`
+ *
+ * ============================================================================
+ * ARCHITECTURAL PLAN & DESIGN NOTES
+ * ============================================================================
+ * `IdeamWaveFunctionCollapse` operates directly on the `ProceduralEnvironment`
+ * and `ProceduralPattern` (`GenerationRulePOD` cascade) defined in
+ * `src/core/procedural_generation/`. When forward entropy collapse encounters
+ * a rule contradiction (`domain.empty()` or violated sibling/child cardinality),
+ * `IdeamQuantumDarwinism` stabilizes the local environment horizon box using
+ * Einselected Pointer States and CSS-cascade-guided coherence relaxation.
  * (`src/core/wave_function_collapse/`), leaning on `src/core/procedural_generation/procgen_common.h`.
  *
  * Implements the Section 8 Reflection & Hypergraph CSP structures:

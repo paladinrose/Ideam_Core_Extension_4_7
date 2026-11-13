@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:Foldout text="Rays" name="ShowRays" value="true">
-        <ui:Button text="New Ray" name="NewRay" />
-        <ui:ScrollView name="RayScroll" />
-    </ui:Foldout>
-</ui:UXML>

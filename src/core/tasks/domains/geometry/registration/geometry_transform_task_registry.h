@@ -22,6 +22,8 @@ enum class GeometryTransformLogicID : uint32_t {
     DelaunayNavMeshBuild,
     ConvexHullAndOBBFit,
     SpatialVoronoiTerritoryControl,
+    TensorFieldEvaluateAndEigen,
+    TensorHyperstreamlineNetwork,
     Count
 };
 

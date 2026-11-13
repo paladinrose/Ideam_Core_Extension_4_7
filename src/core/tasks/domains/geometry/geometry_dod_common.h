@@ -12,6 +12,8 @@
  *   3. PlanarGraphAndVoronoi (PlanarHalfEdgePOD + Voronoi sites + Voronoi cell slices + CSR dual adjacency)
  *   4. SpatialHashBuffer     (SpatialHashEntryPOD key-value cell hashes)
  *   5. SDFAndContourBuffer   (SDFGridHeaderPOD + row-major float32 SDF grid + MarchingSquaresSegment2D array)
+ *   6. TensorFieldAndStreamlineBuffer (TensorGridHeaderPod + TensorBasisElementPod + SymmetricTensor2DPod +
+ *      major/minor eigenvectors + TensorSingularityPod + TensorStreamlineSeedPod)
  *   + GeometrySignalCommandPOD ring for deferred main-thread Godot Resource synchronization.
  */
 
@@ -31,6 +33,7 @@
 #include "../../../geometry/polygon_math_2d.h"
 #include "../../../geometry/sdf_math.h"
 #include "../../../geometry/symmetry_2d.h"
+#include "../../../geometry/tensor_field_2d.h"
 #include "../../../geometry/voronoi_2d.h"
 #include "../../../memory/memory_common.h"
 #include "../../../memory/memory_buffer_pod.h"
@@ -47,10 +50,13 @@
 // Include the Geometry domain logic headers
 #include "metadata_logic/spatial_hash_partition_metadata_logic.h"
 #include "query_logic/polygon_boundary_cull_query_logic.h"
+#include "query_logic/tensor_singularity_and_seed_query_logic.h"
 #include "transform_logic/polygon_triangulate_and_offset_transform_logic.h"
 #include "transform_logic/csg_clip_and_seam_weld_transform_logic.h"
 #include "transform_logic/voronoi_delaunay_dual_transform_logic.h"
 #include "transform_logic/sdf_field_and_contour_transform_logic.h"
+#include "transform_logic/tensor_field_evaluate_and_eigen_transform_logic.h"
+#include "transform_logic/tensor_hyperstreamline_network_transform_logic.h"
 
 namespace ideam::core {
 
@@ -72,12 +78,13 @@ static_assert(sizeof(SDFGridHeaderPOD) == 32, "SDFGridHeaderPOD must be 32 bytes
 /**
  * GeometrySignalCommandPOD (16 Bytes)
  * Queued event record emitted when a GeometryDOD task updates a bound `Polygon2DResource`,
- * `VoronoiDiagram2DResource`, or `SDFGrid2DResource`.
+ * `VoronoiDiagram2DResource`, `SDFGrid2DResource`, or `TensorField2DResource`.
  */
 enum GeometrySignalKind : uint8_t {
-    GEOM_SIGNAL_POLYGON_UPDATED = 0,
-    GEOM_SIGNAL_VORONOI_UPDATED = 1,
-    GEOM_SIGNAL_SDF_UPDATED     = 2
+    GEOM_SIGNAL_POLYGON_UPDATED      = 0,
+    GEOM_SIGNAL_VORONOI_UPDATED      = 1,
+    GEOM_SIGNAL_SDF_UPDATED          = 2,
+    GEOM_SIGNAL_TENSOR_FIELD_UPDATED = 3
 };
 
 struct alignas(16) GeometrySignalCommandPOD {
@@ -96,35 +103,39 @@ static_assert(sizeof(GeometrySignalCommandPOD) == 16, "GeometrySignalCommandPOD 
  * Composable bitmask flags representing logical stages in the GeometryDOD execution pipeline.
  */
 enum GeometryPipelineStageFlags : uint32_t {
-    GEOMETRY_STAGE_NONE                     = 0u,
+    GEOMETRY_STAGE_NONE                         = 0u,
 
     // Stage 1: G_M1 SpatialHashPartitionMetadataLogic (AABB & Spatial Hash Grid Indexing)
-    GEOMETRY_STAGE_SPATIAL_HASH_METADATA    = 1u << 0,
+    GEOMETRY_STAGE_SPATIAL_HASH_METADATA        = 1u << 0,
 
     // Stage 2: G_Q1 PolygonBoundaryCullQueryLogic (Wave 2 Interior vs. Straddling Classification)
-    GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY   = 1u << 1,
+    GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY       = 1u << 1,
 
     // Stage 3: G_T1 PolygonTriangulateAndOffset + G_T2 CSGClipAndSeamWeld
-    GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG  = 1u << 2,
+    GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG      = 1u << 2,
 
     // Stage 4: G_T3 VoronoiDelaunayDualTransformLogic (Delaunay, Clipped Voronoi & CSR Dual Graph)
-    GEOMETRY_STAGE_VORONOI_DELAUNAY_DUAL    = 1u << 3,
+    GEOMETRY_STAGE_VORONOI_DELAUNAY_DUAL        = 1u << 3,
 
     // Stage 5: G_T4 SDFFieldAndContourTransformLogic (2D SDF / Chladni Field & Marching Squares)
-    GEOMETRY_STAGE_SDF_AND_CONTOURS         = 1u << 4,
+    GEOMETRY_STAGE_SDF_AND_CONTOURS             = 1u << 4,
+
+    // Stage 6: G_T5 TensorFieldEvaluateAndEigen + G_Q2 TensorSingularityAndSeed + G_T6 TensorHyperstreamlineNetwork
+    GEOMETRY_STAGE_TENSOR_FIELD_AND_STREAMLINES = 1u << 5,
 
     // Preset masks:
-    GEOMETRY_STAGE_POLYGON_PIPELINE_MASK    =
+    GEOMETRY_STAGE_POLYGON_PIPELINE_MASK        =
         GEOMETRY_STAGE_SPATIAL_HASH_METADATA  |
         GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY |
         GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG,
 
-    GEOMETRY_STAGE_DEFAULT_PIPELINE_MASK    =
+    GEOMETRY_STAGE_DEFAULT_PIPELINE_MASK        =
         GEOMETRY_STAGE_POLYGON_PIPELINE_MASK  |
         GEOMETRY_STAGE_VORONOI_DELAUNAY_DUAL  |
-        GEOMETRY_STAGE_SDF_AND_CONTOURS,
+        GEOMETRY_STAGE_SDF_AND_CONTOURS       |
+        GEOMETRY_STAGE_TENSOR_FIELD_AND_STREAMLINES,
 
-    GEOMETRY_STAGE_ALL_MASK                 = 0x001Fu
+    GEOMETRY_STAGE_ALL_MASK                     = 0x003Fu
 };
 
 /**
@@ -200,6 +211,11 @@ enum class GeometryCapacityKind : uint8_t {
     SDF_GRIDS,
     SDF_CELLS,
     MARCHING_SQUARES_SEGMENTS,
+    TENSOR_GRIDS,
+    TENSOR_BASES,
+    TENSOR_CELLS,
+    TENSOR_SINGULARITIES,
+    TENSOR_SEEDS,
     SIGNAL_COMMANDS,
     RING_CURSOR_OR_COUNTER
 };
@@ -225,6 +241,11 @@ enum class GeometryTableGroup : uint8_t {
     SDF_GRID_HEADER,
     SDF_CELL_SLICE,
     MARCHING_SQUARES_SLICE,
+    TENSOR_GRID_HEADER,
+    TENSOR_BASIS_SLICE,
+    TENSOR_CELL_SLICE,
+    TENSOR_SINGULARITY_SLICE,
+    TENSOR_SEED_SLICE,
     EVENT_RING_OR_COUNTER
 };
 
@@ -247,6 +268,11 @@ struct GeometryBufferCapacities {
     uint32_t max_sdf_grids                 = 16;
     uint32_t max_sdf_cells                 = 65536; // e.g., 256x256 or 16 x 64x64 grids
     uint32_t max_marching_squares_segments = 16384;
+    uint32_t max_tensor_grids              = 16;
+    uint32_t max_tensor_bases              = 256;
+    uint32_t max_tensor_cells              = 65536;
+    uint32_t max_tensor_singularities      = 256;
+    uint32_t max_tensor_seeds              = 2048;
     uint32_t max_signal_commands           = 512;
     uint32_t max_ring_cursors              = 4;
 
@@ -267,6 +293,11 @@ struct GeometryBufferCapacities {
             case GeometryCapacityKind::SDF_GRIDS:                 return max_sdf_grids;
             case GeometryCapacityKind::SDF_CELLS:                 return max_sdf_cells;
             case GeometryCapacityKind::MARCHING_SQUARES_SEGMENTS: return max_marching_squares_segments;
+            case GeometryCapacityKind::TENSOR_GRIDS:              return max_tensor_grids;
+            case GeometryCapacityKind::TENSOR_BASES:              return max_tensor_bases;
+            case GeometryCapacityKind::TENSOR_CELLS:              return max_tensor_cells;
+            case GeometryCapacityKind::TENSOR_SINGULARITIES:      return max_tensor_singularities;
+            case GeometryCapacityKind::TENSOR_SEEDS:              return max_tensor_seeds;
             case GeometryCapacityKind::SIGNAL_COMMANDS:           return max_signal_commands;
             case GeometryCapacityKind::RING_CURSOR_OR_COUNTER:    return max_ring_cursors;
             default:                                              return max_polylines;
@@ -307,6 +338,16 @@ enum class GeometryBufferSlot : uint8_t {
     GEOM_MARCHING_SQUARES_SEGMENT_POD,   // MarchingSquaresSegment2D<float> (24B AoS)
     GEOM_MARCHING_SQUARES_COUNT,         // uint32_t (4B Flat counter)
 
+    // --- Table 6: 2D Tensor Field, Eigenvector, Singularity & Hyperstreamline Seed Buffers ---
+    GEOM_TENSOR_GRID_HEADER_POD,         // TensorGridHeaderPod (32B AoS)
+    GEOM_TENSOR_BASIS_POD,               // TensorBasisElementPod (32B AoS)
+    GEOM_TENSOR_CELL_POD,                // SymmetricTensor2DPod (16B AoS)
+    GEOM_TENSOR_EIGEN_MAJOR_2D,          // glm::vec2 (8B Flat: Major eigenvector field)
+    GEOM_TENSOR_EIGEN_MINOR_2D,          // glm::vec2 (8B Flat: Minor eigenvector field)
+    GEOM_TENSOR_SINGULARITY_POD,         // TensorSingularityPod (16B AoS)
+    GEOM_TENSOR_SINGULARITY_COUNT,       // uint32_t (4B Flat counter)
+    GEOM_TENSOR_STREAMLINE_SEED_POD,     // TensorStreamlineSeedPod (16B AoS)
+
     // --- Ring 1: Deferred Godot Resource Signal Command Ring ---
     GEOM_SIGNAL_COMMAND_RING,            // GeometrySignalCommandPOD (16B Ring)
     GEOM_SIGNAL_RING_CURSOR,             // uint32_t[2] cursor
@@ -344,7 +385,7 @@ struct GeometryBufferSpec {
 
 /**
  * GEOMETRY_BUFFER_SPECS
- * Compile-time manifest covering all 20 GeometryDOD buffer slots and property aliases.
+ * Compile-time manifest covering all 28 GeometryDOD buffer slots and property aliases.
  */
 inline constexpr std::array<GeometryBufferSpec, GEOMETRY_BUFFER_SLOT_COUNT> GEOMETRY_BUFFER_SPECS = {{
     // --- Table 1: Polyline & 3D Frame Buffers ---
@@ -483,6 +524,64 @@ inline constexpr std::array<GeometryBufferSpec, GEOMETRY_BUFFER_SLOT_COUNT> GEOM
         GeometryCapacityKind::RING_CURSOR_OR_COUNTER, GeometryTableGroup::EVENT_RING_OR_COUNTER
     },
 
+    // --- Table 6: 2D Tensor Field, Eigenvector, Singularity & Hyperstreamline Seed Buffers ---
+    {
+        GeometryBufferSlot::GEOM_TENSOR_GRID_HEADER_POD,
+        "tensor_grid_header_buffer_id",
+        {"geom_tensor_grid_header_pod_buffer_id", "", ""},
+        sizeof(TensorGridHeaderPod), BufferLayoutType::AOS, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_GRIDS, GeometryTableGroup::TENSOR_GRID_HEADER
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_BASIS_POD,
+        "tensor_basis_buffer_id",
+        {"geom_tensor_basis_pod_buffer_id", "", ""},
+        sizeof(TensorBasisElementPod), BufferLayoutType::AOS, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_BASES, GeometryTableGroup::TENSOR_BASIS_SLICE
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_CELL_POD,
+        "tensor_cell_buffer_id",
+        {"geom_tensor_cell_pod_buffer_id", "symmetric_tensor_2d_buffer_id", ""},
+        sizeof(SymmetricTensor2DPod), BufferLayoutType::AOS, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_CELLS, GeometryTableGroup::TENSOR_CELL_SLICE
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_EIGEN_MAJOR_2D,
+        "tensor_eigen_major_buffer_id",
+        {"geom_tensor_eigen_major_2d_buffer_id", "major_eigenvector_buffer_id", ""},
+        sizeof(glm::vec2), BufferLayoutType::FLAT, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_CELLS, GeometryTableGroup::TENSOR_CELL_SLICE
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_EIGEN_MINOR_2D,
+        "tensor_eigen_minor_buffer_id",
+        {"geom_tensor_eigen_minor_2d_buffer_id", "minor_eigenvector_buffer_id", ""},
+        sizeof(glm::vec2), BufferLayoutType::FLAT, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_CELLS, GeometryTableGroup::TENSOR_CELL_SLICE
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_SINGULARITY_POD,
+        "tensor_singularity_buffer_id",
+        {"geom_tensor_singularity_pod_buffer_id", "", ""},
+        sizeof(TensorSingularityPod), BufferLayoutType::AOS, SelectionMode::RANGE,
+        GeometryCapacityKind::TENSOR_SINGULARITIES, GeometryTableGroup::TENSOR_SINGULARITY_SLICE
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_SINGULARITY_COUNT,
+        "tensor_singularity_count_buf_id",
+        {"geom_tensor_singularity_count_buffer_id", "", ""},
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::RANGE,
+        GeometryCapacityKind::RING_CURSOR_OR_COUNTER, GeometryTableGroup::EVENT_RING_OR_COUNTER
+    },
+    {
+        GeometryBufferSlot::GEOM_TENSOR_STREAMLINE_SEED_POD,
+        "tensor_seed_buffer_id",
+        {"geom_tensor_streamline_seed_pod_buffer_id", "streamline_seed_buffer_id", ""},
+        sizeof(TensorStreamlineSeedPod), BufferLayoutType::AOS, SelectionMode::SPARSE_SET,
+        GeometryCapacityKind::TENSOR_SEEDS, GeometryTableGroup::TENSOR_SEED_SLICE
+    },
+
     // --- Ring 1: Deferred Godot Resource Signal Command Ring ---
     {
         GeometryBufferSlot::GEOM_SIGNAL_COMMAND_RING,
@@ -562,7 +661,8 @@ struct GeometryBufferManifest {
         return get(GeometryBufferSlot::GEOM_POLYLINE_SLICE_POD) != INVALID_ID &&
                get(GeometryBufferSlot::GEOM_POLYGON_MESH_SLICE_POD) != INVALID_ID &&
                get(GeometryBufferSlot::GEOM_VORONOI_SITE_2D) != INVALID_ID &&
-               get(GeometryBufferSlot::GEOM_SDF_GRID_FLOAT32) != INVALID_ID;
+               get(GeometryBufferSlot::GEOM_SDF_GRID_FLOAT32) != INVALID_ID &&
+               get(GeometryBufferSlot::GEOM_TENSOR_CELL_POD) != INVALID_ID;
     }
 };
 

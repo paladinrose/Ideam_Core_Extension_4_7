@@ -53,6 +53,9 @@ public:
     [[nodiscard]] bool is_wfc_handshake_available() const {
         return is_plugin_active("IdeamWaveFunctionCollapse") || is_plugin_active("IdeamWFC");
     }
+    [[nodiscard]] bool is_quantum_darwinism_handshake_available() const {
+        return is_plugin_active("IdeamQuantumDarwinism") || is_plugin_active("IdeamQD");
+    }
     [[nodiscard]] bool is_tasks_handshake_available() const { return is_plugin_active("IdeamTasks"); }
 
 #ifdef TOOLS_ENABLED

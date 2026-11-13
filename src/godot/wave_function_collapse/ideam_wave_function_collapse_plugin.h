@@ -57,6 +57,9 @@ public:
     [[nodiscard]] bool is_design_handshake_available() const { return is_plugin_active("IdeamDesign"); }
     [[nodiscard]] bool is_narratives_handshake_available() const { return is_plugin_active("IdeamNarratives"); }
     [[nodiscard]] bool is_games_handshake_available() const { return is_plugin_active("IdeamGames"); }
+    [[nodiscard]] bool is_quantum_darwinism_handshake_available() const {
+        return is_plugin_active("IdeamQuantumDarwinism") || is_plugin_active("IdeamQD");
+    }
     [[nodiscard]] bool is_tasks_handshake_available() const { return is_plugin_active("IdeamTasks"); }
 
 #ifdef TOOLS_ENABLED

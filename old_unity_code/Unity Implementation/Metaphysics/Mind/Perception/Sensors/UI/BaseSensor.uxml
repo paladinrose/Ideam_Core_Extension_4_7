@@ -1,9 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
-    <ui:Toggle label="Is Sensing" name="IsSensing" class="eye">
-        <Style src="BaseSensor.uss" />
-    </ui:Toggle>
-    <ui:Foldout text="Sensor Events" name="ShowSensorEvents" value="false">
-        <Style src="BaseSensor.uss" />
-        <ui:ScrollView name="SensorEventScroll" />
-    </ui:Foldout>
-</ui:UXML>

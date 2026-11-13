@@ -3,7 +3,7 @@
 /**
  * mind_agent_node.h
  * SceneTree node binding a `GameAgent` / `Character` to an `InformationMatrixResource`
- * and `AgentMindResource` (`src/godot/minds/`).
+ * (Akashic Tome registry) and `AgentMindResource` (Reference Catalogue profile) (`src/godot/minds/`).
  */
 
 #include <godot_cpp/classes/node.hpp>
@@ -33,9 +33,23 @@ public:
     void set_agent_mind(const godot::Ref<AgentMindResource> &p_mind);
     [[nodiscard]] godot::Ref<AgentMindResource> get_agent_mind() const { return agent_mind_; }
 
-    void perceive_fact(int p_fact_id, int64_t p_perceived_value, float p_confidence = 1.0f, int p_source_agent_id = 0);
+    void perceive_fact(int p_fact_id, int64_t p_perceived_value, float p_confidence = 1.0f, int p_source_agent_id = 0, float p_acceptance = 0.0f);
+    void perceive_misreferenced_fact(
+        int p_catalogued_fact_id,
+        int p_true_fact_id,
+        int64_t p_perceived_value,
+        float p_confidence = 1.0f,
+        float p_acceptance = 0.0f,
+        int p_believed_tome_id = 0,
+        int p_true_tome_id = 0
+    );
+
     [[nodiscard]] int64_t query_believed_value(int p_fact_id) const;
     [[nodiscard]] float query_belief_confidence(int p_fact_id) const;
+    [[nodiscard]] float query_belief_acceptance(int p_fact_id) const;
+    [[nodiscard]] float query_belief_intuition_charge(int p_fact_id) const;
+    [[nodiscard]] bool is_fact_known(int p_fact_id) const;
+    [[nodiscard]] bool is_fact_misreferenced(int p_fact_id) const;
 };
 
 } // namespace ideam::godot_ext

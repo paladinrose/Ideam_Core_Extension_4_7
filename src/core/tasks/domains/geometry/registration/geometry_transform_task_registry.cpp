@@ -31,6 +31,10 @@ const std::array<LogicVariantGroup, GeometryTransformTaskRegistry::STORAGE_COUNT
     // ConvexHullAndOBBFit (8)
     { true, 1, nullptr },
     // SpatialVoronoiTerritoryControl (9)
+    { true, 1, nullptr },
+    // TensorFieldEvaluateAndEigen (10)
+    { true, 1, nullptr },
+    // TensorHyperstreamlineNetwork (11)
     { true, 1, nullptr }
 }};
 

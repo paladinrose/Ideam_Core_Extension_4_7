@@ -111,9 +111,15 @@
 #include "core/tasks/registration/task_manifest.h"
 #include "core/tasks/domains/games/registration/games_task_domain_pack.h"
 #include "core/tasks/domains/geometry/registration/geometry_task_domain_pack.h"
+#include "core/tasks/domains/minds/registration/minds_task_domain_pack.h"
 #include "core/tasks/domains/narratives/registration/narratives_task_domain_pack.h"
 #include "core/tasks/domains/splines/registration/splines_task_domain_pack.h"
 #include "core/tasks/domains/tiles/registration/tiles_task_domain_pack.h"
+#include "core/tasks/domains/procedural_generation/registration/procedural_generation_task_domain_pack.h"
+#include "core/tasks/domains/wave_function_collapse/registration/wfc_task_domain_pack.h"
+#include "core/tasks/domains/quantum_darwinism/registration/quantum_darwinism_task_domain_pack.h"
+#include "core/tasks/domains/linguistics/registration/linguistics_task_domain_pack.h"
+#include "core/tasks/domains/communications/registration/communications_task_domain_pack.h"
 
 // --- Geometry (Shared Resources, 2D-to-3D Projector, 2D Canvases & Controls, DOD Bridge, Inspectors & Plugin) ---
 #include "godot/geometry/geometry_resource.h"
@@ -121,6 +127,7 @@
 #include "godot/geometry/resources/polygon_2d_resource.h"
 #include "godot/geometry/resources/voronoi_diagram_2d_resource.h"
 #include "godot/geometry/resources/sdf_grid_2d_resource.h"
+#include "godot/geometry/resources/tensor_field_2d_resource.h"
 #include "godot/geometry/ui/geometry_canvas_2d_base.h"
 #include "godot/geometry/ui/voronoi_2d_canvas.h"
 #include "godot/geometry/ui/sdf_grid_2d_canvas.h"
@@ -215,6 +222,60 @@
 #include "godot/narratives/ideam_narratives_plugin.h"
 #include "godot/tasks/domains/narratives/data_oriented_narrative.h"
 #include "godot/tasks/domains/narratives/narrative_task_host.h"
+
+// --- Minds (Akashic Tome & Reference Catalogue Resources, Nodes, DOD Bridge & Plugin) ---
+#include "godot/minds/information_matrix_resource.h"
+#include "godot/minds/agent_mind_resource.h"
+#include "godot/minds/mind_agent_node.h"
+#include "godot/minds/ideam_minds_plugin.h"
+#include "godot/tasks/domains/minds/data_oriented_mind.h"
+#include "godot/tasks/domains/minds/mind_task_host.h"
+
+// --- Design (3D Styles, Themes, Sockets, Containers & Plugin) ---
+#include "godot/design/style_3d_resource.h"
+#include "godot/design/socket_3d.h"
+#include "godot/design/container_3d.h"
+#include "godot/design/ideam_design_plugin.h"
+
+// --- Characters (Parametric Character Blueprints, Apparel, Nodes & Plugin) ---
+#include "godot/characters/character_blueprint_resource.h"
+#include "godot/characters/ideam_characters_plugin.h"
+
+// --- Procedural Generation, Wave Function Collapse & Quantum Darwinism ---
+#include "godot/procedural_generation/procedural_generator_resource.h"
+#include "godot/procedural_generation/analysis_rule.h"
+#include "godot/procedural_generation/generation_rule.h"
+#include "godot/procedural_generation/procedural_pattern.h"
+#include "godot/procedural_generation/procedural_patterner.h"
+#include "godot/procedural_generation/editor/procedural_generator_inspector_base.h"
+#include "godot/procedural_generation/ideam_procedural_generation_plugin.h"
+#include "godot/tasks/domains/procedural_generation/data_oriented_procedural_generation.h"
+#include "godot/tasks/domains/procedural_generation/procedural_generation_task_host.h"
+#include "godot/wave_function_collapse/wfc_rule_tensor_resource.h"
+#include "godot/wave_function_collapse/ideam_wave_function_collapse_plugin.h"
+#include "godot/tasks/domains/wave_function_collapse/data_oriented_wfc.h"
+#include "godot/tasks/domains/wave_function_collapse/wfc_task_host.h"
+#include "godot/quantum_darwinism/quantum_darwinism_stabilizer_resource.h"
+#include "godot/quantum_darwinism/editor/quantum_darwinism_inspector.h"
+#include "godot/quantum_darwinism/ideam_quantum_darwinism_plugin.h"
+#include "godot/tasks/domains/quantum_darwinism/data_oriented_quantum_darwinism.h"
+#include "godot/tasks/domains/quantum_darwinism/quantum_darwinism_task_host.h"
+
+// --- Linguistics & Communications ---
+#include "godot/linguistics/sememe_resource.h"
+#include "godot/linguistics/lexicon_resource.h"
+#include "godot/linguistics/semantic_prompt_parser.h"
+#include "godot/linguistics/editor/linguistics_inspector.h"
+#include "godot/linguistics/ideam_linguistics_plugin.h"
+#include "godot/tasks/domains/linguistics/data_oriented_linguistics.h"
+#include "godot/tasks/domains/linguistics/linguistics_task_host.h"
+#include "godot/communications/communication_medium_resource.h"
+#include "godot/communications/discourse_resource.h"
+#include "godot/communications/transceiver_nodes.h"
+#include "godot/communications/editor/communications_inspector.h"
+#include "godot/communications/ideam_communications_plugin.h"
+#include "godot/tasks/domains/communications/data_oriented_communications.h"
+#include "godot/tasks/domains/communications/communications_task_host.h"
 
 // --- Games Plugin & DOD Bridge ---
 #include "godot/games/ideam_games_plugin.h"
@@ -490,6 +551,63 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Narrative_Condition);
         GDREGISTER_CLASS(ideam::godot_ext::Plot_Event);
 
+        // --- Minds & DOD Bridge (Section 1.1 & Section 2.2) ---
+        GDREGISTER_CLASS(ideam::godot_ext::InformationMatrixResource);
+        GDREGISTER_CLASS(ideam::godot_ext::AgentMindResource);
+        GDREGISTER_CLASS(ideam::godot_ext::MindAgentNode);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedMind);
+        GDREGISTER_CLASS(ideam::godot_ext::MindTaskHost);
+
+        // --- Design (Section 1.1) ---
+        GDREGISTER_CLASS(ideam::godot_ext::Style3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Theme3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::Socket3D);
+        GDREGISTER_CLASS(ideam::godot_ext::Container3D);
+        GDREGISTER_CLASS(ideam::godot_ext::RadialContainer3D);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticStructure3D);
+
+        // --- Characters (Section 1.1) ---
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterBlueprintResource);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterApparelResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ParametricCharacterNode3D);
+
+        // --- Procedural Generation, Wave Function Collapse & Quantum Darwinism ---
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralGeneratorResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralGenerationHost);
+        GDREGISTER_CLASS(ideam::godot_ext::AnalysisRule);
+        GDREGISTER_CLASS(ideam::godot_ext::AnalysisStyle);
+        GDREGISTER_CLASS(ideam::godot_ext::GenerationRule);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralPattern);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralPatterner);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedProceduralGeneration);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralGenerationTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::WFCRuleTensorResource);
+        GDREGISTER_CLASS(ideam::godot_ext::WFCSceneAnalyzer);
+        GDREGISTER_CLASS(ideam::godot_ext::WFCSolverNode);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedWaveFunctionCollapse);
+        GDREGISTER_CLASS(ideam::godot_ext::WaveFunctionCollapseTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismStabilizerResource);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismStabilizerNode);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedQuantumDarwinism);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismTaskHost);
+
+        // --- Linguistics & Communications ---
+        GDREGISTER_CLASS(ideam::godot_ext::SememeResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticTagSetResource);
+        GDREGISTER_CLASS(ideam::godot_ext::GrammarRuleResource);
+        GDREGISTER_CLASS(ideam::godot_ext::LexiconResource);
+        GDREGISTER_CLASS(ideam::godot_ext::LanguageAssetResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticPromptParser);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedLinguistics);
+        GDREGISTER_CLASS(ideam::godot_ext::LinguisticsTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationMediumResource);
+        GDREGISTER_CLASS(ideam::godot_ext::UtteranceResource);
+        GDREGISTER_CLASS(ideam::godot_ext::DiscourseResource);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationTransmitterNode);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationReceiverNode);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedCommunications);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationsTaskHost);
+
         // --- Games & DOD Bridge ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::GameEntity);
         
@@ -546,9 +664,15 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         IdeamTaskRegistry::init();
         GamesTaskDomainPack::register_domain();
         GeometryTaskDomainPack::register_domain();
+        MindsTaskDomainPack::register_domain();
         NarrativesTaskDomainPack::register_domain();
         SplinesTaskDomainPack::register_domain();
         TilesTaskDomainPack::register_domain();
+        ProceduralGenerationTaskDomainPack::register_domain();
+        WaveFunctionCollapseTaskDomainPack::register_domain();
+        QuantumDarwinismTaskDomainPack::register_domain();
+        LinguisticsTaskDomainPack::register_domain();
+        CommunicationsTaskDomainPack::register_domain();
     }
 
     // ========================================================================
@@ -605,6 +729,21 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         // Narratives tooling
         GDREGISTER_CLASS(ideam::godot_ext::IdeamNarrativesPlugin);
+
+        // Minds, Design, Characters, Procedural Generation & WFC tooling (Section 1.1 & 2.2)
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamMindsPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamDesignPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamCharactersPlugin);
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamProceduralGenerationPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::WFCRuleTensorInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamWaveFunctionCollapsePlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamQuantumDarwinismPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::LinguisticsInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamLinguisticsPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationsInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamCommunicationsPlugin);
 
         // --- Games Editors ---
         GDREGISTER_CLASS(ideam::godot_ext::GameAgentEditorInspectorPlugin);

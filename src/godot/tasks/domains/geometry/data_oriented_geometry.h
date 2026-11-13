@@ -52,6 +52,7 @@ private:
     godot::TypedArray<Polygon2DResource> polygons_;
     godot::Ref<VoronoiDiagram2DResource> voronoi_diagram_;
     godot::TypedArray<SDFGrid2DResource> sdf_grids_;
+    TypedArray<TensorField2DResource> tensor_fields_;
 
     // --- Inspector Configuration ---
     GeometryDODExecutionMode dod_execution_mode_ = GEOMETRY_DOD_EXEC_COMPOSABLE_STAGES;

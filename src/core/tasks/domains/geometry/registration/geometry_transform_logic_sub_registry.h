@@ -18,6 +18,8 @@
 #include "../transform_logic/delaunay_nav_mesh_build_transform_logic.h"
 #include "../transform_logic/convex_hull_and_obb_fit_transform_logic.h"
 #include "../transform_logic/spatial_voronoi_territory_control_transform_logic.h"
+#include "../transform_logic/tensor_field_evaluate_and_eigen_transform_logic.h"
+#include "../transform_logic/tensor_hyperstreamline_network_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -85,6 +87,8 @@ namespace {
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::DelaunayNavMeshBuild, C, S> { using Type = DelaunayNavMeshBuildTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::ConvexHullAndOBBFit, C, S> { using Type = ConvexHullAndOBBFitTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::SpatialVoronoiTerritoryControl, C, S> { using Type = SpatialVoronoiTerritoryControlTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::TensorFieldEvaluateAndEigen, C, S> { using Type = TensorFieldEvaluateAndEigenTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct GeometryTransformLogicResolver<GeometryTransformLogicID::TensorHyperstreamlineNetwork, C, S> { using Type = TensorHyperstreamlineNetworkTransformLogic<C>; static constexpr bool is_valid = true; };
 
     template <GeometryTransformLogicID LogicID, typename C, typename S>
     struct GeometryTransformLogicKernelExtractor : GeometryTransformKernelExtractorImpl<GeometryTransformLogicResolver<LogicID, C, S>> {};

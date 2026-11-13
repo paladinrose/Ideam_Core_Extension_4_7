@@ -84,6 +84,33 @@ DEFINE_GEOMETRY_TASK_DESCRIPTOR(
     GEOM_SDF_GRID_HEADER_POD, READ
 );
 
+DEFINE_GEOMETRY_TASK_DESCRIPTOR(
+    TensorFieldEvaluateAndEigenTransformLogic,
+    GeometryTransformLogicID::TensorFieldEvaluateAndEigen,
+    GEOM_TENSOR_CELL_POD, READ_WRITE,
+    GEOM_TENSOR_GRID_HEADER_POD, READ,
+    GEOM_TENSOR_BASIS_POD, READ,
+    GEOM_TENSOR_EIGEN_MAJOR_2D, READ_WRITE
+);
+
+DEFINE_GEOMETRY_TASK_DESCRIPTOR(
+    TensorSingularityAndSeedQueryLogic,
+    GeometryQueryLogicID::TensorSingularityAndSeed,
+    GEOM_TENSOR_STREAMLINE_SEED_POD, READ,
+    GEOM_TENSOR_CELL_POD, READ,
+    GEOM_TENSOR_SINGULARITY_POD, READ_WRITE,
+    GEOM_TENSOR_SINGULARITY_COUNT, READ_WRITE
+);
+
+DEFINE_GEOMETRY_TASK_DESCRIPTOR(
+    TensorHyperstreamlineNetworkTransformLogic,
+    GeometryTransformLogicID::TensorHyperstreamlineNetwork,
+    GEOM_POLYLINE_SLICE_POD, READ_WRITE,
+    GEOM_TENSOR_CELL_POD, READ,
+    GEOM_PLANAR_HALF_EDGE_POD, READ_WRITE,
+    GEOM_POLYGON_MESH_SLICE_POD, READ_WRITE
+);
+
 #undef DEFINE_GEOMETRY_TASK_DESCRIPTOR
 
 } // anonymous namespace
@@ -118,6 +145,7 @@ void GeometryDOD::initialize_buffers(const GeometryBufferCapacities &p_capacitie
     polygon_mesh_allocator_.initialize(capacities_.max_polygon_meshes);
     voronoi_site_allocator_.initialize(capacities_.max_voronoi_sites);
     sdf_grid_allocator_.initialize(capacities_.max_sdf_grids);
+    tensor_grid_allocator_.initialize(capacities_.max_tensor_grids);
 
     for (size_t i = 0; i < GEOMETRY_BUFFER_SLOT_COUNT; ++i) {
         const GeometryBufferSpec &spec = GEOMETRY_BUFFER_SPECS[i];
@@ -156,6 +184,11 @@ uint32_t GeometryDOD::_active_count_for_group(GeometryTableGroup p_group) const 
         case GeometryTableGroup::SDF_GRID_HEADER:           return sdf_grid_allocator_.get_high_water_mark();
         case GeometryTableGroup::SDF_CELL_SLICE:            return sdf_cell_cursor_;
         case GeometryTableGroup::MARCHING_SQUARES_SLICE:    return capacities_.max_marching_squares_segments;
+        case GeometryTableGroup::TENSOR_GRID_HEADER:        return tensor_grid_allocator_.get_high_water_mark();
+        case GeometryTableGroup::TENSOR_BASIS_SLICE:        return tensor_basis_cursor_;
+        case GeometryTableGroup::TENSOR_CELL_SLICE:         return tensor_cell_cursor_;
+        case GeometryTableGroup::TENSOR_SINGULARITY_SLICE:  return capacities_.max_tensor_singularities;
+        case GeometryTableGroup::TENSOR_SEED_SLICE:         return tensor_seed_cursor_;
         case GeometryTableGroup::EVENT_RING_OR_COUNTER:
         default:                                            return 0u;
     }
@@ -168,7 +201,8 @@ void GeometryDOD::sync_selection_ranges() noexcept {
         if (!buf) continue;
         const GeometryBufferSpec &spec = GEOMETRY_BUFFER_SPECS[i];
         buf->current_count = (spec.table_group == GeometryTableGroup::EVENT_RING_OR_COUNTER ||
-                              spec.table_group == GeometryTableGroup::MARCHING_SQUARES_SLICE)
+                              spec.table_group == GeometryTableGroup::MARCHING_SQUARES_SLICE ||
+                              spec.table_group == GeometryTableGroup::TENSOR_SINGULARITY_SLICE)
             ? buf->max_elements
             : std::min<int64_t>(static_cast<int64_t>(_active_count_for_group(spec.table_group)), buf->max_elements);
         buf->used_bytes = static_cast<size_t>(buf->current_count) * buf->element_stride;
@@ -180,6 +214,7 @@ void GeometryDOD::reset_all_slots() noexcept {
     polygon_mesh_allocator_.clear();
     voronoi_site_allocator_.clear();
     sdf_grid_allocator_.clear();
+    tensor_grid_allocator_.clear();
 
     polyline_vertex_2d_cursor_ = 0u;
     polyline_vertex_3d_cursor_ = 0u;
@@ -190,12 +225,18 @@ void GeometryDOD::reset_all_slots() noexcept {
     voronoi_csr_edge_cursor_   = 0u;
     spatial_hash_entry_cursor_ = 0u;
     sdf_cell_cursor_           = 0u;
+    tensor_basis_cursor_       = 0u;
+    tensor_cell_cursor_        = 0u;
+    tensor_seed_cursor_        = 0u;
 
     auto cursor_span = get_column_span<uint32_t>(GeometryBufferSlot::GEOM_SIGNAL_RING_CURSOR);
     std::fill(cursor_span.begin(), cursor_span.end(), 0u);
 
     auto ms_cnt_span = get_column_span<uint32_t>(GeometryBufferSlot::GEOM_MARCHING_SQUARES_COUNT);
     std::fill(ms_cnt_span.begin(), ms_cnt_span.end(), 0u);
+
+    auto ts_cnt_span = get_column_span<uint32_t>(GeometryBufferSlot::GEOM_TENSOR_SINGULARITY_COUNT);
+    std::fill(ts_cnt_span.begin(), ts_cnt_span.end(), 0u);
 
     sync_selection_ranges();
 }
@@ -262,7 +303,6 @@ uint32_t GeometryDOD::allocate_polyline_2d(std::span<const glm::vec2> p_vertices
     slice.bounds_max    = box.is_valid() ? box.max_bounds : glm::vec2(0.0f);
     slices[slot]        = slice;
 
-    // Also ensure polygon_mesh_allocator tracks up to this slot so G_T1 can write 1:1
     while (polygon_mesh_allocator_.get_high_water_mark() <= slot) {
         (void)polygon_mesh_allocator_.allocate();
     }
@@ -571,6 +611,107 @@ std::span<const MarchingSquaresSegment2D<float>> GeometryDOD::get_extracted_marc
     return std::span<const MarchingSquaresSegment2D<float>>(segs, n);
 }
 
+// ============================================================================
+// Table 6: 2D Symmetric Tensor Fields, Eigenvectors & Hyperstreamline Seeds
+// ============================================================================
+
+uint32_t GeometryDOD::allocate_tensor_grid_2d(
+    uint32_t p_width,
+    uint32_t p_height,
+    const glm::vec2 &p_origin,
+    const glm::vec2 &p_cell_size,
+    std::span<const TensorBasisElementPod> p_bases,
+    uint32_t p_sdf_grid_slot
+) {
+    const uint32_t w     = std::max(2u, p_width);
+    const uint32_t h     = std::max(2u, p_height);
+    const uint32_t cells = w * h;
+    if (tensor_cell_cursor_ + cells > capacities_.max_tensor_cells ||
+        tensor_basis_cursor_ + p_bases.size() > capacities_.max_tensor_bases) {
+        return INVALID_ID;
+    }
+    const uint32_t slot = tensor_grid_allocator_.allocate();
+    if (slot == INVALID_ID) return INVALID_ID;
+
+    auto *headers = get_column_ptr<TensorGridHeaderPod>(GeometryBufferSlot::GEOM_TENSOR_GRID_HEADER_POD);
+    auto *bases   = get_column_ptr<TensorBasisElementPod>(GeometryBufferSlot::GEOM_TENSOR_BASIS_POD);
+    if (!headers || !bases) return INVALID_ID;
+
+    TensorGridHeaderPod hdr{};
+    hdr.cell_offset   = tensor_cell_cursor_;
+    hdr.width         = w;
+    hdr.height        = h;
+    hdr.basis_offset  = static_cast<uint16_t>(tensor_basis_cursor_);
+    hdr.basis_count   = static_cast<uint16_t>(p_bases.size());
+    hdr.sdf_grid_slot = p_sdf_grid_slot;
+    hdr.origin        = p_origin;
+    hdr.cell_size     = p_cell_size;
+    headers[slot]     = hdr;
+
+    if (!p_bases.empty()) {
+        std::copy(p_bases.begin(), p_bases.end(), bases + tensor_basis_cursor_);
+        tensor_basis_cursor_ += static_cast<uint32_t>(p_bases.size());
+    }
+    tensor_cell_cursor_ += cells;
+    sync_selection_ranges();
+    return slot;
+}
+
+TensorGridHeaderPod GeometryDOD::get_tensor_grid_header(uint32_t p_grid_slot) const noexcept {
+    if (p_grid_slot >= capacities_.max_tensor_grids) return TensorGridHeaderPod{};
+    const auto *headers = get_column_ptr<TensorGridHeaderPod>(GeometryBufferSlot::GEOM_TENSOR_GRID_HEADER_POD);
+    return headers ? headers[p_grid_slot] : TensorGridHeaderPod{};
+}
+
+std::span<const SymmetricTensor2DPod> GeometryDOD::get_tensor_grid_cells(uint32_t p_grid_slot) const noexcept {
+    const TensorGridHeaderPod hdr = get_tensor_grid_header(p_grid_slot);
+    const auto *cells = get_column_ptr<SymmetricTensor2DPod>(GeometryBufferSlot::GEOM_TENSOR_CELL_POD);
+    const uint32_t total = hdr.width * hdr.height;
+    if (!cells || total == 0u || hdr.cell_offset + total > capacities_.max_tensor_cells) {
+        return {};
+    }
+    return std::span<const SymmetricTensor2DPod>(cells + hdr.cell_offset, total);
+}
+
+std::span<const glm::vec2> GeometryDOD::get_tensor_major_eigenvectors(uint32_t p_grid_slot) const noexcept {
+    const TensorGridHeaderPod hdr = get_tensor_grid_header(p_grid_slot);
+    const auto *vecs = get_column_ptr<glm::vec2>(GeometryBufferSlot::GEOM_TENSOR_EIGEN_MAJOR_2D);
+    const uint32_t total = hdr.width * hdr.height;
+    if (!vecs || total == 0u || hdr.cell_offset + total > capacities_.max_tensor_cells) {
+        return {};
+    }
+    return std::span<const glm::vec2>(vecs + hdr.cell_offset, total);
+}
+
+std::span<const glm::vec2> GeometryDOD::get_tensor_minor_eigenvectors(uint32_t p_grid_slot) const noexcept {
+    const TensorGridHeaderPod hdr = get_tensor_grid_header(p_grid_slot);
+    const auto *vecs = get_column_ptr<glm::vec2>(GeometryBufferSlot::GEOM_TENSOR_EIGEN_MINOR_2D);
+    const uint32_t total = hdr.width * hdr.height;
+    if (!vecs || total == 0u || hdr.cell_offset + total > capacities_.max_tensor_cells) {
+        return {};
+    }
+    return std::span<const glm::vec2>(vecs + hdr.cell_offset, total);
+}
+
+std::span<const TensorSingularityPod> GeometryDOD::get_detected_tensor_singularities() const noexcept {
+    const auto *sings = get_column_ptr<TensorSingularityPod>(GeometryBufferSlot::GEOM_TENSOR_SINGULARITY_POD);
+    const auto *cnt   = get_column_ptr<uint32_t>(GeometryBufferSlot::GEOM_TENSOR_SINGULARITY_COUNT);
+    if (!sings || !cnt) return {};
+    const uint32_t n = std::min(*cnt, capacities_.max_tensor_singularities);
+    return std::span<const TensorSingularityPod>(sings, n);
+}
+
+void GeometryDOD::stage_tensor_streamline_seeds(std::span<const TensorStreamlineSeedPod> p_seeds) {
+    auto *seeds = get_column_ptr<TensorStreamlineSeedPod>(GeometryBufferSlot::GEOM_TENSOR_STREAMLINE_SEED_POD);
+    if (!seeds) return;
+    const size_t copy_n = std::min<size_t>(p_seeds.size(), capacities_.max_tensor_seeds);
+    if (copy_n > 0u) {
+        std::copy_n(p_seeds.data(), copy_n, seeds);
+    }
+    tensor_seed_cursor_ = static_cast<uint32_t>(copy_n);
+    sync_selection_ranges();
+}
+
 bool GeometryDOD::push_signal_command(const GeometrySignalCommandPOD &p_cmd) noexcept {
     auto *ring    = get_column_ptr<GeometrySignalCommandPOD>(GeometryBufferSlot::GEOM_SIGNAL_COMMAND_RING);
     auto *cursors = get_column_ptr<uint32_t>(GeometryBufferSlot::GEOM_SIGNAL_RING_CURSOR);
@@ -711,6 +852,9 @@ INSTANTIATE_GEOMETRY_TASK_NODE(PolygonTriangulateAndOffsetTransformLogic<>);
 INSTANTIATE_GEOMETRY_TASK_NODE(CSGClipAndSeamWeldTransformLogic<>);
 INSTANTIATE_GEOMETRY_TASK_NODE(VoronoiDelaunayDualTransformLogic<>);
 INSTANTIATE_GEOMETRY_TASK_NODE(SDFFieldAndContourTransformLogic<>);
+INSTANTIATE_GEOMETRY_TASK_NODE(TensorFieldEvaluateAndEigenTransformLogic<>);
+INSTANTIATE_GEOMETRY_TASK_NODE(TensorSingularityAndSeedQueryLogic<>);
+INSTANTIATE_GEOMETRY_TASK_NODE(TensorHyperstreamlineNetworkTransformLogic<>);
 
 #undef INSTANTIATE_GEOMETRY_TASK_NODE
 
@@ -726,11 +870,13 @@ NodeID GeometryDOD::add_transform_node_by_id(
         return add_geometry_task_node(r_graph, l, p_cfg);
     };
     switch (p_id) {
-        case GeometryTransformLogicID::PolygonTriangulateAndOffset: return build.template operator()<PolygonTriangulateAndOffsetTransformLogic<>>();
-        case GeometryTransformLogicID::CSGClipAndSeamWeld:          return build.template operator()<CSGClipAndSeamWeldTransformLogic<>>();
-        case GeometryTransformLogicID::VoronoiDelaunayDual:         return build.template operator()<VoronoiDelaunayDualTransformLogic<>>();
-        case GeometryTransformLogicID::SDFFieldAndContour:          return build.template operator()<SDFFieldAndContourTransformLogic<>>();
-        default:                                                    return INVALID_ID;
+        case GeometryTransformLogicID::PolygonTriangulateAndOffset:  return build.template operator()<PolygonTriangulateAndOffsetTransformLogic<>>();
+        case GeometryTransformLogicID::CSGClipAndSeamWeld:           return build.template operator()<CSGClipAndSeamWeldTransformLogic<>>();
+        case GeometryTransformLogicID::VoronoiDelaunayDual:          return build.template operator()<VoronoiDelaunayDualTransformLogic<>>();
+        case GeometryTransformLogicID::SDFFieldAndContour:           return build.template operator()<SDFFieldAndContourTransformLogic<>>();
+        case GeometryTransformLogicID::TensorFieldEvaluateAndEigen:  return build.template operator()<TensorFieldEvaluateAndEigenTransformLogic<>>();
+        case GeometryTransformLogicID::TensorHyperstreamlineNetwork: return build.template operator()<TensorHyperstreamlineNetworkTransformLogic<>>();
+        default:                                                     return INVALID_ID;
     }
 }
 
@@ -742,6 +888,11 @@ NodeID GeometryDOD::add_query_node_by_id(
 ) const {
     if (p_id == GeometryQueryLogicID::PolygonBoundaryCull) {
         PolygonBoundaryCullQueryLogic<> l{};
+        if (!p_props.is_empty()) l.apply_properties(p_props);
+        return add_geometry_task_node(r_graph, l, p_cfg);
+    }
+    if (p_id == GeometryQueryLogicID::TensorSingularityAndSeed) {
+        TensorSingularityAndSeedQueryLogic<> l{};
         if (!p_props.is_empty()) l.apply_properties(p_props);
         return add_geometry_task_node(r_graph, l, p_cfg);
     }
@@ -799,16 +950,35 @@ GeometryPipelineTopology GeometryDOD::inject_pipeline_stages(
         append_stage(GEOMETRY_STAGE_SPATIAL_HASH_METADATA, {add_spatial_hash_partition_node(r_graph)}, true);
     }
     if (p_stage_mask & GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY) {
-        append_stage(GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY, {add_polygon_boundary_cull_node(r_graph)}, true);
+        GeometryNodeExecutionConfig cull_cfg{};
+        cull_cfg.query_op = QueryOp::ADD;
+        append_stage(GEOMETRY_STAGE_BOUNDARY_CULL_CLASSIFY, {add_polygon_boundary_cull_node(r_graph, {}, cull_cfg)}, true);
     }
     if (p_stage_mask & GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG) {
-        append_stage(GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG, {add_polygon_triangulate_node(r_graph), add_csg_clip_and_seam_weld_node(r_graph)}, true);
+        append_stage(
+            GEOMETRY_STAGE_POLYGON_TRIANGULATE_CSG,
+            {add_polygon_triangulate_node(r_graph), add_csg_clip_and_seam_weld_node(r_graph)},
+            true
+        );
     }
     if (p_stage_mask & GEOMETRY_STAGE_VORONOI_DELAUNAY_DUAL) {
         append_stage(GEOMETRY_STAGE_VORONOI_DELAUNAY_DUAL, {add_voronoi_delaunay_dual_node(r_graph)}, true);
     }
     if (p_stage_mask & GEOMETRY_STAGE_SDF_AND_CONTOURS) {
         append_stage(GEOMETRY_STAGE_SDF_AND_CONTOURS, {add_sdf_field_and_contour_node(r_graph)}, true);
+    }
+    if (p_stage_mask & GEOMETRY_STAGE_TENSOR_FIELD_AND_STREAMLINES) {
+        GeometryNodeExecutionConfig seed_cfg{};
+        seed_cfg.query_op = QueryOp::ADD;
+        append_stage(
+            GEOMETRY_STAGE_TENSOR_FIELD_AND_STREAMLINES,
+            {
+                add_tensor_field_evaluate_node(r_graph),
+                add_tensor_singularity_and_seed_node(r_graph, {}, seed_cfg),
+                add_tensor_hyperstreamline_network_node(r_graph)
+            },
+            true
+        );
     }
 
     active_topology_ = topo;

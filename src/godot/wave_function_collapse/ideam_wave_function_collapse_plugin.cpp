@@ -16,6 +16,7 @@ void IdeamWaveFunctionCollapsePlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("is_design_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_design_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_narratives_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_narratives_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_games_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_games_handshake_available);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_quantum_darwinism_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_quantum_darwinism_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_tasks_handshake_available);
 
 #ifdef TOOLS_ENABLED

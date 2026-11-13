@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://b25yfxjuue6y4"]
+
+[ext_resource type="Script" path="res://addons/ideam_dialogue/scripts/dialogue_box.gd" id="1_1i227"]
+
+[node name="Dialogue_Box" type="VBoxContainer" node_paths=PackedStringArray("main_text_parent")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1i227")
+main_text_type = null
+main_text_parent = NodePath("VBoxContainer")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="Main_Text" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+autowrap_mode = 3

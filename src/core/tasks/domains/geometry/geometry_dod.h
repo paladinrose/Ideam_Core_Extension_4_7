@@ -7,11 +7,13 @@
  *
  * Responsibilities:
  *   1. Loop-driven allocation, selection-range synchronization, semantic name lookup, and
- *      TaskGraphResource dictionary population across the 20 GeometryDOD buffer slots via
+ *      TaskGraphResource dictionary population across the 28 GeometryDOD buffer slots via
  *      `GEOMETRY_BUFFER_SPECS`.
  *   2. O(1) slot allocation and zero-copy contiguous staging for 2D/3D Polylines, 3D Bishop
  *      Rotation-Minimizing Frames, Triangulated Polygon Meshes, Planar Half-Edge Graphs,
- *      Voronoi Generator Sites & CSR Dual Adjacency, Spatial Hash Entries, and 2D SDF Grids.
+ *      Voronoi Generator Sites & CSR Dual Adjacency, Spatial Hash Entries, 2D SDF Grids,
+ *      and 2D Symmetric Tensor Fields (`TensorGridHeaderPod`, `TensorBasisElementPod`,
+ *      `SymmetricTensor2DPod`, `TensorSingularityPod`, `TensorStreamlineSeedPod`).
  *   3. Single templated `add_geometry_task_node<T_Logic>()` builder + bitmask-driven
  *      `inject_pipeline_stages()` for all Geometry domain tasks, plus cross-domain buffer
  *      sharing with `SplineDOD`, `TileDOD`, and `NarrativeDOD`.
@@ -48,8 +50,9 @@ private:
     SlotIndexAllocator polygon_mesh_allocator_;
     SlotIndexAllocator voronoi_site_allocator_;
     SlotIndexAllocator sdf_grid_allocator_;
+    SlotIndexAllocator tensor_grid_allocator_;
 
-    // --- Contiguous Vertex / Index / CSR Bump Cursors ---
+    // --- Contiguous Vertex / Index / CSR / Tensor Bump Cursors ---
     uint32_t polyline_vertex_2d_cursor_ = 0u;
     uint32_t polyline_vertex_3d_cursor_ = 0u;
     uint32_t curve_frame_3d_cursor_     = 0u;
@@ -59,6 +62,9 @@ private:
     uint32_t voronoi_csr_edge_cursor_   = 0u;
     uint32_t spatial_hash_entry_cursor_ = 0u;
     uint32_t sdf_cell_cursor_           = 0u;
+    uint32_t tensor_basis_cursor_       = 0u;
+    uint32_t tensor_cell_cursor_        = 0u;
+    uint32_t tensor_seed_cursor_        = 0u;
 
     uint32_t _active_count_for_group(GeometryTableGroup p_group) const noexcept;
     void _bind_default_logic_buffers(void *r_logic_bytes, size_t p_size, const void *p_default_bytes) const noexcept;
@@ -188,6 +194,25 @@ public:
     [[nodiscard]] std::span<float> get_sdf_grid_cells_mut(uint32_t p_grid_slot) noexcept;
     [[nodiscard]] std::span<const MarchingSquaresSegment2D<float>> get_extracted_marching_squares_segments() const noexcept;
 
+    // ========================================================================
+    // Table 6: 2D Symmetric Tensor Fields, Eigenvectors & Hyperstreamline Seeds
+    // ========================================================================
+
+    uint32_t allocate_tensor_grid_2d(
+        uint32_t p_width,
+        uint32_t p_height,
+        const glm::vec2 &p_origin,
+        const glm::vec2 &p_cell_size,
+        std::span<const TensorBasisElementPod> p_bases = {},
+        uint32_t p_sdf_grid_slot = INVALID_ID
+    );
+    [[nodiscard]] TensorGridHeaderPod get_tensor_grid_header(uint32_t p_grid_slot) const noexcept;
+    [[nodiscard]] std::span<const SymmetricTensor2DPod> get_tensor_grid_cells(uint32_t p_grid_slot) const noexcept;
+    [[nodiscard]] std::span<const glm::vec2> get_tensor_major_eigenvectors(uint32_t p_grid_slot) const noexcept;
+    [[nodiscard]] std::span<const glm::vec2> get_tensor_minor_eigenvectors(uint32_t p_grid_slot) const noexcept;
+    [[nodiscard]] std::span<const TensorSingularityPod> get_detected_tensor_singularities() const noexcept;
+    void stage_tensor_streamline_seeds(std::span<const TensorStreamlineSeedPod> p_seeds);
+
     // --- Signal Command Ring Push / Drain ---
     bool push_signal_command(const GeometrySignalCommandPOD &p_cmd) noexcept;
     uint32_t drain_signal_commands(std::vector<GeometrySignalCommandPOD> &r_out, uint32_t p_max_drain = 512u) noexcept;
@@ -219,6 +244,15 @@ public:
         return add_geometry_task_node(g, l, c);
     }
     NodeID add_sdf_field_and_contour_node(TaskGraphDOD &g, const SDFFieldAndContourTransformLogic<> &l = {}, const GeometryNodeExecutionConfig &c = {}) const {
+        return add_geometry_task_node(g, l, c);
+    }
+    NodeID add_tensor_field_evaluate_node(TaskGraphDOD &g, const TensorFieldEvaluateAndEigenTransformLogic<> &l = {}, const GeometryNodeExecutionConfig &c = {}) const {
+        return add_geometry_task_node(g, l, c);
+    }
+    NodeID add_tensor_singularity_and_seed_node(TaskGraphDOD &g, const TensorSingularityAndSeedQueryLogic<> &l = {}, const GeometryNodeExecutionConfig &c = {}) const {
+        return add_geometry_task_node(g, l, c);
+    }
+    NodeID add_tensor_hyperstreamline_network_node(TaskGraphDOD &g, const TensorHyperstreamlineNetworkTransformLogic<> &l = {}, const GeometryNodeExecutionConfig &c = {}) const {
         return add_geometry_task_node(g, l, c);
     }
 

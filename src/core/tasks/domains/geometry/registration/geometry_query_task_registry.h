@@ -14,6 +14,7 @@ namespace ideam::core {
 // --- Compile-Time Coordinates for IdeamGeometry Query Tasks ---
 enum class GeometryQueryLogicID : uint32_t {
     PolygonBoundaryCull = 0,
+    TensorSingularityAndSeed,
     Count
 };
 
