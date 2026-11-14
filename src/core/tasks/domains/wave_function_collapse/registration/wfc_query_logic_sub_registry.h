@@ -7,7 +7,7 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Query Logics (Section 2.3: MND2, MND6) ---
+// --- WaveFunctionCollapse Query Logics (Section 1.4: WFC3) ---
 #include "../query_logic/wfc_contradiction_detect_query_logic.h"
 
 // --- Views & Strategies ---

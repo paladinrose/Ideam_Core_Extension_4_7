@@ -2,21 +2,8 @@
 
 /**
  * quantum_darwinism_task_host.h
- * SceneTree `TaskGraphHost` node for `DataOrientedQuantumDarwinism` (`src/godot/tasks/domains/quantum_darwinism/`).
- *
- * ============================================================================
- * ARCHITECTURAL PLAN & DESIGN NOTES
- * ============================================================================
- * - Implements Quantum Darwinism conflict stabilization on `TaskGraphDOD` over the shared
- *   `ProceduralEnvironment`:
- *     1. `ConflictHorizonBoxPartitionMetadataLogic`: Draws the bounded environment box (E_box)
- *        around a WFC contradiction or cardinality conflict slot.
- *     2. `PointerStateEinselectionQueryLogic`: Evaluates `GenerationRule` scores and neighbor
- *        mutual-information redundancy (R_delta) to select settled Pointer States.
- *     3. `CoherenceCascadeRelaxAndPropagateTransformLogic`: Evaluates which lower-precedence
- *        CSS cascade properties/siblings on intermediate cells between each Pointer State and
- *        the problem cell can be altered without losing coherence, then propagates pointer
- *        properties inward to resolve the conflict.
+ * SceneTree `TaskGraphHost` node for `DataOrientedQuantumDarwinism`
+ * (`src/godot/tasks/domains/quantum_darwinism/`).
  */
 
 #include "data_oriented_quantum_darwinism.h"
@@ -30,6 +17,8 @@ class QuantumDarwinismTaskHost : public TaskGraphHost {
 
 private:
     godot::Ref<DataOrientedQuantumDarwinism> domain_resource_;
+    int active_stage_mask_    = static_cast<int>(core::QD_STAGE_DEFAULT_PIPELINE_MASK);
+    bool auto_stage_on_ready_ = true;
 
 protected:
     static void _bind_methods();
@@ -38,8 +27,18 @@ public:
     QuantumDarwinismTaskHost() = default;
     ~QuantumDarwinismTaskHost() override = default;
 
+    void _ready() override;
+
     void set_domain_resource(const godot::Ref<DataOrientedQuantumDarwinism> &p_res) { domain_resource_ = p_res; }
     [[nodiscard]] godot::Ref<DataOrientedQuantumDarwinism> get_domain_resource() const { return domain_resource_; }
+
+    void set_active_stage_mask(int p_mask) { active_stage_mask_ = p_mask; }
+    [[nodiscard]] int get_active_stage_mask() const noexcept { return active_stage_mask_; }
+
+    void set_auto_stage_on_ready(bool p_auto) { auto_stage_on_ready_ = p_auto; }
+    [[nodiscard]] bool get_auto_stage_on_ready() const noexcept { return auto_stage_on_ready_; }
+
+    bool step_quantum_darwinism_pipeline();
 };
 
 } // namespace ideam::godot_ext

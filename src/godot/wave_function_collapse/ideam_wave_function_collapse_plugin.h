@@ -53,6 +53,9 @@ public:
     [[nodiscard]] bool is_procedural_generation_handshake_available() const {
         return is_plugin_active("IdeamProceduralGeneration");
     }
+    [[nodiscard]] bool is_linguistics_handshake_available() const {
+        return is_plugin_active("IdeamLinguistics");
+    }
     [[nodiscard]] bool is_tiles_handshake_available() const { return is_plugin_active("IdeamTiles"); }
     [[nodiscard]] bool is_design_handshake_available() const { return is_plugin_active("IdeamDesign"); }
     [[nodiscard]] bool is_narratives_handshake_available() const { return is_plugin_active("IdeamNarratives"); }

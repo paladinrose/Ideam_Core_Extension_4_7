@@ -2,14 +2,15 @@
 
 #include "procedural_generation_transform_task_registry.h"
 #include "../../../registration/task_view_bridge.h"
-#include "../../../metadata_logic/transform_logic_traits.h"
+#include "../../../transform_logic/transform_logic_traits.h"
 #include "../../../transform_task.h"
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- ProceduralGeneration Transform Logics (PCG3, PCG4) ---
 #include "../transform_logic/pattern_domain_initialize_transform_logic.h"
+#include "../transform_logic/hierarchy_cardinality_propagate_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -29,7 +30,7 @@
 namespace ideam::core {
 
 namespace {
-    consteval size_t procedural_generation_trans_floor_pow2(size_t n) {
+    consteval size_t procgen_trans_floor_pow2(size_t n) {
         if (n == 0) return 1;
         size_t res = 1;
         while ((res << 1) <= n) res <<= 1;
@@ -45,7 +46,7 @@ namespace {
                 constexpr size_t byte_size = MemoryUtilities::get_type_byte_size(DataFlag, AlignMode);
                 if constexpr (byte_size == 0) return 1;
                 constexpr size_t raw_lanes = TargetVectorWidthBytes / byte_size;
-                return procedural_generation_trans_floor_pow2(raw_lanes > 0 ? raw_lanes : 1);
+                return procgen_trans_floor_pow2(raw_lanes > 0 ? raw_lanes : 1);
             }
         }
     };
@@ -56,10 +57,11 @@ namespace {
     template <typename T_Resolver, typename Enable = void> struct ProceduralGenerationTransformKernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
     template <typename T_Resolver> struct ProceduralGenerationTransformKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
-    // --- ProceduralGenerationTransformLogicResolver Specializations (Section 2.3: MND4) ---
+    // --- ProceduralGenerationTransformLogicResolver Specializations (PCG3, PCG4) ---
     template <ProceduralGenerationTransformLogicID ID, typename T_Concrete, typename T_Strategy>
     struct ProceduralGenerationTransformLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct ProceduralGenerationTransformLogicResolver<ProceduralGenerationTransformLogicID::PatternDomainInitialize, C, S> { using Type = PatternDomainInitializeTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct ProceduralGenerationTransformLogicResolver<ProceduralGenerationTransformLogicID::HierarchyCardinalityPropagate, C, S> { using Type = HierarchyCardinalityPropagateTransformLogic<C>; static constexpr bool is_valid = true; };
 
     template <ProceduralGenerationTransformLogicID LogicID, typename C, typename S>
     struct ProceduralGenerationTransformLogicKernelExtractor : ProceduralGenerationTransformKernelExtractorImpl<ProceduralGenerationTransformLogicResolver<LogicID, C, S>> {};

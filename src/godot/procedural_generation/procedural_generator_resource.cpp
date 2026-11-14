@@ -1,4 +1,5 @@
 #include "procedural_generator_resource.h"
+#include "ideam_procedural_generation_plugin.h"
 
 namespace ideam::godot_ext {
 
@@ -12,23 +13,37 @@ void ProceduralGeneratorResource::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_deterministic_mode"), &ProceduralGeneratorResource::get_deterministic_mode);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "deterministic_mode"), "set_deterministic_mode", "get_deterministic_mode");
 
+    ClassDB::bind_method(D_METHOD("set_semantic_tags", "tags"), &ProceduralGeneratorResource::set_semantic_tags);
+    ClassDB::bind_method(D_METHOD("get_semantic_tags"), &ProceduralGeneratorResource::get_semantic_tags);
+    ADD_PROPERTY(
+        PropertyInfo(Variant::OBJECT, "semantic_tags", PROPERTY_HINT_RESOURCE_TYPE, "SemanticTagSetResource"),
+        "set_semantic_tags",
+        "get_semantic_tags"
+    );
+
     ClassDB::bind_method(D_METHOD("get_snapshot_state"), &ProceduralGeneratorResource::get_snapshot_state);
     ClassDB::bind_method(D_METHOD("apply_snapshot_state", "state"), &ProceduralGeneratorResource::apply_snapshot_state);
+    ClassDB::bind_method(
+        D_METHOD("commit_seed_change", "new_seed", "action_name"),
+        &ProceduralGeneratorResource::commit_seed_change,
+        DEFVAL("Change Procedural Generator Seed")
+    );
 }
 
 void ProceduralGeneratorResource::set_master_seed(int64_t p_seed) {
-    if (master_seed_ == p_seed) {
-        return;
-    }
+    if (master_seed_ == p_seed) return;
     master_seed_ = p_seed;
     emit_changed();
 }
 
 void ProceduralGeneratorResource::set_deterministic_mode(bool p_deterministic) {
-    if (deterministic_mode_ == p_deterministic) {
-        return;
-    }
+    if (deterministic_mode_ == p_deterministic) return;
     deterministic_mode_ = p_deterministic;
+    emit_changed();
+}
+
+void ProceduralGeneratorResource::set_semantic_tags(const godot::Ref<SemanticTagSetResource> &p_tags) {
+    semantic_tags_ = p_tags;
     emit_changed();
 }
 
@@ -54,13 +69,22 @@ void ProceduralGeneratorResource::commit_snapshot_mutation(
     const godot::Dictionary &p_before_state
 ) {
     if (undo_redo_.is_null()) {
-        return;
+        undo_redo_ = IdeamProceduralGenerationPlugin::create_undo_redo_wrapper();
     }
-    const godot::Dictionary after_state = get_snapshot_state();
-    undo_redo_->create_action(p_action_name);
-    undo_redo_->add_do_method(this, "apply_snapshot_state", after_state);
-    undo_redo_->add_undo_method(this, "apply_snapshot_state", p_before_state);
-    undo_redo_->commit_action(false);
+    if (undo_redo_.is_valid()) {
+        const godot::Dictionary after_state = get_snapshot_state();
+        undo_redo_->create_action(p_action_name);
+        undo_redo_->add_do_method(this, "apply_snapshot_state", after_state);
+        undo_redo_->add_undo_method(this, "apply_snapshot_state", p_before_state);
+        undo_redo_->commit_action(false);
+    }
+}
+
+void ProceduralGeneratorResource::commit_seed_change(int64_t p_new_seed, const godot::String &p_action_name) {
+    const godot::Dictionary before = get_snapshot_state();
+    master_seed_ = p_new_seed;
+    emit_changed();
+    commit_snapshot_mutation(p_action_name, before);
 }
 
 void ProceduralGenerationHost::_bind_methods() {
@@ -76,6 +100,14 @@ void ProceduralGenerationHost::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_auto_generate_on_ready", "auto_generate"), &ProceduralGenerationHost::set_auto_generate_on_ready);
     ClassDB::bind_method(D_METHOD("get_auto_generate_on_ready"), &ProceduralGenerationHost::get_auto_generate_on_ready);
     ADD_PROPERTY(PropertyInfo(Variant::BOOL, "auto_generate_on_ready"), "set_auto_generate_on_ready", "get_auto_generate_on_ready");
+
+    ADD_SIGNAL(MethodInfo("generation_ready"));
+}
+
+void ProceduralGenerationHost::_ready() {
+    if (auto_generate_on_ready_ && generator_resource_.is_valid()) {
+        emit_signal("generation_ready");
+    }
 }
 
 void ProceduralGenerationHost::set_generator_resource(const godot::Ref<ProceduralGeneratorResource> &p_res) {

@@ -8,8 +8,11 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- Linguistics Transform Logics (LNG2, LNG5, LNG6, LNG7) ---
 #include "../transform_logic/phonetic_hamming_lexeme_decode_transform_logic.h"
+#include "../transform_logic/wordnet_synset_hypernym_propagate_transform_logic.h"
+#include "../transform_logic/bpe_subword_and_morphology_transform_logic.h"
+#include "../transform_logic/semantic_frame_and_slm_mask_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -56,10 +59,13 @@ namespace {
     template <typename T_Resolver, typename Enable = void> struct LinguisticsTransformKernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
     template <typename T_Resolver> struct LinguisticsTransformKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
-    // --- LinguisticsTransformLogicResolver Specializations (Section 2.3: MND4) ---
+    // --- LinguisticsTransformLogicResolver Specializations (LNG2, LNG5, LNG6, LNG7) ---
     template <LinguisticsTransformLogicID ID, typename T_Concrete, typename T_Strategy>
     struct LinguisticsTransformLogicResolver { static constexpr bool is_valid = false; };
-    template <typename C, typename S> struct LinguisticsTransformLogicResolver<LinguisticsTransformLogicID::PhoneticHammingLexemeDecode, C, S> { using Type = PhoneticHammingLexemeDecodeTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct LinguisticsTransformLogicResolver<LinguisticsTransformLogicID::PhoneticHammingLexemeDecode, C, S>    { using Type = PhoneticHammingLexemeDecodeTransformLogic<C>;    static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct LinguisticsTransformLogicResolver<LinguisticsTransformLogicID::WordNetSynsetHypernymPropagate, C, S> { using Type = WordNetSynsetHypernymPropagateTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct LinguisticsTransformLogicResolver<LinguisticsTransformLogicID::BPESubwordAndMorphology, C, S>        { using Type = BPESubwordAndMorphologyTransformLogic<C>;        static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct LinguisticsTransformLogicResolver<LinguisticsTransformLogicID::SemanticFrameAndSLMMask, C, S>        { using Type = SemanticFrameAndSLMMaskTransformLogic<C>;        static constexpr bool is_valid = true; };
 
     template <LinguisticsTransformLogicID LogicID, typename C, typename S>
     struct LinguisticsTransformLogicKernelExtractor : LinguisticsTransformKernelExtractorImpl<LinguisticsTransformLogicResolver<LogicID, C, S>> {};

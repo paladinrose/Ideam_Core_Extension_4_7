@@ -120,6 +120,7 @@
 #include "core/tasks/domains/quantum_darwinism/registration/quantum_darwinism_task_domain_pack.h"
 #include "core/tasks/domains/linguistics/registration/linguistics_task_domain_pack.h"
 #include "core/tasks/domains/communications/registration/communications_task_domain_pack.h"
+#include "core/tasks/domains/design/registration/design_task_domain_pack.h"
 
 // --- Geometry (Shared Resources, 2D-to-3D Projector, 2D Canvases & Controls, DOD Bridge, Inspectors & Plugin) ---
 #include "godot/geometry/geometry_resource.h"
@@ -235,7 +236,12 @@
 #include "godot/design/style_3d_resource.h"
 #include "godot/design/socket_3d.h"
 #include "godot/design/container_3d.h"
+#include "godot/design/parametric_assembly_resource.h"
+#include "godot/design/blueprint_resource.h"
+#include "godot/design/editor/design_inspector.h"
 #include "godot/design/ideam_design_plugin.h"
+#include "godot/tasks/domains/design/data_oriented_design.h"
+#include "godot/tasks/domains/design/design_task_host.h"
 
 // --- Characters (Parametric Character Blueprints, Apparel, Nodes & Plugin) ---
 #include "godot/characters/character_blueprint_resource.h"
@@ -265,6 +271,8 @@
 #include "godot/linguistics/sememe_resource.h"
 #include "godot/linguistics/lexicon_resource.h"
 #include "godot/linguistics/semantic_prompt_parser.h"
+#include "godot/linguistics/metadata_linguistics_manager.h"
+#include "godot/linguistics/linguistic_object_profiler.h"
 #include "godot/linguistics/editor/linguistics_inspector.h"
 #include "godot/linguistics/ideam_linguistics_plugin.h"
 #include "godot/tasks/domains/linguistics/data_oriented_linguistics.h"
@@ -558,13 +566,22 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedMind);
         GDREGISTER_CLASS(ideam::godot_ext::MindTaskHost);
 
-        // --- Design (Section 1.1) ---
+        // --- Design (Section 1.1 & Section 2.1) ---
         GDREGISTER_CLASS(ideam::godot_ext::Style3DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Theme3DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Socket3D);
         GDREGISTER_CLASS(ideam::godot_ext::Container3D);
+        GDREGISTER_CLASS(ideam::godot_ext::BoxContainer3D);
+        GDREGISTER_CLASS(ideam::godot_ext::GridContainer3D);
         GDREGISTER_CLASS(ideam::godot_ext::RadialContainer3D);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineContainer3D);
         GDREGISTER_CLASS(ideam::godot_ext::SemanticStructure3D);
+        GDREGISTER_CLASS(ideam::godot_ext::ParametricAssemblyRecipeResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ParametricAssemblyNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::BlueprintResource);
+        GDREGISTER_CLASS(ideam::godot_ext::BlueprintCanvas2D);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedDesign);
+        GDREGISTER_CLASS(ideam::godot_ext::DesignTaskHost);
 
         // --- Characters (Section 1.1) ---
         GDREGISTER_CLASS(ideam::godot_ext::CharacterBlueprintResource);
@@ -594,17 +611,23 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // --- Linguistics & Communications ---
         GDREGISTER_CLASS(ideam::godot_ext::SememeResource);
         GDREGISTER_CLASS(ideam::godot_ext::SemanticTagSetResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticFrameResource);
         GDREGISTER_CLASS(ideam::godot_ext::GrammarRuleResource);
         GDREGISTER_CLASS(ideam::godot_ext::LexiconResource);
         GDREGISTER_CLASS(ideam::godot_ext::LanguageAssetResource);
         GDREGISTER_CLASS(ideam::godot_ext::SemanticPromptParser);
+        GDREGISTER_CLASS(ideam::godot_ext::MetadataLinguisticsManager);
+        GDREGISTER_CLASS(ideam::godot_ext::LinguisticObjectProfiler);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedLinguistics);
         GDREGISTER_CLASS(ideam::godot_ext::LinguisticsTaskHost);
         GDREGISTER_CLASS(ideam::godot_ext::CommunicationMediumResource);
         GDREGISTER_CLASS(ideam::godot_ext::UtteranceResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SSMLParser);
         GDREGISTER_CLASS(ideam::godot_ext::DiscourseResource);
         GDREGISTER_CLASS(ideam::godot_ext::CommunicationTransmitterNode);
         GDREGISTER_CLASS(ideam::godot_ext::CommunicationReceiverNode);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationSpeechBox2D);
+        GDREGISTER_CLASS(ideam::godot_ext::CommunicationSpeechBubble3D);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedCommunications);
         GDREGISTER_CLASS(ideam::godot_ext::CommunicationsTaskHost);
 
@@ -673,6 +696,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         QuantumDarwinismTaskDomainPack::register_domain();
         LinguisticsTaskDomainPack::register_domain();
         CommunicationsTaskDomainPack::register_domain();
+        DesignTaskDomainPack::register_domain();
     }
 
     // ========================================================================
@@ -732,6 +756,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         // Minds, Design, Characters, Procedural Generation & WFC tooling (Section 1.1 & 2.2)
         GDREGISTER_CLASS(ideam::godot_ext::IdeamMindsPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::DesignInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamDesignPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamCharactersPlugin);
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);

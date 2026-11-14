@@ -4,20 +4,16 @@
  * procedural_generator_resource.h
  * Abstract base `Resource` (`ProceduralGeneratorResource`) and SceneTree host (`ProceduralGenerationHost`)
  * for `IdeamProceduralGeneration` (`src/godot/procedural_generation/`).
- *
- * Just as `GeometryResource` in `IdeamGeometry` is the shared base resource for `SplineResource`
- * and `TilingResource`, `ProceduralGeneratorResource` provides the shared seed, Undo/Redo snapshot
- * protocol, and constraint-validation contract that `WFCRuleTensorResource` in
- * `IdeamWaveFunctionCollapse` inherits from.
  */
 
+#include "../../core/procedural_generation/procgen_common.h"
+#include "../linguistics/sememe_resource.h"
+#include "../utilities/ideam_undo_redo.h"
 #include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/string.hpp>
-#include "../utilities/ideam_undo_redo.h"
-#include "../../core/procedural_generation/procgen_common.h"
 
 namespace ideam::godot_ext {
 
@@ -25,8 +21,9 @@ class ProceduralGeneratorResource : public godot::Resource {
     GDCLASS(ProceduralGeneratorResource, godot::Resource)
 
 private:
-    int64_t master_seed_           = 1337;
-    bool deterministic_mode_       = true;
+    int64_t master_seed_     = 1337;
+    bool deterministic_mode_ = true;
+    godot::Ref<SemanticTagSetResource> semantic_tags_;
     godot::Ref<IdeamUndoRedo> undo_redo_;
 
 protected:
@@ -45,9 +42,13 @@ public:
     void set_deterministic_mode(bool p_deterministic);
     [[nodiscard]] bool get_deterministic_mode() const noexcept { return deterministic_mode_; }
 
+    void set_semantic_tags(const godot::Ref<SemanticTagSetResource> &p_tags);
+    [[nodiscard]] godot::Ref<SemanticTagSetResource> get_semantic_tags() const { return semantic_tags_; }
+
     [[nodiscard]] virtual godot::Dictionary get_snapshot_state() const;
     virtual void apply_snapshot_state(const godot::Dictionary &p_state);
     void commit_snapshot_mutation(const godot::String &p_action_name, const godot::Dictionary &p_before_state);
+    void commit_seed_change(int64_t p_new_seed, const godot::String &p_action_name = "Change Procedural Generator Seed");
 };
 
 class ProceduralGenerationHost : public godot::Node {
@@ -63,6 +64,8 @@ protected:
 public:
     ProceduralGenerationHost() = default;
     ~ProceduralGenerationHost() override = default;
+
+    void _ready() override;
 
     void set_generator_resource(const godot::Ref<ProceduralGeneratorResource> &p_res);
     [[nodiscard]] godot::Ref<ProceduralGeneratorResource> get_generator_resource() const { return generator_resource_; }

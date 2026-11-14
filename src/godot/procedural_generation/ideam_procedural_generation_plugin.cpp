@@ -1,4 +1,5 @@
 #include "ideam_procedural_generation_plugin.h"
+#include "../../core/tasks/registration/ideam_task_registry.h"
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -45,9 +46,16 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
     validate_script_templates();
     set_plugin_active("IdeamProceduralGeneration", true);
     register_to_ecosystem("WizardSettings", "IdeamProceduralGeneration", godot::String(PROCGEN_SETTINGS_PATH.data()));
+
+    if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
+        reg->set_domain_active(godot::StringName("IdeamProceduralGeneration"), true);
+    }
 }
 
 void IdeamProceduralGenerationPlugin::_exit_tree() {
+    if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
+        reg->set_domain_active(godot::StringName("IdeamProceduralGeneration"), false);
+    }
     set_plugin_active("IdeamProceduralGeneration", false);
 }
 

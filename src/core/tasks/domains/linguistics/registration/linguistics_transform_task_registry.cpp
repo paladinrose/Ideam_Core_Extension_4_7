@@ -5,6 +5,13 @@
 namespace ideam::core {
 
 const std::array<LogicVariantGroup, LinguisticsTransformTaskRegistry::STORAGE_COUNT> LinguisticsTransformTaskRegistry::logic_variants = {{
+    // PhoneticHammingLexemeDecode (0)
+    { true, 1, nullptr },
+    // WordNetSynsetHypernymPropagate (1)
+    { true, 1, nullptr },
+    // BPESubwordAndMorphology (2)
+    { true, 1, nullptr },
+    // SemanticFrameAndSLMMask (3)
     { true, 1, nullptr }
 }};
 

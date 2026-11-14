@@ -8,9 +8,10 @@
  * ARCHITECTURAL PLAN & DESIGN NOTES
  * ============================================================================
  * Implements the programmatic Shannon-Weaver communication pipeline (`Transmitter`,
- * `Medium`, `Noise`, `Receiver`, `Encoder`, `Decoder`) and Sacks-Schegloff-Jefferson
- * `Discourse` turn-taking, leaning on `IdeamLinguistics`, `IdeamSplines` (prosody curves),
- * `IdeamMinds` (belief & misreference recording), and `IdeamGames` (RPG skills).
+ * `Medium`, `Noise`, `Receiver`, `Encoder`, `Decoder`), Sacks-Schegloff-Jefferson
+ * `Discourse` turn-taking, SSML/TTS synthesis, and 2D/3D speech-box presenters,
+ * leaning on `IdeamLinguistics`, `IdeamSplines` (prosody curves), `IdeamMinds`
+ * (belief & `HONEST_MISREFERENCE` recording), and `IdeamGames` (RPG skills).
  */
 
 #include "../editor/ideam_editor_plugin.h"

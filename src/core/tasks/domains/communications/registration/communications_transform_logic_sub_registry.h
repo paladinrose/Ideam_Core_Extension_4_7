@@ -2,14 +2,15 @@
 
 #include "communications_transform_task_registry.h"
 #include "../../../registration/task_view_bridge.h"
-#include "../../../metadata_logic/transform_logic_traits.h"
+#include "../../../transform_logic/transform_logic_traits.h"
 #include "../../../transform_task.h"
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- Communications Transform Logics (COM3, COM4) ---
 #include "../transform_logic/noisy_medium_phoneme_degrade_transform_logic.h"
+#include "../transform_logic/receiver_epistemic_handoff_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -56,10 +57,11 @@ namespace {
     template <typename T_Resolver, typename Enable = void> struct CommunicationsTransformKernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
     template <typename T_Resolver> struct CommunicationsTransformKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
-    // --- CommunicationsTransformLogicResolver Specializations (Section 2.3: MND4) ---
+    // --- CommunicationsTransformLogicResolver Specializations (COM3, COM4) ---
     template <CommunicationsTransformLogicID ID, typename T_Concrete, typename T_Strategy>
     struct CommunicationsTransformLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct CommunicationsTransformLogicResolver<CommunicationsTransformLogicID::NoisyMediumPhonemeDegrade, C, S> { using Type = NoisyMediumPhonemeDegradeTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct CommunicationsTransformLogicResolver<CommunicationsTransformLogicID::ReceiverEpistemicHandoff, C, S> { using Type = ReceiverEpistemicHandoffTransformLogic<C>; static constexpr bool is_valid = true; };
 
     template <CommunicationsTransformLogicID LogicID, typename C, typename S>
     struct CommunicationsTransformLogicKernelExtractor : CommunicationsTransformKernelExtractorImpl<CommunicationsTransformLogicResolver<LogicID, C, S>> {};

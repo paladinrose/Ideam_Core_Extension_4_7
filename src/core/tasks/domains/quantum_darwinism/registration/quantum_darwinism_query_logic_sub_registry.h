@@ -7,7 +7,7 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Query Logics (Section 2.3: MND2, MND6) ---
+// --- QuantumDarwinism Query Logics (Section 1.5: QD2) ---
 #include "../query_logic/pointer_state_einselection_query_logic.h"
 
 // --- Views & Strategies ---

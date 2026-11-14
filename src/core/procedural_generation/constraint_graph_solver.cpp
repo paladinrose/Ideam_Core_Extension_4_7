@@ -4,12 +4,26 @@
 
 namespace ideam::core {
 
+void ConstraintGraphSolver::bind_environment(ProceduralEnvironment *p_env) noexcept {
+    bound_environment_ = p_env;
+    if (bound_environment_ && !bound_environment_->slots().empty()) {
+        state_count_ = static_cast<uint32_t>(std::min<size_t>(256u, bound_environment_->tokens().size()));
+        slot_domains_.resize(bound_environment_->slots().size());
+        for (size_t i = 0; i < bound_environment_->slots().size(); ++i) {
+            slot_domains_[i] = bound_environment_->slots()[i].domain;
+        }
+    }
+}
+
 void ConstraintGraphSolver::configure_slots(uint32_t p_slot_count, uint32_t p_state_count, uint64_t p_seed) {
     state_count_ = std::min<uint32_t>(p_state_count, 256u);
     rng_         = ProcGenSeedStreamPOD(p_seed);
     slot_domains_.resize(p_slot_count);
     for (auto &dom : slot_domains_) {
         dom.fill_first_n(state_count_);
+    }
+    if (bound_environment_) {
+        bound_environment_->configure_slots(p_slot_count, state_count_);
     }
     status_ = ProcGenSolverStatus::UNSOLVED;
 }
@@ -37,12 +51,37 @@ bool ConstraintGraphSolver::apply_pinned_landmarks() {
         }
         slot_domains_[pin.slot_id].clear();
         slot_domains_[pin.slot_id].set_bit(pin.pinned_state);
+        if (bound_environment_ && pin.slot_id < bound_environment_->slots().size()) {
+            auto &env_slot               = bound_environment_->slots()[pin.slot_id];
+            env_slot.domain              = slot_domains_[pin.slot_id];
+            env_slot.collapsed_token_id  = static_cast<int32_t>(pin.pinned_state);
+            env_slot.locked_layer        = PatternCascadeLayer::LAYER_PINNED_OVERRIDE;
+            env_slot.is_pointer_state    = 1u;
+            env_slot.einselection_score  = 1.0f;
+        }
         if (slot_domains_[pin.slot_id].empty()) {
             status_ = ProcGenSolverStatus::CONTRADICTION;
             return false;
         }
     }
     return true;
+}
+
+bool ConstraintGraphSolver::sync_and_propagate_environment_rules() {
+    if (!bound_environment_) return true;
+    auto &env_slots = bound_environment_->slots();
+    const size_t n  = std::min(slot_domains_.size(), env_slots.size());
+    for (size_t i = 0; i < n; ++i) {
+        env_slots[i].domain = slot_domains_[i];
+    }
+    const bool ok = bound_environment_->propagate_hierarchy_and_cardinality_constraints();
+    for (size_t i = 0; i < n; ++i) {
+        slot_domains_[i] = env_slots[i].domain;
+    }
+    if (!ok) {
+        status_ = ProcGenSolverStatus::CONTRADICTION;
+    }
+    return ok;
 }
 
 int32_t ConstraintGraphSolver::select_lowest_entropy_slot() noexcept {

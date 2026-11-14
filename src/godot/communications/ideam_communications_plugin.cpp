@@ -1,4 +1,5 @@
 #include "ideam_communications_plugin.h"
+#include "../../core/tasks/registration/ideam_task_registry.h"
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -41,6 +42,10 @@ void IdeamCommunicationsPlugin::_enter_tree() {
     set_plugin_active("IdeamCommunications", true);
     register_to_ecosystem("WizardSettings", "IdeamCommunications", godot::String(COMMUNICATIONS_SETTINGS_PATH.data()));
 
+    if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
+        reg->set_domain_active(godot::StringName("IdeamCommunications"), true);
+    }
+
     communications_inspector_.instantiate();
     add_inspector_plugin(communications_inspector_);
 }
@@ -49,6 +54,9 @@ void IdeamCommunicationsPlugin::_exit_tree() {
     if (communications_inspector_.is_valid()) {
         remove_inspector_plugin(communications_inspector_);
         communications_inspector_.unref();
+    }
+    if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
+        reg->set_domain_active(godot::StringName("IdeamCommunications"), false);
     }
     set_plugin_active("IdeamCommunications", false);
 }

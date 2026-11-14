@@ -9,8 +9,8 @@
  * ARCHITECTURAL PLAN & DESIGN NOTES
  * ============================================================================
  * Leans on `IdeamProceduralGeneration` (`src/godot/procedural_generation/`) and
- * works synergistically with `IdeamWaveFunctionCollapse` (`src/godot/wave_function_collapse/`)
- * and `IdeamTasks` (`TaskGraphDOD`).
+ * works synergistically with `IdeamWaveFunctionCollapse` (`src/godot/wave_function_collapse/`),
+ * `IdeamLinguistics` (`src/godot/linguistics/`), and `IdeamTasks` (`TaskGraphDOD`).
  */
 
 #include "../editor/ideam_editor_plugin.h"
@@ -59,6 +59,9 @@ public:
     }
     [[nodiscard]] bool is_wfc_handshake_available() const {
         return is_plugin_active("IdeamWaveFunctionCollapse") || is_plugin_active("IdeamWFC");
+    }
+    [[nodiscard]] bool is_linguistics_handshake_available() const {
+        return is_plugin_active("IdeamLinguistics");
     }
     [[nodiscard]] bool is_tiles_handshake_available() const { return is_plugin_active("IdeamTiles"); }
     [[nodiscard]] bool is_minds_handshake_available() const { return is_plugin_active("IdeamMinds"); }

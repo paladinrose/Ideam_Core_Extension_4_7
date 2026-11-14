@@ -2,13 +2,13 @@
 
 #include "wfc_transform_task_registry.h"
 #include "../../../registration/task_view_bridge.h"
-#include "../../../metadata_logic/transform_logic_traits.h"
+#include "../../../transform_logic/transform_logic_traits.h"
 #include "../../../transform_task.h"
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- WaveFunctionCollapse Transform Logics (Section 1.4: WFC2) ---
 #include "../transform_logic/wfc_forward_collapse_and_propagate_transform_logic.h"
 
 // --- Views & Strategies ---

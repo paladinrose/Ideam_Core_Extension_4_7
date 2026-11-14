@@ -11,7 +11,8 @@
 namespace ideam::core {
 
 enum class ProceduralGenerationTransformLogicID : uint32_t {
-    PatternDomainInitialize = 0,
+    PatternDomainInitialize       = 0,
+    HierarchyCardinalityPropagate = 1,
     Count
 };
 

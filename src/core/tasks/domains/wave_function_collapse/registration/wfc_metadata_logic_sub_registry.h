@@ -8,7 +8,7 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- WaveFunctionCollapse Metadata Logics (Section 1.4: WFC1) ---
 #include "../metadata_logic/wfc_entropy_partition_metadata_logic.h"
 
 // --- Views & Strategies ---

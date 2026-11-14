@@ -1,5 +1,6 @@
 #include "ideam_wave_function_collapse_plugin.h"
 #include "../procedural_generation/ideam_procedural_generation_plugin.h"
+#include "../../core/tasks/domains/wave_function_collapse/registration/wfc_task_domain_pack.h"
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -7,17 +8,42 @@ namespace ideam::godot_ext {
 IdeamWaveFunctionCollapsePlugin *IdeamWaveFunctionCollapsePlugin::singleton = nullptr;
 
 void IdeamWaveFunctionCollapsePlugin::_bind_methods() {
-    godot::ClassDB::bind_method(godot::D_METHOD("get_plugin_domain_name"), &IdeamWaveFunctionCollapsePlugin::get_plugin_domain_name);
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("get_plugin_domain_name"),
+        &IdeamWaveFunctionCollapsePlugin::get_plugin_domain_name
+    );
     godot::ClassDB::bind_method(
         godot::D_METHOD("is_procedural_generation_handshake_available"),
         &IdeamWaveFunctionCollapsePlugin::is_procedural_generation_handshake_available
     );
-    godot::ClassDB::bind_method(godot::D_METHOD("is_tiles_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_tiles_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_design_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_design_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_narratives_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_narratives_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_games_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_games_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_quantum_darwinism_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_quantum_darwinism_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamWaveFunctionCollapsePlugin::is_tasks_handshake_available);
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_linguistics_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_linguistics_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_tiles_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_tiles_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_design_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_design_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_narratives_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_narratives_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_games_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_games_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_quantum_darwinism_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_quantum_darwinism_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_tasks_handshake_available"),
+        &IdeamWaveFunctionCollapsePlugin::is_tasks_handshake_available
+    );
 
 #ifdef TOOLS_ENABLED
     godot::ClassDB::bind_static_method(
@@ -53,6 +79,8 @@ void IdeamWaveFunctionCollapsePlugin::_enter_tree() {
     set_plugin_active("IdeamWFC", true);
     register_to_ecosystem("WizardSettings", "IdeamWaveFunctionCollapse", godot::String(WFC_SETTINGS_PATH.data()));
 
+    core::WaveFunctionCollapseTaskDomainPack::register_domain();
+
     wfc_rule_tensor_inspector_.instantiate();
     add_inspector_plugin(wfc_rule_tensor_inspector_);
 }
@@ -71,7 +99,6 @@ godot::EditorUndoRedoManager *IdeamWaveFunctionCollapsePlugin::get_static_undo_r
     if (singleton) {
         return singleton->get_undo_redo();
     }
-    // Lean on IdeamProceduralGenerationPlugin if WFC's own EditorPlugin undo_redo is queried while delegated
     return IdeamProceduralGenerationPlugin::get_static_undo_redo();
 }
 #endif

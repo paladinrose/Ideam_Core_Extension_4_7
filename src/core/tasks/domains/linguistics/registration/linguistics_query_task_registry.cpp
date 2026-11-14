@@ -6,6 +6,8 @@ namespace ideam::core {
 
 const std::array<LogicVariantGroup, LinguisticsQueryTaskRegistry::STORAGE_COUNT> LinguisticsQueryTaskRegistry::logic_variants = {{
     // SemeComponentialAffinity (0)
+    { true, 1, nullptr },
+    // MatryoshkaBinaryHamming (1)
     { true, 1, nullptr }
 }};
 

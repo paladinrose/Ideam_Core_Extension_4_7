@@ -8,7 +8,7 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Metadata Logics (Section 2.3: MND4) ---
+// --- QuantumDarwinism Metadata Logics (Section 1.5: QD1) ---
 #include "../metadata_logic/conflict_horizon_box_partition_metadata_logic.h"
 
 // --- Views & Strategies ---

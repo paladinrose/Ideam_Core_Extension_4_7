@@ -13,6 +13,7 @@ namespace ideam::core {
 
 enum class LinguisticsQueryLogicID : uint32_t {
     SemeComponentialAffinity = 0,
+    MatryoshkaBinaryHamming  = 1,
     Count
 };
 

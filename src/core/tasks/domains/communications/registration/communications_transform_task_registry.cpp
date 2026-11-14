@@ -5,6 +5,9 @@
 namespace ideam::core {
 
 const std::array<LogicVariantGroup, CommunicationsTransformTaskRegistry::STORAGE_COUNT> CommunicationsTransformTaskRegistry::logic_variants = {{
+    // NoisyMediumPhonemeDegrade (0)
+    { true, 1, nullptr },
+    // ReceiverEpistemicHandoff (1)
     { true, 1, nullptr }
 }};
 

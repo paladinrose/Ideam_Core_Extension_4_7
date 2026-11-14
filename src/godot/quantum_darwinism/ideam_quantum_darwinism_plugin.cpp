@@ -1,5 +1,6 @@
 #include "ideam_quantum_darwinism_plugin.h"
 #include "../procedural_generation/ideam_procedural_generation_plugin.h"
+#include "../../core/tasks/domains/quantum_darwinism/registration/quantum_darwinism_task_domain_pack.h"
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -18,6 +19,10 @@ void IdeamQuantumDarwinismPlugin::_bind_methods() {
     godot::ClassDB::bind_method(
         godot::D_METHOD("is_wfc_handshake_available"),
         &IdeamQuantumDarwinismPlugin::is_wfc_handshake_available
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("is_linguistics_handshake_available"),
+        &IdeamQuantumDarwinismPlugin::is_linguistics_handshake_available
     );
     godot::ClassDB::bind_method(
         godot::D_METHOD("is_tiles_handshake_available"),
@@ -76,6 +81,8 @@ void IdeamQuantumDarwinismPlugin::_enter_tree() {
         "IdeamQuantumDarwinism",
         godot::String(QD_SETTINGS_PATH.data())
     );
+
+    core::QuantumDarwinismTaskDomainPack::register_domain();
 
     qd_inspector_.instantiate();
     add_inspector_plugin(qd_inspector_);

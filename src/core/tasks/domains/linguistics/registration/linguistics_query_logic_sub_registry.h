@@ -7,8 +7,9 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/packed_int64_array.hpp>
 
-// --- Minds Query Logics (Section 2.3: MND2, MND6) ---
+// --- Linguistics Query Logics (LNG3, LNG4) ---
 #include "../query_logic/seme_componential_affinity_query_logic.h"
+#include "../query_logic/matryoshka_binary_hamming_query_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -55,10 +56,11 @@ namespace {
     template <typename T_Resolver, typename Enable = void> struct LinguisticsQueryKernelExtractorImpl { static constexpr size_t value = 0; static constexpr bool has_kernel = false; };
     template <typename T_Resolver> struct LinguisticsQueryKernelExtractorImpl<T_Resolver, std::void_t<decltype(T_Resolver::K_SIZE)>> { static constexpr size_t value = T_Resolver::K_SIZE; static constexpr bool has_kernel = true; };
 
-    // --- LinguisticsQueryLogicResolver Specializations (Section 2.3: MND2, MND6) ---
+    // --- LinguisticsQueryLogicResolver Specializations (LNG3, LNG4) ---
     template <LinguisticsQueryLogicID ID, typename T_Concrete, typename T_Strategy>
     struct LinguisticsQueryLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct LinguisticsQueryLogicResolver<LinguisticsQueryLogicID::SemeComponentialAffinity, C, S> { using Type = SemeComponentialAffinityQueryLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct LinguisticsQueryLogicResolver<LinguisticsQueryLogicID::MatryoshkaBinaryHamming, C, S>  { using Type = MatryoshkaBinaryHammingQueryLogic<C>;  static constexpr bool is_valid = true; };
 
     template <LinguisticsQueryLogicID LogicID, typename C, typename S>
     struct LinguisticsQueryLogicKernelExtractor : LinguisticsQueryKernelExtractorImpl<LinguisticsQueryLogicResolver<LogicID, C, S>> {};

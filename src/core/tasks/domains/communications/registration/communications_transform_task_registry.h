@@ -12,6 +12,7 @@ namespace ideam::core {
 
 enum class CommunicationsTransformLogicID : uint32_t {
     NoisyMediumPhonemeDegrade = 0,
+    ReceiverEpistemicHandoff  = 1,
     Count
 };
 

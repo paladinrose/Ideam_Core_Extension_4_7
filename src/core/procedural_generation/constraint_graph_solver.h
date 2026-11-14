@@ -4,20 +4,13 @@
  * constraint_graph_solver.h
  * Base C++26 Constraint Graph & Domain Propagation Solver (`src/core/procedural_generation/`).
  *
- * ============================================================================
- * ARCHITECTURAL PLAN & DESIGN NOTES
- * ============================================================================
  * Acts as the foundational constraint solver over `ProceduralEnvironment`.
  * Downstream solvers (`WFCSolverCore` for forward entropy collapse and
  * `QuantumDarwinismSolver` for einselection pointer-state conflict stabilization)
- * share this common domain & landmark representation.
- *
- * Provides the shared `BitmaskDomain256POD` variable table, pinned landmark initialization,
- * and minimum-entropy slot selection that `WFCSolverCore` (`src/core/wave_function_collapse/`)
- * inherits and specializes.
+ * share this common domain, landmark, and `ProceduralEnvironment` binding contract.
  */
 
-#include "procgen_common.h"
+#include "procedural_environment.h"
 #include <vector>
 
 namespace ideam::core {
@@ -29,10 +22,14 @@ protected:
     std::vector<BitmaskDomain256POD> slot_domains_;
     std::vector<PinnedSlotConstraintPOD> pinned_landmarks_;
     ProcGenSolverStatus status_ = ProcGenSolverStatus::UNSOLVED;
+    ProceduralEnvironment *bound_environment_ = nullptr;
 
 public:
     ConstraintGraphSolver() = default;
     virtual ~ConstraintGraphSolver() = default;
+
+    void bind_environment(ProceduralEnvironment *p_env) noexcept;
+    [[nodiscard]] ProceduralEnvironment *bound_environment() const noexcept { return bound_environment_; }
 
     void configure_slots(uint32_t p_slot_count, uint32_t p_state_count, uint64_t p_seed = 1337ULL);
     void clear_pinned_landmarks() noexcept;
@@ -43,16 +40,24 @@ public:
     [[nodiscard]] ProcGenSolverStatus status() const noexcept { return status_; }
 
     [[nodiscard]] const std::vector<BitmaskDomain256POD> &slot_domains() const noexcept { return slot_domains_; }
+    [[nodiscard]] std::vector<BitmaskDomain256POD> &slot_domains_mut() noexcept { return slot_domains_; }
     [[nodiscard]] int32_t collapsed_state_at(uint32_t p_slot_id) const noexcept;
 
     /**
      * Applies all registered `pinned_landmarks_` (`domains[slot_A] = (1 << state_A)`)
-     * before arc-consistency propagation begins.
+     * before arc-consistency propagation begins, and syncs to `bound_environment_` if bound.
      */
     bool apply_pinned_landmarks();
 
     /**
-     * Selects the uncollapsed slot (> 1 remaining bits) with minimum remaining states.
+     * Synchronizes `slot_domains_` with `bound_environment_` and runs
+     * `ProceduralEnvironment::propagate_hierarchy_and_cardinality_constraints()`.
+     */
+    bool sync_and_propagate_environment_rules();
+
+    /**
+     * Selects the uncollapsed slot (> 1 remaining bits) with minimum remaining states,
+     * using deterministic SplitMix64 tie-breaking.
      */
     [[nodiscard]] int32_t select_lowest_entropy_slot() noexcept;
 };

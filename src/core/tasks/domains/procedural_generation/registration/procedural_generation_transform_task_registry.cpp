@@ -5,6 +5,9 @@
 namespace ideam::core {
 
 const std::array<LogicVariantGroup, ProceduralGenerationTransformTaskRegistry::STORAGE_COUNT> ProceduralGenerationTransformTaskRegistry::logic_variants = {{
+    // PatternDomainInitialize (0)
+    { true, 1, nullptr },
+    // HierarchyCardinalityPropagate (1)
     { true, 1, nullptr }
 }};
 

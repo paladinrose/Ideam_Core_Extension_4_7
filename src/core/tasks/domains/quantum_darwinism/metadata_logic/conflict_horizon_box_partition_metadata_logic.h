@@ -2,21 +2,18 @@
 
 /**
  * conflict_horizon_box_partition_metadata_logic.h
- * 64-byte cache-aligned MetadataLogic task struct for `IdeamQuantumDarwinism`.
+ * 64-byte cache-aligned MetadataLogic task struct (`QD1`) for `IdeamQuantumDarwinism`.
  *
  * ============================================================================
- * ARCHITECTURAL PLAN & DESIGN NOTES
+ * ARCHITECTURAL PLAN & DESIGN NOTES (SECTION 1.5 — STAGE 1)
  * ============================================================================
- * - Implements Quantum Darwinism conflict stabilization on `TaskGraphDOD` over the shared
- *   `ProceduralEnvironment`:
- *     1. `ConflictHorizonBoxPartitionMetadataLogic`: Draws the bounded environment box (E_box)
- *        around a WFC contradiction or cardinality conflict slot.
- *     2. `PointerStateEinselectionQueryLogic`: Evaluates `GenerationRule` scores and neighbor
- *        mutual-information redundancy (R_delta) to select settled Pointer States.
- *     3. `CoherenceCascadeRelaxAndPropagateTransformLogic`: Evaluates which lower-precedence
- *        CSS cascade properties/siblings on intermediate cells between each Pointer State and
- *        the problem cell can be altered without losing coherence, then propagates pointer
- *        properties inward to resolve the conflict.
+ * - Around each conflicted slot flagged in `EnvironmentSlotPOD::has_conflict` or
+ *   `POINTER_OR_CONFLICT_MASK`, runs a zero-allocation ring-buffer BFS up to
+ *   `max_horizon_radius` hops across parent, child (`CHILD_SLOT_CSR`), sibling,
+ *   and spatial neighbor (`SPATIAL_NEIGHBOR_CSR`) links.
+ * - Populates `HORIZON_PARTITION_POD` (`HorizonSlotPartitionPOD`) with shortest
+ *   hop distance and inward predecessor links (`predecessor_toward_conf`), and
+ *   stamps hop distances into `r_selection.lod_levels` for downstream stages.
  */
 
 #include "../../../../memory/memory_common.h"
@@ -25,8 +22,10 @@
 #include "../../../../memory/views/strategies.h"
 #include "../../../i_native_task.h"
 #include "../../../metadata_logic/metadata_logic_traits.h"
+#include "../../../../quantum_darwinism/quantum_darwinism_common.h"
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <algorithm>
 #include <cstdint>
 #include <string_view>
 
@@ -46,7 +45,7 @@ struct alignas(64) ConflictHorizonBoxPartitionMetadataLogic {
     static constexpr BufferLayoutType required_layouts =
         BufferLayoutType::FLAT | BufferLayoutType::AOS | BufferLayoutType::SOA;
     static constexpr DataType required_types =
-        DataType::INT32 | DataType::UINT32 | DataType::FLOAT32;
+        DataType::BYTE | DataType::INT32 | DataType::FLOAT32;
 
     static constexpr size_t dimensions             = 0;
     static constexpr bool requires_static_kernel   = false;
@@ -56,24 +55,209 @@ struct alignas(64) ConflictHorizonBoxPartitionMetadataLogic {
     static constexpr std::string_view display_name = "QD Conflict Environment Horizon Box Partition";
     static constexpr std::string_view ui_category  = "QuantumDarwinism";
 
-    uint32_t target_buffer_id    = INVALID_ID;
-    uint32_t metadata_buffer_id  = INVALID_ID;
-    uint32_t max_horizon_radius  = 4;
-    uint8_t  reserved_padding[52]= {0};
+    uint32_t target_buffer_id            = INVALID_ID; ///< `ENVIRONMENT_SLOT_POD` (`EnvironmentSlotPOD`)
+    uint32_t metadata_buffer_id          = INVALID_ID; ///< `HORIZON_PARTITION_POD` (`HorizonSlotPartitionPOD`)
+    uint32_t child_csr_buffer_id         = INVALID_ID; ///< `CHILD_SLOT_CSR` (`uint32_t`)
+    uint32_t spatial_csr_buffer_id       = INVALID_ID; ///< `SPATIAL_NEIGHBOR_CSR` (`SpatialNeighborEdgePOD`)
+    uint32_t pointer_conflict_buffer_id  = INVALID_ID; ///< `POINTER_OR_CONFLICT_MASK` (`uint32_t`)
+    uint32_t max_horizon_radius          = 4;
+    uint32_t max_horizon_slots           = 128;
+    PatternCascadeLayer min_locked_layer = PatternCascadeLayer::LAYER_HIERARCHY_PARENT;
+    uint8_t  reserved_padding[35]        = {0};
 
-    static godot::Array get_ui_properties() { return godot::Array(); }
+    static godot::Array get_ui_properties() {
+        godot::Array props;
+        auto add_prop = [&](const char *p_name, godot::Variant::Type p_type, godot::Variant p_def) {
+            godot::Dictionary d;
+            d["name"]    = p_name;
+            d["type"]    = static_cast<int>(p_type);
+            d["default"] = p_def;
+            props.push_back(d);
+        };
+        add_prop("target_buffer_id",           godot::Variant::INT, static_cast<int64_t>(INVALID_ID));
+        add_prop("metadata_buffer_id",         godot::Variant::INT, static_cast<int64_t>(INVALID_ID));
+        add_prop("child_csr_buffer_id",        godot::Variant::INT, static_cast<int64_t>(INVALID_ID));
+        add_prop("spatial_csr_buffer_id",      godot::Variant::INT, static_cast<int64_t>(INVALID_ID));
+        add_prop("pointer_conflict_buffer_id", godot::Variant::INT, static_cast<int64_t>(INVALID_ID));
+        add_prop("max_horizon_radius",         godot::Variant::INT, static_cast<int64_t>(4));
+        add_prop("max_horizon_slots",          godot::Variant::INT, static_cast<int64_t>(128));
+        return props;
+    }
+
     [[nodiscard]] constexpr uint32_t get_target_buffer_id() const noexcept { return target_buffer_id; }
-    void apply_properties(const godot::Dictionary &p_props) noexcept { (void)p_props; }
+
+    void apply_properties(const godot::Dictionary &p_props) noexcept {
+        if (p_props.has("target_buffer_id"))           target_buffer_id           = static_cast<uint32_t>(static_cast<int64_t>(p_props["target_buffer_id"]));
+        if (p_props.has("metadata_buffer_id"))         metadata_buffer_id         = static_cast<uint32_t>(static_cast<int64_t>(p_props["metadata_buffer_id"]));
+        if (p_props.has("child_csr_buffer_id"))        child_csr_buffer_id        = static_cast<uint32_t>(static_cast<int64_t>(p_props["child_csr_buffer_id"]));
+        if (p_props.has("spatial_csr_buffer_id"))      spatial_csr_buffer_id      = static_cast<uint32_t>(static_cast<int64_t>(p_props["spatial_csr_buffer_id"]));
+        if (p_props.has("pointer_conflict_buffer_id")) pointer_conflict_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["pointer_conflict_buffer_id"]));
+        if (p_props.has("max_horizon_radius"))         max_horizon_radius         = static_cast<uint32_t>(static_cast<int64_t>(p_props["max_horizon_radius"]));
+        if (p_props.has("max_horizon_slots"))          max_horizon_slots          = static_cast<uint32_t>(static_cast<int64_t>(p_props["max_horizon_slots"]));
+    }
 
     template <typename T_ActiveView>
     inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view; (void)p_ctx;
+        (void)p_view;
+        (void)p_ctx;
+    }
+
+    template <typename T_Elem>
+    [[nodiscard]] static T_Elem *_resolve_ptr(const TaskContextPOD &p_ctx, uint32_t p_buf_id, size_t &r_cap) noexcept {
+        r_cap = 0u;
+        if (p_buf_id == INVALID_ID) return nullptr;
+        if (const GrantPartPOD *part = p_ctx.get_grant_part(p_buf_id)) {
+            if (part->raw_base_ptr) {
+                const size_t cap = part->capacity_bytes / sizeof(T_Elem);
+                r_cap = (part->selection.element_count > 0)
+                    ? std::min<size_t>(static_cast<size_t>(part->selection.element_count), cap)
+                    : cap;
+                return reinterpret_cast<T_Elem *>(part->raw_base_ptr);
+            }
+        }
+        if (p_ctx.manager) {
+            if (MemoryBufferPOD *buf = p_ctx.manager->get_buffer(p_buf_id)) {
+                if (buf->master_block_ptr) {
+                    const size_t cap = static_cast<size_t>(std::max<int64_t>(0, buf->max_elements));
+                    r_cap = (buf->current_count > 0)
+                        ? std::min<size_t>(static_cast<size_t>(buf->current_count), cap)
+                        : cap;
+                    return reinterpret_cast<T_Elem *>(buf->master_block_ptr + buf->memory_offset);
+                }
+            }
+        }
+        return nullptr;
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>
     void execute(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
-        (void)p_ctx; (void)p_view;
-        // Architectural stub: Full DOD metadata partitioning / specificity sorting.
+        (void)p_view;
+        size_t slot_cap = 0, part_cap = 0, child_cap = 0, spatial_cap = 0, status_cap = 0;
+        const auto *slots       = _resolve_ptr<const EnvironmentSlotPOD>(p_ctx, target_buffer_id, slot_cap);
+        auto *partitions        = _resolve_ptr<HorizonSlotPartitionPOD>(p_ctx, metadata_buffer_id, part_cap);
+        const auto *child_csr   = _resolve_ptr<const uint32_t>(p_ctx, child_csr_buffer_id, child_cap);
+        const auto *spatial_csr = _resolve_ptr<const SpatialNeighborEdgePOD>(p_ctx, spatial_csr_buffer_id, spatial_cap);
+        const auto *status_mask = _resolve_ptr<const uint32_t>(p_ctx, pointer_conflict_buffer_id, status_cap);
+
+        if (!slots || slot_cap == 0 || !partitions || part_cap == 0) {
+            return;
+        }
+
+        const uint32_t n_slots       = static_cast<uint32_t>(std::min(slot_cap, part_cap));
+        const uint32_t n_child_csr   = static_cast<uint32_t>(child_cap);
+        const uint32_t n_spatial_csr = static_cast<uint32_t>(spatial_cap);
+
+        for (uint32_t i = 0; i < n_slots; ++i) {
+            partitions[i].slot_id                 = i;
+            partitions[i].nearest_conflict_slot   = 0xFFFFFFFFu;
+            partitions[i].predecessor_toward_conf = 0xFFFFFFFFu;
+            partitions[i].hop_distance            = 0xFFFFu;
+            partitions[i].role_flags              = HORIZON_ROLE_OUTSIDE;
+            partitions[i].locked_cascade_floor    = static_cast<uint8_t>(min_locked_layer);
+        }
+
+        // Zero-allocation fixed ring buffer for BFS (up to 512 horizon slots)
+        constexpr uint32_t RING_CAP = 512u;
+        uint32_t bfs_ring[RING_CAP];
+        uint32_t q_head = 0u;
+        uint32_t q_tail = 0u;
+        uint32_t box_count = 0u;
+        const uint32_t max_box    = std::min<uint32_t>(RING_CAP, std::max<uint32_t>(1u, max_horizon_slots));
+        const uint16_t max_radius = static_cast<uint16_t>(std::max<uint32_t>(1u, max_horizon_radius));
+
+        for (uint32_t i = 0; i < n_slots && box_count < max_box; ++i) {
+            const bool flagged = (slots[i].has_conflict != 0u) ||
+                                 slots[i].domain.empty() ||
+                                 (status_mask && i < status_cap && (status_mask[i] & SLOT_STATUS_HAS_CONFLICT) != 0u);
+            if (flagged) {
+                partitions[i].nearest_conflict_slot   = i;
+                partitions[i].predecessor_toward_conf = i;
+                partitions[i].hop_distance            = 0u;
+                partitions[i].role_flags              = HORIZON_ROLE_CONFLICT_CENTER;
+                bfs_ring[q_tail++]                    = i;
+                ++box_count;
+            }
+        }
+
+        while (q_head < q_tail && box_count < max_box) {
+            const uint32_t u    = bfs_ring[q_head++];
+            const uint16_t dist = partitions[u].hop_distance;
+            if (dist >= max_radius) {
+                continue;
+            }
+
+            auto try_visit = [&](uint32_t v) {
+                if (v >= n_slots || box_count >= max_box || q_tail >= RING_CAP) return;
+                if (partitions[v].hop_distance != 0xFFFFu) return;
+
+                const uint16_t next_dist = static_cast<uint16_t>(dist + 1u);
+                partitions[v].hop_distance            = next_dist;
+                partitions[v].nearest_conflict_slot   = partitions[u].nearest_conflict_slot;
+                partitions[v].predecessor_toward_conf = u;
+                partitions[v].role_flags              = (next_dist == max_radius)
+                    ? HORIZON_ROLE_PERIMETER
+                    : HORIZON_ROLE_INTERIOR;
+                ++box_count;
+                if (next_dist < max_radius) {
+                    bfs_ring[q_tail++] = v;
+                }
+            };
+
+            const EnvironmentSlotPOD &u_slot = slots[u];
+            // 1. Parent & Sibling hops
+            if (u_slot.parent_slot_id < n_slots) {
+                const uint32_t p_id = u_slot.parent_slot_id;
+                try_visit(p_id);
+                if (child_csr) {
+                    const EnvironmentSlotPOD &p_slot = slots[p_id];
+                    if (p_slot.children_count > 0u &&
+                        (p_slot.children_csr_offset + p_slot.children_count) <= n_child_csr) {
+                        for (uint32_t k = 0; k < p_slot.children_count; ++k) {
+                            try_visit(child_csr[p_slot.children_csr_offset + k]);
+                        }
+                    }
+                }
+            }
+            // 2. Child hops
+            if (child_csr && u_slot.children_count > 0u &&
+                (u_slot.children_csr_offset + u_slot.children_count) <= n_child_csr) {
+                for (uint32_t k = 0; k < u_slot.children_count; ++k) {
+                    try_visit(child_csr[u_slot.children_csr_offset + k]);
+                }
+            }
+            // 3. Spatial neighbor CSR hops
+            if (spatial_csr && u_slot.spatial_neighbor_count > 0u &&
+                static_cast<uint32_t>(u_slot.spatial_csr_offset + u_slot.spatial_neighbor_count) <= n_spatial_csr) {
+                for (uint16_t k = 0; k < u_slot.spatial_neighbor_count; ++k) {
+                    try_visit(spatial_csr[u_slot.spatial_csr_offset + k].neighbor_slot_id);
+                }
+            }
+        }
+
+        if (GrantPartPOD *target_part = const_cast<GrantPartPOD *>(p_ctx.get_grant_part(target_buffer_id))) {
+            MemoryBufferSelectionPOD &sel = target_part->selection;
+            const size_t sel_lim = static_cast<size_t>(std::max<int64_t>(0, sel.element_count));
+            for (uint32_t i = 0; i < n_slots && i < sel_lim; ++i) {
+                if (sel.lod_levels) {
+                    sel.lod_levels[i] = (partitions[i].hop_distance == 0xFFFFu)
+                        ? 255u
+                        : static_cast<uint8_t>(std::min<uint16_t>(254u, partitions[i].hop_distance));
+                }
+                if (sel.group_masks) {
+                    sel.group_masks[i] = static_cast<uint32_t>(partitions[i].role_flags);
+                }
+            }
+        }
+    }
+
+    template <typename T_ActiveView, typename T_ActiveStrategy>
+    void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_ctx,
+        T_ActiveView &p_view
+    ) const noexcept {
+        (void)r_selection;
+        execute<T_ActiveView, T_ActiveStrategy>(p_ctx, p_view);
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

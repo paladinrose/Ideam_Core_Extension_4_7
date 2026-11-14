@@ -5,28 +5,6 @@ namespace ideam::godot_ext {
 
 IdeamDesignPlugin *IdeamDesignPlugin::singleton = nullptr;
 
-void IdeamDesignPlugin::_bind_methods() {
-    godot::ClassDB::bind_method(godot::D_METHOD("get_plugin_domain_name"), &IdeamDesignPlugin::get_plugin_domain_name);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_geometry_handshake_available"), &IdeamDesignPlugin::is_geometry_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_splines_handshake_available"), &IdeamDesignPlugin::is_splines_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_tiles_handshake_available"), &IdeamDesignPlugin::is_tiles_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_characters_handshake_available"), &IdeamDesignPlugin::is_characters_handshake_available);
-    godot::ClassDB::bind_method(godot::D_METHOD("is_wfc_handshake_available"), &IdeamDesignPlugin::is_wfc_handshake_available);
-
-#ifdef TOOLS_ENABLED
-    godot::ClassDB::bind_static_method(
-        "IdeamDesignPlugin",
-        godot::D_METHOD("undo_redo"),
-        &IdeamDesignPlugin::get_static_undo_redo
-    );
-#endif
-    godot::ClassDB::bind_static_method(
-        "IdeamDesignPlugin",
-        godot::D_METHOD("create_undo_redo_wrapper"),
-        &IdeamDesignPlugin::create_undo_redo_wrapper
-    );
-}
-
 IdeamDesignPlugin::IdeamDesignPlugin() {
     if (singleton == nullptr) {
         singleton = this;
@@ -43,9 +21,15 @@ void IdeamDesignPlugin::_enter_tree() {
     validate_script_templates();
     set_plugin_active("IdeamDesign", true);
     register_to_ecosystem("WizardSettings", "IdeamDesign", godot::String(DESIGN_SETTINGS_PATH.data()));
+    inspector_plugin_.instantiate();
+    add_inspector_plugin(inspector_plugin_);
 }
 
 void IdeamDesignPlugin::_exit_tree() {
+    if (inspector_plugin_.is_valid()) {
+        remove_inspector_plugin(inspector_plugin_);
+        inspector_plugin_.unref();
+    }
     set_plugin_active("IdeamDesign", false);
 }
 
@@ -67,6 +51,21 @@ godot::Ref<IdeamUndoRedo> IdeamDesignPlugin::create_undo_redo_wrapper() {
     }
 #endif
     return ur;
+}
+
+void IdeamDesignPlugin::_bind_methods() {
+    using namespace godot;
+    ClassDB::bind_method(D_METHOD("get_plugin_domain_name"), &IdeamDesignPlugin::get_plugin_domain_name);
+    ClassDB::bind_method(D_METHOD("is_geometry_handshake_available"), &IdeamDesignPlugin::is_geometry_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_splines_handshake_available"), &IdeamDesignPlugin::is_splines_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_tiles_handshake_available"), &IdeamDesignPlugin::is_tiles_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_linguistics_handshake_available"), &IdeamDesignPlugin::is_linguistics_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_tasks_handshake_available"), &IdeamDesignPlugin::is_tasks_handshake_available);
+
+#ifdef TOOLS_ENABLED
+    ClassDB::bind_static_method("IdeamDesignPlugin", D_METHOD("undo_redo"), &IdeamDesignPlugin::get_static_undo_redo);
+#endif
+    ClassDB::bind_static_method("IdeamDesignPlugin", D_METHOD("create_undo_redo_wrapper"), &IdeamDesignPlugin::create_undo_redo_wrapper);
 }
 
 } // namespace ideam::godot_ext

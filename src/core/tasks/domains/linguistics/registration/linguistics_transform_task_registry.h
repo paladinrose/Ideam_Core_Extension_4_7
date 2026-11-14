@@ -11,7 +11,10 @@
 namespace ideam::core {
 
 enum class LinguisticsTransformLogicID : uint32_t {
-    PhoneticHammingLexemeDecode = 0,
+    PhoneticHammingLexemeDecode    = 0,
+    WordNetSynsetHypernymPropagate = 1,
+    BPESubwordAndMorphology        = 2,
+    SemanticFrameAndSLMMask        = 3,
     Count
 };
 

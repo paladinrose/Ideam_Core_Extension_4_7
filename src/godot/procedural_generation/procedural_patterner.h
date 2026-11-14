@@ -5,21 +5,20 @@
  * `ProceduralPatterner` (`src/godot/procedural_generation/`).
  *
  * ============================================================================
- * ARCHITECTURAL PLAN & DESIGN NOTES
+ * ARCHITECTURAL PLAN & DESIGN NOTES (Master Plan Section 1.3)
  * ============================================================================
  * 1. ROLE:
  *    - Evaluates a cascading `AnalysisStyle` (collection of `AnalysisRule`s) against any
  *      Godot source artifact (`PackedScene` via `SceneState`, live `Node` subtree,
  *      `Resource`, or `RefCounted`) and synthesizes a `ProceduralPattern` containing
  *      cascading `GenerationRule`s.
- *
- * 2. GODOT REFLECTION CAPABILITIES LEVERAGED:
- *    - Inspects `SceneState` (for `PackedScene` without instantiating nodes) or `Object`
- *      reflection (`ClassDB::is_parent_class`, `get_property_list`, `get_method_list`,
- *      `get_signal_list`, node names, groups, and parent/child/sibling topology).
- *    - Emits parent acceptance rules (`CastleGrounds | CastleRuins -> CastleTower`),
- *      child cardinality budgets (`TowerGate [1..2]`, `TowerStairs [0..1]`), and
- *      sibling co-occurrence requirements (`TowerLanding [0..3]` requires `TowerStairs`).
+ * 2. GODOT REFLECTION HARVESTING:
+ *    - `create_pattern_from_packed_scene`: Zero-instantiation `SceneState` inspection
+ *      (`get_node_count()`, `get_node_type()`, `get_node_name()`, `get_node_path()`,
+ *      `get_node_groups()`, `get_node_property_count()`).
+ *    - `create_pattern_from_object`: Live duck-typed reflection (`get_class()`,
+ *      `ClassDB::is_parent_class()`, `get_property_list()`, `has_method()`, `has_signal()`,
+ *      and attached `SememeResource` / `MetadataLinguisticsManager` tags).
  */
 
 #include "analysis_rule.h"
@@ -27,6 +26,7 @@
 #include <godot_cpp/classes/packed_scene.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/array.hpp>
 
 namespace ideam::godot_ext {
 
@@ -52,6 +52,10 @@ public:
 
     [[nodiscard]] godot::Ref<ProceduralPattern> create_pattern_from_object(
         godot::Object *p_root_object
+    ) const;
+
+    [[nodiscard]] godot::Ref<ProceduralPattern> create_pattern_from_hierarchy_dicts(
+        const godot::Array &p_hierarchy_nodes
     ) const;
 };
 
