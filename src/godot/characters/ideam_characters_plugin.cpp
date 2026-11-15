@@ -10,6 +10,8 @@ void IdeamCharactersPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("is_splines_handshake_available"), &IdeamCharactersPlugin::is_splines_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_design_handshake_available"), &IdeamCharactersPlugin::is_design_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_geometry_handshake_available"), &IdeamCharactersPlugin::is_geometry_handshake_available);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_linguistics_handshake_available"), &IdeamCharactersPlugin::is_linguistics_handshake_available);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_games_handshake_available"), &IdeamCharactersPlugin::is_games_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamCharactersPlugin::is_tasks_handshake_available);
 
 #ifdef TOOLS_ENABLED
@@ -42,9 +44,15 @@ void IdeamCharactersPlugin::_enter_tree() {
     validate_script_templates();
     set_plugin_active("IdeamCharacters", true);
     register_to_ecosystem("WizardSettings", "IdeamCharacters", godot::String(CHARACTERS_SETTINGS_PATH.data()));
+    inspector_plugin_.instantiate();
+    add_inspector_plugin(inspector_plugin_);
 }
 
 void IdeamCharactersPlugin::_exit_tree() {
+    if (inspector_plugin_.is_valid()) {
+        remove_inspector_plugin(inspector_plugin_);
+        inspector_plugin_.unref();
+    }
     set_plugin_active("IdeamCharacters", false);
 }
 

@@ -121,6 +121,10 @@
 #include "core/tasks/domains/linguistics/registration/linguistics_task_domain_pack.h"
 #include "core/tasks/domains/communications/registration/communications_task_domain_pack.h"
 #include "core/tasks/domains/design/registration/design_task_domain_pack.h"
+#include "core/tasks/domains/characters/registration/characters_task_domain_pack.h"
+#include "core/tasks/domains/geomorphology/registration/geomorphology_task_domain_pack.h"
+#include "core/tasks/domains/climatology/registration/climatology_task_domain_pack.h"
+#include "core/tasks/domains/ecology/registration/ecology_task_domain_pack.h"
 
 // --- Geometry (Shared Resources, 2D-to-3D Projector, 2D Canvases & Controls, DOD Bridge, Inspectors & Plugin) ---
 #include "godot/geometry/geometry_resource.h"
@@ -243,9 +247,40 @@
 #include "godot/tasks/domains/design/data_oriented_design.h"
 #include "godot/tasks/domains/design/design_task_host.h"
 
-// --- Characters (Parametric Character Blueprints, Apparel, Nodes & Plugin) ---
+// --- Characters (Parametric Character Blueprints, Apparel, Nodes, UI, DOD Bridge & Plugin) ---
 #include "godot/characters/character_blueprint_resource.h"
+#include "godot/characters/ui/character_morph_slider_panel.h"
+#include "godot/characters/editor/characters_inspector.h"
 #include "godot/characters/ideam_characters_plugin.h"
+#include "godot/tasks/domains/characters/data_oriented_characters.h"
+#include "godot/tasks/domains/characters/characters_task_host.h"
+
+// --- Geomorphology (Tectonics, Stratigraphy, Pipe Hydrology, Karst, UI, DOD Bridge & Plugin) ---
+#include "godot/geomorphology/geomorphology_terrain_resource.h"
+#include "godot/geomorphology/ui/stratigraphic_column_inspector_control.h"
+#include "godot/geomorphology/ui/geomorphology_map_layer_preview_canvas.h"
+#include "godot/geomorphology/editor/geomorphology_inspector.h"
+#include "godot/geomorphology/ideam_geomorphology_plugin.h"
+#include "godot/tasks/domains/geomorphology/data_oriented_geomorphology.h"
+#include "godot/tasks/domains/geomorphology/geomorphology_task_host.h"
+
+// --- Climatology (Synoptic Winds, Foehn Microphysics, Tornado Vortices, UI, DOD Bridge & Plugin) ---
+#include "godot/climatology/climatology_weather_resource.h"
+#include "godot/climatology/ui/thermodynamic_sounding_skewt_control.h"
+#include "godot/climatology/ui/climatology_synoptic_map_preview_canvas.h"
+#include "godot/climatology/editor/climatology_inspector.h"
+#include "godot/climatology/ideam_climatology_plugin.h"
+#include "godot/tasks/domains/climatology/data_oriented_climatology.h"
+#include "godot/tasks/domains/climatology/climatology_task_host.h"
+
+// --- Ecology (Whittaker Biomes, Succession, Soil NPK, Rothermel Wildfire, Trophic Web, UI, DOD Bridge & Plugin) ---
+#include "godot/ecology/ecology_biosphere_resource.h"
+#include "godot/ecology/ui/whittaker_ordination_and_trophic_control.h"
+#include "godot/ecology/ui/ecology_biome_map_preview_canvas.h"
+#include "godot/ecology/editor/ecology_inspector.h"
+#include "godot/ecology/ideam_ecology_plugin.h"
+#include "godot/tasks/domains/ecology/data_oriented_ecology.h"
+#include "godot/tasks/domains/ecology/ecology_task_host.h"
 
 // --- Procedural Generation, Wave Function Collapse & Quantum Darwinism ---
 #include "godot/procedural_generation/procedural_generator_resource.h"
@@ -322,6 +357,7 @@
 #include "godot/games/gameplay/gameplay_perspective.h"
 #include "godot/games/gameplay/gameplay_rule.h"
 #include "godot/games/gameplay/gameplay_style.h"
+#include "godot/games/gameplay/xr_eye_effect_resource.h"
 
 // --- Games UI ---
 #include "godot/games/ui/game_hub_ui.h"
@@ -583,10 +619,43 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedDesign);
         GDREGISTER_CLASS(ideam::godot_ext::DesignTaskHost);
 
-        // --- Characters (Section 1.1) ---
+        // --- Characters (Section 1.1 & Section 2.2) ---
         GDREGISTER_CLASS(ideam::godot_ext::CharacterBlueprintResource);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterApparelResource);
         GDREGISTER_CLASS(ideam::godot_ext::ParametricCharacterNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterMorphSliderPanel);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedCharacters);
+        GDREGISTER_CLASS(ideam::godot_ext::CharactersTaskHost);
+
+        // --- Geomorphology (Section 2.3) ---
+        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::geomorphology::LithologyStratumResource);
+        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyTerrainResource);
+        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyTerrainNode3D);
+        GDREGISTER_CLASS(ideam::geomorphology::StratigraphicColumnInspectorControl);
+        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyMapLayerPreviewCanvas);
+        GDREGISTER_CLASS(ideam::tasks::geomorphology::DataOrientedGeomorphology);
+        GDREGISTER_CLASS(ideam::tasks::geomorphology::GeomorphologyTaskHost);
+
+        // --- Climatology (Section 2.3) ---
+        GDREGISTER_CLASS(ideam::climatology::ClimatologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::climatology::TornadoVortexProfileResource);
+        GDREGISTER_CLASS(ideam::climatology::ClimatologyAtmosphereResource);
+        GDREGISTER_CLASS(ideam::climatology::ClimatologyWeatherNode3D);
+        GDREGISTER_CLASS(ideam::climatology::ThermodynamicSoundingSkewTControl);
+        GDREGISTER_CLASS(ideam::climatology::ClimatologySynopticMapPreviewCanvas);
+        GDREGISTER_CLASS(ideam::tasks::climatology::DataOrientedClimatology);
+        GDREGISTER_CLASS(ideam::tasks::climatology::ClimatologyTaskHost);
+
+        // --- Ecology (Section 2.3) ---
+        GDREGISTER_CLASS(ideam::ecology::EcologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::ecology::FloraGuildArchetypeResource);
+        GDREGISTER_CLASS(ideam::ecology::EcologyBiosphereResource);
+        GDREGISTER_CLASS(ideam::ecology::EcologyBiosphereNode3D);
+        GDREGISTER_CLASS(ideam::ecology::WhittakerOrdinationAndTrophicControl);
+        GDREGISTER_CLASS(ideam::ecology::EcologyBiomeMapPreviewCanvas);
+        GDREGISTER_CLASS(ideam::tasks::ecology::DataOrientedEcology);
+        GDREGISTER_CLASS(ideam::tasks::ecology::EcologyTaskHost);
 
         // --- Procedural Generation, Wave Function Collapse & Quantum Darwinism ---
         GDREGISTER_CLASS(ideam::godot_ext::ProceduralGeneratorResource);
@@ -663,6 +732,8 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GameplayPerspective);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayRule);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayStyle);
+        GDREGISTER_CLASS(ideam::godot_ext::XREyeEffectResource);
+        GDREGISTER_CLASS(ideam::godot_ext::XREyeFXNode3D);
 
         // --- Games UI ---
         GDREGISTER_CLASS(ideam::godot_ext::GameHubUI);
@@ -697,6 +768,10 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         LinguisticsTaskDomainPack::register_domain();
         CommunicationsTaskDomainPack::register_domain();
         DesignTaskDomainPack::register_domain();
+        CharactersTaskDomainPack::register_domain();
+        GeomorphologyTaskDomainPack::register_domain();
+        ClimatologyTaskDomainPack::register_domain();
+        EcologyTaskDomainPack::register_domain();
     }
 
     // ========================================================================
@@ -758,7 +833,14 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::IdeamMindsPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::DesignInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamDesignPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::CharactersInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamCharactersPlugin);
+        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyInspector);
+        GDREGISTER_CLASS(ideam::geomorphology::IdeamGeomorphologyPlugin);
+        GDREGISTER_CLASS(ideam::climatology::ClimatologyInspector);
+        GDREGISTER_CLASS(ideam::climatology::IdeamClimatologyPlugin);
+        GDREGISTER_CLASS(ideam::ecology::EcologyInspector);
+        GDREGISTER_CLASS(ideam::ecology::IdeamEcologyPlugin);
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamProceduralGenerationPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::WFCRuleTensorInspector);

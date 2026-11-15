@@ -4,10 +4,13 @@
 #include <godot_cpp/classes/window.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/engine.hpp>
+#include <godot_cpp/classes/xr_interface.hpp>
+#include <godot_cpp/classes/xr_server.hpp>
 
 #include "scene_transition.h"
 #include "game_player.h"
 #include "game.h"
+#include "gameplay/gameplay_graphics_option.h"
 
 namespace ideam::godot_ext {
 
@@ -19,6 +22,18 @@ void GameHub::_bind_methods() {
     ADD_SIGNAL(godot::MethodInfo("load_game_completed", godot::PropertyInfo(godot::Variant::OBJECT, "game", godot::PROPERTY_HINT_RESOURCE_TYPE, "Game")));
     ADD_SIGNAL(godot::MethodInfo("game_already_loaded", godot::PropertyInfo(godot::Variant::OBJECT, "game", godot::PROPERTY_HINT_RESOURCE_TYPE, "Game")));
     ADD_SIGNAL(godot::MethodInfo("game_unloaded", godot::PropertyInfo(godot::Variant::OBJECT, "game", godot::PROPERTY_HINT_RESOURCE_TYPE, "Game")));
+
+    // Section 2.4 XR_Session_Manager Lifecycle Signals
+    ADD_SIGNAL(godot::MethodInfo("xr_started"));
+    ADD_SIGNAL(godot::MethodInfo("xr_enabled"));
+    ADD_SIGNAL(godot::MethodInfo("xr_failed"));
+    ADD_SIGNAL(godot::MethodInfo("xr_disabled"));
+    ADD_SIGNAL(godot::MethodInfo("xr_stopped"));
+    ADD_SIGNAL(godot::MethodInfo("entered_immersive_mode"));
+    ADD_SIGNAL(godot::MethodInfo("entered_windowed_mode"));
+    ADD_SIGNAL(godot::MethodInfo("focus_lost"));
+    ADD_SIGNAL(godot::MethodInfo("focus_gained"));
+    ADD_SIGNAL(godot::MethodInfo("pose_recentered"));
 
     // Properties
     godot::ClassDB::bind_method(godot::D_METHOD("set_game_paths", "paths"), &GameHub::set_game_paths);
@@ -50,9 +65,31 @@ void GameHub::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("get_disable_hub_scene_on_game_load"), &GameHub::get_disable_hub_scene_on_game_load);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "disable_hub_scene_on_game_load"), "set_disable_hub_scene_on_game_load", "get_disable_hub_scene_on_game_load");
 
+    // Section 2.4 OpenXR Session Properties
+    ADD_GROUP("OpenXR Session Management", "xr_");
+    godot::ClassDB::bind_method(godot::D_METHOD("set_graphics_option", "option"), &GameHub::set_graphics_option);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_graphics_option"), &GameHub::get_graphics_option);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "graphics_option", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayGraphicsOption"), "set_graphics_option", "get_graphics_option");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_is_enabled", "enabled"), &GameHub::set_xr_is_enabled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_is_enabled"), &GameHub::get_xr_is_enabled);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "xr_is_enabled"), "set_xr_is_enabled", "get_xr_is_enabled");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_is_started"), &GameHub::get_xr_is_started);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_is_focussed"), &GameHub::get_xr_is_focussed);
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_pause_games_on_xr_focus_lost", "pause"), &GameHub::set_pause_games_on_xr_focus_lost);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_pause_games_on_xr_focus_lost"), &GameHub::get_pause_games_on_xr_focus_lost);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "pause_games_on_xr_focus_lost"), "set_pause_games_on_xr_focus_lost", "get_pause_games_on_xr_focus_lost");
+
     godot::ClassDB::bind_method(godot::D_METHOD("get_loaded_games"), &GameHub::get_loaded_games);
 
     // Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("start_xr"), &GameHub::start_xr);
+    godot::ClassDB::bind_method(godot::D_METHOD("end_xr"), &GameHub::end_xr);
+    godot::ClassDB::bind_method(godot::D_METHOD("switch_to_immersive_mode"), &GameHub::switch_to_immersive_mode);
+    godot::ClassDB::bind_method(godot::D_METHOD("switch_to_windowed_mode"), &GameHub::switch_to_windowed_mode);
+
     godot::ClassDB::bind_method(godot::D_METHOD("connect_to_player", "player"), &GameHub::connect_to_player);
     godot::ClassDB::bind_method(godot::D_METHOD("load_startup_game"), &GameHub::load_startup_game);
     godot::ClassDB::bind_method(godot::D_METHOD("load_game", "game_id"), &GameHub::load_game);
@@ -64,14 +101,16 @@ void GameHub::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("add_game", "gamePath"), &GameHub::add_game);
     godot::ClassDB::bind_method(godot::D_METHOD("remove_game", "game_id"), &GameHub::remove_game);
     
-    // Internal callback binding
+    // Internal callback bindings
     godot::ClassDB::bind_method(godot::D_METHOD("_on_process_frame_startup"), &GameHub::_on_process_frame_startup);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_openxr_session_begun"), &GameHub::_on_openxr_session_begun);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_openxr_visible_state"), &GameHub::_on_openxr_visible_state);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_openxr_focused_state"), &GameHub::_on_openxr_focused_state);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_openxr_session_stopping"), &GameHub::_on_openxr_session_stopping);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_openxr_pose_recentered"), &GameHub::_on_openxr_pose_recentered);
 }
 
-GameHub::GameHub() {
-    // Note: Defer heavy initializations to _ready to avoid heap fragmentation 
-    // when instances are spawned rapidly from packed scenes.
-}
+GameHub::GameHub() {}
 
 GameHub::~GameHub() {}
 
@@ -86,8 +125,10 @@ void GameHub::_ready() {
         hub_scene_parent = hub_scene->get_parent();
     }
 
-    // Translating GDScript's `await get_tree().process_frame`
-    // We bind to process_frame ONE_SHOT to execute the rest of the startup routine.
+    if (xr_is_enabled) {
+        start_xr();
+    }
+
     if (get_tree()) {
         get_tree()->connect("process_frame", godot::Callable(this, "_on_process_frame_startup"), godot::Object::CONNECT_ONE_SHOT);
     }
@@ -102,10 +143,154 @@ void GameHub::_on_process_frame_startup() {
 
 void GameHub::_notification(int p_what) {
     if (p_what == NOTIFICATION_WM_CLOSE_REQUEST) {
+        if (xr_is_started) {
+            end_xr();
+        }
         if (get_tree()) {
-            get_tree()->quit(); // Default behavior
+            get_tree()->quit();
         }
     }
+}
+
+// --- Section 2.4 OpenXR Session Management Implementation ---
+
+void GameHub::set_graphics_option(const godot::Ref<GameplayGraphicsOption>& p_option) {
+    graphics_option = p_option;
+}
+godot::Ref<GameplayGraphicsOption> GameHub::get_graphics_option() const { return graphics_option; }
+
+void GameHub::set_xr_is_enabled(bool p_enabled) {
+    if (xr_is_enabled == p_enabled) return;
+    xr_is_enabled = p_enabled;
+    if (!_is_ready) return;
+    if (xr_is_enabled) {
+        start_xr();
+    } else {
+        end_xr();
+    }
+}
+bool GameHub::get_xr_is_enabled() const { return xr_is_enabled; }
+bool GameHub::get_xr_is_started() const { return xr_is_started; }
+bool GameHub::get_xr_is_focussed() const { return xr_is_focussed; }
+
+void GameHub::set_pause_games_on_xr_focus_lost(bool p_pause) { pause_games_on_xr_focus_lost = p_pause; }
+bool GameHub::get_pause_games_on_xr_focus_lost() const { return pause_games_on_xr_focus_lost; }
+
+bool GameHub::start_xr() {
+    if (!graphics_option.is_valid()) {
+        graphics_option.instantiate();
+        graphics_option->set_xr_enabled(true);
+    }
+
+    godot::Viewport* vp = get_viewport();
+    bool ok = graphics_option->start_xr_session(vp);
+    if (!ok) {
+        xr_is_enabled = false;
+        emit_signal("xr_failed");
+        return false;
+    }
+
+    if (godot::XRServer* xrs = godot::XRServer::get_singleton()) {
+        godot::Ref<godot::XRInterface> iface = xrs->find_interface("OpenXR");
+        if (iface.is_valid() && !xr_is_started) {
+            xr_is_started = true;
+            if (!iface->is_connected("session_begun", godot::Callable(this, "_on_openxr_session_begun"))) {
+                iface->connect("session_begun", godot::Callable(this, "_on_openxr_session_begun"));
+            }
+            if (!iface->is_connected("session_visible", godot::Callable(this, "_on_openxr_visible_state"))) {
+                iface->connect("session_visible", godot::Callable(this, "_on_openxr_visible_state"));
+            }
+            if (!iface->is_connected("session_focussed", godot::Callable(this, "_on_openxr_focused_state"))) {
+                iface->connect("session_focussed", godot::Callable(this, "_on_openxr_focused_state"));
+            }
+            if (!iface->is_connected("session_stopping", godot::Callable(this, "_on_openxr_session_stopping"))) {
+                iface->connect("session_stopping", godot::Callable(this, "_on_openxr_session_stopping"));
+            }
+            if (!iface->is_connected("pose_recentered", godot::Callable(this, "_on_openxr_pose_recentered"))) {
+                iface->connect("pose_recentered", godot::Callable(this, "_on_openxr_pose_recentered"));
+            }
+        }
+    }
+
+    xr_is_enabled = true;
+    emit_signal("xr_enabled");
+    return true;
+}
+
+void GameHub::end_xr() {
+    if (graphics_option.is_valid()) {
+        graphics_option->end_xr_session(get_viewport());
+    }
+    xr_is_enabled = false;
+    xr_is_started = false;
+    xr_is_focussed = false;
+    emit_signal("xr_disabled");
+}
+
+bool GameHub::switch_to_immersive_mode() {
+    bool ok = start_xr();
+    if (ok) {
+        emit_signal("entered_immersive_mode");
+    }
+    return ok;
+}
+
+bool GameHub::switch_to_windowed_mode() {
+    end_xr();
+    emit_signal("entered_windowed_mode");
+    return true;
+}
+
+void GameHub::_on_openxr_session_begun() {
+    if (graphics_option.is_valid()) {
+        graphics_option->start_xr_session(get_viewport());
+    }
+    emit_signal("xr_started");
+}
+
+void GameHub::_on_openxr_visible_state() {
+    if (xr_is_focussed) {
+        xr_is_focussed = false;
+        if (pause_games_on_xr_focus_lost) {
+            godot::Array keys = loaded_games.keys();
+            for (int i = 0; i < keys.size(); ++i) {
+                if (Game* g = godot::Object::cast_to<Game>(loaded_games[keys[i]])) {
+                    g->game_pause();
+                }
+            }
+        }
+        emit_signal("focus_lost");
+    }
+}
+
+void GameHub::_on_openxr_focused_state() {
+    if (!xr_is_focussed) {
+        xr_is_focussed = true;
+        if (pause_games_on_xr_focus_lost) {
+            godot::Array keys = loaded_games.keys();
+            for (int i = 0; i < keys.size(); ++i) {
+                if (Game* g = godot::Object::cast_to<Game>(loaded_games[keys[i]])) {
+                    g->game_continue();
+                }
+            }
+        }
+        emit_signal("focus_gained");
+    }
+}
+
+void GameHub::_on_openxr_session_stopping() {
+    xr_is_started = false;
+    xr_is_focussed = false;
+    emit_signal("xr_stopped");
+}
+
+void GameHub::_on_openxr_pose_recentered() {
+    for (int i = 0; i < connected_players.size(); ++i) {
+        if (GamePlayer* p = godot::Object::cast_to<GamePlayer>(connected_players[i])) {
+            p->recenter_player();
+        }
+    }
+    emit_signal("pose_recentered");
 }
 
 // Property Implementations
@@ -171,6 +356,10 @@ godot::Dictionary GameHub::get_loaded_games() const {
 // Class Methods
 void GameHub::connect_to_player(GamePlayer* player) {
     if (!player) return;
+
+    if (!connected_players.has(player)) {
+        connected_players.append(player);
+    }
     
     SceneTransition* transition = player->get_game_transition();
     if (transition) {
@@ -255,12 +444,6 @@ void GameHub::game_load_complete(godot::Node* game_node) {
     if (disable_hub_scene_on_game_load && hub_scene) {
         disable_hub_scene();
     }
-    
-    // Translating GDScript commented block:
-    // godot::PackedStringArray dependencies = godot::ResourceLoader::get_singleton()->get_dependencies(gamePath);
-    // if (dependencies.size() > 0) {
-    //      loadedGame->load_dependencies(dependencies);
-    // }
         
     loadedGame->game_loaded_from_game_hub();
     emit_signal("load_game_completed", loadedGame);
@@ -268,9 +451,7 @@ void GameHub::game_load_complete(godot::Node* game_node) {
     _game_loader->complete_transition();
 }
 
-void GameHub::game_load_fail() {
-    // Pass equivalent in GDScript
-}
+void GameHub::game_load_fail() {}
 
 void GameHub::unload_game(int game_id) {
     if (!loaded_games.has(game_id)) return;

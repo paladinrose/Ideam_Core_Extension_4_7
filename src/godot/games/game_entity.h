@@ -1,8 +1,10 @@
 #pragma once
 
 #include <godot_cpp/classes/node.hpp>
-#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/packed_float32_array.hpp>
+#include <godot_cpp/variant/string.hpp>
 
 namespace ideam::godot_ext {
 
@@ -34,6 +36,12 @@ protected:
 
     godot::Ref<GameplayStyle> _resolved_gameplay_style;
 
+    // --- Section 2.4 XR_RayCast3D_Target Merger: 3D Ray / Gaze Hover & Dwell Tracking ---
+    bool ray_target_enabled = true;
+    int default_target_action_id = 0;
+    godot::Array hovering_rays;
+    godot::PackedFloat32Array hover_dwell_times; // Cumulative dwell seconds (`times_over`) per hovering ray
+
 public:
     GameEntity();
     ~GameEntity();
@@ -63,6 +71,24 @@ public:
     // DOD Accessors for strict internal state
     bool get_entity_is_paused() const;
     void set_entity_is_paused(bool p_paused);
+
+    // --- Section 2.4 3D Ray / Gaze Hover & Target Action API ---
+    void set_ray_target_enabled(bool p_enabled);
+    bool get_ray_target_enabled() const;
+
+    void set_default_target_action_id(int p_action_id);
+    int get_default_target_action_id() const;
+
+    void on_ray_entered(godot::Node* p_ray);
+    void on_ray_stay(godot::Node* p_ray, float p_delta);
+    void on_ray_exited(godot::Node* p_ray);
+
+    bool is_ray_hovering() const;
+    int get_hovering_ray_count() const;
+    float get_ray_dwell_time(godot::Node* p_ray = nullptr) const;
+    godot::PackedFloat32Array get_hover_dwell_times() const;
+
+    virtual void use_target_action(godot::Node* p_instigator = nullptr);
 
     // Class Functions
     void validate_game();

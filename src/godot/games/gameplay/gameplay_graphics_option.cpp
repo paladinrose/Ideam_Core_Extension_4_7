@@ -3,9 +3,14 @@
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/light3d.hpp>
 #include <godot_cpp/classes/lightmap_gi.hpp>
+#include <godot_cpp/classes/open_xr_interface.hpp>
 #include <godot_cpp/classes/voxel_gi.hpp>
+#include <godot_cpp/classes/xr_interface.hpp>
+#include <godot_cpp/classes/xr_server.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/math.hpp>
+
+#include <cmath>
 
 #include "gameplay_rule.h"
 
@@ -221,6 +226,37 @@ void GameplayGraphicsOption::_bind_methods() {
         "get_debris_budget_multiplier"
     );
 
+    // --- 6. Section 2.4 OpenXR Session & Display Negotiation ---
+    ADD_GROUP("OpenXR Session & HMD Display", "xr_");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_enabled", "enabled"), &GameplayGraphicsOption::set_xr_enabled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_enabled"), &GameplayGraphicsOption::get_xr_enabled);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "xr_enabled"), "set_xr_enabled", "get_xr_enabled");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_maximum_refresh_rate", "rate"), &GameplayGraphicsOption::set_xr_maximum_refresh_rate);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_maximum_refresh_rate"), &GameplayGraphicsOption::get_xr_maximum_refresh_rate);
+    ADD_PROPERTY(
+        godot::PropertyInfo(godot::Variant::INT, "xr_maximum_refresh_rate", godot::PROPERTY_HINT_RANGE, "60,240,1,suffix:Hz"),
+        "set_xr_maximum_refresh_rate",
+        "get_xr_maximum_refresh_rate"
+    );
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_foveation_enabled", "enabled"), &GameplayGraphicsOption::set_xr_foveation_enabled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_foveation_enabled"), &GameplayGraphicsOption::get_xr_foveation_enabled);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "xr_foveation_enabled"), "set_xr_foveation_enabled", "get_xr_foveation_enabled");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_passthrough_enabled", "enabled"), &GameplayGraphicsOption::set_xr_passthrough_enabled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_passthrough_enabled"), &GameplayGraphicsOption::get_xr_passthrough_enabled);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "xr_passthrough_enabled"), "set_xr_passthrough_enabled", "get_xr_passthrough_enabled");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_xr_lock_physics_ticks_to_refresh_rate", "lock"), &GameplayGraphicsOption::set_xr_lock_physics_ticks_to_refresh_rate);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_xr_lock_physics_ticks_to_refresh_rate"), &GameplayGraphicsOption::get_xr_lock_physics_ticks_to_refresh_rate);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "xr_lock_physics_ticks_to_refresh_rate"), "set_xr_lock_physics_ticks_to_refresh_rate", "get_xr_lock_physics_ticks_to_refresh_rate");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("get_cached_original_vsync_mode"), &GameplayGraphicsOption::get_cached_original_vsync_mode);
+    godot::ClassDB::bind_method(godot::D_METHOD("start_xr_session", "viewport"), &GameplayGraphicsOption::start_xr_session, DEFVAL(nullptr));
+    godot::ClassDB::bind_method(godot::D_METHOD("end_xr_session", "viewport"), &GameplayGraphicsOption::end_xr_session, DEFVAL(nullptr));
+
     // --- Methods ---
     godot::ClassDB::bind_method(godot::D_METHOD("apply_graphics_option", "other"), &GameplayGraphicsOption::apply_graphics_option);
     godot::ClassDB::bind_method(godot::D_METHOD("apply_to_scene", "window", "environment", "scene_root"), &GameplayGraphicsOption::apply_to_scene);
@@ -287,7 +323,7 @@ void GameplayGraphicsOption::apply_quality_preset(GraphicsQualityPreset p_preset
 
     switch (p_preset) {
         case GraphicsQualityPreset::QUALITY_LOW: {
-            resolution_scale = 1.0f / 1.7f; // Balanced upscaling
+            resolution_scale = 1.0f / 1.7f;
             taa_enabled = false;
             msaa_3d = godot::Viewport::MSAA_DISABLED;
             screen_space_aa = godot::Viewport::SCREEN_SPACE_AA_FXAA;
@@ -304,7 +340,6 @@ void GameplayGraphicsOption::apply_quality_preset(GraphicsQualityPreset p_preset
             break;
         }
         case GraphicsQualityPreset::QUALITY_MEDIUM: {
-            // Matches the default TPS Demo settings in `settings.gd`
             resolution_scale = 1.0f;
             taa_enabled = false;
             msaa_3d = godot::Viewport::MSAA_DISABLED;
@@ -577,6 +612,137 @@ void GameplayGraphicsOption::set_debris_budget_multiplier(float p_multiplier) {
 }
 float GameplayGraphicsOption::get_debris_budget_multiplier() const { return debris_budget_multiplier; }
 
+// --- 6. Section 2.4 OpenXR Session & Display Negotiation Setters / Getters ---
+
+void GameplayGraphicsOption::set_xr_enabled(bool p_enabled) {
+    if (xr_enabled == p_enabled) return;
+    xr_enabled = p_enabled;
+    emit_changed();
+}
+bool GameplayGraphicsOption::get_xr_enabled() const { return xr_enabled; }
+
+void GameplayGraphicsOption::set_xr_maximum_refresh_rate(int p_rate) {
+    int clamped = godot::Math::clamp(p_rate, 60, 240);
+    if (xr_maximum_refresh_rate == clamped) return;
+    xr_maximum_refresh_rate = clamped;
+    emit_changed();
+}
+int GameplayGraphicsOption::get_xr_maximum_refresh_rate() const { return xr_maximum_refresh_rate; }
+
+void GameplayGraphicsOption::set_xr_foveation_enabled(bool p_enabled) {
+    if (xr_foveation_enabled == p_enabled) return;
+    xr_foveation_enabled = p_enabled;
+    emit_changed();
+}
+bool GameplayGraphicsOption::get_xr_foveation_enabled() const { return xr_foveation_enabled; }
+
+void GameplayGraphicsOption::set_xr_passthrough_enabled(bool p_enabled) {
+    if (xr_passthrough_enabled == p_enabled) return;
+    xr_passthrough_enabled = p_enabled;
+    emit_changed();
+}
+bool GameplayGraphicsOption::get_xr_passthrough_enabled() const { return xr_passthrough_enabled; }
+
+void GameplayGraphicsOption::set_xr_lock_physics_ticks_to_refresh_rate(bool p_lock) {
+    if (xr_lock_physics_ticks_to_refresh_rate == p_lock) return;
+    xr_lock_physics_ticks_to_refresh_rate = p_lock;
+    emit_changed();
+}
+bool GameplayGraphicsOption::get_xr_lock_physics_ticks_to_refresh_rate() const { return xr_lock_physics_ticks_to_refresh_rate; }
+
+godot::DisplayServer::VSyncMode GameplayGraphicsOption::get_cached_original_vsync_mode() const {
+    return _cached_original_vsync_mode;
+}
+
+bool GameplayGraphicsOption::start_xr_session(godot::Viewport *p_viewport) const {
+    godot::XRServer *xrs = godot::XRServer::get_singleton();
+    if (!xrs) return false;
+
+    godot::Ref<godot::XRInterface> xr_iface = xrs->find_interface("OpenXR");
+    if (!xr_iface.is_valid()) {
+        return false;
+    }
+
+    if (!xr_iface->is_initialized()) {
+        if (!xr_iface->initialize()) {
+            return false;
+        }
+    }
+
+    // Cache original VSync mode non-destructively and disable desktop VSync so OpenXR paces frames
+    if (godot::DisplayServer *ds = godot::DisplayServer::get_singleton()) {
+        if (!_has_cached_vsync_mode) {
+            _cached_original_vsync_mode = ds->window_get_vsync_mode(godot::DisplayServer::MAIN_WINDOW_ID);
+            _has_cached_vsync_mode = true;
+        }
+        ds->window_set_vsync_mode(godot::DisplayServer::VSYNC_DISABLED);
+    }
+
+    if (p_viewport) {
+        p_viewport->set_use_xr(true);
+        if (xr_foveation_enabled) {
+            p_viewport->set_vrs_mode(godot::Viewport::VRS_XR);
+        }
+        if (xr_passthrough_enabled) {
+            p_viewport->set_transparent_background(true);
+        }
+    }
+
+    // Negotiate HMD refresh rate and passthrough blend mode on OpenXRInterface
+    if (godot::OpenXRInterface *oxr = godot::Object::cast_to<godot::OpenXRInterface>(xr_iface.ptr())) {
+        double current_refresh_rate = oxr->get_display_refresh_rate();
+        double target_rate = current_refresh_rate;
+        godot::Array available_rates = oxr->get_available_display_refresh_rates();
+        if (available_rates.size() > 1) {
+            for (int i = 0; i < available_rates.size(); ++i) {
+                double r = static_cast<double>(available_rates[i]);
+                if (r > target_rate && r <= static_cast<double>(xr_maximum_refresh_rate)) {
+                    target_rate = r;
+                }
+            }
+            if (target_rate != current_refresh_rate && target_rate > 0.0) {
+                oxr->set_display_refresh_rate(target_rate);
+                current_refresh_rate = target_rate;
+            }
+        }
+
+        if (xr_lock_physics_ticks_to_refresh_rate && current_refresh_rate > 0.0) {
+            if (godot::Engine *eng = godot::Engine::get_singleton()) {
+                eng->set_physics_ticks_per_second(static_cast<int>(std::round(current_refresh_rate)));
+            }
+        }
+    }
+
+    if (xr_passthrough_enabled) {
+        xr_iface->set_environment_blend_mode(godot::XRInterface::XR_ENV_BLEND_MODE_ALPHA_BLEND);
+    } else {
+        xr_iface->set_environment_blend_mode(godot::XRInterface::XR_ENV_BLEND_MODE_OPAQUE);
+    }
+
+    return true;
+}
+
+void GameplayGraphicsOption::end_xr_session(godot::Viewport *p_viewport) const {
+    if (p_viewport) {
+        p_viewport->set_use_xr(false);
+    }
+
+    if (godot::DisplayServer *ds = godot::DisplayServer::get_singleton()) {
+        if (_has_cached_vsync_mode) {
+            ds->window_set_vsync_mode(_cached_original_vsync_mode);
+        } else {
+            ds->window_set_vsync_mode(vsync_mode);
+        }
+    }
+
+    if (godot::XRServer *xrs = godot::XRServer::get_singleton()) {
+        godot::Ref<godot::XRInterface> xr_iface = xrs->find_interface("OpenXR");
+        if (xr_iface.is_valid() && xr_iface->is_initialized()) {
+            xr_iface->uninitialize();
+        }
+    }
+}
+
 // --- Internal Scene Traversal Helpers ---
 
 void GameplayGraphicsOption::_apply_shadow_and_gi_recursive(godot::Node *p_node) const {
@@ -584,7 +750,6 @@ void GameplayGraphicsOption::_apply_shadow_and_gi_recursive(godot::Node *p_node)
         return;
     }
 
-    // 1. Non-Destructive Light3D Shadow Toggle (Fixes TPS Demo `settings.gd` FIXME bug)
     if (godot::Light3D *light = godot::Object::cast_to<godot::Light3D>(p_node)) {
         const godot::StringName meta_key("_ideam_orig_shadow_enabled");
         if (!light->has_meta(meta_key)) {
@@ -599,7 +764,6 @@ void GameplayGraphicsOption::_apply_shadow_and_gi_recursive(godot::Node *p_node)
         }
     }
 
-    // 2. Toggle VoxelGI and LightmapGI Nodes based on active `gi_type` and `gi_quality`
     if (godot::VoxelGI *voxel_gi = godot::Object::cast_to<godot::VoxelGI>(p_node)) {
         bool should_show = (gi_quality != GraphicsGIQuality::GI_QUALITY_DISABLED) &&
                            (gi_type == GraphicsGIType::GI_TYPE_VOXEL_GI);
@@ -651,6 +815,12 @@ void GameplayGraphicsOption::apply_graphics_option(const godot::Ref<GameplayGrap
     mesh_lod_threshold = p_other->get_mesh_lod_threshold();
     debris_budget_multiplier = p_other->get_debris_budget_multiplier();
 
+    xr_enabled = p_other->get_xr_enabled();
+    xr_maximum_refresh_rate = p_other->get_xr_maximum_refresh_rate();
+    xr_foveation_enabled = p_other->get_xr_foveation_enabled();
+    xr_passthrough_enabled = p_other->get_xr_passthrough_enabled();
+    xr_lock_physics_ticks_to_refresh_rate = p_other->get_xr_lock_physics_ticks_to_refresh_rate();
+
     emit_changed();
 }
 
@@ -668,17 +838,23 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
         return;
     }
 
-    // 1. DisplayServer & Engine Frame Pacing
-    if (godot::DisplayServer *ds = godot::DisplayServer::get_singleton()) {
-        ds->window_set_vsync_mode(vsync_mode);
-    }
-    if (godot::Engine *eng = godot::Engine::get_singleton()) {
-        eng->set_max_fps(max_fps);
+    // 1. DisplayServer & Engine Frame Pacing (or OpenXR Session Negotiation if xr_enabled)
+    if (xr_enabled) {
+        start_xr_session(p_window);
+    } else {
+        if (godot::DisplayServer *ds = godot::DisplayServer::get_singleton()) {
+            ds->window_set_vsync_mode(vsync_mode);
+        }
+        if (godot::Engine *eng = godot::Engine::get_singleton()) {
+            eng->set_max_fps(max_fps);
+        }
     }
 
     // 2. Window & Viewport 3D Scaling, Anti-Aliasing, Shadow Atlas, and Mesh LOD
     if (p_window) {
-        p_window->set_mode(display_mode);
+        if (!xr_enabled) {
+            p_window->set_mode(display_mode);
+        }
         p_window->set_scaling_3d_scale(resolution_scale);
         p_window->set_scaling_3d_mode(get_effective_scale_filter());
         p_window->set_fsr_sharpness(fsr_sharpness);
@@ -691,7 +867,7 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
         p_window->set_mesh_lod_threshold(mesh_lod_threshold);
     }
 
-    // 3. RenderingServer & Environment Settings (Fixing the inverted SSAO branch in `settings.gd`)
+    // 3. RenderingServer & Environment Settings
     godot::RenderingServer *rs = godot::RenderingServer::get_singleton();
     if (rs) {
         rs->voxel_gi_set_quality(
@@ -702,12 +878,10 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
     }
 
     if (p_environment) {
-        // Global Illumination (SDFGI)
         bool sdfgi_active = (gi_quality != GraphicsGIQuality::GI_QUALITY_DISABLED) &&
                             (gi_type == GraphicsGIType::GI_TYPE_SDFGI);
         p_environment->set_sdfgi_enabled(sdfgi_active);
 
-        // SSAO (Fixed: MEDIUM maps to ENV_SSAO_QUALITY_MEDIUM, HIGH maps to ENV_SSAO_QUALITY_HIGH)
         if (ssao_quality == GraphicsEffectQuality::EFFECT_DISABLED) {
             p_environment->set_ssao_enabled(false);
         } else {
@@ -719,7 +893,6 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
             }
         }
 
-        // SSIL
         if (ssil_quality == GraphicsEffectQuality::EFFECT_DISABLED) {
             p_environment->set_ssil_enabled(false);
         } else {
@@ -731,7 +904,6 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
             }
         }
 
-        // SSR
         if (ssr_quality == GraphicsEffectQuality::EFFECT_DISABLED) {
             p_environment->set_ssr_enabled(false);
         } else {
@@ -743,7 +915,6 @@ void GameplayGraphicsOption::apply_to_scene(godot::Window *p_window, godot::Envi
             p_environment->set_ssr_max_steps(max_steps);
         }
 
-        // Bloom & Volumetric Fog
         p_environment->set_glow_enabled(bloom_enabled);
         p_environment->set_volumetric_fog_enabled(volumetric_fog_enabled);
     }
@@ -760,7 +931,6 @@ godot::TypedArray<GameplayRule> GameplayGraphicsOption::collect_rules() const {
         return collected;
     }
 
-    // Synthesize a cascading rule for debris/particle budget scaling on GameBoards
     if (!godot::Math::is_equal_approx(debris_budget_multiplier, 1.0f)) {
         godot::Ref<GameplayRule> debris_rule;
         debris_rule.instantiate();
@@ -783,7 +953,6 @@ bool GameplayGraphicsOption::save_to_tps_config(const godot::Ref<godot::ConfigFi
         return false;
     }
 
-    // `[video]` section matching `settings.gd`
     p_config->set_value("video", "display_mode", static_cast<int>(display_mode));
     p_config->set_value("video", "vsync", static_cast<int>(vsync_mode));
     p_config->set_value("video", "max_fps", max_fps);
@@ -791,7 +960,6 @@ bool GameplayGraphicsOption::save_to_tps_config(const godot::Ref<godot::ConfigFi
     p_config->set_value("video", "scale_filter", static_cast<int>(scale_filter));
     p_config->set_value("video", "fsr_sharpness", fsr_sharpness);
 
-    // `[rendering]` section matching `settings.gd`
     p_config->set_value("rendering", "quality_preset", static_cast<int>(quality_preset));
     p_config->set_value("rendering", "taa", taa_enabled);
     p_config->set_value("rendering", "msaa", static_cast<int>(msaa_3d));
@@ -807,6 +975,12 @@ bool GameplayGraphicsOption::save_to_tps_config(const godot::Ref<godot::ConfigFi
     p_config->set_value("rendering", "volumetric_fog", volumetric_fog_enabled);
     p_config->set_value("rendering", "mesh_lod_threshold", mesh_lod_threshold);
     p_config->set_value("rendering", "debris_budget_multiplier", debris_budget_multiplier);
+
+    p_config->set_value("xr", "xr_enabled", xr_enabled);
+    p_config->set_value("xr", "xr_maximum_refresh_rate", xr_maximum_refresh_rate);
+    p_config->set_value("xr", "xr_foveation_enabled", xr_foveation_enabled);
+    p_config->set_value("xr", "xr_passthrough_enabled", xr_passthrough_enabled);
+    p_config->set_value("xr", "xr_lock_physics_ticks_to_refresh_rate", xr_lock_physics_ticks_to_refresh_rate);
 
     return true;
 }
@@ -889,6 +1063,25 @@ bool GameplayGraphicsOption::load_from_tps_config(const godot::Ref<godot::Config
         }
     }
 
+    if (p_config->has_section("xr")) {
+        loaded_any = true;
+        if (p_config->has_section_key("xr", "xr_enabled")) {
+            xr_enabled = p_config->get_value("xr", "xr_enabled");
+        }
+        if (p_config->has_section_key("xr", "xr_maximum_refresh_rate")) {
+            set_xr_maximum_refresh_rate(p_config->get_value("xr", "xr_maximum_refresh_rate"));
+        }
+        if (p_config->has_section_key("xr", "xr_foveation_enabled")) {
+            xr_foveation_enabled = p_config->get_value("xr", "xr_foveation_enabled");
+        }
+        if (p_config->has_section_key("xr", "xr_passthrough_enabled")) {
+            xr_passthrough_enabled = p_config->get_value("xr", "xr_passthrough_enabled");
+        }
+        if (p_config->has_section_key("xr", "xr_lock_physics_ticks_to_refresh_rate")) {
+            xr_lock_physics_ticks_to_refresh_rate = p_config->get_value("xr", "xr_lock_physics_ticks_to_refresh_rate");
+        }
+    }
+
     if (loaded_any) {
         emit_changed();
     }
@@ -924,6 +1117,12 @@ godot::Dictionary GameplayGraphicsOption::save_resource() const {
     data["mesh_lod_threshold"] = mesh_lod_threshold;
     data["debris_budget_multiplier"] = debris_budget_multiplier;
 
+    data["xr_enabled"] = xr_enabled;
+    data["xr_maximum_refresh_rate"] = xr_maximum_refresh_rate;
+    data["xr_foveation_enabled"] = xr_foveation_enabled;
+    data["xr_passthrough_enabled"] = xr_passthrough_enabled;
+    data["xr_lock_physics_ticks_to_refresh_rate"] = xr_lock_physics_ticks_to_refresh_rate;
+
     return data;
 }
 
@@ -955,6 +1154,12 @@ void GameplayGraphicsOption::load_resource(const godot::Dictionary &p_data) {
 
     if (p_data.has("mesh_lod_threshold")) set_mesh_lod_threshold(p_data["mesh_lod_threshold"]);
     if (p_data.has("debris_budget_multiplier")) set_debris_budget_multiplier(p_data["debris_budget_multiplier"]);
+
+    if (p_data.has("xr_enabled")) xr_enabled = p_data["xr_enabled"];
+    if (p_data.has("xr_maximum_refresh_rate")) set_xr_maximum_refresh_rate(p_data["xr_maximum_refresh_rate"]);
+    if (p_data.has("xr_foveation_enabled")) xr_foveation_enabled = p_data["xr_foveation_enabled"];
+    if (p_data.has("xr_passthrough_enabled")) xr_passthrough_enabled = p_data["xr_passthrough_enabled"];
+    if (p_data.has("xr_lock_physics_ticks_to_refresh_rate")) xr_lock_physics_ticks_to_refresh_rate = p_data["xr_lock_physics_ticks_to_refresh_rate"];
 
     emit_changed();
 }

@@ -23,6 +23,8 @@ const std::array<LogicVariantGroup, SplinesTransformTaskRegistry::STORAGE_COUNT>
     // Spline1DInverseRootSolve (7)
     { true, 1, nullptr },
     // Spline4DColorGradientMap (8)
+    { true, 1, nullptr },
+    // SplinePhysicsRopeBridge (9)
     { true, 1, nullptr }
 }};
 

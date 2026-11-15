@@ -137,7 +137,7 @@ godot::PackedVector2Array SphericalGoldbergPolyhedronResource::get_prototile_out
     godot::PackedVector2Array hex;
     hex.resize(6);
     for (int i = 0; i < 6; ++i) {
-        const float angle = static_cast<float>(i) * (Math_TAU / 6.0f);
+        const float angle = static_cast<float>(i) * (Godot::Math::TAU / 6.0f);
         hex.set(i, godot::Vector2(std::cos(angle), std::sin(angle)));
     }
     return hex;
@@ -1226,7 +1226,7 @@ void SphericalGoldbergPreviewCanvas::_draw_geometry_canvas() {
         draw_polyline(poly2, Color(0.88f, 0.95f, 1.0f, 0.55f), 1.1f, true);
     }
 
-    draw_arc(center_scr, rad_px, 0.0f, Math_TAU, 96, Color(0.45f, 0.76f, 0.96f, 0.85f), 2.0f, true);
+    draw_arc(center_scr, rad_px, 0.0f, Godot::Math::TAU, 96, Color(0.45f, 0.76f, 0.96f, 0.85f), 2.0f, true);
 }
 
 SphericalGoldbergControl::SphericalGoldbergControl() {

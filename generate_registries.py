@@ -46,6 +46,9 @@ ACRONYM_MAP: dict[str, str] = {
     "snr": "SNR",
     "slm": "SLM",
     "2drd": "2DRD",
+    "pd": "PD",
+    "bpe": "BPE",
+    "wordnet": "WordNet",
 }
 
 
@@ -618,6 +621,206 @@ DOMAINS = [
             },
         ],
     },
+    {
+        "domain_name": "IdeamDesign",
+        "base_dir": Path("src/core/tasks/domains/design"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/design/registration/design_task_domain_pack.h"
+        ),
+        "version_const": "DESIGN_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Design Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "design_query_task_registry.h",
+                "header_include": "design_query_logic_sub_registry.h",
+                "enum_prefix": "DesignQueryLogicID",
+                "struct_prefix": "DesignQueryLogicSubRegistry",
+            },
+            {
+                "name": "Design Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "design_metadata_task_registry.h",
+                "header_include": "design_metadata_logic_sub_registry.h",
+                "enum_prefix": "DesignMetadataLogicID",
+                "struct_prefix": "DesignMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Design Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "design_transform_task_registry.h",
+                "header_include": "design_transform_logic_sub_registry.h",
+                "enum_prefix": "DesignTransformLogicID",
+                "struct_prefix": "DesignTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamCharacters",
+        "base_dir": Path("src/core/tasks/domains/characters"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/characters/registration/characters_task_domain_pack.h"
+        ),
+        "version_const": "CHARACTERS_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Characters Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "characters_query_task_registry.h",
+                "header_include": "characters_query_logic_sub_registry.h",
+                "enum_prefix": "CharactersQueryLogicID",
+                "struct_prefix": "CharactersQueryLogicSubRegistry",
+            },
+            {
+                "name": "Characters Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "characters_metadata_task_registry.h",
+                "header_include": "characters_metadata_logic_sub_registry.h",
+                "enum_prefix": "CharactersMetadataLogicID",
+                "struct_prefix": "CharactersMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Characters Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "characters_transform_task_registry.h",
+                "header_include": "characters_transform_logic_sub_registry.h",
+                "enum_prefix": "CharactersTransformLogicID",
+                "struct_prefix": "CharactersTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamGeomorphology",
+        "base_dir": Path("src/core/tasks/domains/geomorphology"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/geomorphology/registration/geomorphology_task_domain_pack.h"
+        ),
+        "version_const": "GEOMORPHOLOGY_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Geomorphology Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "geomorphology_query_task_registry.h",
+                "header_include": "geomorphology_query_logic_sub_registry.h",
+                "enum_prefix": "GeomorphologyQueryLogicID",
+                "struct_prefix": "GeomorphologyQueryLogicSubRegistry",
+            },
+            {
+                "name": "Geomorphology Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "geomorphology_metadata_task_registry.h",
+                "header_include": "geomorphology_metadata_logic_sub_registry.h",
+                "enum_prefix": "GeomorphologyMetadataLogicID",
+                "struct_prefix": "GeomorphologyMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Geomorphology Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "geomorphology_transform_task_registry.h",
+                "header_include": "geomorphology_transform_logic_sub_registry.h",
+                "enum_prefix": "GeomorphologyTransformLogicID",
+                "struct_prefix": "GeomorphologyTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamClimatology",
+        "base_dir": Path("src/core/tasks/domains/climatology"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/climatology/registration/climatology_task_domain_pack.h"
+        ),
+        "version_const": "CLIMATOLOGY_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Climatology Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "climatology_query_task_registry.h",
+                "header_include": "climatology_query_logic_sub_registry.h",
+                "enum_prefix": "ClimatologyQueryLogicID",
+                "struct_prefix": "ClimatologyQueryLogicSubRegistry",
+            },
+            {
+                "name": "Climatology Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "climatology_metadata_task_registry.h",
+                "header_include": "climatology_metadata_logic_sub_registry.h",
+                "enum_prefix": "ClimatologyMetadataLogicID",
+                "struct_prefix": "ClimatologyMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Climatology Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "climatology_transform_task_registry.h",
+                "header_include": "climatology_transform_logic_sub_registry.h",
+                "enum_prefix": "ClimatologyTransformLogicID",
+                "struct_prefix": "ClimatologyTransformLogicSubRegistry",
+            },
+        ],
+    },
+    {
+        "domain_name": "IdeamEcology",
+        "base_dir": Path("src/core/tasks/domains/ecology"),
+        "manifest_header": Path(
+            "src/core/tasks/domains/ecology/registration/ecology_task_domain_pack.h"
+        ),
+        "version_const": "ECOLOGY_MANIFEST_VERSION",
+        "targets": [
+            {
+                "name": "Ecology Query",
+                "logic_dir": "query_logic",
+                "reg_dir": "query_reg",
+                "suffix": "_query_logic",
+                "registry_header": "ecology_query_task_registry.h",
+                "header_include": "ecology_query_logic_sub_registry.h",
+                "enum_prefix": "EcologyQueryLogicID",
+                "struct_prefix": "EcologyQueryLogicSubRegistry",
+            },
+            {
+                "name": "Ecology Metadata",
+                "logic_dir": "metadata_logic",
+                "reg_dir": "metadata_reg",
+                "suffix": "_metadata_logic",
+                "registry_header": "ecology_metadata_task_registry.h",
+                "header_include": "ecology_metadata_logic_sub_registry.h",
+                "enum_prefix": "EcologyMetadataLogicID",
+                "struct_prefix": "EcologyMetadataLogicSubRegistry",
+            },
+            {
+                "name": "Ecology Transform",
+                "logic_dir": "transform_logic",
+                "reg_dir": "transform_reg",
+                "suffix": "_transform_logic",
+                "registry_header": "ecology_transform_task_registry.h",
+                "header_include": "ecology_transform_logic_sub_registry.h",
+                "enum_prefix": "EcologyTransformLogicID",
+                "struct_prefix": "EcologyTransformLogicSubRegistry",
+            },
+        ],
+    },
 ]
 
 
@@ -677,9 +880,6 @@ def main():
         )
         continue
 
-      # If the domain uses direct dispatch in *_task_registry.cpp rather than a
-      # *_logic_sub_registry.h header, skip generating *_sub_registry.cpp files
-      # that would #include a non-existent sub-registry header.
       if not sub_reg_header.exists():
         print(
             f"[DIRECT DISPATCH] {sub_reg_header.name} not present; verified"

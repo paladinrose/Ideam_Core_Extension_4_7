@@ -296,7 +296,7 @@ godot::PackedVector2Array SplineExtrudeMesh3D::_resolve_profile_ring_2d() const 
     PackedVector2Array ring;
     ring.resize(ring_verts);
     for (int i = 0; i < ring_verts; ++i) {
-        const float angle = (static_cast<float>(i) / static_cast<float>(ring_verts)) * Math_TAU;
+        const float angle = (static_cast<float>(i) / static_cast<float>(ring_verts)) * Godot::Math::TAU;
         ring.set(i, Vector2(std::cos(angle), std::sin(angle)));
     }
     return ring;
@@ -511,8 +511,8 @@ void SplineExtrudeGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_g
             constexpr int RING_SEG = 16;
             const Vector2 sc       = node->get_profile_scale();
             for (int k = 0; k < RING_SEG; ++k) {
-                const float a0 = (static_cast<float>(k) / static_cast<float>(RING_SEG)) * Math_TAU;
-                const float a1 = (static_cast<float>(k + 1) / static_cast<float>(RING_SEG)) * Math_TAU;
+                const float a0 = (static_cast<float>(k) / static_cast<float>(RING_SEG)) * Godot::Math::TAU;
+                const float a1 = (static_cast<float>(k + 1) / static_cast<float>(RING_SEG)) * Godot::Math::TAU;
                 const Vector3 p0 = xf.xform(Vector3(std::cos(a0) * sc.x, std::sin(a0) * sc.y, 0.0f));
                 const Vector3 p1 = xf.xform(Vector3(std::cos(a1) * sc.x, std::sin(a1) * sc.y, 0.0f));
                 lines.push_back(p0);

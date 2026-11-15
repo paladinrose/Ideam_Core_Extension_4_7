@@ -5,6 +5,7 @@
 #include <godot_cpp/classes/input.hpp>
 #include <godot_cpp/classes/input_event.hpp>
 #include <godot_cpp/classes/input_map.hpp>
+#include <godot_cpp/classes/node.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_byte_array.hpp>
 #include <godot_cpp/variant/string.hpp>
@@ -20,12 +21,6 @@ namespace ideam::godot_ext {
 class GameAgent;
 class GameplayPerspective;
 
-/**
- * DOD NOTE: Extracting control map enums at namespace scope with explicit int32_t
- * backing allows input routing systems to store device families, deadzone curves,
- * and locomotion states in contiguous Structure of Arrays (SoA) columns without
- * pulling in the full GameplayControlMap Resource definition.
- */
 enum ControlDeviceFamily : int32_t {
     DEVICE_AUTO_DETECT = 0,     // Dynamically switches active device family based on latest input
     DEVICE_KEYBOARD_MOUSE = 1,  // Desktop Keyboard + Mouse
@@ -71,21 +66,6 @@ enum CustomUSBProtocolFormat : int32_t {
     USB_PROTOCOL_RAW_HID_BYTES = 3    // Binary USB HID report frames (uint8 / uint16 channels)
 };
 
-/**
- * GameplayControlMap provides a unified, hardware-agnostic input abstraction and
- * command-routing resource that normalizes input across:
- * 1. Keyboard & Mouse (`InputEventKey`, `InputEventMouseButton`, `InputEventMouseMotion`)
- * 2. Console Controllers & Gamepads (`InputEventJoypadButton`, `InputEventJoypadMotion`)
- * 3. Arduino & Custom USB Serial / HID Hardware (ASCII `KEY:VALUE`, CSV, JSON, and raw binary HID bytes
- *    with configurable ADC bit depth, center offset, and per-channel calibration)
- * 4. VR / OpenXR Tracked Controllers (6DoF hand poses, physical swing/throw velocities,
- *    analog triggers/grips, thumbsticks, and comfort locomotion/turning)
- *
- * It adapts smoothly across `GameplayMode` transitions via `context_mode` presets,
- * `blend_with_control_map()`, and perspective-aware 3D movement projection
- * (`get_world_move_direction()`), and can directly drive a controlled `GameAgent`
- * (`apply_to_agent()`) or synthesize cascading `GameplayRule` modifiers (`collect_rules()`).
- */
 class GameplayControlMap : public GameplayResource {
     GDCLASS(GameplayControlMap, GameplayResource)
 
@@ -105,6 +85,10 @@ private:
     int device_id = -1; // -1 = any/all devices, >= 0 = specific controller/USB port index
     float input_buffer_window = 0.15f;
     float mode_transition_smoothing = 12.0f;
+
+    // --- Section 2.4 XR_Control Merger: Click-vs-Hold Disambiguation & Toggle-on-Click ---
+    float click_time = 0.15f;
+    bool toggle_on_click = false;
 
     // --- 1. Unified Semantic Action Names & Agent Routing ---
     godot::StringName move_forward_action = godot::StringName("move_forward");
@@ -163,17 +147,12 @@ private:
     int custom_usb_baud_rate = 115200;
     int custom_usb_vendor_id = 0;
     int custom_usb_product_id = 0;
-    int custom_adc_resolution_max = 1023; // 10-bit Arduino default (0..1023); 4095 for 12-bit ESP32/STM32
+    int custom_adc_resolution_max = 1023;
     int custom_adc_center_value = 512;
     float custom_usb_deadzone = 0.05f;
 
-    // Maps custom hardware channel names ("AX", "AY", "ch0", "BTN1") -> semantic action names ("move_right", "primary_action")
     godot::Dictionary custom_channel_to_action_map;
-
-    // Optional per-channel calibration overrides: channel name -> Vector3(min, center, max)
     godot::Dictionary custom_channel_calibration;
-
-    // Latest normalized values received from custom USB/Arduino channels
     godot::Dictionary custom_channel_values;
 
     // --- 5. VR / OpenXR Tracked Controller Settings ---
@@ -187,6 +166,11 @@ private:
     int vr_dominant_hand = 1; // 0 = Left Hand, 1 = Right Hand
     float vr_gesture_velocity_threshold = 1.8f;
     bool vr_comfort_vignette_on_move = true;
+
+    // Section 2.4 XR_Basic_Movement & XRController3D_Animated_Parameters Mergers
+    bool allow_vertical_hand_flight = false;
+    godot::StringName vr_trigger_animation_parameter = godot::StringName("parameters/trigger/blend_amount");
+    godot::StringName vr_grip_animation_parameter = godot::StringName("parameters/grip/blend_amount");
 
     // Maps physical VR gestures ("swing_left", "swing_right", "thrust_right", "grip_left") -> semantic actions
     godot::Dictionary vr_gesture_to_action_map;
@@ -207,12 +191,15 @@ private:
     uint32_t _vr_button_masks[2] = {0, 0};
     bool _vr_snap_turn_latched = false;
 
-    // Sequence & Input Buffering Runtime State
+    // Sequence, Input Buffering & Click-vs-Hold Runtime State
     bool _sequence_active = false;
     double _sequence_elapsed = 0.0;
     godot::Dictionary _action_strengths;       // StringName -> float [0.0 .. 1.0]
     godot::Dictionary _action_pressed_states;  // StringName -> bool
     godot::Dictionary _action_buffer_timers;   // StringName -> double remaining buffer seconds
+    godot::Dictionary _action_hold_timers;     // StringName -> double held duration seconds
+    godot::Dictionary _action_hold_emitted;    // StringName -> bool (whether hold_started was emitted)
+    godot::Dictionary _action_toggle_latched;  // StringName -> bool (for toggle_on_click)
 
     godot::StringName player_group_tag = godot::StringName("Player");
 
@@ -268,6 +255,15 @@ public:
 
     void set_mode_transition_smoothing(float p_smoothing);
     float get_mode_transition_smoothing() const;
+
+    void set_click_time(float p_click_time);
+    float get_click_time() const;
+
+    void set_toggle_on_click(bool p_toggle);
+    bool get_toggle_on_click() const;
+
+    bool is_action_toggled(const godot::StringName &p_action) const;
+    float get_action_hold_duration(const godot::StringName &p_action) const;
 
     // --- 1. Unified Semantic Action Names & Agent Routing Setters / Getters ---
     void set_move_forward_action(const godot::StringName &p_action);
@@ -421,15 +417,7 @@ public:
     void set_custom_channel_calibration(const godot::Dictionary &p_calibration);
     godot::Dictionary get_custom_channel_calibration() const;
 
-    /**
-     * Parses an incoming serial/USB line (Arduino `KEY:VALUE`, CSV channels, or JSON),
-     * normalizes raw ADC readings, updates mapped semantic actions, and emits `custom_packet_received`.
-     */
     bool feed_custom_serial_line(const godot::String &p_line);
-
-    /**
-     * Parses a binary USB HID byte frame into normalized channel values and mapped semantic actions.
-     */
     bool feed_custom_hid_bytes(const godot::PackedByteArray &p_bytes, bool p_sixteen_bit_channels = false);
 
     void set_custom_channel_value(const godot::StringName &p_channel, float p_value, bool p_is_raw_adc = false);
@@ -466,16 +454,30 @@ public:
     void set_vr_comfort_vignette_on_move(bool p_enabled);
     bool get_vr_comfort_vignette_on_move() const;
 
+    void set_allow_vertical_hand_flight(bool p_allow);
+    bool get_allow_vertical_hand_flight() const;
+
+    void set_vr_trigger_animation_parameter(const godot::StringName &p_param);
+    godot::StringName get_vr_trigger_animation_parameter() const;
+
+    void set_vr_grip_animation_parameter(const godot::StringName &p_param);
+    godot::StringName get_vr_grip_animation_parameter() const;
+
+    float get_vr_trigger_value(int p_hand = -1) const;
+    float get_vr_grip_value(int p_hand = -1) const;
+
+    /**
+     * Replaces legacy `xrcontroller3d_animated_parameters.gd` by binding tracked VR trigger/grip
+     * analog floats directly onto an `AnimationTree` or `ParametricCharacterNode3D`.
+     */
+    void apply_vr_analog_to_animation_target(godot::Node *p_target, int p_hand = -1) const;
+
     void set_vr_gesture_to_action_map(const godot::Dictionary &p_map);
     godot::Dictionary get_vr_gesture_to_action_map() const;
 
     void set_player_group_tag(const godot::StringName &p_tag);
     godot::StringName get_player_group_tag() const;
 
-    /**
-     * Updates tracked 6DoF state for a VR hand controller (0 = Left, 1 = Right) or HMD (2 = Head),
-     * evaluating physical swing gestures, thumbstick locomotion/snap-turn, and analog triggers/grips.
-     */
     void feed_vr_controller_state(
         int p_tracker_index,
         const godot::Transform3D &p_pose,
@@ -492,17 +494,7 @@ public:
     godot::Vector3 get_vr_tracker_angular_velocity(int p_tracker_index) const;
 
     // --- Unified Input Ingestion, Queries & Mode Adaptation ---
-
-    /**
-     * Ingests a standard Godot `InputEvent` (Keyboard, Mouse, Joypad, Touch), automatically
-     * updating `active_device_family` (when set to `DEVICE_AUTO_DETECT`) and unified axes/actions.
-     */
     void feed_input_event(const godot::Ref<godot::InputEvent> &p_event);
-
-    /**
-     * Polls active input state, advances sequence/hold timeouts and input buffer timers,
-     * and synthesizes unified movement and look vectors for the frame.
-     */
     virtual void process_input(double p_delta);
 
     void begin_sequence();
@@ -513,11 +505,6 @@ public:
     godot::Vector2 get_unified_move_vector() const;
     godot::Vector2 get_unified_look_vector() const;
 
-    /**
-     * Projects the 2D unified movement vector into a 3D world-space direction vector
-     * adapted to the active `GameplayPerspective` (Camera-Relative, Character/Tank-Relative,
-     * World-Axis-Aligned for Isometric/Top-Down/Side-Scroller, or VR HMD/Hand-Oriented).
-     */
     godot::Vector3 get_world_move_direction(
         const godot::Transform3D &p_camera_or_head_transform,
         const godot::Transform3D &p_agent_transform,
@@ -529,25 +516,12 @@ public:
     bool is_action_just_pressed(const godot::StringName &p_action, bool p_consume_buffer = true);
     void buffer_action_press(const godot::StringName &p_action);
 
-    /**
-     * Smoothly interpolates sensitivities, deadzones, and analog state between this control map
-     * and `p_target` by `p_weight` (0.0 .. 1.0) during `GameplayMode` transitions.
-     */
     godot::Ref<GameplayControlMap> blend_with_control_map(
         const godot::Ref<GameplayControlMap> &p_target,
         float p_weight
     ) const;
 
-    /**
-     * Applies this control map's active actions and movement/look state to a controlled `GameAgent`,
-     * invoking mapped `GameAgentAction`s (`start_action` / `end_action` / `interact`).
-     * Returns the number of agent actions triggered or updated.
-     */
     int apply_to_agent(GameAgent *p_agent);
-
-    /**
-     * Synchronizes Godot's `Input::MouseMode` (captured vs. visible) with this control map's context.
-     */
     void apply_mouse_mode_to_engine() const;
 
     // --- Resource & Cascade Overrides ---

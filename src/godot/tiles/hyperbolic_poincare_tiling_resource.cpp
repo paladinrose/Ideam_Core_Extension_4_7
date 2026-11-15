@@ -665,7 +665,7 @@ void PoincareDiskTilingCanvas::_draw_geometry_canvas() {
     const Vector2 center_screen = world_to_screen(Vector2(0.0f, 0.0f));
     const float radius_px       = static_cast<float>(get_zoom_scale());
     draw_circle(center_screen, radius_px, Color(0.06f, 0.08f, 0.12f, 0.92f));
-    draw_arc(center_screen, radius_px, 0.0f, Math_TAU, 96, Color(0.45f, 0.72f, 0.95f, 0.85f), 2.0f, true);
+    draw_arc(center_screen, radius_px, 0.0f, Godot::Math::TAU, 96, Color(0.45f, 0.72f, 0.95f, 0.85f), 2.0f, true);
 
     if (tiling_resource_.is_null()) {
         return;

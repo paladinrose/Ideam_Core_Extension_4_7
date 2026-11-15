@@ -578,7 +578,7 @@ inline constexpr std::array<GeometryBufferSpec, GEOMETRY_BUFFER_SLOT_COUNT> GEOM
         GeometryBufferSlot::GEOM_TENSOR_STREAMLINE_SEED_POD,
         "tensor_seed_buffer_id",
         {"geom_tensor_streamline_seed_pod_buffer_id", "streamline_seed_buffer_id", ""},
-        sizeof(TensorStreamlineSeedPod), BufferLayoutType::AOS, SelectionMode::SPARSE_SET,
+        sizeof(TensorStreamlineSeedPod), BufferLayoutType::AOS, SelectionMode::SPARSE,
         GeometryCapacityKind::TENSOR_SEEDS, GeometryTableGroup::TENSOR_SEED_SLICE
     },
 

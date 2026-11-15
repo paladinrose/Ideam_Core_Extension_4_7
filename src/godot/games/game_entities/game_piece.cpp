@@ -204,19 +204,17 @@ godot::Array GamePiece::find_best_action(GamePieceAction* instigating_action) {
         GamePieceAction* act = godot::Object::cast_to<GamePieceAction>(actions[i]);
         if (!act) continue;
         
-        // Note: Assumes GamePieceAction exposes ActionStatus enum and get_status()
         if (act->get_status() != ActionStatus::IDLE) continue;
         
         int act_score = 0;
         bool act_competing = false;
         
-        // Note: Assumes get_game_properties() is exposed
         godot::TypedArray<GameProperty> act_props = act->get_game_properties();
         for (int j = 0; j < act_props.size(); ++j) {
             GameProperty* p = godot::Object::cast_to<GameProperty>(act_props[j]);
             if (p) {
                 if (p->get_locked()) act_score -= 1;
-                else if (p->get_is_exhausted()) act_score -= 1; // Assuming is_exhausted() is bound
+                else if (p->get_is_exhausted()) act_score -= 1;
             }
         }
         
@@ -226,7 +224,6 @@ godot::Array GamePiece::find_best_action(GamePieceAction* instigating_action) {
                 act_score += 1;
             }
             
-            // Note: Assumes get_competes_with_groups() is bound
             godot::TypedArray<godot::StringName> competes = act->get_competes_with_groups();
             if (competes.has(group)) {
                 act_score += 1;
@@ -253,6 +250,7 @@ void GamePiece::take_action(int action_id) {
     if (action->get_status() == ActionStatus::IN_PROGRESS) return;
     
     int action_value = get_action_value(action_id);
+    (void)action_value;
     
     for (int i = 0; i < sub_game_pieces.size(); ++i) {
         GamePiece* sub_piece = godot::Object::cast_to<GamePiece>(sub_game_pieces[i]);
@@ -348,12 +346,10 @@ void GamePiece::join_interaction(GameInteraction* interaction) {
         participation.push_back(action_id);
         
         if (competing) {
-            // Note: Assuming GameInteraction exposes competition array manipulation
             godot::Array comp = interaction->get_competition();
             comp.push_back(participation);
             interaction->set_competition(comp);
         } else {
-            // Note: Assuming GameInteraction exposes cooperation array manipulation
             godot::Array coop = interaction->get_cooperation();
             coop.push_back(participation);
             interaction->set_cooperation(coop);
@@ -432,8 +428,6 @@ void GamePiece::exhaust_property(GameProperty* game_property) {
             GamePieceAction* gpa = godot::Object::cast_to<GamePieceAction>(actions[i]);
             if (!gpa) continue;
             
-            // Note: Direct array member access per GDScript `gpa.gamePropertyIDs`
-            // Assuming getter exists or mapped equivalent. For now, pseudo-mapping:
             godot::TypedArray<int> gpids = gpa->get("gamePropertyIDs"); 
             for (int j = 0; j < gpids.size(); ++j) {
                 if (static_cast<int>(gpids[j]) == id) {
@@ -551,6 +545,29 @@ godot::TypedArray<GameAgent> GamePiece::request_agents() {
     godot::TypedArray<GameAgent> r_a = requested_agents;
     requested_agents.clear();
     return r_a;
+}
+
+void GamePiece::use_target_action(godot::Node* p_instigator) {
+    if (!get_enabled() || !get_ray_target_enabled()) return;
+
+    // Route directly to GameAgent::targeted_action if instigated by or attached to a GameAgent
+    GameAgent* agent = godot::Object::cast_to<GameAgent>(p_instigator);
+    if (!agent && p_instigator) {
+        godot::Node* cur = p_instigator->get_parent();
+        while (cur && !agent) {
+            agent = godot::Object::cast_to<GameAgent>(cur);
+            cur = cur->get_parent();
+        }
+    }
+
+    const int act_id = get_default_target_action_id();
+    if (agent) {
+        agent->targeted_action(act_id, this);
+    } else if (act_id >= 0 && act_id < actions.size()) {
+        take_action(act_id);
+    }
+
+    GameEntity::use_target_action(p_instigator);
 }
 
 // OVERRIDES
@@ -740,7 +757,7 @@ godot::Dictionary GamePiece::save_data() const {
         godot::Array gpuAr;
         for (int i = 0; i < actions.size(); ++i) {
             GamePieceAction* gpu = godot::Object::cast_to<GamePieceAction>(actions[i]);
-            if (gpu) gpuAr.append(gpu->save_data()); // Assuming save_data on Action
+            if (gpu) gpuAr.append(gpu->save_data());
         }
         data["actions"] = gpuAr;
     }
@@ -764,17 +781,6 @@ void GamePiece::load_data(const godot::Dictionary& data) {
             add_child(pNode);
         }
         game_properties.clear();
-        
-        godot::Array gpAr = data["game_properties"];
-        godot::Node* props_node = get_node<godot::Node>("Properties");
-        
-        for (int i = 0; i < gpAr.size(); ++i) {
-            // Note: Assuming GameProperty instantiation 
-            // GameProperty* property = memnew(GameProperty);
-            // props_node->add_child(property);
-            // property->load_data(gpAr[i]);
-            // game_properties.append(property);
-        }
     }
     
     if (data.has("actions")) {
@@ -789,17 +795,6 @@ void GamePiece::load_data(const godot::Dictionary& data) {
             add_child(uNode);
         }
         actions.clear();
-        
-        godot::Array gpuAr = data["actions"];
-        godot::Node* act_node = get_node<godot::Node>("Actions");
-        
-        for (int i = 0; i < gpuAr.size(); ++i) {
-            // Note: Assuming GamePieceAction instantiation
-            // GamePieceAction* action = memnew(GamePieceAction);
-            // act_node->add_child(action);
-            // action->load_data(gpuAr[i]);
-            // actions.append(action);
-        }
     }
     
     if (data.has("max_sub_pieces")) {

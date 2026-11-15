@@ -41,6 +41,20 @@ void GameplayControlMap::_bind_methods() {
         godot::PropertyInfo(godot::Variant::STRING_NAME, "action")
     ));
     ADD_SIGNAL(godot::MethodInfo(
+        "action_short_clicked",
+        godot::PropertyInfo(godot::Variant::STRING_NAME, "action"),
+        godot::PropertyInfo(godot::Variant::FLOAT, "hold_duration")
+    ));
+    ADD_SIGNAL(godot::MethodInfo(
+        "action_hold_started",
+        godot::PropertyInfo(godot::Variant::STRING_NAME, "action")
+    ));
+    ADD_SIGNAL(godot::MethodInfo(
+        "action_hold_released",
+        godot::PropertyInfo(godot::Variant::STRING_NAME, "action"),
+        godot::PropertyInfo(godot::Variant::FLOAT, "hold_duration")
+    ));
+    ADD_SIGNAL(godot::MethodInfo(
         "custom_packet_received",
         godot::PropertyInfo(godot::Variant::DICTIONARY, "channel_values")
     ));
@@ -187,6 +201,21 @@ void GameplayControlMap::_bind_methods() {
         "set_mode_transition_smoothing",
         "get_mode_transition_smoothing"
     );
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_click_time", "click_time"), &GameplayControlMap::set_click_time);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_click_time"), &GameplayControlMap::get_click_time);
+    ADD_PROPERTY(
+        godot::PropertyInfo(godot::Variant::FLOAT, "click_time", godot::PROPERTY_HINT_RANGE, "0.02,1.0,0.01,suffix:s"),
+        "set_click_time",
+        "get_click_time"
+    );
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_toggle_on_click", "toggle"), &GameplayControlMap::set_toggle_on_click);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_toggle_on_click"), &GameplayControlMap::get_toggle_on_click);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "toggle_on_click"), "set_toggle_on_click", "get_toggle_on_click");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("is_action_toggled", "action"), &GameplayControlMap::is_action_toggled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_action_hold_duration", "action"), &GameplayControlMap::get_action_hold_duration);
 
     // --- 1. Unified Semantic Action Names & Agent Routing ---
     ADD_GROUP("Semantic Action Mappings", "");
@@ -560,6 +589,26 @@ void GameplayControlMap::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("get_vr_comfort_vignette_on_move"), &GameplayControlMap::get_vr_comfort_vignette_on_move);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "vr_comfort_vignette_on_move"), "set_vr_comfort_vignette_on_move", "get_vr_comfort_vignette_on_move");
 
+    godot::ClassDB::bind_method(godot::D_METHOD("set_allow_vertical_hand_flight", "allow"), &GameplayControlMap::set_allow_vertical_hand_flight);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_allow_vertical_hand_flight"), &GameplayControlMap::get_allow_vertical_hand_flight);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "allow_vertical_hand_flight"), "set_allow_vertical_hand_flight", "get_allow_vertical_hand_flight");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_vr_trigger_animation_parameter", "param"), &GameplayControlMap::set_vr_trigger_animation_parameter);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_vr_trigger_animation_parameter"), &GameplayControlMap::get_vr_trigger_animation_parameter);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::STRING_NAME, "vr_trigger_animation_parameter"), "set_vr_trigger_animation_parameter", "get_vr_trigger_animation_parameter");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_vr_grip_animation_parameter", "param"), &GameplayControlMap::set_vr_grip_animation_parameter);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_vr_grip_animation_parameter"), &GameplayControlMap::get_vr_grip_animation_parameter);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::STRING_NAME, "vr_grip_animation_parameter"), "set_vr_grip_animation_parameter", "get_vr_grip_animation_parameter");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("get_vr_trigger_value", "hand"), &GameplayControlMap::get_vr_trigger_value, DEFVAL(-1));
+    godot::ClassDB::bind_method(godot::D_METHOD("get_vr_grip_value", "hand"), &GameplayControlMap::get_vr_grip_value, DEFVAL(-1));
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("apply_vr_analog_to_animation_target", "target", "hand"),
+        &GameplayControlMap::apply_vr_analog_to_animation_target,
+        DEFVAL(-1)
+    );
+
     godot::ClassDB::bind_method(godot::D_METHOD("set_vr_gesture_to_action_map", "map"), &GameplayControlMap::set_vr_gesture_to_action_map);
     godot::ClassDB::bind_method(godot::D_METHOD("get_vr_gesture_to_action_map"), &GameplayControlMap::get_vr_gesture_to_action_map);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::DICTIONARY, "vr_gesture_to_action_map"), "set_vr_gesture_to_action_map", "get_vr_gesture_to_action_map");
@@ -622,7 +671,6 @@ GameplayControlMap::GameplayControlMap() {
     set_category(godot::StringName("Controls"));
     set_config_section("controls");
 
-    // Default Arduino / Custom USB channel mappings so standard sketches work out of the box
     custom_channel_to_action_map["AX"] = godot::String(move_right_action);
     custom_channel_to_action_map["AY"] = godot::String(move_forward_action);
     custom_channel_to_action_map["LX"] = godot::String(look_right_action);
@@ -632,7 +680,6 @@ GameplayControlMap::GameplayControlMap() {
     custom_channel_to_action_map["BTN3"] = godot::String(interact_action);
     custom_channel_to_action_map["BTN4"] = godot::String(jump_action);
 
-    // Default VR gesture mappings
     vr_gesture_to_action_map["swing_right"] = godot::String(primary_action);
     vr_gesture_to_action_map["swing_left"] = godot::String(secondary_action);
 
@@ -684,7 +731,6 @@ godot::Vector2 GameplayControlMap::apply_stick_deadzone(
 
     float scaled_mag = godot::Math::clamp((mag - inner) / (outer - inner), 0.0f, 1.0f);
     if (p_curve == DeadzoneCurveShape::DEADZONE_CUBIC_PRECISION) {
-        // Blend 65% cubic + 35% linear for smooth fine-aim control near center
         scaled_mag = 0.65f * (scaled_mag * scaled_mag * scaled_mag) + 0.35f * scaled_mag;
     }
     if (!godot::Math::is_equal_approx(exp_val, 1.0f)) {
@@ -806,6 +852,9 @@ void GameplayControlMap::_update_semantic_action_state(
     _action_pressed_states[p_action] = now_pressed;
 
     if ((now_pressed && !was_pressed) || p_just_pressed) {
+        _action_hold_timers[p_action] = 0.0;
+        _action_hold_emitted[p_action] = false;
+
         if (input_buffer_window > 0.0f) {
             _action_buffer_timers[p_action] = static_cast<double>(input_buffer_window);
         } else {
@@ -818,6 +867,24 @@ void GameplayControlMap::_update_semantic_action_state(
             begin_sequence();
         }
     } else if (!now_pressed && was_pressed) {
+        double held_sec = _action_hold_timers.has(p_action) ? static_cast<double>(_action_hold_timers[p_action]) : 0.0;
+        _action_hold_timers.erase(p_action);
+        _action_hold_emitted.erase(p_action);
+
+        // Section 2.4 XR_Control Merger: Short-Click (< click_time) vs. Hold (>= click_time) Disambiguation
+        if (held_sec <= static_cast<double>(click_time)) {
+            if (toggle_on_click) {
+                bool prev_latched = _action_toggle_latched.has(p_action) ? static_cast<bool>(_action_toggle_latched[p_action]) : false;
+                _action_toggle_latched[p_action] = !prev_latched;
+            }
+            emit_signal("action_short_clicked", p_action, static_cast<float>(held_sec));
+        } else {
+            if (toggle_on_click) {
+                _action_toggle_latched[p_action] = false;
+            }
+            emit_signal("action_hold_released", p_action, static_cast<float>(held_sec));
+        }
+
         emit_signal("action_released", p_action);
     }
 }
@@ -999,6 +1066,38 @@ void GameplayControlMap::set_mode_transition_smoothing(float p_smoothing) {
     emit_changed();
 }
 float GameplayControlMap::get_mode_transition_smoothing() const { return mode_transition_smoothing; }
+
+void GameplayControlMap::set_click_time(float p_click_time) {
+    float clamped = godot::Math::clamp(p_click_time, 0.01f, 2.0f);
+    if (godot::Math::is_equal_approx(click_time, clamped)) return;
+    click_time = clamped;
+    emit_changed();
+}
+float GameplayControlMap::get_click_time() const { return click_time; }
+
+void GameplayControlMap::set_toggle_on_click(bool p_toggle) {
+    if (toggle_on_click == p_toggle) return;
+    toggle_on_click = p_toggle;
+    if (!toggle_on_click) {
+        _action_toggle_latched.clear();
+    }
+    emit_changed();
+}
+bool GameplayControlMap::get_toggle_on_click() const { return toggle_on_click; }
+
+bool GameplayControlMap::is_action_toggled(const godot::StringName &p_action) const {
+    if (_action_toggle_latched.has(p_action)) {
+        return static_cast<bool>(_action_toggle_latched[p_action]);
+    }
+    return false;
+}
+
+float GameplayControlMap::get_action_hold_duration(const godot::StringName &p_action) const {
+    if (_action_hold_timers.has(p_action)) {
+        return static_cast<float>(_action_hold_timers[p_action]);
+    }
+    return 0.0f;
+}
 
 // --- 1. Unified Semantic Action Names & Agent Routing Setters / Getters ---
 
@@ -1412,7 +1511,6 @@ void GameplayControlMap::set_custom_channel_value(
     if (p_channel.is_empty()) return;
     godot::String ch_str(p_channel);
 
-    // Determine whether this channel maps to a bipolar axis or unipolar button/trigger
     bool is_button = ch_str.begins_with("BTN") || ch_str.begins_with("SW") || ch_str.begins_with("DIG");
     float normalized = p_is_raw_adc
         ? (is_button ? (p_value > 0.5f ? 1.0f : 0.0f) : _normalize_custom_adc_value(ch_str, p_value, true))
@@ -1426,7 +1524,6 @@ void GameplayControlMap::set_custom_channel_value(
         if (normalized >= 0.0f) {
             _update_semantic_action_state(mapped_action, normalized);
         } else {
-            // Handle bipolar negative axis deflection for standard movement/look pairs
             if (mapped_action == move_right_action) {
                 _update_semantic_action_state(move_right_action, 0.0f);
                 _update_semantic_action_state(move_left_action, -normalized);
@@ -1480,7 +1577,6 @@ bool GameplayControlMap::feed_custom_serial_line(const godot::String &p_line) {
             }
         }
     } else if (custom_usb_protocol == CustomUSBProtocolFormat::USB_PROTOCOL_KEY_VALUE_ASCII || trimmed.contains(":")) {
-        // Supports "AX:512,AY:768,BTN1:1" or space/semicolon-separated key:value pairs
         godot::PackedStringArray tokens = trimmed.split(",", false);
         for (int i = 0; i < tokens.size(); ++i) {
             godot::PackedStringArray kv = tokens[i].strip_edges().split(":", false);
@@ -1615,6 +1711,58 @@ void GameplayControlMap::set_vr_comfort_vignette_on_move(bool p_enabled) {
 }
 bool GameplayControlMap::get_vr_comfort_vignette_on_move() const { return vr_comfort_vignette_on_move; }
 
+void GameplayControlMap::set_allow_vertical_hand_flight(bool p_allow) {
+    if (allow_vertical_hand_flight == p_allow) return;
+    allow_vertical_hand_flight = p_allow;
+    emit_changed();
+}
+bool GameplayControlMap::get_allow_vertical_hand_flight() const { return allow_vertical_hand_flight; }
+
+void GameplayControlMap::set_vr_trigger_animation_parameter(const godot::StringName &p_param) {
+    if (vr_trigger_animation_parameter == p_param) return;
+    vr_trigger_animation_parameter = p_param;
+    emit_changed();
+}
+godot::StringName GameplayControlMap::get_vr_trigger_animation_parameter() const { return vr_trigger_animation_parameter; }
+
+void GameplayControlMap::set_vr_grip_animation_parameter(const godot::StringName &p_param) {
+    if (vr_grip_animation_parameter == p_param) return;
+    vr_grip_animation_parameter = p_param;
+    emit_changed();
+}
+godot::StringName GameplayControlMap::get_vr_grip_animation_parameter() const { return vr_grip_animation_parameter; }
+
+float GameplayControlMap::get_vr_trigger_value(int p_hand) const {
+    int idx = (p_hand < 0 || p_hand > 1) ? vr_dominant_hand : p_hand;
+    return _vr_triggers[idx];
+}
+
+float GameplayControlMap::get_vr_grip_value(int p_hand) const {
+    int idx = (p_hand < 0 || p_hand > 1) ? vr_dominant_hand : p_hand;
+    return _vr_grips[idx];
+}
+
+void GameplayControlMap::apply_vr_analog_to_animation_target(godot::Node *p_target, int p_hand) const {
+    if (!p_target || !get_enabled()) return;
+    int idx = (p_hand < 0 || p_hand > 1) ? vr_dominant_hand : p_hand;
+    const float trig = _vr_triggers[idx];
+    const float grip = _vr_grips[idx];
+
+    // If the target is a ParametricCharacterNode3D (IdeamCharacters), invoke its native morph method directly
+    if (p_target->has_method("apply_xr_trigger_grip_morphs")) {
+        p_target->call("apply_xr_trigger_grip_morphs", idx, trig, grip);
+        return;
+    }
+
+    // Otherwise write directly onto AnimationTree parameter properties (replaces xrcontroller3d_animated_parameters.gd)
+    if (!vr_trigger_animation_parameter.is_empty()) {
+        p_target->set(vr_trigger_animation_parameter, trig);
+    }
+    if (!vr_grip_animation_parameter.is_empty()) {
+        p_target->set(vr_grip_animation_parameter, grip);
+    }
+}
+
 void GameplayControlMap::set_vr_gesture_to_action_map(const godot::Dictionary &p_map) {
     if (vr_gesture_to_action_map == p_map) return;
     vr_gesture_to_action_map = p_map.duplicate();
@@ -1671,7 +1819,6 @@ void GameplayControlMap::feed_vr_controller_state(
             _vr_grips[p_tracker_index] >= vr_grip_threshold ? _vr_grips[p_tracker_index] : 0.0f
         );
 
-        // Evaluate physical controller swing velocity gestures
         float speed = p_linear_velocity.length();
         if (speed >= vr_gesture_velocity_threshold) {
             godot::String gesture_key = (p_tracker_index == 0) ? "swing_left" : "swing_right";
@@ -1716,7 +1863,6 @@ void GameplayControlMap::feed_input_event(const godot::Ref<godot::InputEvent> &p
         return;
     }
 
-    // 1. Mouse Motion
     if (godot::InputEventMouseMotion *mm = godot::Object::cast_to<godot::InputEventMouseMotion>(p_event.ptr())) {
         _set_active_device_if_auto(ControlDeviceFamily::DEVICE_KEYBOARD_MOUSE);
         godot::Vector2 rel = mm->get_relative();
@@ -1726,13 +1872,11 @@ void GameplayControlMap::feed_input_event(const godot::Ref<godot::InputEvent> &p
         return;
     }
 
-    // 2. Keyboard or Mouse Button
     if (godot::Object::cast_to<godot::InputEventKey>(p_event.ptr()) != nullptr ||
         godot::Object::cast_to<godot::InputEventMouseButton>(p_event.ptr()) != nullptr) {
         _set_active_device_if_auto(ControlDeviceFamily::DEVICE_KEYBOARD_MOUSE);
     }
 
-    // 3. Gamepad Button or Motion
     if (godot::Object::cast_to<godot::InputEventJoypadButton>(p_event.ptr()) != nullptr) {
         _set_active_device_if_auto(ControlDeviceFamily::DEVICE_GAMEPAD);
     } else if (godot::InputEventJoypadMotion *jm = godot::Object::cast_to<godot::InputEventJoypadMotion>(p_event.ptr())) {
@@ -1741,7 +1885,6 @@ void GameplayControlMap::feed_input_event(const godot::Ref<godot::InputEvent> &p
         }
     }
 
-    // 4. Check semantic actions against the incoming event
     const godot::StringName actions_to_check[] = {
         primary_action,
         secondary_action,
@@ -1778,6 +1921,19 @@ void GameplayControlMap::process_input(double p_delta) {
             _action_buffer_timers.erase(key);
         } else {
             _action_buffer_timers[key] = rem;
+        }
+    }
+
+    // 1b. Advance active hold timers & emit `action_hold_started` once `click_time` is exceeded
+    godot::Array hold_keys = _action_hold_timers.keys();
+    for (int i = 0; i < hold_keys.size(); ++i) {
+        godot::StringName act_key = hold_keys[i];
+        double next_hold = static_cast<double>(_action_hold_timers[act_key]) + p_delta;
+        _action_hold_timers[act_key] = next_hold;
+        bool already_emitted = _action_hold_emitted.has(act_key) ? static_cast<bool>(_action_hold_emitted[act_key]) : false;
+        if (!already_emitted && next_hold > static_cast<double>(click_time)) {
+            _action_hold_emitted[act_key] = true;
+            emit_signal("action_hold_started", act_key);
         }
     }
 
@@ -1932,6 +2088,9 @@ void GameplayControlMap::reset_runtime_state() {
     _action_strengths.clear();
     _action_pressed_states.clear();
     _action_buffer_timers.clear();
+    _action_hold_timers.clear();
+    _action_hold_emitted.clear();
+    _action_toggle_latched.clear();
 }
 
 godot::Vector2 GameplayControlMap::get_unified_move_vector() const {
@@ -1952,15 +2111,18 @@ godot::Vector3 GameplayControlMap::get_world_move_direction(
     }
 
     // If VR hand-oriented locomotion is active, project along the off-hand controller basis
+    // (preserving full 3D pitch when `allow_vertical_hand_flight` is enabled per `xr_basic_movement.gd`)
     if (vr_input_enabled && active_device_family == ControlDeviceFamily::DEVICE_VR_XR &&
         vr_locomotion_mode == VRMovementLocomotionMode::VR_LOCOMOTION_CONTINUOUS_HAND) {
         int move_hand = 1 - vr_dominant_hand;
         godot::Basis hand_basis = _vr_poses[move_hand].basis;
         godot::Vector3 forward = -hand_basis.get_column(2);
-        forward.y = 0.0f;
-        forward = forward.normalized();
         godot::Vector3 right = hand_basis.get_column(0);
-        right.y = 0.0f;
+        if (!allow_vertical_hand_flight) {
+            forward.y = 0.0f;
+            right.y = 0.0f;
+        }
+        forward = forward.normalized();
         right = right.normalized();
         return (right * _unified_move_vector.x + forward * _unified_move_vector.y).limit_length(1.0f);
     }
@@ -1991,7 +2153,6 @@ godot::Vector3 GameplayControlMap::get_world_move_direction(
             godot::Vector3 forward = -cam_basis.get_column(2);
             forward.y = 0.0f;
             if (forward.length_squared() < 0.0001f) {
-                // Fallback for straight top-down (-90 deg pitch) cameras: use camera -Y up vector
                 forward = cam_basis.get_column(1);
                 forward.y = 0.0f;
             }
@@ -2005,6 +2166,9 @@ godot::Vector3 GameplayControlMap::get_world_move_direction(
 }
 
 float GameplayControlMap::get_action_strength(const godot::StringName &p_action) const {
+    if (toggle_on_click && is_action_toggled(p_action)) {
+        return 1.0f;
+    }
     if (_action_strengths.has(p_action)) {
         return static_cast<float>(_action_strengths[p_action]);
     }
@@ -2012,6 +2176,9 @@ float GameplayControlMap::get_action_strength(const godot::StringName &p_action)
 }
 
 bool GameplayControlMap::is_action_pressed(const godot::StringName &p_action) const {
+    if (toggle_on_click && is_action_toggled(p_action)) {
+        return true;
+    }
     if (_action_pressed_states.has(p_action)) {
         return static_cast<bool>(_action_pressed_states[p_action]);
     }
@@ -2060,6 +2227,7 @@ godot::Ref<GameplayControlMap> GameplayControlMap::blend_with_control_map(
     blended->set_gamepad_response_exponent(godot::Math::lerp(gamepad_response_exponent, p_target->get_gamepad_response_exponent(), t));
     blended->set_vibration_strength(godot::Math::lerp(vibration_strength, p_target->get_vibration_strength(), t));
     blended->set_input_buffer_window(godot::Math::lerp(input_buffer_window, p_target->get_input_buffer_window(), t));
+    blended->set_click_time(godot::Math::lerp(click_time, p_target->get_click_time(), t));
 
     return blended;
 }
@@ -2130,6 +2298,8 @@ void GameplayControlMap::apply_control_map(const godot::Ref<GameplayControlMap> 
     device_id = p_other->get_device_id();
     input_buffer_window = p_other->get_input_buffer_window();
     mode_transition_smoothing = p_other->get_mode_transition_smoothing();
+    click_time = p_other->get_click_time();
+    toggle_on_click = p_other->get_toggle_on_click();
 
     move_forward_action = p_other->get_move_forward_action();
     move_backward_action = p_other->get_move_backward_action();
@@ -2196,6 +2366,9 @@ void GameplayControlMap::apply_control_map(const godot::Ref<GameplayControlMap> 
     vr_dominant_hand = p_other->get_vr_dominant_hand();
     vr_gesture_velocity_threshold = p_other->get_vr_gesture_velocity_threshold();
     vr_comfort_vignette_on_move = p_other->get_vr_comfort_vignette_on_move();
+    allow_vertical_hand_flight = p_other->get_allow_vertical_hand_flight();
+    vr_trigger_animation_parameter = p_other->get_vr_trigger_animation_parameter();
+    vr_grip_animation_parameter = p_other->get_vr_grip_animation_parameter();
     vr_gesture_to_action_map = p_other->get_vr_gesture_to_action_map().duplicate();
     player_group_tag = p_other->get_player_group_tag();
 
@@ -2218,7 +2391,6 @@ godot::TypedArray<GameplayRule> GameplayControlMap::collect_rules() const {
         return collected;
     }
 
-    // Cascade input buffer window onto matching Player GameEntities if they expose `input_buffer_window`
     {
         godot::Ref<GameplayRule> buf_rule;
         buf_rule.instantiate();
@@ -2251,6 +2423,8 @@ godot::Dictionary GameplayControlMap::save_resource() const {
     data["device_id"] = device_id;
     data["input_buffer_window"] = input_buffer_window;
     data["mode_transition_smoothing"] = mode_transition_smoothing;
+    data["click_time"] = click_time;
+    data["toggle_on_click"] = toggle_on_click;
 
     data["move_forward_action"] = godot::String(move_forward_action);
     data["move_backward_action"] = godot::String(move_backward_action);
@@ -2317,6 +2491,9 @@ godot::Dictionary GameplayControlMap::save_resource() const {
     data["vr_dominant_hand"] = vr_dominant_hand;
     data["vr_gesture_velocity_threshold"] = vr_gesture_velocity_threshold;
     data["vr_comfort_vignette_on_move"] = vr_comfort_vignette_on_move;
+    data["allow_vertical_hand_flight"] = allow_vertical_hand_flight;
+    data["vr_trigger_animation_parameter"] = godot::String(vr_trigger_animation_parameter);
+    data["vr_grip_animation_parameter"] = godot::String(vr_grip_animation_parameter);
     data["vr_gesture_to_action_map"] = vr_gesture_to_action_map.duplicate();
     data["player_group_tag"] = godot::String(player_group_tag);
 
@@ -2343,6 +2520,8 @@ void GameplayControlMap::load_resource(const godot::Dictionary &p_data) {
     if (p_data.has("device_id")) set_device_id(p_data["device_id"]);
     if (p_data.has("input_buffer_window")) set_input_buffer_window(p_data["input_buffer_window"]);
     if (p_data.has("mode_transition_smoothing")) set_mode_transition_smoothing(p_data["mode_transition_smoothing"]);
+    if (p_data.has("click_time")) set_click_time(p_data["click_time"]);
+    if (p_data.has("toggle_on_click")) set_toggle_on_click(p_data["toggle_on_click"]);
 
     if (p_data.has("move_forward_action")) move_forward_action = godot::StringName(godot::String(p_data["move_forward_action"]));
     if (p_data.has("move_backward_action")) move_backward_action = godot::StringName(godot::String(p_data["move_backward_action"]));
@@ -2425,6 +2604,9 @@ void GameplayControlMap::load_resource(const godot::Dictionary &p_data) {
     if (p_data.has("vr_dominant_hand")) set_vr_dominant_hand(p_data["vr_dominant_hand"]);
     if (p_data.has("vr_gesture_velocity_threshold")) set_vr_gesture_velocity_threshold(p_data["vr_gesture_velocity_threshold"]);
     if (p_data.has("vr_comfort_vignette_on_move")) vr_comfort_vignette_on_move = p_data["vr_comfort_vignette_on_move"];
+    if (p_data.has("allow_vertical_hand_flight")) allow_vertical_hand_flight = p_data["allow_vertical_hand_flight"];
+    if (p_data.has("vr_trigger_animation_parameter")) vr_trigger_animation_parameter = godot::StringName(godot::String(p_data["vr_trigger_animation_parameter"]));
+    if (p_data.has("vr_grip_animation_parameter")) vr_grip_animation_parameter = godot::StringName(godot::String(p_data["vr_grip_animation_parameter"]));
     if (p_data.has("vr_gesture_to_action_map") && p_data["vr_gesture_to_action_map"].get_type() == godot::Variant::DICTIONARY) {
         vr_gesture_to_action_map = godot::Dictionary(p_data["vr_gesture_to_action_map"]).duplicate();
     }

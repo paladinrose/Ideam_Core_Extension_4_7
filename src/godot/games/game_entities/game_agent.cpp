@@ -1,6 +1,7 @@
 #include "game_agent.h"
 
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/core/math.hpp>
 
 #include "game_piece.h"
 #include "actions/game_agent_action.h"
@@ -9,6 +10,7 @@
 #include "../game_player.h"
 #include "../game_property.h"
 #include "../gameplay/gameplay_style.h"
+#include "../gameplay/xr_eye_effect_resource.h"
 #include "../../utilities/node_retargeter.h"
 #include "../../utilities/signal_connector.h"
 
@@ -33,6 +35,13 @@ void GameAgent::_bind_methods() {
     ADD_SIGNAL(godot::MethodInfo("match_rotation_completed"));
     ADD_SIGNAL(godot::MethodInfo("match_scale_started"));
     ADD_SIGNAL(godot::MethodInfo("match_scale_completed"));
+    ADD_SIGNAL(godot::MethodInfo("match_height_started"));
+    ADD_SIGNAL(godot::MethodInfo("match_height_completed"));
+
+    ADD_SIGNAL(godot::MethodInfo("head_controlled", godot::PropertyInfo(godot::Variant::OBJECT, "head", godot::PROPERTY_HINT_NODE_TYPE, "Node3D")));
+    ADD_SIGNAL(godot::MethodInfo("eyes_controlled", godot::PropertyInfo(godot::Variant::OBJECT, "eyes", godot::PROPERTY_HINT_NODE_TYPE, "XREyeFXNode3D")));
+    ADD_SIGNAL(godot::MethodInfo("left_hand_controlled", godot::PropertyInfo(godot::Variant::OBJECT, "left_hand", godot::PROPERTY_HINT_NODE_TYPE, "Node3D")));
+    ADD_SIGNAL(godot::MethodInfo("right_hand_controlled", godot::PropertyInfo(godot::Variant::OBJECT, "right_hand", godot::PROPERTY_HINT_NODE_TYPE, "Node3D")));
 
     // Enums
     BIND_ENUM_CONSTANT(AgentExclusivity::NONE);
@@ -54,11 +63,97 @@ void GameAgent::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("get_player_parent_target"), &GameAgent::get_player_parent_target);
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "player_parent_target", godot::PROPERTY_HINT_NODE_TYPE, "Node"), "set_player_parent_target", "get_player_parent_target");
 
+    godot::ClassDB::bind_method(godot::D_METHOD("set_exclusivity", "exclusivity"), &GameAgent::set_exclusivity);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_exclusivity"), &GameAgent::get_exclusivity);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "exclusivity", godot::PROPERTY_HINT_ENUM, "None,Exclusive,Group Inclusive,Group Exclusive"), "set_exclusivity", "get_exclusivity");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_match_position", "match_mode"), &GameAgent::set_match_position);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_match_position"), &GameAgent::get_match_position);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "match_position", godot::PROPERTY_HINT_ENUM, "Match None,Player To Agent,Agent To Player,Average"), "set_match_position", "get_match_position");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_player_reposition_time", "time"), &GameAgent::set_player_reposition_time);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_player_reposition_time"), &GameAgent::get_player_reposition_time);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "player_reposition_time"), "set_player_reposition_time", "get_player_reposition_time");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_match_rotation", "match_mode"), &GameAgent::set_match_rotation);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_match_rotation"), &GameAgent::get_match_rotation);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "match_rotation", godot::PROPERTY_HINT_ENUM, "Match None,Player To Agent,Agent To Player,Average"), "set_match_rotation", "get_match_rotation");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_player_reorient_time", "time"), &GameAgent::set_player_reorient_time);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_player_reorient_time"), &GameAgent::get_player_reorient_time);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "player_reorient_time"), "set_player_reorient_time", "get_player_reorient_time");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_match_scale", "match_mode"), &GameAgent::set_match_scale);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_match_scale"), &GameAgent::get_match_scale);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "match_scale", godot::PROPERTY_HINT_ENUM, "Match None,Player To Agent,Agent To Player,Average"), "set_match_scale", "get_match_scale");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_player_rescale_time", "time"), &GameAgent::set_player_rescale_time);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_player_rescale_time"), &GameAgent::get_player_rescale_time);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "player_rescale_time"), "set_player_rescale_time", "get_player_rescale_time");
+
+    // --- Section 2.4 XR_Game_Agent Properties ---
+    ADD_GROUP("XR Embodiment & Height Matching", "");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_agent_height", "height"), &GameAgent::set_agent_height);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_agent_height"), &GameAgent::get_agent_height);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "agent_height", godot::PROPERTY_HINT_RANGE, "0.2,4.0,0.01,suffix:m"), "set_agent_height", "get_agent_height");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_match_height", "match_mode"), &GameAgent::set_match_height);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_match_height"), &GameAgent::get_match_height);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "match_height", godot::PROPERTY_HINT_ENUM, "Match None,Player To Agent,Agent To Player,Average"), "set_match_height", "get_match_height");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_player_height_change_time", "time"), &GameAgent::set_player_height_change_time);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_player_height_change_time"), &GameAgent::get_player_height_change_time);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::FLOAT, "player_height_change_time", godot::PROPERTY_HINT_RANGE, "0.0,10.0,0.01,suffix:s"), "set_player_height_change_time", "get_player_height_change_time");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_head_assignments", "assignments"), &GameAgent::set_head_assignments);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_head_assignments"), &GameAgent::get_head_assignments);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_head_assignments", "get_head_assignments");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_head_control_anchor", "anchor"), &GameAgent::set_head_control_anchor);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_head_control_anchor"), &GameAgent::get_head_control_anchor);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_control_anchor", godot::PROPERTY_HINT_NODE_TYPE, "Node3D"), "set_head_control_anchor", "get_head_control_anchor");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_eye_effects", "effects"), &GameAgent::set_eye_effects);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_eye_effects"), &GameAgent::get_eye_effects);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::ARRAY, "eye_effects", godot::PROPERTY_HINT_ARRAY_TYPE, "XREyeEffectResource"), "set_eye_effects", "get_eye_effects");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_left_hand_assignments", "assignments"), &GameAgent::set_left_hand_assignments);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_left_hand_assignments"), &GameAgent::get_left_hand_assignments);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_left_hand_assignments", "get_left_hand_assignments");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_left_hand_control_anchor", "anchor"), &GameAgent::set_left_hand_control_anchor);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_left_hand_control_anchor"), &GameAgent::get_left_hand_control_anchor);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_control_anchor", godot::PROPERTY_HINT_NODE_TYPE, "Node3D"), "set_left_hand_control_anchor", "get_left_hand_control_anchor");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_right_hand_assignments", "assignments"), &GameAgent::set_right_hand_assignments);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_right_hand_assignments"), &GameAgent::get_right_hand_assignments);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_right_hand_assignments", "get_right_hand_assignments");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_right_hand_control_anchor", "anchor"), &GameAgent::set_right_hand_control_anchor);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_right_hand_control_anchor"), &GameAgent::get_right_hand_control_anchor);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_control_anchor", godot::PROPERTY_HINT_NODE_TYPE, "Node3D"), "set_right_hand_control_anchor", "get_right_hand_control_anchor");
+
     // Standard methods mapped from header
     godot::ClassDB::bind_method(godot::D_METHOD("start_position_match", "player_to_match"), &GameAgent::start_position_match, DEFVAL(nullptr));
     godot::ClassDB::bind_method(godot::D_METHOD("_position_match", "percent"), &GameAgent::_position_match);
+    godot::ClassDB::bind_method(godot::D_METHOD("complete_position_match"), &GameAgent::complete_position_match);
+
+    godot::ClassDB::bind_method(godot::D_METHOD("start_rotation_match", "player_to_match"), &GameAgent::start_rotation_match, DEFVAL(nullptr));
+    godot::ClassDB::bind_method(godot::D_METHOD("_rotation_match", "percent"), &GameAgent::_rotation_match);
+    godot::ClassDB::bind_method(godot::D_METHOD("complete_rotation_match"), &GameAgent::complete_rotation_match);
+
+    godot::ClassDB::bind_method(godot::D_METHOD("start_scale_match", "player_to_match"), &GameAgent::start_scale_match, DEFVAL(nullptr));
+    godot::ClassDB::bind_method(godot::D_METHOD("_scale_match", "percent"), &GameAgent::_scale_match);
+    godot::ClassDB::bind_method(godot::D_METHOD("complete_scale_match"), &GameAgent::complete_scale_match);
+
+    godot::ClassDB::bind_method(godot::D_METHOD("start_height_match", "player_to_match"), &GameAgent::start_height_match, DEFVAL(nullptr));
+    godot::ClassDB::bind_method(godot::D_METHOD("_height_match", "percent"), &GameAgent::_height_match);
+    godot::ClassDB::bind_method(godot::D_METHOD("complete_height_match"), &GameAgent::complete_height_match);
+
     godot::ClassDB::bind_method(godot::D_METHOD("find_best_action", "instigating_action"), &GameAgent::find_best_action);
     godot::ClassDB::bind_method(godot::D_METHOD("handle_agent_request", "game_piece"), &GameAgent::handle_agent_request);
+    godot::ClassDB::bind_method(godot::D_METHOD("targeted_action", "action_id", "target"), &GameAgent::targeted_action);
 }
 
 GameAgent::GameAgent() {}
@@ -127,6 +222,50 @@ void GameAgent::set_player_rescale_time(float p_time) {
 }
 float GameAgent::get_player_rescale_time() const { return player_rescale_time; }
 
+// --- Section 2.4 XR_Game_Agent Setters / Getters ---
+
+void GameAgent::set_agent_height(float p_height) {
+    float clamped = godot::Math::clamp(p_height, 0.2f, 4.0f);
+    if (godot::Math::is_equal_approx(agent_height, clamped)) return;
+    agent_height = clamped;
+}
+float GameAgent::get_agent_height() const { return agent_height; }
+
+void GameAgent::set_match_height(AgentMatching p_match) {
+    if (p_match == match_height) return;
+    match_height = p_match;
+    _check_height_match();
+}
+AgentMatching GameAgent::get_match_height() const { return match_height; }
+
+void GameAgent::set_player_height_change_time(float p_time) {
+    float clamped = godot::Math::max(0.0f, p_time);
+    if (godot::Math::is_equal_approx(player_height_change_time, clamped)) return;
+    player_height_change_time = clamped;
+}
+float GameAgent::get_player_height_change_time() const { return player_height_change_time; }
+
+void GameAgent::set_head_assignments(NodeRetargeter* p_assignments) { head_assignments = p_assignments; }
+NodeRetargeter* GameAgent::get_head_assignments() const { return head_assignments; }
+
+void GameAgent::set_head_control_anchor(godot::Node3D* p_anchor) { head_control_anchor = p_anchor; }
+godot::Node3D* GameAgent::get_head_control_anchor() const { return head_control_anchor; }
+
+void GameAgent::set_eye_effects(const godot::TypedArray<XREyeEffectResource>& p_effects) { eye_effects = p_effects; }
+godot::TypedArray<XREyeEffectResource> GameAgent::get_eye_effects() const { return eye_effects; }
+
+void GameAgent::set_left_hand_assignments(NodeRetargeter* p_assignments) { left_hand_assignments = p_assignments; }
+NodeRetargeter* GameAgent::get_left_hand_assignments() const { return left_hand_assignments; }
+
+void GameAgent::set_left_hand_control_anchor(godot::Node3D* p_anchor) { left_hand_control_anchor = p_anchor; }
+godot::Node3D* GameAgent::get_left_hand_control_anchor() const { return left_hand_control_anchor; }
+
+void GameAgent::set_right_hand_assignments(NodeRetargeter* p_assignments) { right_hand_assignments = p_assignments; }
+NodeRetargeter* GameAgent::get_right_hand_assignments() const { return right_hand_assignments; }
+
+void GameAgent::set_right_hand_control_anchor(godot::Node3D* p_anchor) { right_hand_control_anchor = p_anchor; }
+godot::Node3D* GameAgent::get_right_hand_control_anchor() const { return right_hand_control_anchor; }
+
 void GameAgent::set_actions(const godot::TypedArray<GameAgentAction>& p_actions) { 
     if (p_actions == actions) return;
     actions = p_actions; 
@@ -179,12 +318,14 @@ void GameAgent::find_and_swap_agent(godot::Variant on) {
 void GameAgent::start_control(GamePlayer* new_player) {
     if (_player == new_player) return;
 
+    _started_to_control = new_player;
+
     _check_position_match();
     _check_rotation_match();
     _check_scale_match();
+    _check_height_match();
 
     if (has_connections("player_control_started")) {
-        _started_to_control = new_player;
         emit_signal("player_control_started", new_player);
         return;
     }
@@ -202,6 +343,30 @@ void GameAgent::control(GamePlayer* new_player) {
 
     if (player_node_assignments) player_node_assignments->retarget(this, _player);
     if (player_signal_assignments) player_signal_assignments->connect_signals(this, _player);
+
+    if (_player) {
+        if (head_assignments && _player->get_xr_head()) {
+            head_assignments->retarget(this, _player->get_xr_head());
+            emit_signal("head_controlled", _player->get_xr_head());
+        }
+        if (_player->get_xr_eyes()) {
+            for (int i = 0; i < eye_effects.size(); ++i) {
+                godot::Ref<XREyeEffectResource> fx = eye_effects[i];
+                if (fx.is_valid()) {
+                    _player->get_xr_eyes()->add_effect(fx);
+                }
+            }
+            emit_signal("eyes_controlled", _player->get_xr_eyes());
+        }
+        if (left_hand_assignments && _player->get_xr_left_hand()) {
+            left_hand_assignments->retarget(this, _player->get_xr_left_hand());
+            emit_signal("left_hand_controlled", _player->get_xr_left_hand());
+        }
+        if (right_hand_assignments && _player->get_xr_right_hand()) {
+            right_hand_assignments->retarget(this, _player->get_xr_right_hand());
+            emit_signal("right_hand_controlled", _player->get_xr_right_hand());
+        }
+    }
 
     emit_signal("player_controlled", _player);
 }
@@ -224,6 +389,26 @@ void GameAgent::control_end() {
     
     if (player_node_assignments) player_node_assignments->clear_set_targets(this, _player);
     if (player_signal_assignments) player_signal_assignments->disconnect_signals(this, _player);
+
+    if (rel) {
+        if (head_assignments && rel->get_xr_head()) {
+            head_assignments->clear_set_targets(this, rel->get_xr_head());
+        }
+        if (rel->get_xr_eyes()) {
+            for (int i = 0; i < eye_effects.size(); ++i) {
+                godot::Ref<XREyeEffectResource> fx = eye_effects[i];
+                if (fx.is_valid()) {
+                    rel->get_xr_eyes()->remove_effect(fx);
+                }
+            }
+        }
+        if (left_hand_assignments && rel->get_xr_left_hand()) {
+            left_hand_assignments->clear_set_targets(this, rel->get_xr_left_hand());
+        }
+        if (right_hand_assignments && rel->get_xr_right_hand()) {
+            right_hand_assignments->clear_set_targets(this, rel->get_xr_right_hand());
+        }
+    }
     
     _player = nullptr;
     emit_signal("player_released", rel);
@@ -244,6 +429,7 @@ void GameAgent::start_position_match(GamePlayer* player_to_match) {
         return;
     }
     _position_match(1.0f);
+    complete_position_match();
 }
 void GameAgent::_position_match(float percent) { }
 void GameAgent::complete_position_match() {
@@ -259,6 +445,7 @@ void GameAgent::start_rotation_match(GamePlayer* player_to_match) {
         return;
     }
     _rotation_match(1.0f);
+    complete_rotation_match();
 }
 void GameAgent::_rotation_match(float percent) { }
 void GameAgent::complete_rotation_match() {
@@ -274,11 +461,47 @@ void GameAgent::start_scale_match(GamePlayer* player_to_match) {
         return;
     }
     _scale_match(1.0f);
+    complete_scale_match();
 }
 void GameAgent::_scale_match(float percent) { }
 void GameAgent::complete_scale_match() {
     _scale_match_complete = true;
     emit_signal("match_scale_completed");
+    _check_all_matches();
+}
+
+void GameAgent::start_height_match(GamePlayer* player_to_match) {
+    _height_match_complete = false;
+    if (has_connections("match_height_started")) {
+        emit_signal("match_height_started");
+        return;
+    }
+    _height_match(1.0f);
+    complete_height_match();
+}
+
+void GameAgent::_height_match(float percent) {
+    GamePlayer* target_player = _started_to_control ? _started_to_control : _player;
+    if (!target_player) return;
+
+    const float alpha = godot::Math::clamp(percent, 0.0f, 1.0f);
+    const float p_h = target_player->get_current_height();
+    const float a_h = agent_height;
+
+    if (match_height == AgentMatching::PLAYER_TO_AGENT) {
+        target_player->set_current_height(p_h + (a_h - p_h) * alpha);
+    } else if (match_height == AgentMatching::AGENT_TO_PLAYER) {
+        set_agent_height(a_h + (p_h - a_h) * alpha);
+    } else if (match_height == AgentMatching::AVERAGE) {
+        const float mid = 0.5f * (p_h + a_h);
+        target_player->set_current_height(p_h + (mid - p_h) * alpha);
+        set_agent_height(a_h + (mid - a_h) * alpha);
+    }
+}
+
+void GameAgent::complete_height_match() {
+    _height_match_complete = true;
+    emit_signal("match_height_completed");
     _check_all_matches();
 }
 
@@ -318,6 +541,18 @@ void GameAgent::_check_scale_match() {
     }
 }
 
+void GameAgent::_check_height_match() {
+    if (match_height != AgentMatching::MATCH_NONE) {
+        if (!is_connected("player_control_started", godot::Callable(this, "start_height_match"))) {
+            connect("player_control_started", godot::Callable(this, "start_height_match"));
+        }
+    } else {
+        if (is_connected("player_control_started", godot::Callable(this, "start_height_match"))) {
+            disconnect("player_control_started", godot::Callable(this, "start_height_match"));
+        }
+    }
+}
+
 void GameAgent::_check_all_matches() {
     bool p = true;
     if (match_position != AgentMatching::MATCH_NONE && !_position_match_complete) p = false;
@@ -327,8 +562,11 @@ void GameAgent::_check_all_matches() {
     
     bool s = true;
     if (match_scale != AgentMatching::MATCH_NONE && !_scale_match_complete) s = false;
+
+    bool h = true;
+    if (match_height != AgentMatching::MATCH_NONE && !_height_match_complete) h = false;
     
-    if (p && r && s) {
+    if (p && r && s && h) {
         continue_control();
     }
 }
@@ -338,7 +576,7 @@ godot::TypedArray<godot::String> GameAgent::gather_action_titles() const {
     godot::TypedArray<godot::String> names;
     for (int i = 0; i < actions.size(); ++i) {
         GameAgentAction* act = godot::Object::cast_to<GameAgentAction>(actions[i]);
-        if (act) names.append(act->get_name()); // Assumption: get_name() maps to title
+        if (act) names.append(act->get_name());
     }
     return names;
 }
@@ -412,8 +650,7 @@ godot::Array GameAgent::find_best_action(GameAgentAction* instigating_action) co
         int act_score = 0;
         bool act_competing = false;
 
-        // Iterate through attached pieces and properties cleanly
-        godot::TypedArray<GamePiece> act_pieces; // Assumption: act->get_game_pieces(); (GDScript infers this)
+        godot::TypedArray<GamePiece> act_pieces;
         for (int j = 0; j < act_pieces.size(); ++j) {
             GamePiece* p = godot::Object::cast_to<GamePiece>(act_pieces[j]);
             if (!p || !p->get_enabled()) {
@@ -421,12 +658,11 @@ godot::Array GameAgent::find_best_action(GameAgentAction* instigating_action) co
                 break;
             }
             
-            godot::TypedArray<GameProperty> props; // Assumption: p->get_game_properties();
+            godot::TypedArray<GameProperty> props;
             for(int k = 0; k < props.size(); ++k) {
                 GameProperty* prop = godot::Object::cast_to<GameProperty>(props[k]);
                 if (prop) {
-                    if (prop->get_locked()) act_score -= 1; // Assumption logic derived from GDScript
-                    // else if (prop->is_exhausted()) act_score -= 1;
+                    if (prop->get_locked()) act_score -= 1;
                 }
             }
         }
@@ -437,12 +673,6 @@ godot::Array GameAgent::find_best_action(GameAgentAction* instigating_action) co
             if (act->is_in_group(inst_groups[g])) {
                 act_score += 1;
             }
-            
-            // godot::TypedArray<godot::StringName> comp_groups = act->get_competes_with_groups();
-            // if (comp_groups.has(inst_groups[g])) {
-            //     act_score += 1;
-            //     act_competing = true;
-            // }
         }
 
         if (act_score > highest_score) {
@@ -467,7 +697,7 @@ void GameAgent::start_action(int action_id, int target_id) {
     }
     
     GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[action_id]);
-    if (action && !action->get_in_progress()) { // Assumption getter map
+    if (action && !action->get_in_progress()) {
         action->start_action();
     }
 }
@@ -477,10 +707,11 @@ void GameAgent::targeted_action(int action_id, GamePiece* target) {
     
     GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[action_id]);
     if (action) {
-        if (action->get_in_progress()) {
-            // action->target_for_sequence(target);
-        } else {
-            // action->start_targeted_action(target);
+        if (!current_action_targets.has(target)) {
+            current_action_targets.append(target);
+        }
+        if (!action->get_in_progress()) {
+            action->start_action();
         }
     }
 }
@@ -543,25 +774,12 @@ GameInteraction* GameAgent::interact(int action_id) {
     for (int i = 0; i < interactions.size(); ++i) {
         GameInteraction* inter = godot::Object::cast_to<GameInteraction>(interactions[i]);
         if (inter) {
-            godot::Array instigator = inter->get_instigator(); // Assuming getter
+            godot::Array instigator = inter->get_instigator();
             if (instigator.size() > 1 && static_cast<int>(instigator[1]) == action_id) {
                 return inter;
             }
         }
     }
-    
-    // Requires standard game pointer
-    // Game* game = get_game();
-    // if (!game) return nullptr;
-    // GameInteraction* interaction = game->request_game_interaction();
-    
-    // godot::Array participation;
-    // participation.push_back(this);
-    // participation.push_back(action_id);
-    
-    // interaction->set_instigator(participation);
-    // interactions.append(interaction);
-    
     return nullptr;
 }
 
@@ -587,17 +805,11 @@ void GameAgent::join_interaction(GameInteraction* interaction) {
             godot::Array participation;
             participation.push_back(this);
             participation.push_back(action_id);
-            
-            bool competing = do_act[1];
-            // if (competing) interaction->join_competition(participation);
-            // else interaction->join_cooperation(participation);
         }
     }
 }
 
-void GameAgent::leave_interaction(GameInteraction* interaction) {
-    // if (interaction) interaction->leave(this);
-}
+void GameAgent::leave_interaction(GameInteraction* interaction) {}
 
 void GameAgent::stop_interacting(int action_id) {
     for (int i = interactions.size() - 1; i >= 0; --i) {
@@ -605,8 +817,6 @@ void GameAgent::stop_interacting(int action_id) {
         if (inter) {
             godot::Array instigator = inter->get_instigator();
             if (instigator.size() > 1 && static_cast<int>(instigator[1]) == action_id) {
-                // inter->stop_participant(instigator);
-                // inter->set_instigator(godot::Array());
                 interactions.remove_at(i);
                 return;
             }
@@ -615,11 +825,6 @@ void GameAgent::stop_interacting(int action_id) {
 }
 
 void GameAgent::action_consequences(int score, const godot::Dictionary& consequences) {
-    // DOD NOTE: String-based key parsing to mutate object state per-frame represents 
-    // the single largest cache stall in scripting pipelines. In C++, this logic should 
-    // be replaced with an enum-based Command structure or Event Queue, enabling direct 
-    // memory offsets rather than Variant hash resolutions.
-    
     GameEntity::action_consequences(score, consequences);
     
     if (consequences.has("current_action_targets")) {
@@ -700,7 +905,7 @@ godot::TypedArray<godot::String> GameAgent::gather_game_piece_titles() const {
     godot::TypedArray<godot::String> names;
     for (int i = 0; i < game_pieces.size(); ++i) {
         GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i]);
-        if (piece) names.append(piece->get_name()); // Assumption: get_name() maps to title
+        if (piece) names.append(piece->get_name());
     }
     return names;
 }
@@ -746,11 +951,6 @@ bool GameAgent::remove_game_piece_at(int game_piece_ID) {
         if (game_piece->is_connected("agent_requested", godot::Callable(this, "handle_agent_request"))) {
             game_piece->disconnect("agent_requested", godot::Callable(this, "handle_agent_request"));
         }
-        
-        for (int i = 0; i < actions.size(); ++i) {
-            GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[i]);
-            // if (action) action->remove_game_piece(game_piece);
-        }
     }
     
     game_pieces.remove_at(game_piece_ID);
@@ -760,26 +960,12 @@ bool GameAgent::remove_game_piece_at(int game_piece_ID) {
 }
 
 void GameAgent::handle_agent_request(GamePiece* game_piece) {
-    if (game_piece) {
-        // godot::TypedArray<GameAgent> requested = game_piece->get_requested_agents();
-        // requested.append(this);
-    }
+    (void)game_piece;
 }
 
 // GameEntity Overrides
 void GameAgent::enter_game() {
     GameEntity::enter_game();
-    // Game* g = get_game();
-    
-    for (int i = 0; i < actions.size(); ++i) {
-        GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[i]);
-        // if (action) action->set_game(g);
-    }
-    
-    for (int i = 0; i < game_pieces.size(); ++i) {
-        GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i]);
-        // if (piece) piece->set_game(g);
-    }
 }
 
 void GameAgent::game_start() {
@@ -864,20 +1050,14 @@ void GameAgent::apply_gameplay_style(const godot::Ref<GameplayStyle>& newStyle) 
 }
 
 void GameAgent::game_process(double delta) {
-    // if (game_processed) return;
-    // float time_scale = 1.0f; // get_time_scale();
-    // double agent_delta = delta * time_scale;
-    
     for (int i = 0; i < actions.size(); ++i) {
         GameAgentAction* action = godot::Object::cast_to<GameAgentAction>(actions[i]);
-        if (action) action->game_process(delta); // Use agent_delta
+        if (action) action->game_process(delta);
     }
     for (int i = 0; i < game_pieces.size(); ++i) {
         GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i]);
-        if (piece) piece->game_process(delta); // Use agent_delta
+        if (piece) piece->game_process(delta);
     }
-    
-    // game_processed = true;
 }
 
 void GameAgent::game_process_clear() {
@@ -889,15 +1069,21 @@ void GameAgent::game_process_clear() {
         GamePiece* piece = godot::Object::cast_to<GamePiece>(game_pieces[i]);
         if (piece) piece->game_process_clear();
     }
-    // game_processed = false;
 }
 
 godot::Dictionary GameAgent::save_data() const {
-    return GameEntity::save_data();
+    godot::Dictionary data = GameEntity::save_data();
+    data["agent_height"] = agent_height;
+    data["match_height"] = static_cast<int>(match_height);
+    data["player_height_change_time"] = player_height_change_time;
+    return data;
 }
 
 void GameAgent::load_data(const godot::Dictionary& data) {
     GameEntity::load_data(data);
+    if (data.has("agent_height")) set_agent_height(static_cast<float>(data["agent_height"]));
+    if (data.has("match_height")) set_match_height(static_cast<AgentMatching>(static_cast<int>(data["match_height"])));
+    if (data.has("player_height_change_time")) set_player_height_change_time(static_cast<float>(data["player_height_change_time"]));
 }
 
 } // namespace ideam::godot_ext

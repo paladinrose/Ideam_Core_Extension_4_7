@@ -2,6 +2,7 @@
 
 #include "../game_entity.h" 
 #include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
@@ -16,6 +17,7 @@ class NodeRetargeter;
 class SignalConnector;
 class GameInteraction;
 class Game;
+class XREyeEffectResource;
 
 // DOD NOTE: Extracting these states from the object header allows for dense packing 
 // in an ECS-like system. Instead of traversing a hierarchy of Nodes to check exclusivity, 
@@ -55,6 +57,21 @@ private:
     AgentMatching match_scale = AgentMatching::PLAYER_TO_AGENT;
     float player_rescale_time = 0.1f;
 
+    // --- Section 2.4 XR_Game_Agent Merger: Height Matching, Limb Retargeters & Eye FX ---
+    float agent_height = 1.7f;
+    AgentMatching match_height = AgentMatching::PLAYER_TO_AGENT;
+    float player_height_change_time = 0.1f;
+
+    NodeRetargeter* head_assignments = nullptr;
+    godot::Node3D* head_control_anchor = nullptr;
+    godot::TypedArray<XREyeEffectResource> eye_effects;
+
+    NodeRetargeter* left_hand_assignments = nullptr;
+    godot::Node3D* left_hand_control_anchor = nullptr;
+
+    NodeRetargeter* right_hand_assignments = nullptr;
+    godot::Node3D* right_hand_control_anchor = nullptr;
+
     // DOD NOTE: `TypedArray` encapsulates Godot Variants, causing double-indirection 
     // when iterating. In a data-oriented architecture, Actions and GamePieces should be 
     // allocated sequentially in memory using `std::vector<GameAgentAction*>` or 
@@ -74,6 +91,7 @@ private:
     bool _position_match_complete = false;
     bool _rotation_match_complete = false;
     bool _scale_match_complete = false;
+    bool _height_match_complete = false;
 
 public:
     GameAgent();
@@ -106,6 +124,37 @@ public:
 
     void set_player_rescale_time(float p_time);
     float get_player_rescale_time() const;
+
+    // --- Section 2.4 XR_Game_Agent Setters / Getters ---
+    void set_agent_height(float p_height);
+    float get_agent_height() const;
+
+    void set_match_height(AgentMatching p_match);
+    AgentMatching get_match_height() const;
+
+    void set_player_height_change_time(float p_time);
+    float get_player_height_change_time() const;
+
+    void set_head_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_head_assignments() const;
+
+    void set_head_control_anchor(godot::Node3D* p_anchor);
+    godot::Node3D* get_head_control_anchor() const;
+
+    void set_eye_effects(const godot::TypedArray<XREyeEffectResource>& p_effects);
+    godot::TypedArray<XREyeEffectResource> get_eye_effects() const;
+
+    void set_left_hand_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_left_hand_assignments() const;
+
+    void set_left_hand_control_anchor(godot::Node3D* p_anchor);
+    godot::Node3D* get_left_hand_control_anchor() const;
+
+    void set_right_hand_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_right_hand_assignments() const;
+
+    void set_right_hand_control_anchor(godot::Node3D* p_anchor);
+    godot::Node3D* get_right_hand_control_anchor() const;
 
     void set_actions(const godot::TypedArray<GameAgentAction>& p_actions);
     godot::TypedArray<GameAgentAction> get_actions() const;
@@ -142,9 +191,14 @@ public:
     void _scale_match(float percent);
     void complete_scale_match();
 
+    void start_height_match(GamePlayer* player_to_match = nullptr);
+    void _height_match(float percent);
+    void complete_height_match();
+
     void _check_position_match();
     void _check_rotation_match();
     void _check_scale_match();
+    void _check_height_match();
     void _check_all_matches();
 
     // Action Functions

@@ -92,6 +92,9 @@ public:
     void find_and_remove_sub_piece(godot::Variant on);
     godot::TypedArray<GameAgent> request_agents();
 
+    // Section 2.4 Ray / Gaze Target Action Override
+    virtual void use_target_action(godot::Node* p_instigator = nullptr) override;
+
     // GameEntity Overrides
     virtual void enter_game() override;
     virtual void game_pause() override;

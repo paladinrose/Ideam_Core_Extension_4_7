@@ -1,6 +1,7 @@
 #pragma once
 
 #include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
@@ -11,6 +12,7 @@ namespace ideam::godot_ext {
 class SceneTransition;
 class GamePlayer;
 class Game;
+class GameplayGraphicsOption;
 
 class GameHub : public godot::Node {
     GDCLASS(GameHub, godot::Node)
@@ -20,10 +22,6 @@ protected:
     void _notification(int p_what);
 
 private:
-    // DOD NOTE: Storing Arrays of Strings forces the CPU to chase pointers to the heap 
-    // for each string's character data. In our C++26 optimizations, this should be refactored 
-    // into a centralized String Interning Pool that issues contiguous 32-bit Integer Handles (Tokens).
-    // Operations would then act purely on a fast std::span<uint32_t>.
     godot::TypedArray<godot::String> game_paths;
     godot::TypedArray<godot::String> game_titles;
     
@@ -35,10 +33,6 @@ private:
     godot::Node* hub_scene = nullptr;
     bool disable_hub_scene_on_game_load = false;
 
-    // DOD NOTE: godot::Dictionary uses a variant-based hash map underneath, causing 
-    // massive L1/L2 cache misses upon retrieval. For mapping `int` to pointers, 
-    // a sparse set (SparseSetView) or a simple contiguous std::vector<Game*> 
-    // using the game_id as the direct index will provide O(1) branchless lookups.
     godot::Dictionary loaded_games;
     
     godot::Node* hub_scene_parent = nullptr;
@@ -47,8 +41,21 @@ private:
 
     bool _is_ready = false;
 
-    // Internal deferred startup
+    // --- Section 2.4 XR_Session_Manager Merger: OpenXR Session Lifecycle & Focus Routing ---
+    godot::Ref<GameplayGraphicsOption> graphics_option;
+    godot::TypedArray<GamePlayer> connected_players;
+    bool xr_is_enabled = false;
+    bool xr_is_started = false;
+    bool xr_is_focussed = false;
+    bool pause_games_on_xr_focus_lost = true;
+
+    // Internal deferred startup & OpenXR signal callbacks
     void _on_process_frame_startup();
+    void _on_openxr_session_begun();
+    void _on_openxr_visible_state();
+    void _on_openxr_focused_state();
+    void _on_openxr_session_stopping();
+    void _on_openxr_pose_recentered();
 
 public:
     GameHub();
@@ -76,6 +83,23 @@ public:
 
     void set_disable_hub_scene_on_game_load(bool p_disable);
     bool get_disable_hub_scene_on_game_load() const;
+
+    // --- Section 2.4 OpenXR Session Lifecycle API (ported from `xr_session_manager.gd`) ---
+    void set_graphics_option(const godot::Ref<GameplayGraphicsOption>& p_option);
+    godot::Ref<GameplayGraphicsOption> get_graphics_option() const;
+
+    void set_xr_is_enabled(bool p_enabled);
+    bool get_xr_is_enabled() const;
+    bool get_xr_is_started() const;
+    bool get_xr_is_focussed() const;
+
+    void set_pause_games_on_xr_focus_lost(bool p_pause);
+    bool get_pause_games_on_xr_focus_lost() const;
+
+    bool start_xr();
+    void end_xr();
+    bool switch_to_immersive_mode();
+    bool switch_to_windowed_mode();
 
     // Class Functions
     void connect_to_player(GamePlayer* player);

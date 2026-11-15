@@ -221,7 +221,7 @@ struct GamesBufferManifest {
     uint32_t prop_modded_value_buffer_id          = INVALID_ID; // int32_t
     uint32_t prop_base_min_buffer_id              = INVALID_ID; // int32_t
     uint32_t prop_modded_min_buffer_id            = INVALID_ID; // int32_t
-    uint32_t prop_base_max_buffer_id            = INVALID_ID; // int32_t
+    uint32_t prop_base_max_buffer_id              = INVALID_ID; // int32_t
     uint32_t prop_modded_max_buffer_id            = INVALID_ID; // int32_t
     uint32_t prop_flags_buffer_id                 = INVALID_ID; // uint16_t (GamePropertyFlags)
     uint32_t prop_object_id_buffer_id             = INVALID_ID; // uint64_t (Godot GameProperty ObjectID)
@@ -282,6 +282,8 @@ struct GamesBufferManifest {
 
     uint32_t agent_transform_pos_buffer_id        = INVALID_ID; // godot::Vector3
     uint32_t player_transform_pos_buffer_id       = INVALID_ID; // godot::Vector3
+    uint32_t agent_height_vec3_buffer_id          = INVALID_ID; // godot::Vector3 (Y = XR agent_height)
+    uint32_t player_height_vec3_buffer_id         = INVALID_ID; // godot::Vector3 (Y = XR player current_height)
     uint32_t agent_to_player_idx_buffer_id        = INVALID_ID; // int32_t
     uint32_t possession_match_mode_buffer_id      = INVALID_ID; // uint8_t (AgentPossessionMatchMode)
     uint32_t possession_elapsed_buffer_id         = INVALID_ID; // float
@@ -293,6 +295,10 @@ struct GamesBufferManifest {
     uint32_t world_move_dir_vec3_buffer_id        = INVALID_ID; // godot::Vector3
     uint32_t camera_transform_pod_buffer_id       = INVALID_ID; // InputTransform3DPOD (48B)
     uint32_t agent_transform_pod_buffer_id        = INVALID_ID; // InputTransform3DPOD (48B)
+
+    // --- Ray / Gaze Hover Dwell Time Columns (Section 2.4 XR_RayCast3D_Target Merger) ---
+    uint32_t entity_hover_ray_count_buffer_id     = INVALID_ID; // uint32_t (Number of active rays hovering entity)
+    uint32_t entity_hover_dwell_time_buffer_id    = INVALID_ID; // float (Cumulative gaze/ray dwell time seconds)
 
     [[nodiscard]] constexpr bool is_initialized() const noexcept {
         return entity_effective_time_scale_buffer_id != INVALID_ID &&

@@ -1,9 +1,13 @@
 #pragma once
 
 #include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/variant/string.hpp>
 
 namespace ideam::godot_ext {
+
+class XREyeFXNode3D;
+class XREyeEffectResource;
 
 // DOD NOTE: While Scene Transitions inherently deal with heavy asset loading, 
 // maintaining a node-based, polling architecture for background tasks creates 
@@ -23,14 +27,16 @@ private:
     godot::String _to_path;
     godot::Node* _to = nullptr;
 
+    // --- Section 2.4 Stereoscopic XR Eye FX Integration (`Game_In`/`Game_Out`, `Board_In`/`Board_Out`, `Blink`) ---
+    XREyeFXNode3D* xr_eye_fx = nullptr;
+    godot::Ref<XREyeEffectResource> transition_eye_effect;
+    float transition_out_duration = 0.25f;
+    float transition_in_duration = 0.25f;
+
 public:
     SceneTransition();
     ~SceneTransition();
 
-    // DOD NOTE: Polling a singleton (ResourceLoader) with a string key every 
-    // frame forces a string hash map lookup, obliterating L1 cache. In a C++26 
-    // optimized architecture, background tasks should push completion flags to a 
-    // contiguous lock-free ring buffer (std::atomic arrays) to eliminate polling overhead.
     virtual void _process(double delta) override;
 
     // Setters / Getters
@@ -46,14 +52,22 @@ public:
     void set_to(godot::Node* p_to);
     godot::Node* get_to() const;
 
+    void set_xr_eye_fx(XREyeFXNode3D* p_eye_fx);
+    XREyeFXNode3D* get_xr_eye_fx() const;
+
+    void set_transition_eye_effect(const godot::Ref<XREyeEffectResource>& p_effect);
+    godot::Ref<XREyeEffectResource> get_transition_eye_effect() const;
+
+    void set_transition_out_duration(float p_duration);
+    float get_transition_out_duration() const;
+
+    void set_transition_in_duration(float p_duration);
+    float get_transition_in_duration() const;
+
     // Class Functions
     void start_transition(const godot::String& to_path, godot::Node* from = nullptr);
     void transition();
     
-    // DOD NOTE: Instantiating PackedScenes on-the-fly dynamically allocates 
-    // an unpredictable tree of variants across the heap. To minimize memory 
-    // fragmentation, target objects should ideally be constructed into a pre-allocated 
-    // linear allocator (std::pmr::monotonic_buffer_resource) designated for the incoming scene.
     void to_scene_load_complete();
     void complete_transition();
 };

@@ -1,6 +1,7 @@
 #include "game_entity.h"
 
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/core/math.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 
@@ -18,7 +19,16 @@ void GameEntity::_bind_methods() {
     ADD_SIGNAL(godot::MethodInfo("game_exited"));
     ADD_SIGNAL(godot::MethodInfo("game_paused"));
     ADD_SIGNAL(godot::MethodInfo("game_continued"));
-    
+
+    // Section 2.4 Ray / Gaze Hover & Target Action Signals (ported from XR_RayCast3D_Target)
+    ADD_SIGNAL(godot::MethodInfo("ray_entered", godot::PropertyInfo(godot::Variant::OBJECT, "ray", godot::PROPERTY_HINT_NODE_TYPE, "Node")));
+    ADD_SIGNAL(godot::MethodInfo(
+        "ray_over",
+        godot::PropertyInfo(godot::Variant::OBJECT, "ray", godot::PROPERTY_HINT_NODE_TYPE, "Node"),
+        godot::PropertyInfo(godot::Variant::FLOAT, "dwell_time")
+    ));
+    ADD_SIGNAL(godot::MethodInfo("ray_exited", godot::PropertyInfo(godot::Variant::OBJECT, "ray", godot::PROPERTY_HINT_NODE_TYPE, "Node")));
+    ADD_SIGNAL(godot::MethodInfo("action_used", godot::PropertyInfo(godot::Variant::OBJECT, "instigator", godot::PROPERTY_HINT_NODE_TYPE, "Node")));
 
     // Properties
     godot::ClassDB::bind_method(godot::D_METHOD("set_enabled", "enabled"), &GameEntity::set_enabled);
@@ -53,7 +63,26 @@ void GameEntity::_bind_methods() {
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "gameplay_style", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayStyle"), "set_gameplay_style", "get_gameplay_style");
     ADD_SIGNAL(godot::MethodInfo("gameplay_style_changed", godot::PropertyInfo(godot::Variant::OBJECT, "gameplay_style", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameplayStyle")));
 
+    // Section 2.4 Ray / Gaze Target Properties
+    ADD_GROUP("Ray & Gaze Targeting", "");
+    godot::ClassDB::bind_method(godot::D_METHOD("set_ray_target_enabled", "enabled"), &GameEntity::set_ray_target_enabled);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_ray_target_enabled"), &GameEntity::get_ray_target_enabled);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::BOOL, "ray_target_enabled"), "set_ray_target_enabled", "get_ray_target_enabled");
+
+    godot::ClassDB::bind_method(godot::D_METHOD("set_default_target_action_id", "action_id"), &GameEntity::set_default_target_action_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_default_target_action_id"), &GameEntity::get_default_target_action_id);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "default_target_action_id"), "set_default_target_action_id", "get_default_target_action_id");
+
     // Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("on_ray_entered", "ray"), &GameEntity::on_ray_entered);
+    godot::ClassDB::bind_method(godot::D_METHOD("on_ray_stay", "ray", "delta"), &GameEntity::on_ray_stay);
+    godot::ClassDB::bind_method(godot::D_METHOD("on_ray_exited", "ray"), &GameEntity::on_ray_exited);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_ray_hovering"), &GameEntity::is_ray_hovering);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_hovering_ray_count"), &GameEntity::get_hovering_ray_count);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_ray_dwell_time", "ray"), &GameEntity::get_ray_dwell_time, DEFVAL(nullptr));
+    godot::ClassDB::bind_method(godot::D_METHOD("get_hover_dwell_times"), &GameEntity::get_hover_dwell_times);
+    godot::ClassDB::bind_method(godot::D_METHOD("use_target_action", "instigator"), &GameEntity::use_target_action, DEFVAL(nullptr));
+
     godot::ClassDB::bind_method(godot::D_METHOD("validate_game"), &GameEntity::validate_game);
     godot::ClassDB::bind_method(godot::D_METHOD("game_start"), &GameEntity::game_start);
     godot::ClassDB::bind_method(godot::D_METHOD("enter_game"), &GameEntity::enter_game);
@@ -162,6 +191,93 @@ void GameEntity::set_entity_is_paused(bool p_paused) {
     entity_is_paused = p_paused; 
 }
 bool GameEntity::get_entity_is_paused() const { return entity_is_paused; }
+
+// --- Section 2.4 3D Ray / Gaze Hover & Target Action Implementation ---
+
+void GameEntity::set_ray_target_enabled(bool p_enabled) {
+    ray_target_enabled = p_enabled;
+    if (!ray_target_enabled) {
+        hovering_rays.clear();
+        hover_dwell_times.clear();
+    }
+}
+bool GameEntity::get_ray_target_enabled() const { return ray_target_enabled; }
+
+void GameEntity::set_default_target_action_id(int p_action_id) {
+    default_target_action_id = godot::Math::max(0, p_action_id);
+}
+int GameEntity::get_default_target_action_id() const { return default_target_action_id; }
+
+void GameEntity::on_ray_entered(godot::Node* p_ray) {
+    if (!enabled || !ray_target_enabled || !p_ray) return;
+    int idx = hovering_rays.find(p_ray);
+    if (idx >= 0) return;
+
+    hovering_rays.push_back(p_ray);
+    hover_dwell_times.push_back(0.0f);
+    emit_signal("ray_entered", p_ray);
+}
+
+void GameEntity::on_ray_stay(godot::Node* p_ray, float p_delta) {
+    if (!enabled || !ray_target_enabled || !p_ray) return;
+    int idx = hovering_rays.find(p_ray);
+    if (idx < 0) {
+        on_ray_entered(p_ray);
+        idx = hovering_rays.find(p_ray);
+    }
+    if (idx >= 0 && idx < hover_dwell_times.size()) {
+        float new_dwell = hover_dwell_times[idx] + godot::Math::max(0.0f, p_delta * time_scale);
+        hover_dwell_times.set(idx, new_dwell);
+        emit_signal("ray_over", p_ray, new_dwell);
+    }
+}
+
+void GameEntity::on_ray_exited(godot::Node* p_ray) {
+    if (!p_ray) return;
+    int idx = hovering_rays.find(p_ray);
+    if (idx < 0) return;
+
+    hovering_rays.remove_at(idx);
+    if (idx < hover_dwell_times.size()) {
+        hover_dwell_times.remove_at(idx);
+    }
+    emit_signal("ray_exited", p_ray);
+}
+
+bool GameEntity::is_ray_hovering() const {
+    return !hovering_rays.is_empty();
+}
+
+int GameEntity::get_hovering_ray_count() const {
+    return hovering_rays.size();
+}
+
+float GameEntity::get_ray_dwell_time(godot::Node* p_ray) const {
+    if (hover_dwell_times.is_empty()) return 0.0f;
+    if (p_ray) {
+        int idx = hovering_rays.find(p_ray);
+        if (idx >= 0 && idx < hover_dwell_times.size()) {
+            return hover_dwell_times[idx];
+        }
+        return 0.0f;
+    }
+    float max_dwell = 0.0f;
+    for (int i = 0; i < hover_dwell_times.size(); ++i) {
+        if (hover_dwell_times[i] > max_dwell) {
+            max_dwell = hover_dwell_times[i];
+        }
+    }
+    return max_dwell;
+}
+
+godot::PackedFloat32Array GameEntity::get_hover_dwell_times() const {
+    return hover_dwell_times;
+}
+
+void GameEntity::use_target_action(godot::Node* p_instigator) {
+    if (!enabled || !ray_target_enabled) return;
+    emit_signal("action_used", p_instigator);
+}
 
 void GameEntity::validate_game() {
     if (!_game) {

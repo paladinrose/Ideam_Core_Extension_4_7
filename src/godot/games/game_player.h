@@ -1,9 +1,14 @@
 #pragma once
 
 #include <godot_cpp/classes/node.hpp>
+#include <godot_cpp/classes/node3d.hpp>
+#include <godot_cpp/classes/xr_camera3d.hpp>
+#include <godot_cpp/classes/xr_controller3d.hpp>
+#include <godot_cpp/classes/xr_origin3d.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
-#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/vector3.hpp>
 
 namespace ideam::godot_ext {
 
@@ -17,6 +22,7 @@ class Game;
 class GameMenu;
 class GameBoard;
 class GamePlayerManager;
+class XREyeFXNode3D;
 
 class GamePlayer : public godot::Node {
     GDCLASS(GamePlayer, godot::Node)
@@ -38,6 +44,23 @@ private:
     
     NodeRetargeter* agent_node_assignments = nullptr;
     SignalConnector* agent_signal_assignments = nullptr;
+
+    // --- Section 2.4 XR_Player Merger: Optional 6DoF XR Rig & Per-Limb Retargeters ---
+    godot::XROrigin3D* xr_origin = nullptr;
+    godot::XRCamera3D* xr_head = nullptr;
+    XREyeFXNode3D* xr_eyes = nullptr;
+    godot::Node3D* xr_ears = nullptr;
+    godot::XRController3D* xr_left_hand = nullptr;
+    godot::XRController3D* xr_right_hand = nullptr;
+
+    NodeRetargeter* head_assignments = nullptr;
+    NodeRetargeter* eye_assignments = nullptr;
+    NodeRetargeter* ear_assignments = nullptr;
+    NodeRetargeter* left_hand_assignments = nullptr;
+    NodeRetargeter* right_hand_assignments = nullptr;
+
+    float player_height = 1.7f;
+    float current_height = 1.7f;
 
     // DOD NOTE: Storing Node pointers in TypedArray causes severe cache thrashing when iterating 
     // over these collections to evaluate exclusivity rules. In a DOD paradigm, `controlled_agents` 
@@ -88,6 +111,57 @@ public:
 
     void set_agent_signal_assignments(SignalConnector* p_assignments);
     SignalConnector* get_agent_signal_assignments() const;
+
+    // --- Section 2.4 XR Embodiment Setters / Getters & Helpers ---
+    void set_xr_origin(godot::XROrigin3D* p_origin);
+    godot::XROrigin3D* get_xr_origin() const;
+
+    void set_xr_head(godot::XRCamera3D* p_head);
+    godot::XRCamera3D* get_xr_head() const;
+
+    void set_xr_eyes(XREyeFXNode3D* p_eyes);
+    XREyeFXNode3D* get_xr_eyes() const;
+
+    void set_xr_ears(godot::Node3D* p_ears);
+    godot::Node3D* get_xr_ears() const;
+
+    void set_xr_left_hand(godot::XRController3D* p_hand);
+    godot::XRController3D* get_xr_left_hand() const;
+
+    void set_xr_right_hand(godot::XRController3D* p_hand);
+    godot::XRController3D* get_xr_right_hand() const;
+
+    void set_head_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_head_assignments() const;
+
+    void set_eye_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_eye_assignments() const;
+
+    void set_ear_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_ear_assignments() const;
+
+    void set_left_hand_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_left_hand_assignments() const;
+
+    void set_right_hand_assignments(NodeRetargeter* p_assignments);
+    NodeRetargeter* get_right_hand_assignments() const;
+
+    void set_player_height(float p_height);
+    float get_player_height() const;
+
+    void set_current_height(float p_height);
+    float get_current_height() const;
+
+    /**
+     * Pitch-compensated horizontal body forward estimation (ported from `xr_player.gd::_estimate_body_forward_dir()`).
+     * Slides `camera_basis.y` onto the horizontal player plane when HMD elevation exceeds `abs(dot) > 0.75`.
+     */
+    godot::Vector3 estimate_body_forward_dir() const;
+
+    /**
+     * Recenters the 3D player root horizontally onto the current HMD XZ offset relative to `xr_origin`.
+     */
+    void recenter_player();
 
     // Class Functions
     void find_game_player_manager(godot::Node* on = nullptr);

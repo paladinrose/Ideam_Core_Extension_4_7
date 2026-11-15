@@ -34,11 +34,14 @@ enum AgentPossessionMatchMode : uint8_t {
 
 /**
  * Transform channel being blended by AgentPossessionTransformBlendTransformLogic.
+ * Includes POSSESSION_CHANNEL_HEIGHT (channel 3) folded from legacy `xr_game_agent.gd`
+ * (`agent_height` / `match_height` / `player_height_change_time`).
  */
 enum AgentPossessionTransformChannel : uint8_t {
     POSSESSION_CHANNEL_POSITION = 0, // Vector3 world/local position (player_reposition_time)
     POSSESSION_CHANNEL_ROTATION = 1, // Vector4 unit quaternion (x,y,z,w) (player_reorient_time)
-    POSSESSION_CHANNEL_SCALE    = 2  // Vector3 scale (player_rescale_time)
+    POSSESSION_CHANNEL_SCALE    = 2, // Vector3 scale (player_rescale_time)
+    POSSESSION_CHANNEL_HEIGHT   = 3  // float or Vector3.y XR player/agent height (player_height_change_time)
 };
 
 /**
@@ -49,18 +52,22 @@ enum AgentPossessionCompletionFlags : uint32_t {
     POSSESSION_COMPLETE_POSITION = 1u << 0, // _position_match_complete
     POSSESSION_COMPLETE_ROTATION = 1u << 1, // _rotation_match_complete
     POSSESSION_COMPLETE_SCALE    = 1u << 2, // _scale_match_complete
+    POSSESSION_COMPLETE_HEIGHT   = 1u << 3, // _height_match_complete (XR_Game_Agent merger)
     POSSESSION_COMPLETE_ALL      =
-        POSSESSION_COMPLETE_POSITION | POSSESSION_COMPLETE_ROTATION | POSSESSION_COMPLETE_SCALE
+        POSSESSION_COMPLETE_POSITION | POSSESSION_COMPLETE_ROTATION | POSSESSION_COMPLETE_SCALE,
+    POSSESSION_COMPLETE_ALL_XR   =
+        POSSESSION_COMPLETE_ALL | POSSESSION_COMPLETE_HEIGHT
 };
 
 #endif // IDEAM_GAMES_AGENT_POSSESSION_MATCHING_DEFINED
 
 /**
  * AgentPossessionTransformBlendTransformLogic<T> (G9)
- * Interpolates PLAYER_TO_AGENT, AGENT_TO_PLAYER, or AVERAGE position/scale (Vector3) or
+ * Interpolates PLAYER_TO_AGENT, AGENT_TO_PLAYER, or AVERAGE position/scale/height (Vector3) or
  * quaternion rotation (Vector4) matching timers (player_reposition_time, player_reorient_time,
- * player_rescale_time) across possessed GameAgents, setting completion flags when alpha reaches 1.0.
- * Replaces GameAgent::_position_match(), _rotation_match(), _scale_match(), and _check_all_matches().
+ * player_rescale_time, player_height_change_time) across possessed GameAgents, setting completion
+ * flags when alpha reaches 1.0.
+ * Replaces GameAgent::_position_match(), _rotation_match(), _scale_match(), _height_match(), and _check_all_matches().
  */
 template <typename T = godot::Vector3>
 struct alignas(64) AgentPossessionTransformBlendTransformLogic {
@@ -93,11 +100,11 @@ struct alignas(64) AgentPossessionTransformBlendTransformLogic {
     uint32_t time_scale_buffer_id          = INVALID_ID;                      // 4B: Optional effective_time_scale (float) column
     uint32_t completion_flags_buffer_id    = INVALID_ID;                      // 4B: Optional uint32_t AgentPossessionCompletionFlags column
 
-    float default_match_duration           = 0.1f;                            // 4B: Default player_reposition/reorient/rescale_time
+    float default_match_duration           = 0.1f;                            // 4B: Default player_reposition/reorient/rescale/height_change_time
     float fixed_blend_alpha                = -1.0f;                           // 4B: If >= 0.0f, overrides timer progression with [0..1] alpha
 
     uint8_t default_match_mode             = AGENT_MATCH_PLAYER_TO_AGENT;     // 1B: AgentPossessionMatchMode fallback
-    uint8_t transform_channel              = POSSESSION_CHANNEL_POSITION;     // 1B: AgentPossessionTransformChannel
+    uint8_t transform_channel              = POSSESSION_CHANNEL_POSITION;     // 1B: AgentPossessionTransformChannel (0..3)
     bool single_player_slot_zero           = false;                           // 1B: Map all agents to player slot 0 when index map is unbound
     uint8_t reserved_padding[21]           = {0};                             // 21B -> Total = 64B
 
@@ -163,7 +170,7 @@ struct alignas(64) AgentPossessionTransformBlendTransformLogic {
         ch_prop["name"] = "transform_channel";
         ch_prop["type"] = godot::Variant::INT;
         ch_prop["hint"] = godot::PROPERTY_HINT_ENUM;
-        ch_prop["hint_string"] = "Position (Vector3):0,Rotation Quaternion (Vector4):1,Scale (Vector3):2";
+        ch_prop["hint_string"] = "Position (Vector3):0,Rotation Quaternion (Vector4):1,Scale (Vector3):2,XR Height (Vector3.y):3";
         props.push_back(ch_prop);
 
         godot::Dictionary ddur_prop;
@@ -231,7 +238,7 @@ struct alignas(64) AgentPossessionTransformBlendTransformLogic {
             default_match_mode = static_cast<uint8_t>(std::clamp<int64_t>(static_cast<int64_t>(p_props["default_match_mode"]), 0, 3));
         }
         if (p_props.has("transform_channel")) {
-            transform_channel = static_cast<uint8_t>(std::clamp<int64_t>(static_cast<int64_t>(p_props["transform_channel"]), 0, 2));
+            transform_channel = static_cast<uint8_t>(std::clamp<int64_t>(static_cast<int64_t>(p_props["transform_channel"]), 0, 3));
         }
         if (p_props.has("single_player_slot_zero")) {
             single_player_slot_zero = static_cast<bool>(p_props["single_player_slot_zero"]);
@@ -282,7 +289,8 @@ struct alignas(64) AgentPossessionTransformBlendTransformLogic {
             const uint32_t channel_complete_bit =
                 (transform_channel == POSSESSION_CHANNEL_POSITION) ? POSSESSION_COMPLETE_POSITION :
                 (transform_channel == POSSESSION_CHANNEL_ROTATION) ? POSSESSION_COMPLETE_ROTATION :
-                                                                     POSSESSION_COMPLETE_SCALE;
+                (transform_channel == POSSESSION_CHANNEL_SCALE)    ? POSSESSION_COMPLETE_SCALE    :
+                                                                     POSSESSION_COMPLETE_HEIGHT;
             const float base_dt = static_cast<float>(p_context.delta);
 
             auto eval_agent = [&](int64_t idx) noexcept {
@@ -332,13 +340,13 @@ struct alignas(64) AgentPossessionTransformBlendTransformLogic {
                 const T p_val = player_vecs[p_idx];
 
                 if (mode == AGENT_MATCH_PLAYER_TO_AGENT) {
-                    player_vecs[p_idx] = _interpolate_value(p_val, a_val, alpha);
+                    player_vecs[p_idx] = _interpolate_value(p_val, a_val, alpha, transform_channel);
                 } else if (mode == AGENT_MATCH_AGENT_TO_PLAYER) {
-                    agent_vecs[idx] = _interpolate_value(a_val, p_val, alpha);
+                    agent_vecs[idx] = _interpolate_value(a_val, p_val, alpha, transform_channel);
                 } else if (mode == AGENT_MATCH_AVERAGE) {
-                    const T mid        = _interpolate_value(p_val, a_val, 0.5f);
-                    player_vecs[p_idx] = _interpolate_value(p_val, mid, alpha);
-                    agent_vecs[idx]    = _interpolate_value(a_val, mid, alpha);
+                    const T mid        = _interpolate_value(p_val, a_val, 0.5f, transform_channel);
+                    player_vecs[p_idx] = _interpolate_value(p_val, mid, alpha, transform_channel);
+                    agent_vecs[idx]    = _interpolate_value(a_val, mid, alpha, transform_channel);
                 }
 
                 if (comp_flags && idx < cmp_cap) {
@@ -360,8 +368,21 @@ private:
     #else
         [[gnu::always_inline]]
     #endif
-    [[nodiscard]] static inline T _interpolate_value(const T& p_from, const T& p_to, float p_alpha) noexcept {
+    [[nodiscard]] static inline T _interpolate_value(
+        const T& p_from,
+        const T& p_to,
+        float p_alpha,
+        uint8_t p_channel = POSSESSION_CHANNEL_POSITION
+    ) noexcept {
         if constexpr (std::is_same_v<T, godot::Vector3>) {
+            if (p_channel == POSSESSION_CHANNEL_HEIGHT) {
+                // Blend only vertical height (Y) while preserving horizontal (X, Z) components
+                return godot::Vector3{
+                    p_from.x,
+                    p_from.y + (p_to.y - p_from.y) * p_alpha,
+                    p_from.z
+                };
+            }
             return godot::Vector3{
                 p_from.x + (p_to.x - p_from.x) * p_alpha,
                 p_from.y + (p_to.y - p_from.y) * p_alpha,

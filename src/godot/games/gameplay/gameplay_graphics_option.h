@@ -60,25 +60,6 @@ enum GraphicsEffectQuality : int32_t {
     EFFECT_ULTRA = 4
 };
 
-/**
- * DOD NOTE: GameplayGraphicsOption directly replaces the procedural GDScript logic in
- * the Godot TPS Demo's `settings.gd` and `menu.gd` (`[video]` and `[rendering]` sections)
- * with a native C++26 GameplayResource.
- *
- * Key architectural improvements over the stock TPS Demo `settings.gd`:
- * 1. Non-Destructive Shadow Toggling: Caches each `Light3D`'s original `shadow_enabled`
- *    state inside node metadata (`_ideam_orig_shadow_enabled`) before disabling shadows,
- *    fixing the TPS demo `FIXME` bug where re-enabling shadows in the menu failed to
- *    restore scene lights.
- * 2. Corrected SSAO Quality Dispatch: Fixes the inverted `ENV_SSAO_QUALITY_MEDIUM` vs.
- *    `ENV_SSAO_QUALITY_HIGH` branch in `settings.gd`.
- * 3. Hardware-Aware Upscaler Fallback: Automatically detects Metal rendering driver
- *    support (`is_metalfx_supported()`) and resolves `scale_filter` between MetalFX
- *    and FSR2 without manual UI branching.
- * 4. Dual-Section `user://settings.ini` Compatibility: Reads and writes both the
- *    unified `GameplayResource` section and the TPS demo's split `[video]` + `[rendering]`
- *    sections in `ConfigFile`.
- */
 class GameplayGraphicsOption : public GameplayResource {
     GDCLASS(GameplayGraphicsOption, GameplayResource)
 
@@ -118,6 +99,16 @@ private:
     // --- 5. LOD & Performance Budgets (Cascaded via GameplayRule) ---
     float mesh_lod_threshold = 1.0f;
     float debris_budget_multiplier = 1.0f;
+
+    // --- 6. Section 2.4 XR_Session_Manager Merger: OpenXR Configuration & Frame Pacing ---
+    bool xr_enabled = false;
+    int xr_maximum_refresh_rate = 90;
+    bool xr_foveation_enabled = true;
+    bool xr_passthrough_enabled = false;
+    bool xr_lock_physics_ticks_to_refresh_rate = true;
+
+    mutable godot::DisplayServer::VSyncMode _cached_original_vsync_mode = godot::DisplayServer::VSYNC_ENABLED;
+    mutable bool _has_cached_vsync_mode = false;
 
     // Internal scene traversal helpers for non-destructive shadow & GI toggling
     void _apply_shadow_and_gi_recursive(godot::Node *p_node) const;
@@ -205,6 +196,32 @@ public:
 
     void set_debris_budget_multiplier(float p_multiplier);
     float get_debris_budget_multiplier() const;
+
+    // --- 6. Section 2.4 OpenXR Session & Display Negotiation Setters / Getters ---
+    void set_xr_enabled(bool p_enabled);
+    bool get_xr_enabled() const;
+
+    void set_xr_maximum_refresh_rate(int p_rate);
+    int get_xr_maximum_refresh_rate() const;
+
+    void set_xr_foveation_enabled(bool p_enabled);
+    bool get_xr_foveation_enabled() const;
+
+    void set_xr_passthrough_enabled(bool p_enabled);
+    bool get_xr_passthrough_enabled() const;
+
+    void set_xr_lock_physics_ticks_to_refresh_rate(bool p_lock);
+    bool get_xr_lock_physics_ticks_to_refresh_rate() const;
+
+    godot::DisplayServer::VSyncMode get_cached_original_vsync_mode() const;
+
+    /**
+     * Negotiates OpenXR initialization, caches `original_vsync_mode` and sets `DisplayServer::VSYNC_DISABLED`,
+     * configures `Viewport::VRS_XR` foveation and `XR_ENV_BLEND_MODE_ALPHA_BLEND` passthrough, and negotiates
+     * HMD display refresh rate up to `xr_maximum_refresh_rate` while locking `Engine::physics_ticks_per_second`.
+     */
+    bool start_xr_session(godot::Viewport *p_viewport = nullptr) const;
+    void end_xr_session(godot::Viewport *p_viewport = nullptr) const;
 
     // --- Application, Rule Synthesis & Persistence ---
     void apply_graphics_option(const godot::Ref<GameplayGraphicsOption> &p_other);

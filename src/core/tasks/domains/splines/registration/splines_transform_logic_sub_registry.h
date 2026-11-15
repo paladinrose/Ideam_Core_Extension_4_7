@@ -18,6 +18,7 @@
 #include "../transform_logic/spline_vector_field_swirl_transform_logic.h"
 #include "../transform_logic/spline_1d_inverse_root_solve_transform_logic.h"
 #include "../transform_logic/spline_4d_color_gradient_map_transform_logic.h"
+#include "../transform_logic/spline_physics_rope_bridge_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -76,6 +77,7 @@ namespace {
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplineVectorFieldSwirl, C, S> { using Type = SplineVectorFieldSwirlTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::Spline1DInverseRootSolve, C, S> { using Type = Spline1DInverseRootSolveTransformLogic<C, S>; static constexpr bool is_valid = true; };
     template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::Spline4DColorGradientMap, C, S> { using Type = Spline4DColorGradientMapTransformLogic<C, S>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct SplinesTransformLogicResolver<SplinesTransformLogicID::SplinePhysicsRopeBridge, C, S> { using Type = SplinePhysicsRopeBridgeTransformLogic<C, S>; static constexpr bool is_valid = true; };
 
     template <SplinesTransformLogicID LogicID, typename C, typename S>
     struct SplinesTransformLogicKernelExtractor : SplinesTransformKernelExtractorImpl<SplinesTransformLogicResolver<LogicID, C, S>> {};

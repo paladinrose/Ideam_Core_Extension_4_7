@@ -21,6 +21,7 @@ enum class SplinesTransformLogicID : uint32_t {
     SplineVectorFieldSwirl,
     Spline1DInverseRootSolve,
     Spline4DColorGradientMap,
+    SplinePhysicsRopeBridge,
     Count
 };
 
