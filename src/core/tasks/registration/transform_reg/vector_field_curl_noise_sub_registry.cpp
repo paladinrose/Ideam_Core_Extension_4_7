@@ -5,6 +5,7 @@
 namespace ideam::core {
 
 // Explicitly instantiate the factory matrix for VectorFieldCurlNoise
-template struct TransformLogicSubRegistry<TransformLogicID::VectorFieldCurlNoise>;
+template struct TransformLogicSubRegistry<TransformLogicID::VectorFieldCurlNoise_Moore_R1>;
+template struct TransformLogicSubRegistry<TransformLogicID::VectorFieldCurlNoise_VonNeumann_R1>;
 
 } // namespace ideam::core

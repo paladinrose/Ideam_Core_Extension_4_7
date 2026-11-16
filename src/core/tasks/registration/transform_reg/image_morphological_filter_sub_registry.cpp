@@ -5,6 +5,12 @@
 namespace ideam::core {
 
 // Explicitly instantiate the factory matrix for ImageMorphologicalFilter
-template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_Moore_R1>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_Moore_R2>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_Moore_R3>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_VonNeumann_R1>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_VonNeumann_R2>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageMorphologicalFilter_VonNeumann_R3>;
+
 
 } // namespace ideam::core

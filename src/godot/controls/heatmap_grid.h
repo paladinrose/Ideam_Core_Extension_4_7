@@ -72,6 +72,8 @@ public:
     void clear_data();
     void resize_data(int p_size);
 
+    void set_grid_data(const uint8_t* p_bytes, int p_count, int p_columns = -1);
+
     virtual godot::Vector2 _get_minimum_size() const override;
     virtual godot::String _get_tooltip(const godot::Vector2& p_at_position) const override;
 };

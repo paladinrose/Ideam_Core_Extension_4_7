@@ -5,6 +5,7 @@
 namespace ideam::core {
 
 // Explicitly instantiate the factory matrix for ImageNormalFromHeightmap
-template struct TransformLogicSubRegistry<TransformLogicID::ImageNormalFromHeightmap>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageNormalFromHeightmap_Moore_R1>;
+template struct TransformLogicSubRegistry<TransformLogicID::ImageNormalFromHeightmap_VonNeumann_R1>;
 
 } // namespace ideam::core

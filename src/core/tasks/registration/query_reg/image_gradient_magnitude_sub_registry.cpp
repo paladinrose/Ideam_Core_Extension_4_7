@@ -5,6 +5,7 @@
 namespace ideam::core {
 
 // Explicitly instantiate the factory matrix for ImageGradientMagnitude
-template struct QueryLogicSubRegistry<QueryLogicID::ImageGradientMagnitude>;
+template struct QueryLogicSubRegistry<QueryLogicID::ImageGradientMagnitude_Moore_R1>;
+template struct QueryLogicSubRegistry<QueryLogicID::ImageGradientMagnitude_VonNeumann_R1>;
 
 } // namespace ideam::core

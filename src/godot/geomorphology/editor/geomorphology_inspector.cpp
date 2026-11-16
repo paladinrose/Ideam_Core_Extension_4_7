@@ -4,7 +4,7 @@
 #include "godot/geomorphology/ui/stratigraphic_column_inspector_control.h"
 
 #include <godot_cpp/classes/button.hpp>
-#include <godot_cpp/classes/callable.hpp>
+#include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/classes/h_box_container.hpp>
 #include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/option_button.hpp>

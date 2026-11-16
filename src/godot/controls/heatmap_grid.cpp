@@ -10,6 +10,8 @@ void HeatmapGrid::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_data", "data"), &HeatmapGrid::set_data);
     ClassDB::bind_method(D_METHOD("get_data"), &HeatmapGrid::get_data);
 
+    ClassDB::bind_method(D_METHOD("set_grid_data", "bytes", "count", "columns"), &HeatmapGrid::set_grid_data);
+    
     ClassDB::bind_method(D_METHOD("set_gradient", "gradient"), &HeatmapGrid::set_gradient);
     ClassDB::bind_method(D_METHOD("get_gradient"), &HeatmapGrid::get_gradient);
 
@@ -282,6 +284,30 @@ void HeatmapGrid::set_data(const PackedByteArray& p_data) {
     queue_redraw();
 }
 PackedByteArray HeatmapGrid::get_data() const { return data; }
+
+void HeatmapGrid::set_grid_data(const uint8_t* p_bytes, int p_count, int p_columns) {
+    bool min_size_changed = false;
+    if (p_columns > 0 && columns != p_columns) {
+        columns = p_columns;
+        min_size_changed = true;
+    }
+    if (!p_bytes || p_count <= 0) {
+        if (!data.is_empty()) {
+            data.clear();
+            min_size_changed = true;
+        }
+    } else {
+        if (data.size() != p_count) {
+            data.resize(p_count);
+            min_size_changed = true;
+        }
+        memcpy(data.ptrw(), p_bytes, static_cast<size_t>(p_count));
+    }
+    if (min_size_changed) {
+        update_minimum_size();
+    }
+    queue_redraw();
+}
 
 void HeatmapGrid::set_gradient(const Ref<Gradient>& p_gradient) {
     if (color_gradient == p_gradient) return;
