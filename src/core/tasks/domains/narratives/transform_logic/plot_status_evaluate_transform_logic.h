@@ -378,7 +378,6 @@ struct alignas(64) PlotStatusEvaluateTransformLogic {
                     }
 
                     const int8_t inc_st = read_inc_status(static_cast<int64_t>(pev.incident_id));
-                    shouldBreak_label:
                     should_break = false;
                     (void)0;
 

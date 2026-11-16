@@ -9,14 +9,14 @@
 
 #include "godot/tasks/domains/ecology/data_oriented_ecology.h"
 
-namespace ideam::tasks::ecology {
+namespace ideam::godot_ext {
 
 class EcologyTaskHost : public godot::Node {
     GDCLASS(EcologyTaskHost, godot::Node)
 
 private:
     godot::Ref<DataOrientedEcology> dod_ecology_;
-    godot::Ref<ideam::ecology::EcologyBiosphereResource> biosphere_resource_;
+    godot::Ref<EcologyBiosphereResource> biosphere_resource_;
     bool auto_step_in_process_ = false;
     float dt_years_per_step_ = 0.25f;
 
@@ -30,8 +30,8 @@ public:
     void _ready() override;
     void _process(double p_delta) override;
 
-    void set_biosphere_resource(const godot::Ref<ideam::ecology::EcologyBiosphereResource>& p_biosphere);
-    godot::Ref<ideam::ecology::EcologyBiosphereResource> get_biosphere_resource() const;
+    void set_biosphere_resource(const godot::Ref<EcologyBiosphereResource>& p_biosphere);
+    godot::Ref<EcologyBiosphereResource> get_biosphere_resource() const;
 
     godot::Ref<DataOrientedEcology> get_dod_ecology() const;
 
@@ -44,4 +44,4 @@ public:
     void step_once();
 };
 
-} // namespace ideam::tasks::ecology
+} // namespace ideam::godot_ext

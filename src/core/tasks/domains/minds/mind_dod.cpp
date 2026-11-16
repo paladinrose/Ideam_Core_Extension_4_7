@@ -196,7 +196,7 @@ void MindDOD::populate_task_buffer_dictionary(godot::Dictionary &r_props, bool p
 GrantPartPOD MindDOD::make_buffer_requirement(uint32_t p_buffer_id, BufferAccessMode p_access) const noexcept {
     if (memory_manager_ && p_buffer_id != INVALID_ID) {
         if (const MemoryBufferPOD *buf = memory_manager_->get_buffer(p_buffer_id)) {
-            return make_grant_requirement(p_buffer_id, p_access, buf->element_stride, buf->max_elements, buf->default_selection_mode);
+            return make_grant_requirement(p_buffer_id, p_access, buf->element_stride, buf->max_elements, ((buf->layout_type == BufferLayoutType::SPARSE_SET) ? SelectionMode::SPARSE : SelectionMode::RANGE));
         }
     }
     return make_grant_requirement(p_buffer_id, p_access, sizeof(uint32_t), 0);

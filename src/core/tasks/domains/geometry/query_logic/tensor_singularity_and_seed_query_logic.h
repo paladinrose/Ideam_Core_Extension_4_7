@@ -15,6 +15,8 @@
 #include "../../../query_logic/query_logic_traits.h"
 #include "../../../../geometry/tensor_field_2d.h"
 #include "../../../../memory/memory_common.h"
+#include "../../../../memory/views/single_element_view.h"
+#include "../../../../memory/views/strategies.h"
 
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
@@ -32,17 +34,22 @@ namespace ideam::core {
 
 template <typename T = float>
 struct alignas(64) TensorSingularityAndSeedQueryLogic {
-    using ValueType = T;
+    using ValueType       = T;
+    using DefaultStrategy = FlatStrategy;
+    using DefaultView     = SingleElementView<T, DefaultStrategy>;
 
     // --- Compile-Time DOD Traits ---
     static constexpr std::string_view display_name        = "Tensor Field: Singularity & Streamline Seed Filter";
     static constexpr std::string_view ui_category         = "Geometry/TensorField";
-    static constexpr ViewCapability required_capabilities = ViewCapability::READ_ONLY;
-    static constexpr ViewLayout compatible_layouts        = ViewLayout::SINGLE_ELEMENT | ViewLayout::SPARSE_SET;
+    static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS;
+    static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR | BufferLayoutType::ANY_SPATIAL;
     static constexpr DataType required_types              = DataType::FLOAT32 | DataType::INT32 | DataType::BYTE;
-    static constexpr size_t required_dimensions           = 0;
+    static constexpr size_t dimensions                    = 0;
+    static constexpr bool requires_static_kernel          = false;
+    static constexpr size_t kernel_size                   = 0;
     static constexpr bool supports_cull                   = true;
     static constexpr bool supports_addition               = true;
+    static constexpr size_t transient_workspace_bytes     = 0;
 
     // --- 64-Byte Cache-Line Layout (16 x 4B = 64 Bytes) ---
     uint32_t target_buffer_id                = INVALID_ID; // 4B [0..3]   (GEOM_TENSOR_STREAMLINE_SEED_POD)
@@ -156,16 +163,40 @@ struct alignas(64) TensorSingularityAndSeedQueryLogic {
             ? std::min<size_t>(static_cast<size_t>(seed_buf->current_count), seeds.size())
             : seeds.size();
 
-        for (size_t i = 0; i < active_seeds; ++i) {
-            const TensorStreamlineSeedPod &s = seeds[i];
-            const bool valid = (s.active != 0u) && (s.priority >= min_seed_priority);
-            if constexpr (Op == QueryOp::ADD) {
-                if (valid) {
-                    r_selection.add_index(static_cast<int64_t>(i));
+        const uint32_t tgt_id = get_target_buffer_id();
+        auto eval_seed = [&](int64_t idx) noexcept -> bool {
+            if (idx < 0 || static_cast<size_t>(idx) >= active_seeds) return false;
+            const TensorStreamlineSeedPod &s = seeds[static_cast<size_t>(idx)];
+            return (s.active != 0u) && (s.priority >= min_seed_priority);
+        };
+
+        if constexpr (Op == QueryOp::CULL) {
+            if (r_selection.mode == SelectionMode::DENSE && r_selection.data.bitset) {
+                uint64_t *bitset = r_selection.data.bitset;
+                for (int64_t i = 0; i < r_selection.capacity; ++i) {
+                    if (bitset[i >> 6] & (1ULL << (i & 63))) {
+                        if (!eval_seed(i)) {
+                            bitset[i >> 6] &= ~(1ULL << (i & 63));
+                            --r_selection.element_count;
+                        }
+                    }
                 }
-            } else {
-                if (!valid) {
-                    r_selection.remove_index(static_cast<int64_t>(i));
+            } else if (r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices) {
+                int64_t write_ptr = 0;
+                int64_t *indices  = r_selection.data.indices;
+                for (int64_t i = 0; i < r_selection.element_count; ++i) {
+                    const int64_t idx = indices[i];
+                    if (eval_seed(idx)) {
+                        indices[write_ptr++] = idx;
+                    }
+                }
+                r_selection.element_count = write_ptr;
+            }
+        } else if constexpr (Op == QueryOp::ADD) {
+            const int64_t cap = std::min<int64_t>(r_selection.capacity, static_cast<int64_t>(active_seeds));
+            for (int64_t i = 0; i < cap; ++i) {
+                if (eval_seed(i)) {
+                    p_context.queue_selection_command(tgt_id, i);
                 }
             }
         }

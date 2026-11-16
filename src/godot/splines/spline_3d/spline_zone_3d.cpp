@@ -297,7 +297,7 @@ void SplineCorridorGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
 
             // 4 longitudinal corridor rails (+X, -X, +Y, -Y)
             for (int rail = 0; rail < 4; ++rail) {
-                const float ang = static_cast<float>(rail) * (Godot::Math::PI * 0.5f);
+                const float ang = static_cast<float>(rail) * (3.141592653589793f * 0.5f);
                 const Vector3 d0 = Vector3(std::cos(ang) * r, std::sin(ang) * r, 0.0f);
                 const Vector3 d1 = Vector3(std::cos(ang) * r_next, std::sin(ang) * r_next, 0.0f);
                 lines.push_back(xf.xform(d0));
@@ -308,8 +308,8 @@ void SplineCorridorGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
         if (i % 2 == 0) {
             constexpr int RING_SEG = 16;
             for (int k = 0; k < RING_SEG; ++k) {
-                const float a0 = (static_cast<float>(k) / static_cast<float>(RING_SEG)) * Godot::Math::TAU;
-                const float a1 = (static_cast<float>(k + 1) / static_cast<float>(RING_SEG)) * Godot::Math::TAU;
+                const float a0 = (static_cast<float>(k) / static_cast<float>(RING_SEG)) * 6.283185307179586f;
+                const float a1 = (static_cast<float>(k + 1) / static_cast<float>(RING_SEG)) * 6.283185307179586f;
                 lines.push_back(xf.xform(Vector3(std::cos(a0) * r, std::sin(a0) * r, 0.0f)));
                 lines.push_back(xf.xform(Vector3(std::cos(a1) * r, std::sin(a1) * r, 0.0f)));
             }

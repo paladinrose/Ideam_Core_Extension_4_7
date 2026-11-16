@@ -44,7 +44,7 @@ struct alignas(64) PhysicsCollisionLayerAndIslandMetadataLogic {
     static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS;
     static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR;
     static constexpr DataType required_types              =
-        DataType::UINT32 | DataType::UINT64 | DataType::VECTOR3;
+        DataType::INT32 | DataType::INT64 | DataType::VECTOR3;
 
     // --- Explicit Spatial & Kernel Contracts ---
     static constexpr size_t dimensions           = 0;

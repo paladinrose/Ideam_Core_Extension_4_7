@@ -94,6 +94,7 @@ public:
 
     void remove_point(int p_index) override;
     void clear() override;
+    void clear_points() { clear(); }
 
     void set_point_use_back_handle(int p_index, bool p_enable) override;
     [[nodiscard]] bool get_point_use_back_handle(int p_index) const override;
@@ -201,6 +202,9 @@ public:
     // ========================================================================
 
     [[nodiscard]] godot::Vector2 sample(real_t p_percent, bool p_weighted = true) const;
+    [[nodiscard]] godot::Vector2 sample_normalized(real_t p_percent, bool p_weighted = true) const {
+        return sample(p_percent, p_weighted);
+    }
     [[nodiscard]] godot::Vector2 get_point(real_t p_percent, bool p_weighted = true) const {
         return sample(p_percent, p_weighted);
     }

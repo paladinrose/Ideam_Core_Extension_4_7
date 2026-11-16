@@ -496,105 +496,105 @@ inline constexpr std::array<MindBufferSpec, MIND_BUFFER_SLOT_COUNT> MIND_BUFFER_
         MindBufferSlot::MIND_BELIEF_POD,
         "agent_belief_pod_buffer_id",
         {"mind_belief_pod_buffer_id", "belief_pod_buffer_id", ""},
-        sizeof(BeliefPod), BufferLayoutType::AOS, SelectionMode::SPARSE_SET,
+        sizeof(BeliefPod), BufferLayoutType::AOS, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_CATALOGUE_ENTRY_POD,
         "agent_belief_catalogue_entry_buffer_id",
         {"mind_belief_catalogue_entry_pod_buffer_id", "reference_catalogue_buffer_id", ""},
-        sizeof(BeliefCatalogueEntryPod), BufferLayoutType::AOS, SelectionMode::SPARSE_SET,
+        sizeof(BeliefCatalogueEntryPod), BufferLayoutType::AOS, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_CATALOGUED_FACT_ID,
         "belief_catalogued_fact_id_buffer_id",
         {"mind_belief_catalogued_fact_id_buffer_id", "belief_fact_id_buffer_id", ""},
-        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_TRUE_FACT_ID,
         "belief_true_fact_id_buffer_id",
         {"mind_belief_true_fact_id_buffer_id", "akashic_referenced_fact_id_buffer_id", ""},
-        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_BELIEVED_TOME_ID,
         "belief_believed_tome_id_buffer_id",
         {"mind_belief_believed_tome_id_buffer_id", "", ""},
-        sizeof(uint16_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint16_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_TRUE_TOME_ID,
         "belief_true_tome_id_buffer_id",
         {"mind_belief_true_tome_id_buffer_id", "", ""},
-        sizeof(uint16_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint16_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_BELIEVED_VALUE,
         "belief_believed_value_buffer_id",
         {"mind_belief_believed_value_buffer_id", "curr_believed_value_buffer_id", ""},
-        sizeof(int64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(int64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_PREV_BELIEVED_VALUE,
         "belief_prev_believed_value_buffer_id",
         {"mind_belief_prev_believed_value_buffer_id", "prev_believed_value_buffer_id", ""},
-        sizeof(int64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(int64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_CONFIDENCE,
         "belief_confidence_buffer_id",
         {"mind_belief_confidence_buffer_id", "inductive_confidence_buffer_id", ""},
-        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_ACCEPTANCE,
         "belief_acceptance_buffer_id",
         {"mind_belief_acceptance_buffer_id", "abductive_acceptance_buffer_id", ""},
-        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_EMOTIONAL_CHARGE,
         "belief_emotional_charge_buffer_id",
         {"mind_belief_emotional_charge_buffer_id", "", ""},
-        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_INTUITION_CHARGE,
         "belief_intuition_charge_buffer_id",
         {"mind_belief_intuition_charge_buffer_id", "intuition_charge_buffer_id", ""},
-        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_SOURCE_AGENT_ID,
         "belief_source_agent_id_buffer_id",
         {"mind_belief_source_agent_id_buffer_id", "", ""},
-        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_STIMULUS_PRIORITY,
         "belief_stimulus_priority_buffer_id",
         {"mind_belief_stimulus_priority_buffer_id", "stimulus_priority_buffer_id", ""},
-        sizeof(uint8_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint8_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
     {
         MindBufferSlot::MIND_BELIEF_FLAGS,
         "belief_flags_buffer_id",
         {"mind_belief_flags_buffer_id", "", ""},
-        sizeof(uint8_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint8_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         MindCapacityKind::BELIEFS, MindTableGroup::AGENT_BELIEF_SPARSE_TABLE
     },
 

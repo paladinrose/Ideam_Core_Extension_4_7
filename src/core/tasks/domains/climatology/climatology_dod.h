@@ -19,26 +19,26 @@
 #include "core/tasks/domains/climatology/transform_logic/geostrophic_and_orographic_wind_transform_logic.h"
 #include "core/tasks/domains/climatology/transform_logic/solar_radiative_and_synoptic_pressure_transform_logic.h"
 #include "core/tasks/domains/climatology/transform_logic/supercell_mesocyclone_and_tornado_vortex_transform_logic.h"
-#include "core/tasks/task_graph.h"
+#include "core/tasks/task_graph_dod.h"
 
 #include <cstdint>
 #include <span>
 
-namespace ideam::tasks::climatology {
+namespace ideam::core {
 
 class ClimatologyDOD {
 public:
-    using ClimatologySeedProfilePOD          = ideam::climatology::ClimatologySeedProfilePOD;
-    using AtmosphericColumnCellPOD           = ideam::climatology::AtmosphericColumnCellPOD;
-    using MoistureAndCloudCellPOD            = ideam::climatology::MoistureAndCloudCellPOD;
-    using TornadoSupercellVortexPOD          = ideam::climatology::TornadoSupercellVortexPOD;
-    using ClimatologyHazardAndBiomeSamplePOD = ideam::climatology::ClimatologyHazardAndBiomeSamplePOD;
+    using ClimatologySeedProfilePOD          = ideam::core::ClimatologySeedProfilePOD;
+    using AtmosphericColumnCellPOD           = ideam::core::AtmosphericColumnCellPOD;
+    using MoistureAndCloudCellPOD            = ideam::core::MoistureAndCloudCellPOD;
+    using TornadoSupercellVortexPOD          = ideam::core::TornadoSupercellVortexPOD;
+    using ClimatologyHazardAndBiomeSamplePOD = ideam::core::ClimatologyHazardAndBiomeSamplePOD;
 
     /**
      * @brief Ensures the Climatology domain is registered with IdeamTaskRegistry.
      */
     static void build_climatology_pipeline(
-        TaskGraph& graph,
+        TaskGraphDOD& graph,
         uint32_t stage_mask = static_cast<uint32_t>(ClimatologyStageFlags::ALL_STAGES));
 
     /**
@@ -65,4 +65,4 @@ public:
         uint32_t stage_mask = static_cast<uint32_t>(ClimatologyStageFlags::ALL_STAGES)) noexcept;
 };
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::core

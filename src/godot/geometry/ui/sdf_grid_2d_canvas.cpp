@@ -399,7 +399,7 @@ void SDFGrid2DCanvas::_draw_plot_foreground_overlay(const godot::Rect2 &p_plot) 
                 p_scr,
                 px_rad,
                 0.0f,
-                Godot::Math::TAU,
+                6.283185307179586f,
                 32,
                 (brush_tool_ == SDF_TOOL_CARVE_ERASE)
                     ? Color(0.98f, 0.42f, 0.42f, 0.9f)

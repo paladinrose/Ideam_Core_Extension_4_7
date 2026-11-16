@@ -589,6 +589,7 @@ void GeometryCanvas2DBase::_draw() {
     draw_rect(plot, plot_bg_color, true);
 
     _draw_grid_and_axes(plot);
+    _draw_geometry_canvas();
 
     if (_get_canvas_point_count() <= 0 && !_has_non_point_content()) {
         draw_rect(plot, Color(0.28f, 0.32f, 0.38f, 1.0f), false, 1.0f);

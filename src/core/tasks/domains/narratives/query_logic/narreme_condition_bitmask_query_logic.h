@@ -442,7 +442,7 @@ struct alignas(64) NarremeConditionBitmaskQueryLogic {
                 if (!crow_raw || cid == INVALID_ID || static_cast<int64_t>(cid) >= crow_cap) return false;
                 if (crow_stride == sizeof(ConditionEvaluationRowPOD)) {
                     const auto& row = reinterpret_cast<const ConditionEvaluationRowPOD*>(crow_raw)[cid];
-                    r_status = row.condition_status;
+                    r_status = row.current_status;
                     r_dirty  = row.status_dirty_flag;
                     r_type   = row.condition_type;
                 } else if (crow_stride == sizeof(int32_t)) {
@@ -476,7 +476,7 @@ struct alignas(64) NarremeConditionBitmaskQueryLogic {
                     if (crow_raw && idx >= 0 && idx < crow_cap) {
                         if (crow_stride == sizeof(ConditionEvaluationRowPOD)) {
                             const auto& row = reinterpret_cast<const ConditionEvaluationRowPOD*>(crow_raw)[idx];
-                            cst  = row.condition_status;
+                            cst  = row.current_status;
                             cflg = row.status_dirty_flag;
                             ctyp = row.condition_type;
                         } else if (crow_stride == sizeof(int32_t)) {

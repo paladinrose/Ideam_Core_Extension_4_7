@@ -9,7 +9,7 @@
 #include "core/ecology/ecology_types.h"
 #include <cstdint>
 
-namespace ideam::tasks::ecology {
+namespace ideam::core {
 
 /**
  * @enum EcologyBufferSlot
@@ -39,4 +39,4 @@ enum class EcologyStageFlags : uint32_t {
     ALL_STAGES                    = 0x3Fu
 };
 
-} // namespace ideam::tasks::ecology
+} // namespace ideam::core

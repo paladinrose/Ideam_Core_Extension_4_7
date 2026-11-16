@@ -115,9 +115,9 @@ struct alignas(64) ShallowWaterPipeHydrologyTransformLogic {
             return;
         }
 
-        const auto *seed   = reinterpret_cast<const ideam::geomorphology::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        const auto *strata = reinterpret_cast<const ideam::geomorphology::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
-        auto *hydro        = reinterpret_cast<ideam::geomorphology::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
+        const auto *seed   = reinterpret_cast<const ideam::core::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        const auto *strata = reinterpret_cast<const ideam::core::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
+        auto *hydro        = reinterpret_cast<ideam::core::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
         const auto *precip = (precip_part && precip_part->raw_base_ptr)
             ? reinterpret_cast<const float *>(precip_part->raw_base_ptr)
             : nullptr;
@@ -127,13 +127,13 @@ struct alignas(64) ShallowWaterPipeHydrologyTransformLogic {
         const float sub_dt = dt_seconds / static_cast<float>(n_sub);
 
         for (uint32_t s = 0; s < n_sub; ++s) {
-            ideam::geomorphology::GeomorphologyKernelMath::step_shallow_water_pipe_hydrology(
+            ideam::core::GeomorphologyKernelMath::step_shallow_water_pipe_hydrology(
                 *seed,
-                std::span<const ideam::geomorphology::StratigraphicColumnPOD>(strata, n),
+                std::span<const ideam::core::StratigraphicColumnPOD>(strata, n),
                 precip ? std::span<const float>(precip, n) : std::span<const float>{},
                 uniform_precipitation_rate_mps,
                 sub_dt,
-                std::span<ideam::geomorphology::HydrologyCellStatePOD>(hydro, n));
+                std::span<ideam::core::HydrologyCellStatePOD>(hydro, n));
         }
     }
 

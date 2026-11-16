@@ -1,6 +1,6 @@
 #include "godot/ecology/ideam_ecology_plugin.h"
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 void IdeamEcologyPlugin::_bind_methods() {
     using namespace godot;
@@ -22,4 +22,4 @@ void IdeamEcologyPlugin::_exit_tree() {
     }
 }
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

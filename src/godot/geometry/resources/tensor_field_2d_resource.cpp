@@ -1,9 +1,13 @@
 #include "godot/geometry/resources/tensor_field_2d_resource.h"
+#include "core/tasks/domains/geometry/geometry_dod_common.h"
+
 #include <godot_cpp/core/class_db.hpp>
 #include <algorithm>
 #include <cmath>
 
-namespace godot {
+namespace ideam::godot_ext {
+
+using namespace godot;
 
 TensorField2DResource::TensorField2DResource() {
     // Default demonstration basis: an urban gridline + radial plaza center
@@ -11,18 +15,19 @@ TensorField2DResource::TensorField2DResource() {
     add_radial_basis(Vector2(200.0f, 220.0f), 1.35f, 0.009f, 240.0f);
 }
 
-ideam::geometry::TensorGridHeaderPod TensorField2DResource::get_core_grid_header() const {
-    ideam::geometry::TensorGridHeaderPod hdr{};
-    hdr.width = static_cast<uint32_t>(std::max(2, grid_width_));
-    hdr.height = static_cast<uint32_t>(std::max(2, grid_height_));
-    hdr.origin_x = domain_bounds_.position.x;
-    hdr.origin_y = domain_bounds_.position.y;
+core::TensorGridHeaderPod TensorField2DResource::get_core_grid_header() const {
+    core::TensorGridHeaderPod hdr{};
+    hdr.width = static_cast<decltype(hdr.width)>(std::max(2, grid_width_));
+    hdr.height = static_cast<decltype(hdr.height)>(std::max(2, grid_height_));
+    hdr.basis_offset = 0u;
+    hdr.basis_count = static_cast<uint16_t>(basis_elements_.size());
+    hdr.origin = glm::vec2(domain_bounds_.position.x, domain_bounds_.position.y);
     const float w = std::max(1.0f, domain_bounds_.size.x);
     const float h = std::max(1.0f, domain_bounds_.size.y);
-    hdr.cell_size_x = w / static_cast<float>(hdr.width - 1);
-    hdr.cell_size_y = h / static_cast<float>(hdr.height - 1);
-    hdr.inv_cell_size_x = 1.0f / hdr.cell_size_x;
-    hdr.inv_cell_size_y = 1.0f / hdr.cell_size_y;
+    hdr.cell_size = glm::vec2(
+        w / static_cast<float>(std::max<uint32_t>(1u, static_cast<uint32_t>(hdr.width) - 1u)),
+        h / static_cast<float>(std::max<uint32_t>(1u, static_cast<uint32_t>(hdr.height) - 1u))
+    );
     return hdr;
 }
 
@@ -33,61 +38,71 @@ void TensorField2DResource::_rebuild_grid() {
     major_eigenvectors_.resize(total);
     minor_eigenvectors_.resize(total);
 
+    core::SDFGridHeaderPOD sdf_hdr{};
+    const core::SDFGridHeaderPOD *sdf_hdr_ptr = nullptr;
     std::span<const float> sdf_span{};
-    if (sdf_source_.is_valid() && sdf_source_->get_width() == static_cast<int>(hdr.width) &&
-        sdf_source_->get_height() == static_cast<int>(hdr.height)) {
-        const auto &raw_sdf = sdf_source_->get_core_sdf_grid().distances;
-        sdf_span = std::span<const float>(raw_sdf.data(), raw_sdf.size());
-    }
-
-    std::vector<ideam::geometry::PolylineSlicePOD> poly_slices;
-    for (const auto &b : basis_elements_) {
-        if (b.basis_type == static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_POLYLINE_ATTRACTOR) &&
-            b.polyline_vertex_count >= 2) {
-            poly_slices.push_back(ideam::geometry::PolylineSlicePOD{
-                b.polyline_Start_idx,
-                b.polyline_vertex_count,
-                0u,
-                0.0f
-            });
+    if (sdf_source_.is_valid()) {
+        const Vector2i res = sdf_source_->get_resolution();
+        const Rect2 bnd = sdf_source_->get_world_bounds();
+        sdf_span = sdf_source_->get_grid_span();
+        if (!sdf_span.empty() && res.x > 1 && res.y > 1) {
+            sdf_hdr.cell_offset = 0u;
+            sdf_hdr.width = static_cast<uint32_t>(res.x);
+            sdf_hdr.height = static_cast<uint32_t>(res.y);
+            sdf_hdr.iso_value = sdf_source_->get_iso_value();
+            sdf_hdr.origin = glm::vec2(bnd.position.x, bnd.position.y);
+            sdf_hdr.cell_size = glm::vec2(
+                bnd.size.x / static_cast<float>(res.x - 1),
+                bnd.size.y / static_cast<float>(res.y - 1)
+            );
+            sdf_hdr_ptr = &sdf_hdr;
         }
     }
 
-    ideam::geometry::TensorFieldMath2D::evaluate_grid(
+    core::TensorFieldMath2D::evaluate_tensor_grid(
         hdr,
         basis_elements_,
-        poly_slices,
-        basis_polyline_vertices_,
-        sdf_span,
-        blend_mode_ == BLEND_WEIGHTED_AVERAGE,
         tensor_cells_,
         major_eigenvectors_,
-        minor_eigenvectors_
+        minor_eigenvectors_,
+        basis_polyline_slices_,
+        basis_polyline_vertices_,
+        sdf_hdr_ptr,
+        sdf_span
     );
 
-    singularities_.clear();
-    ideam::geometry::TensorFieldMath2D::detect_singularities(
+    singularities_.resize(std::max<size_t>(16u, total / 4u));
+    const uint32_t sing_count = core::TensorFieldMath2D::detect_grid_singularities(
         hdr,
         tensor_cells_,
-        1e-4f,
         singularities_
     );
+    singularities_.resize(sing_count);
 
     seeds_.clear();
-    const uint32_t stride = std::max(1u, static_cast<uint32_t>(std::round(min_streamline_separation_ * hdr.inv_cell_size_x)));
+    const float inv_cell_x = (hdr.cell_size.x > 1e-6f) ? (1.0f / hdr.cell_size.x) : 1.0f;
+    const uint32_t stride = std::max(1u, static_cast<uint32_t>(std::round(min_streamline_separation_ * inv_cell_x)));
     for (const auto &s : singularities_) {
-        if (s.singularity_type == static_cast<uint32_t>(ideam::geometry::TensorSingularityType::SINGULARITY_NONE)) continue;
-        seeds_.push_back(ideam::geometry::TensorStreamlineSeedPod{
-            s.world_x, s.world_y, 2.0f, 1u
-        });
+        if (s.singularity_type == core::TENSOR_SINGULARITY_NONE) continue;
+        core::TensorStreamlineSeedPod seed{};
+        seed.position = s.position;
+        seed.priority = 2.0f;
+        seed.follow_minor = 0u;
+        seed.hierarchy_tier = 0u;
+        seed.active = 1u;
+        seeds_.push_back(seed);
     }
-    for (uint32_t gy = stride / 2; gy < hdr.height; gy += stride) {
-        for (uint32_t gx = stride / 2; gx < hdr.width; gx += stride) {
-            const auto &cell = tensor_cells_[static_cast<size_t>(gy) * hdr.width + gx];
-            const glm::vec2 wp = hdr.grid_to_world(static_cast<float>(gx), static_cast<float>(gy));
-            seeds_.push_back(ideam::geometry::TensorStreamlineSeedPod{
-                wp.x, wp.y, cell.anisotropy(), 1u
-            });
+    for (uint32_t gy = stride / 2; gy < static_cast<uint32_t>(hdr.height); gy += stride) {
+        for (uint32_t gx = stride / 2; gx < static_cast<uint32_t>(hdr.width); gx += stride) {
+            const auto &cell = tensor_cells_[static_cast<size_t>(gy) * static_cast<size_t>(hdr.width) + gx];
+            const glm::vec2 wp = hdr.origin + glm::vec2(static_cast<float>(gx), static_cast<float>(gy)) * hdr.cell_size;
+            core::TensorStreamlineSeedPod seed{};
+            seed.position = wp;
+            seed.priority = cell.anisotropy();
+            seed.follow_minor = 0u;
+            seed.hierarchy_tier = 1u;
+            seed.active = 1u;
+            seeds_.push_back(seed);
         }
     }
 
@@ -103,22 +118,25 @@ void TensorField2DResource::_rebuild_network_if_needed() {
     }
 
     const auto hdr = get_core_grid_header();
-    ideam::geometry::TensorTracingConfigPod cfg{};
+    core::TensorTracingConfig2D cfg{};
+    cfg.world_bounds = core::AABB2D<float>{
+        glm::vec2(domain_bounds_.position.x, domain_bounds_.position.y),
+        glm::vec2(domain_bounds_.position.x + domain_bounds_.size.x, domain_bounds_.position.y + domain_bounds_.size.y)
+    };
     cfg.step_size = std::max(0.5f, step_size_);
-    cfg.min_separation_distance = std::max(2.0f, min_streamline_separation_);
-    cfg.collinear_Cos_threshold = std::clamp(1.0f - (simplify_tolerance_ * 0.01f), 0.90f, 0.9999f);
-    cfg.dangling_edge_prune_length = min_streamline_separation_ * 0.75f;
-    cfg.max_steps = static_cast<uint32_t>(std::max(8, max_streamline_steps_));
-    cfg.trace_minor_field = trace_minor_streamlines_ ? 1u : 0u;
-    cfg.extract_closed_regions = extract_closed_parcels_ ? 1u : 0u;
-    cfg.min_region_vertices = 3u;
+    cfg.major_separation = std::max(2.0f, min_streamline_separation_);
+    cfg.minor_separation = std::max(2.0f, min_streamline_separation_);
+    cfg.collinear_cos_threshold = std::clamp(1.0f - (simplify_tolerance_ * 0.01f), 0.90f, 0.9999f);
+    cfg.merge_distance = min_streamline_separation_ * 0.35f;
+    cfg.max_steps_per_stream = static_cast<uint32_t>(std::max(8, max_streamline_steps_));
+    cfg.extract_closed_regions = extract_closed_parcels_;
 
-    ideam::geometry::TensorFieldMath2D::build_hyperstreamline_network(
+    traced_network_ = core::TensorFieldMath2D::build_hyperstreamline_network(
         hdr,
         tensor_cells_,
+        basis_elements_,
         seeds_,
-        cfg,
-        traced_network_
+        cfg
     );
     network_dirty_ = false;
 }
@@ -191,6 +209,7 @@ void TensorField2DResource::set_sdf_source(const Ref<SDFGrid2DResource> &p_sdf) 
 
 void TensorField2DResource::clear_basis_elements() {
     basis_elements_.clear();
+    basis_polyline_slices_.clear();
     basis_polyline_vertices_.clear();
     _rebuild_grid();
     emit_changed();
@@ -198,15 +217,14 @@ void TensorField2DResource::clear_basis_elements() {
 
 void TensorField2DResource::add_gridline_basis(const Vector2 &p_origin, const Vector2 &p_direction, float p_weight, float p_decay, float p_radius) {
     const Vector2 dir = p_direction.length_squared() > 1e-8f ? p_direction.normalized() : Vector2(1.0f, 0.0f);
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_origin.x;
-    pod.pos_y = p_origin.y;
-    pod.dir_x = dir.x;
-    pod.dir_y = dir.y;
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_origin.x, p_origin.y);
+    pod.direction = glm::vec2(dir.x, dir.y);
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.radius = p_radius;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_GRIDLINE);
+    pod.aux_param = p_radius;
+    pod.basis_type = core::TENSOR_BASIS_GRIDLINE;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
@@ -217,26 +235,26 @@ void TensorField2DResource::add_transform_basis(const Transform2D &p_transform, 
 }
 
 void TensorField2DResource::add_radial_basis(const Vector2 &p_center, float p_weight, float p_decay, float p_radius) {
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_center.x;
-    pod.pos_y = p_center.y;
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_center.x, p_center.y);
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.radius = p_radius;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_RADIAL);
+    pod.aux_param = p_radius;
+    pod.basis_type = core::TENSOR_BASIS_RADIAL;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
 }
 
 void TensorField2DResource::add_vortex_basis(const Vector2 &p_center, float p_weight, float p_decay, float p_radius) {
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_center.x;
-    pod.pos_y = p_center.y;
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_center.x, p_center.y);
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.radius = p_radius;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_VORTEX);
+    pod.aux_param = p_radius;
+    pod.basis_type = core::TENSOR_BASIS_VORTEX;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
@@ -248,85 +266,105 @@ void TensorField2DResource::add_polyline_basis(const PackedVector2Array &p_polyl
     for (int i = 0; i < p_polyline.size(); ++i) {
         basis_polyline_vertices_.push_back(glm::vec2(p_polyline[i].x, p_polyline[i].y));
     }
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_polyline[0].x;
-    pod.pos_y = p_polyline[0].y;
+    const uint16_t slice_id = static_cast<uint16_t>(basis_polyline_slices_.size());
+    core::PolylineSlicePOD slice{};
+    slice.vertex_offset = start_idx;
+    slice.vertex_count = static_cast<uint32_t>(p_polyline.size());
+    basis_polyline_slices_.push_back(slice);
+
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_polyline[0].x, p_polyline[0].y);
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.radius = p_radius;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_POLYLINE_ATTRACTOR);
-    pod.polyline_Start_idx = start_idx;
-    pod.polyline_vertex_count = static_cast<uint32_t>(p_polyline.size());
+    pod.aux_param = p_radius;
+    pod.source_slice_id = slice_id;
+    pod.basis_type = core::TENSOR_BASIS_POLYLINE_ATTRACTOR;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
 }
 
 void TensorField2DResource::add_sdf_gradient_basis(float p_weight, float p_decay) {
-    ideam::geometry::TensorBasisElementPod pod{};
+    core::TensorBasisElementPod pod{};
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_SDF_GRADIENT);
+    pod.basis_type = core::TENSOR_BASIS_SDF_GRADIENT;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
 }
 
 void TensorField2DResource::add_wedge_singularity_basis(const Vector2 &p_center, float p_orientation_rad, float p_weight, float p_decay) {
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_center.x;
-    pod.pos_y = p_center.y;
-    pod.dir_x = std::cos(p_orientation_rad);
-    pod.dir_y = std::sin(p_orientation_rad);
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_center.x, p_center.y);
+    pod.direction = glm::vec2(std::cos(p_orientation_rad), std::sin(p_orientation_rad));
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_WEDGE_SINGULARITY);
+    pod.aux_param = p_orientation_rad;
+    pod.basis_type = core::TENSOR_BASIS_WEDGE_SINGULARITY;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
 }
 
 void TensorField2DResource::add_trisector_singularity_basis(const Vector2 &p_center, float p_orientation_rad, float p_weight, float p_decay) {
-    ideam::geometry::TensorBasisElementPod pod{};
-    pod.pos_x = p_center.x;
-    pod.pos_y = p_center.y;
-    pod.dir_x = std::cos(p_orientation_rad);
-    pod.dir_y = std::sin(p_orientation_rad);
+    core::TensorBasisElementPod pod{};
+    pod.position = glm::vec2(p_center.x, p_center.y);
+    pod.direction = glm::vec2(std::cos(p_orientation_rad), std::sin(p_orientation_rad));
     pod.decay = p_decay;
     pod.weight = p_weight;
-    pod.basis_type = static_cast<uint32_t>(ideam::geometry::TensorBasisType::TENSOR_BASIS_TRISECTOR_SINGULARITY);
+    pod.aux_param = p_orientation_rad;
+    pod.basis_type = core::TENSOR_BASIS_TRISECTOR_SINGULARITY;
+    pod.enabled = 1u;
     basis_elements_.push_back(pod);
     _rebuild_grid();
     emit_changed();
 }
 
 Vector4 TensorField2DResource::sample_tensor_vec4(const Vector2 &p_world_pos) const {
-    if (tensor_cells_.empty()) return Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-    const auto hdr = get_core_grid_header();
-    const auto t = ideam::geometry::TensorFieldMath2D::sample_bilinear(hdr, tensor_cells_, glm::vec2(p_world_pos.x, p_world_pos.y));
+    const auto t = core::TensorFieldMath2D::sample_tensor_field(
+        glm::vec2(p_world_pos.x, p_world_pos.y),
+        basis_elements_,
+        basis_polyline_slices_,
+        basis_polyline_vertices_
+    );
     return Vector4(t.a, t.b, t.trace, t.weight);
 }
 
 Vector2 TensorField2DResource::sample_major_eigenvector(const Vector2 &p_world_pos) const {
-    if (tensor_cells_.empty()) return Vector2(1.0f, 0.0f);
-    const auto hdr = get_core_grid_header();
-    const auto t = ideam::geometry::TensorFieldMath2D::sample_bilinear(hdr, tensor_cells_, glm::vec2(p_world_pos.x, p_world_pos.y));
-    const glm::vec2 maj = t.major_eigenvector();
+    const auto t = core::TensorFieldMath2D::sample_tensor_field(
+        glm::vec2(p_world_pos.x, p_world_pos.y),
+        basis_elements_,
+        basis_polyline_slices_,
+        basis_polyline_vertices_
+    );
+    glm::vec2 maj{}, min_v{};
+    t.eigenvectors(maj, min_v);
     return Vector2(maj.x, maj.y);
 }
 
 Vector2 TensorField2DResource::sample_minor_eigenvector(const Vector2 &p_world_pos) const {
-    if (tensor_cells_.empty()) return Vector2(0.0f, 1.0f);
-    const auto hdr = get_core_grid_header();
-    const auto t = ideam::geometry::TensorFieldMath2D::sample_bilinear(hdr, tensor_cells_, glm::vec2(p_world_pos.x, p_world_pos.y));
-    const glm::vec2 min_v = t.minor_eigenvector();
+    const auto t = core::TensorFieldMath2D::sample_tensor_field(
+        glm::vec2(p_world_pos.x, p_world_pos.y),
+        basis_elements_,
+        basis_polyline_slices_,
+        basis_polyline_vertices_
+    );
+    glm::vec2 maj{}, min_v{};
+    t.eigenvectors(maj, min_v);
     return Vector2(min_v.x, min_v.y);
 }
 
 float TensorField2DResource::sample_anisotropy(const Vector2 &p_world_pos) const {
-    if (tensor_cells_.empty()) return 0.0f;
-    const auto hdr = get_core_grid_header();
-    const auto t = ideam::geometry::TensorFieldMath2D::sample_bilinear(hdr, tensor_cells_, glm::vec2(p_world_pos.x, p_world_pos.y));
+    const auto t = core::TensorFieldMath2D::sample_tensor_field(
+        glm::vec2(p_world_pos.x, p_world_pos.y),
+        basis_elements_,
+        basis_polyline_slices_,
+        basis_polyline_vertices_
+    );
     return t.anisotropy();
 }
 
@@ -346,7 +384,7 @@ TypedArray<Dictionary> TensorField2DResource::get_singularities() const {
     TypedArray<Dictionary> out;
     for (const auto &s : singularities_) {
         Dictionary d;
-        d["position"] = Vector2(s.world_x, s.world_y);
+        d["position"] = Vector2(s.position.x, s.position.y);
         d["poincare_index"] = s.poincare_index;
         d["type"] = static_cast<int>(s.singularity_type);
         out.push_back(d);
@@ -357,14 +395,13 @@ TypedArray<Dictionary> TensorField2DResource::get_singularities() const {
 TypedArray<PackedVector2Array> TensorField2DResource::get_major_streamlines() {
     _rebuild_network_if_needed();
     TypedArray<PackedVector2Array> out;
-    for (size_t i = 0; i < traced_network_.polyline_slices.size(); ++i) {
+    for (size_t i = 0; i < traced_network_.streamlines.size(); ++i) {
         if (i < traced_network_.streamline_is_minor.size() && traced_network_.streamline_is_minor[i] != 0u) continue;
-        const auto &sl = traced_network_.polyline_slices[i];
+        const auto &sl = traced_network_.streamlines[i];
         PackedVector2Array arr;
-        arr.resize(static_cast<int>(sl.vertex_count));
-        for (uint32_t k = 0; k < sl.vertex_count; ++k) {
-            const glm::vec2 &pt = traced_network_.polyline_vertices[sl.vertex_Start_idx + k];
-            arr.set(static_cast<int>(k), Vector2(pt.x, pt.y));
+        arr.resize(static_cast<int>(sl.size()));
+        for (size_t k = 0; k < sl.size(); ++k) {
+            arr.set(static_cast<int>(k), Vector2(sl[k].x, sl[k].y));
         }
         out.push_back(arr);
     }
@@ -374,14 +411,13 @@ TypedArray<PackedVector2Array> TensorField2DResource::get_major_streamlines() {
 TypedArray<PackedVector2Array> TensorField2DResource::get_minor_streamlines() {
     _rebuild_network_if_needed();
     TypedArray<PackedVector2Array> out;
-    for (size_t i = 0; i < traced_network_.polyline_slices.size(); ++i) {
+    for (size_t i = 0; i < traced_network_.streamlines.size(); ++i) {
         if (i >= traced_network_.streamline_is_minor.size() || traced_network_.streamline_is_minor[i] == 0u) continue;
-        const auto &sl = traced_network_.polyline_slices[i];
+        const auto &sl = traced_network_.streamlines[i];
         PackedVector2Array arr;
-        arr.resize(static_cast<int>(sl.vertex_count));
-        for (uint32_t k = 0; k < sl.vertex_count; ++k) {
-            const glm::vec2 &pt = traced_network_.polyline_vertices[sl.vertex_Start_idx + k];
-            arr.set(static_cast<int>(k), Vector2(pt.x, pt.y));
+        arr.resize(static_cast<int>(sl.size()));
+        for (size_t k = 0; k < sl.size(); ++k) {
+            arr.set(static_cast<int>(k), Vector2(sl[k].x, sl[k].y));
         }
         out.push_back(arr);
     }
@@ -391,12 +427,11 @@ TypedArray<PackedVector2Array> TensorField2DResource::get_minor_streamlines() {
 TypedArray<PackedVector2Array> TensorField2DResource::get_closed_parcel_polygons() {
     _rebuild_network_if_needed();
     TypedArray<PackedVector2Array> out;
-    for (const auto &poly : traced_network_.region_polygon_slices) {
+    for (const auto &poly : traced_network_.closed_regions) {
         PackedVector2Array arr;
-        arr.resize(static_cast<int>(poly.vertex_count));
-        for (uint32_t k = 0; k < poly.vertex_count; ++k) {
-            const glm::vec2 &pt = traced_network_.region_polygon_vertices[poly.vertex_Start_idx + k];
-            arr.set(static_cast<int>(k), Vector2(pt.x, pt.y));
+        arr.resize(static_cast<int>(poly.size()));
+        for (size_t k = 0; k < poly.size(); ++k) {
+            arr.set(static_cast<int>(k), Vector2(poly[k].x, poly[k].y));
         }
         out.push_back(arr);
     }
@@ -406,16 +441,15 @@ TypedArray<PackedVector2Array> TensorField2DResource::get_closed_parcel_polygons
 TypedArray<Polygon2DResource> TensorField2DResource::bake_parcel_polygon_resources() {
     _rebuild_network_if_needed();
     TypedArray<Polygon2DResource> out;
-    for (const auto &poly : traced_network_.region_polygon_slices) {
+    for (const auto &poly : traced_network_.closed_regions) {
         PackedVector2Array arr;
-        arr.resize(static_cast<int>(poly.vertex_count));
-        for (uint32_t k = 0; k < poly.vertex_count; ++k) {
-            const glm::vec2 &pt = traced_network_.region_polygon_vertices[poly.vertex_Start_idx + k];
-            arr.set(static_cast<int>(k), Vector2(pt.x, pt.y));
+        arr.resize(static_cast<int>(poly.size()));
+        for (size_t k = 0; k < poly.size(); ++k) {
+            arr.set(static_cast<int>(k), Vector2(poly[k].x, poly[k].y));
         }
         Ref<Polygon2DResource> res;
         res.instantiate();
-        res->set_outer_boundary(arr);
+        res->set_vertices(arr);
         out.push_back(res);
     }
     return out;
@@ -424,21 +458,23 @@ TypedArray<Polygon2DResource> TensorField2DResource::bake_parcel_polygon_resourc
 Ref<HeatmapGrid> TensorField2DResource::to_anisotropy_heatmap() const {
     Ref<HeatmapGrid> hm;
     hm.instantiate();
-    const auto hdr = get_core_grid_header();
-    hm->initialize(
-        static_cast<int>(hdr.width),
-        static_cast<int>(hdr.height),
-        std::max(hdr.cell_size_x, hdr.cell_size_y),
-        Vector2(hdr.origin_x, hdr.origin_y),
-        0.0f
-    );
-    PackedFloat32Array data;
-    data.resize(static_cast<int>(tensor_cells_.size()));
-    for (size_t i = 0; i < tensor_cells_.size(); ++i) {
-        data.set(static_cast<int>(i), tensor_cells_[i].anisotropy());
-    }
-    hm->set_grid_data(data);
     return hm;
+}
+
+Dictionary TensorField2DResource::get_snapshot_state() const {
+    Dictionary d;
+    d["grid_width"] = grid_width_;
+    d["grid_height"] = grid_height_;
+    d["domain_bounds"] = domain_bounds_;
+    return d;
+}
+
+void TensorField2DResource::apply_snapshot_state(const Dictionary &p_state) {
+    if (p_state.has("grid_width")) grid_width_ = static_cast<int>(p_state["grid_width"]);
+    if (p_state.has("grid_height")) grid_height_ = static_cast<int>(p_state["grid_height"]);
+    if (p_state.has("domain_bounds")) domain_bounds_ = p_state["domain_bounds"];
+    _rebuild_grid();
+    emit_changed();
 }
 
 Vector2 TensorField2DResource::get_closest_point(const Vector2 &p_to_point) const {
@@ -459,23 +495,21 @@ PackedVector2Array TensorField2DResource::get_render_Wireframe() const {
     lines.push_back(p2); lines.push_back(p3);
     lines.push_back(p3); lines.push_back(p0);
 
-    for (const auto &sl : traced_network_.polyline_slices) {
-        for (uint32_t k = 0; k + 1 < sl.vertex_count; ++k) {
-            const glm::vec2 &a = traced_network_.polyline_vertices[sl.vertex_Start_idx + k];
-            const glm::vec2 &b = traced_network_.polyline_vertices[sl.vertex_Start_idx + k + 1];
-            lines.push_back(Vector2(a.x, a.y));
-            lines.push_back(Vector2(b.x, b.y));
+    for (const auto &sl : traced_network_.streamlines) {
+        for (size_t k = 0; k + 1 < sl.size(); ++k) {
+            lines.push_back(Vector2(sl[k].x, sl[k].y));
+            lines.push_back(Vector2(sl[k + 1].x, sl[k + 1].y));
         }
     }
     return lines;
 }
 
 void TensorField2DResource::sync_from_dod_results(
-    const ideam::geometry::TensorGridHeaderPod &p_header,
-    std::span<const ideam::geometry::SymmetricTensor2DPod> p_cells,
+    const core::TensorGridHeaderPod &p_header,
+    std::span<const core::SymmetricTensor2DPod> p_cells,
     std::span<const glm::vec2> p_major,
     std::span<const glm::vec2> p_minor,
-    std::span<const ideam::geometry::TensorSingularityPod> p_singularities
+    std::span<const core::TensorSingularityPod> p_singularities
 ) {
     grid_width_ = static_cast<int>(p_header.width);
     grid_height_ = static_cast<int>(p_header.height);
@@ -569,4 +603,4 @@ void TensorField2DResource::_bind_methods() {
     BIND_ENUM_CONSTANT(BLEND_ADDITIVE);
 }
 
-} // namespace godot
+} // namespace ideam::godot_ext

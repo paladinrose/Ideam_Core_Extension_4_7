@@ -71,7 +71,8 @@ struct alignas(32) ConditionEvaluationRowPOD {
     int8_t current_status        = COND_STATUS_UNKNOWN;     // 1B: Evaluated NarremeConditionStatusDOD
     uint8_t subject_is_symbolic  = 0u;                      // 1B: Non-zero when subject_id is a Symbolic slot
     uint8_t object_is_symbolic   = 0u;                      // 1B: Non-zero when object_id is a Symbolic slot
-    uint8_t reserved_pad[5]      = {0};                     // 5B -> Total = 32B
+    uint8_t status_dirty_flag    = 0u;                      // 1B: Transition dirty flag
+    uint8_t reserved_pad[4]      = {0};                     // 4B -> Total = 32B
 };
 
 static_assert(sizeof(ConditionEvaluationRowPOD) == 32, "ConditionEvaluationRowPOD must be 32 bytes!");

@@ -115,25 +115,25 @@ struct alignas(64) GroundwaterKarstAndPedogenesisTransformLogic {
             return;
         }
 
-        auto seed = *reinterpret_cast<const ideam::geomorphology::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto seed = *reinterpret_cast<const ideam::core::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
         seed.karst_dissolution_scale *= karst_dissolution_boost;
         seed.pedogenesis_rate_scale  *= pedogenesis_boost;
 
         const auto *cat = (cat_part && cat_part->raw_base_ptr)
-            ? reinterpret_cast<const ideam::geomorphology::LithologyArchetypePOD *>(cat_part->raw_base_ptr)
+            ? reinterpret_cast<const ideam::core::LithologyArchetypePOD *>(cat_part->raw_base_ptr)
             : nullptr;
-        auto *strata    = reinterpret_cast<ideam::geomorphology::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
-        auto *hydro     = reinterpret_cast<ideam::geomorphology::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
+        auto *strata    = reinterpret_cast<ideam::core::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
+        auto *hydro     = reinterpret_cast<ideam::core::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
 
         const size_t n = static_cast<size_t>(seed.grid_width) * static_cast<size_t>(seed.grid_height);
-        const size_t c_cnt = cat ? (cat_part->capacity_bytes / sizeof(ideam::geomorphology::LithologyArchetypePOD)) : 0u;
+        const size_t c_cnt = cat ? (cat_part->capacity_bytes / sizeof(ideam::core::LithologyArchetypePOD)) : 0u;
 
-        ideam::geomorphology::GeomorphologyKernelMath::step_groundwater_karst_and_pedogenesis(
+        ideam::core::GeomorphologyKernelMath::step_groundwater_karst_and_pedogenesis(
             seed,
-            std::span<const ideam::geomorphology::LithologyArchetypePOD>(cat, c_cnt),
+            std::span<const ideam::core::LithologyArchetypePOD>(cat, c_cnt),
             dt_seconds,
-            std::span<ideam::geomorphology::StratigraphicColumnPOD>(strata, n),
-            std::span<ideam::geomorphology::HydrologyCellStatePOD>(hydro, n));
+            std::span<ideam::core::StratigraphicColumnPOD>(strata, n),
+            std::span<ideam::core::HydrologyCellStatePOD>(hydro, n));
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

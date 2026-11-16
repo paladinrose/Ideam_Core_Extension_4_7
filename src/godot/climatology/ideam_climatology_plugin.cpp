@@ -1,6 +1,6 @@
 #include "godot/climatology/ideam_climatology_plugin.h"
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 void IdeamClimatologyPlugin::_bind_methods() {
     using namespace godot;
@@ -22,4 +22,4 @@ void IdeamClimatologyPlugin::_exit_tree() {
     }
 }
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

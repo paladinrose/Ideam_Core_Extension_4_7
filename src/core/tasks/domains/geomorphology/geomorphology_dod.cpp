@@ -1,10 +1,10 @@
 #include "core/tasks/domains/geomorphology/geomorphology_dod.h"
 #include "core/tasks/domains/geomorphology/registration/geomorphology_task_domain_pack.h"
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::core {
 
 void GeomorphologyDOD::build_geomorphology_pipeline(
-    TaskGraph& graph,
+    TaskGraphDOD& graph,
     uint32_t stage_mask) {
     (void)graph;
     (void)stage_mask;
@@ -18,15 +18,15 @@ void GeomorphologyDOD::initialize_world_from_seed(
     std::span<CrustalTectonicCellPOD> out_crust,
     std::span<StratigraphicColumnPOD> out_strata,
     std::span<HydrologyCellStatePOD> out_hydrology) noexcept {
-    ideam::geomorphology::GeomorphologyKernelMath::generate_tectonic_plates(seed, out_plates);
-    ideam::geomorphology::GeomorphologyKernelMath::initialize_crust_and_stratigraphy(
+    ideam::core::GeomorphologyKernelMath::generate_tectonic_plates(seed, out_plates);
+    ideam::core::GeomorphologyKernelMath::initialize_crust_and_stratigraphy(
         seed,
         out_plates,
         catalog,
         out_crust,
         out_strata,
         out_hydrology);
-    ideam::geomorphology::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
+    ideam::core::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
         seed,
         out_strata,
         out_hydrology);
@@ -46,7 +46,7 @@ void GeomorphologyDOD::execute_step(
     uint32_t stage_mask) noexcept {
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::TECTONIC_UPLIFT)) != 0u &&
         dt_geological_myr > 0.0f) {
-        ideam::geomorphology::GeomorphologyKernelMath::step_tectonic_uplift_and_isostasy(
+        ideam::core::GeomorphologyKernelMath::step_tectonic_uplift_and_isostasy(
             seed,
             plates,
             catalog,
@@ -57,7 +57,7 @@ void GeomorphologyDOD::execute_step(
 
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::SHALLOW_WATER_HYDRO)) != 0u &&
         dt_hydrological_sec > 0.0f) {
-        ideam::geomorphology::GeomorphologyKernelMath::step_shallow_water_pipe_hydrology(
+        ideam::core::GeomorphologyKernelMath::step_shallow_water_pipe_hydrology(
             seed,
             strata,
             {},
@@ -68,7 +68,7 @@ void GeomorphologyDOD::execute_step(
 
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::FLUVIAL_TALUS_EROSION)) != 0u &&
         dt_hydrological_sec > 0.0f) {
-        ideam::geomorphology::GeomorphologyKernelMath::step_stream_power_and_talus_erosion(
+        ideam::core::GeomorphologyKernelMath::step_stream_power_and_talus_erosion(
             seed,
             catalog,
             dt_hydrological_sec,
@@ -79,7 +79,7 @@ void GeomorphologyDOD::execute_step(
 
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::KARST_PEDOGENESIS)) != 0u &&
         dt_hydrological_sec > 0.0f) {
-        ideam::geomorphology::GeomorphologyKernelMath::step_groundwater_karst_and_pedogenesis(
+        ideam::core::GeomorphologyKernelMath::step_groundwater_karst_and_pedogenesis(
             seed,
             catalog,
             dt_hydrological_sec,
@@ -88,7 +88,7 @@ void GeomorphologyDOD::execute_step(
     }
 
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::DRAINAGE_STRAHLER)) != 0u) {
-        ideam::geomorphology::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
+        ideam::core::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
             seed,
             strata,
             hydrology);
@@ -96,7 +96,7 @@ void GeomorphologyDOD::execute_step(
 
     if ((stage_mask & static_cast<uint32_t>(GeomorphologyStageFlags::HAZARD_RESOURCE_QUERY)) != 0u &&
         !hazards.empty()) {
-        ideam::geomorphology::GeomorphologyKernelMath::evaluate_hazards_and_resource_veins(
+        ideam::core::GeomorphologyKernelMath::evaluate_hazards_and_resource_veins(
             seed,
             crust,
             strata,
@@ -105,4 +105,4 @@ void GeomorphologyDOD::execute_step(
     }
 }
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::core

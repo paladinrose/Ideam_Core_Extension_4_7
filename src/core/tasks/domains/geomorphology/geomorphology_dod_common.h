@@ -16,31 +16,26 @@ namespace ideam::core { class TaskGraphDOD; }
 namespace ideam::core {
 
 enum class GeomorphologyBufferSlot : uint32_t {
-    SEED_PROFILE_POD         = 0, ///< `GeomorphologySeedProfilePOD` (64B)
-    LITHOLOGY_CATALOG_POD    = 1, ///< `LithologyArchetypePOD` (64B x 8+)
-    TECTONIC_PLATE_POD       = 2, ///< `TectonicPlatePOD` (64B x N_plates)
-    TECTONIC_CELL_POD        = 3, ///< `CrustalTectonicCellPOD` (32B per grid cell)
-    STRATIGRAPHIC_COLUMN_POD = 4, ///< `StratigraphicColumnPOD` (128B per grid cell)
-    HYDROLOGY_CELL_POD       = 5, ///< `HydrologyCellStatePOD` (64B per grid cell)
-    SURFACE_ELEVATION_FLOAT  = 6, ///< `float` (4B per grid cell)
-    HAZARD_RESOURCE_MASK_U32 = 7, ///< `uint32_t` (4B per grid cell) hazard/mineral vein flags
+    SEED_PROFILE_POD         = 0,
+    LITHOLOGY_CATALOG_POD    = 1,
+    TECTONIC_PLATE_POD       = 2,
+    TECTONIC_CELL_POD        = 3,
+    STRATIGRAPHIC_COLUMN_POD = 4,
+    HYDROLOGY_CELL_POD       = 5,
+    SURFACE_ELEVATION_FLOAT  = 6,
+    HAZARD_RESOURCE_MASK_U32 = 7,
     COUNT                    = 8
 };
 
-enum GeomorphologyStageFlags : uint32_t {
-    GEOMORPHOLOGY_STAGE_NONE                      = 0u,
-    GEOMORPHOLOGY_STAGE_TECTONIC_OROGENY          = 1u << 0, ///< `GEO_T1`: `TectonicUpliftAndOrogenyTransformLogic`
-    GEOMORPHOLOGY_STAGE_SHALLOW_WATER_HYDROLOGY   = 1u << 1, ///< `GEO_T2`: `ShallowWaterPipeHydrologyTransformLogic`
-    GEOMORPHOLOGY_STAGE_STREAM_POWER_EROSION      = 1u << 2, ///< `GEO_T3`: `StreamPowerAndTalusErosionTransformLogic`
-    GEOMORPHOLOGY_STAGE_KARST_AND_PEDOGENESIS     = 1u << 3, ///< `GEO_T4`: `GroundwaterKarstAndPedogenesisTransformLogic`
-    GEOMORPHOLOGY_STAGE_DRAINAGE_STRAHLER_METADATA= 1u << 4, ///< `GEO_M1`: `DrainageBasinAndStrahlerPartitionMetadataLogic`
-    GEOMORPHOLOGY_STAGE_HAZARD_VEIN_QUERY         = 1u << 5, ///< `GEO_Q1`: `GeomorphicHazardAndResourceVeinQueryLogic`
-    GEOMORPHOLOGY_STAGE_DEFAULT_PIPELINE_MASK     =
-        GEOMORPHOLOGY_STAGE_TECTONIC_OROGENY |
-        GEOMORPHOLOGY_STAGE_SHALLOW_WATER_HYDROLOGY |
-        GEOMORPHOLOGY_STAGE_STREAM_POWER_EROSION |
-        GEOMORPHOLOGY_STAGE_KARST_AND_PEDOGENESIS |
-        GEOMORPHOLOGY_STAGE_DRAINAGE_STRAHLER_METADATA
+enum class GeomorphologyStageFlags : uint32_t {
+    NONE                  = 0u,
+    TECTONIC_UPLIFT       = 1u << 0,
+    SHALLOW_WATER_HYDRO   = 1u << 1,
+    FLUVIAL_TALUS_EROSION = 1u << 2,
+    KARST_PEDOGENESIS     = 1u << 3,
+    DRAINAGE_STRAHLER     = 1u << 4,
+    HAZARD_RESOURCE_QUERY = 1u << 5,
+    ALL_STAGES            = 0x3Fu
 };
 
 struct GeomorphologyBufferCapacities {

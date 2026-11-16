@@ -46,6 +46,13 @@ public:
      * inside `r_env`.
      */
     void compile_to_environment(core::ProceduralEnvironment &r_env) const;
+    void compile_to_environment(core::ProceduralEnvironment &r_env, uint32_t p_slot_count) const {
+        compile_to_environment(r_env);
+        if (p_slot_count > 0u) {
+            r_env.configure_slots(p_slot_count, static_cast<uint32_t>(r_env.tokens().size()));
+            r_env.compile_cascade_and_initialize_domains();
+        }
+    }
 
     /**
      * Populates `discovered_tokens_` and `generation_rules_` from a synthesized

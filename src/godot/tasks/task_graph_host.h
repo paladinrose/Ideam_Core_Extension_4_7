@@ -65,6 +65,8 @@ public:
     // --- C++ Internal Accessors ---
     std::shared_ptr<core::MemoryManagerDOD> get_active_manager() const { return active_manager; }
     std::shared_ptr<core::TaskGraphDOD> get_active_graph() const { return active_graph; }
+    std::shared_ptr<core::MemoryManagerDOD> get_memory_manager() const { return active_manager; }
+    std::shared_ptr<core::TaskGraphDOD> get_task_graph() const { return active_graph; }
 };
 
 } // namespace ideam::godot_ext

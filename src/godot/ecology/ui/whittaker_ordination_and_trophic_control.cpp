@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 WhittakerOrdinationAndTrophicControl::WhittakerOrdinationAndTrophicControl() {
     set_custom_minimum_size(godot::Vector2(260.0f, 220.0f));
@@ -111,4 +111,4 @@ void WhittakerOrdinationAndTrophicControl::_draw() {
                 HORIZONTAL_ALIGNMENT_LEFT, -1.0f, 11, Color(0.88f, 0.94f, 0.86f));
 }
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

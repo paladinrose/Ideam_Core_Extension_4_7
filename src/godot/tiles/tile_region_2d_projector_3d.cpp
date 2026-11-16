@@ -353,14 +353,14 @@ void TileRegion2DProjector3D::_rebuild_projected_geometry() {
         for (size_t hid = 0; hid < region->hex_super_cell_count(); ++hid) {
             const auto &hex = region->hex_super_cells()[hid];
             std::vector<Vec2> poly;
-            poly.reserve(hex.perimeter_vertex_count);
-            for (uint16_t k = 0; k < hex.perimeter_vertex_count; ++k) {
-                const uint32_t vid = region->hex_perimeter_vertex_pool()[hex.first_perimeter_vertex + k];
+            poly.reserve(6);
+            for (size_t k = 0; k < 6; ++k) {
+                const uint32_t vid = hex.perimeter_vertex_ids[k];
                 if (vid < region->shared_vertices().size()) {
                     poly.push_back(region->shared_vertices()[vid]);
                 }
             }
-            const Vec2 ctr(static_cast<real_t>(hex.center_x), static_cast<real_t>(hex.center_y));
+            const Vec2 ctr(static_cast<real_t>(hex.center.x), static_cast<real_t>(hex.center.y));
             const Color col = (static_cast<int>(hid) == highlighted_cell_id_)
                 ? highlight_color_
                 : palette[hid % 3];
@@ -370,10 +370,10 @@ void TileRegion2DProjector3D::_rebuild_projected_geometry() {
         for (size_t cid = 0; cid < region->cell_count(); ++cid) {
             const auto &cell = region->cells()[cid];
             const auto poly  = region->cell_polygon(static_cast<uint32_t>(cid));
-            const Vec2 ctr(static_cast<real_t>(cell.center_x), static_cast<real_t>(cell.center_y));
+            const Vec2 ctr(static_cast<real_t>(cell.center.x), static_cast<real_t>(cell.center.y));
             Color col = (cell.flags & core::CELL_FLAG_BRIDGE_QUAD) != 0
                 ? bridge_quad_color_
-                : palette[cell.colour_index % 3];
+                : palette[cell.colour_id % 3];
             if (static_cast<int>(cid) == highlighted_cell_id_) {
                 col = highlight_color_;
             }
@@ -412,7 +412,7 @@ godot::Vector3 TileRegion2DProjector3D::get_projected_cell_center_3d(int p_cell_
         return godot::Vector3();
     }
     const auto &c = region->cells()[static_cast<size_t>(p_cell_id)];
-    return project_point_2d(godot::Vector2(c.center_x, c.center_y));
+    return project_point_2d(godot::Vector2(c.center.x, c.center.y));
 }
 
 godot::Transform3D TileRegion2DProjector3D::get_projected_cell_transform_3d(int p_cell_id) const {
@@ -421,7 +421,7 @@ godot::Transform3D TileRegion2DProjector3D::get_projected_cell_transform_3d(int 
         return godot::Transform3D();
     }
     const auto &c = region->cells()[static_cast<size_t>(p_cell_id)];
-    return project_transform_2d(godot::Vector2(c.center_x, c.center_y), godot::Vector2(1.0f, 0.0f));
+    return project_transform_2d(godot::Vector2(c.center.x, c.center.y), godot::Vector2(1.0f, 0.0f));
 }
 
 godot::PackedVector3Array TileRegion2DProjector3D::get_projected_cell_polygon_3d(int p_cell_id) const {
@@ -455,7 +455,7 @@ int TileRegion2DProjector3D::find_closest_projected_cell_3d(
 
     for (size_t cid = 0; cid < region->cell_count(); ++cid) {
         const auto &c = region->cells()[cid];
-        const godot::Vector3 pos3 = project_point_2d(godot::Vector2(c.center_x, c.center_y));
+        const godot::Vector3 pos3 = project_point_2d(godot::Vector2(c.center.x, c.center.y));
         const real_t d2 = pos3.distance_squared_to(p_local_point_3d);
         if (d2 <= best_d2) {
             best_d2  = d2;
@@ -527,8 +527,8 @@ godot::Ref<Spline3DResource> TileRegion2DProjector3D::bake_projected_path_spline
         godot::Vector3 pos_3d;
         godot::Vector3 nrm_3d;
         project_point_2d_with_normal(uv, pos_3d, nrm_3d);
-        const int idx = spline->add_point(pos_3d);
-        spline->set_point_up_vector(idx, nrm_3d);
+        (void)nrm_3d;
+        spline->add_point(pos_3d);
     }
     return spline;
 }

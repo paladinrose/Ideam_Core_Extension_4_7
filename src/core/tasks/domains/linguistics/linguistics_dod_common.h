@@ -95,7 +95,7 @@ enum LinguisticsPipelineStageFlags : uint32_t {
 struct LinguisticsNodeExecutionConfig {
     MemoryView view            = MemoryView::SingleElementView;
     MemoryStrategy strategy    = MemoryStrategy::FlatStrategy;
-    MemoryTypes element_type   = MemoryTypes::UINT32;
+    MemoryTypes element_type   = MemoryTypes::INT32;
     QueryOp query_op           = QueryOp::CULL;
     int32_t execution_priority = 0;
     bool use_registry_factory  = false;
@@ -292,49 +292,49 @@ constexpr std::array<LinguisticsBufferSpec, LINGUISTICS_BUFFER_SLOT_COUNT> LINGU
         LinguisticsBufferSlot::LING_SEMEME_DESCRIPTOR_POD,
         "sememe_descriptor_pod_buffer_id",
         {"primary_descriptor_pod_buffer_id", "linguistic_profile_pod_buffer_id", ""},
-        sizeof(SememeDescriptorPOD), BufferLayoutType::AOS, SelectionMode::SPARSE_SET,
+        sizeof(SememeDescriptorPOD), BufferLayoutType::AOS, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_NUCLEAR_SYMBOLIC_WORD0,
         "sememe_nuclear_symbolic_word0_buffer_id",
         {"nuclear_symbolic_word0_buffer_id", "", ""},
-        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_MRL_BINARY_LO64,
         "sememe_mrl_binary_lo64_buffer_id",
         {"mrl_binary_lo64_buffer_id", "", ""},
-        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_MRL_BINARY_HI64,
         "sememe_mrl_binary_hi64_buffer_id",
         {"mrl_binary_hi64_buffer_id", "", ""},
-        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint64_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_COHERENCE_MASK32,
         "sememe_coherence_mask32_buffer_id",
         {"coherence_trait_mask32_buffer_id", "", ""},
-        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_UPOS_AND_DOMAIN,
         "sememe_upos_and_domain_buffer_id",
         {"upos_and_domain_buffer_id", "", ""},
-        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(uint32_t), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
     {
         LinguisticsBufferSlot::LING_SEMEME_AFFINITY_SCORE,
         "sememe_affinity_score_buffer_id",
         {"affinity_score_buffer_id", "", ""},
-        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE_SET,
+        sizeof(float), BufferLayoutType::FLAT, SelectionMode::SPARSE,
         LinguisticsCapacityKind::SEMEMES, LinguisticsTableGroup::SEMEME_AND_PROFILE_TABLE
     },
 

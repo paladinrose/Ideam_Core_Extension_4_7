@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::climatology {
+namespace ideam::godot_ext {
 
 ClimatologyTaskHost::ClimatologyTaskHost() {
     dod_climatology_.instantiate();
@@ -46,14 +46,14 @@ void ClimatologyTaskHost::_process(double p_delta) {
     }
 }
 
-void ClimatologyTaskHost::set_atmosphere_resource(const godot::Ref<ideam::climatology::ClimatologyAtmosphereResource>& p_atmosphere) {
+void ClimatologyTaskHost::set_atmosphere_resource(const godot::Ref<ClimatologyAtmosphereResource>& p_atmosphere) {
     atmosphere_resource_ = p_atmosphere;
     if (dod_climatology_.is_valid()) {
         dod_climatology_->bind_atmosphere_resource(atmosphere_resource_);
     }
 }
 
-godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> ClimatologyTaskHost::get_atmosphere_resource() const {
+godot::Ref<ClimatologyAtmosphereResource> ClimatologyTaskHost::get_atmosphere_resource() const {
     return atmosphere_resource_;
 }
 
@@ -94,4 +94,4 @@ void ClimatologyTaskHost::step_once() {
     }
 }
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::godot_ext

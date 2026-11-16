@@ -174,6 +174,7 @@ public:
     
     virtual void defragment() override;
     void clear();
+    void clear_graph() { clear(); }
 };
 
 } // namespace ideam::core

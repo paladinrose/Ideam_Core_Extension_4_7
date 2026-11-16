@@ -169,6 +169,8 @@ void SphericalGoldbergPolyhedron<T>::build_goldberg_sphere(Region& r_out_topolog
 
         const uint8_t val = static_cast<uint8_t>(std::min<size_t>(6u, inc_tris.size()));
         cell.valence      = val;
+        cell.is_pentagon  = (val == 5u);
+        cell.center_3d    = cell.unit_normal * radius_;
         cell.colour_id    = (val == 5u) ? 2u : static_cast<uint8_t>((ci + cell.generation_ring) % 3u);
 
         for (uint8_t k = 0u; k < val; ++k) {
@@ -203,17 +205,16 @@ void SphericalGoldbergPolyhedron<T>::build_goldberg_sphere(Region& r_out_topolog
         }
 
         IsoCellPOD pod{};
-        pod.cell_id      = static_cast<uint32_t>(ci);
         pod.vertex_count = val;
         pod.colour_id    = cell.colour_id;
         pod.generation   = cell.generation_ring;
-        pod.centroid     = center_2d;
+        pod.center       = glm::vec2(center_2d);
         cell_templates[ci] = pod;
 
         TileTransformPOD xf{};
-        xf.col0 = Vec2(static_cast<T>(1.0), static_cast<T>(0.0));
-        xf.col1 = Vec2(static_cast<T>(0.0), static_cast<T>(1.0));
-        xf.col2 = center_2d;
+        xf.position = glm::vec2(center_2d);
+        xf.scale    = glm::vec2(1.0f, 1.0f);
+        xf.cell_id  = static_cast<uint32_t>(ci);
         cell_transforms[ci] = xf;
     }
 

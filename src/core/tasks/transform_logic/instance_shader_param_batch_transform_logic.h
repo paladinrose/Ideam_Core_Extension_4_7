@@ -154,7 +154,7 @@ struct alignas(64) InstanceShaderParamBatchTransformLogic {
                 godot::RID inst_rid;
                 std::memcpy(&inst_rid, &raw_id, sizeof(uint64_t));
                 if (inst_rid.is_valid()) {
-                    rs->instance_set_shader_parameter(inst_rid, parameter_name, _read_value(*val_part, idx));
+                    rs->instance_geometry_set_shader_parameter(inst_rid, parameter_name, _read_value(*val_part, idx));
                 }
             };
 

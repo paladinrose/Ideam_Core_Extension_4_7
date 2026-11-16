@@ -26,11 +26,11 @@
 
 #include <vector>
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 /**
  * @class ClimatologySeedProfileResource
- * @brief Serializable Resource wrapping ClimatologySeedProfilePOD with SplitMix64 sub-seed derivation.
+ * @brief Serializable Resource wrapping core::ClimatologySeedProfilePOD with SplitMix64 sub-seed derivation.
  */
 class ClimatologySeedProfileResource : public godot::Resource {
     GDCLASS(ClimatologySeedProfileResource, godot::Resource)
@@ -117,8 +117,8 @@ public:
     int64_t get_convective_storm_seed() const;
     int64_t get_tornado_vortex_seed() const;
 
-    ClimatologySeedProfilePOD to_pod() const noexcept;
-    void from_pod(const ClimatologySeedProfilePOD& pod);
+    core::ClimatologySeedProfilePOD to_pod() const noexcept;
+    void from_pod(const core::ClimatologySeedProfilePOD& pod);
 };
 
 /**
@@ -186,13 +186,13 @@ private:
 
     float default_synoptic_dt_sec_ = 30.0f;
     float default_vortex_dt_sec_ = 10.0f;
-    int active_stage_mask_ = static_cast<int>(ideam::tasks::climatology::ClimatologyStageFlags::ALL_STAGES);
+    int active_stage_mask_ = static_cast<int>(core::ClimatologyStageFlags::ALL_STAGES);
 
     std::vector<float> custom_terrain_elevations_m_;
-    std::vector<AtmosphericColumnCellPOD> pod_atmo_;
-    std::vector<MoistureAndCloudCellPOD> pod_moisture_;
-    std::vector<TornadoSupercellVortexPOD> pod_vortices_;
-    std::vector<ClimatologyHazardAndBiomeSamplePOD> pod_hazards_;
+    std::vector<core::AtmosphericColumnCellPOD> pod_atmo_;
+    std::vector<core::MoistureAndCloudCellPOD> pod_moisture_;
+    std::vector<core::TornadoSupercellVortexPOD> pod_vortices_;
+    std::vector<core::ClimatologyHazardAndBiomeSamplePOD> pod_hazards_;
     uint32_t simulation_step_counter_ = 0;
 
     void _ensure_buffers_allocated();
@@ -247,7 +247,7 @@ public:
     godot::Dictionary inspect_cell_sounding(int p_x, int p_y) const;
 
     /**
-     * @brief Renders a 2D heatmap preview image of the requested ClimatologyMapLayer.
+     * @brief Renders a 2D heatmap preview image of the requested core::ClimatologyMapLayer.
      */
     godot::Ref<godot::Image> render_map_layer_image(int p_layer) const;
 
@@ -257,15 +257,15 @@ public:
     godot::Dictionary get_domain_telemetry() const;
 
     // Raw span accessors for DOD / TaskHost zero-copy bridging
-    std::span<AtmosphericColumnCellPOD> get_atmo_span() noexcept { return pod_atmo_; }
-    std::span<MoistureAndCloudCellPOD> get_moisture_span() noexcept { return pod_moisture_; }
-    std::span<TornadoSupercellVortexPOD> get_vortices_span() noexcept { return pod_vortices_; }
-    std::span<ClimatologyHazardAndBiomeSamplePOD> get_hazards_span() noexcept { return pod_hazards_; }
+    std::span<core::AtmosphericColumnCellPOD> get_atmo_span() noexcept { return pod_atmo_; }
+    std::span<core::MoistureAndCloudCellPOD> get_moisture_span() noexcept { return pod_moisture_; }
+    std::span<core::TornadoSupercellVortexPOD> get_vortices_span() noexcept { return pod_vortices_; }
+    std::span<core::ClimatologyHazardAndBiomeSamplePOD> get_hazards_span() noexcept { return pod_hazards_; }
 
-    std::span<const AtmosphericColumnCellPOD> get_atmo_const_span() const noexcept { return pod_atmo_; }
-    std::span<const MoistureAndCloudCellPOD> get_moisture_const_span() const noexcept { return pod_moisture_; }
-    std::span<const TornadoSupercellVortexPOD> get_vortices_const_span() const noexcept { return pod_vortices_; }
-    std::span<const ClimatologyHazardAndBiomeSamplePOD> get_hazards_const_span() const noexcept { return pod_hazards_; }
+    std::span<const core::AtmosphericColumnCellPOD> get_atmo_const_span() const noexcept { return pod_atmo_; }
+    std::span<const core::MoistureAndCloudCellPOD> get_moisture_const_span() const noexcept { return pod_moisture_; }
+    std::span<const core::TornadoSupercellVortexPOD> get_vortices_const_span() const noexcept { return pod_vortices_; }
+    std::span<const core::ClimatologyHazardAndBiomeSamplePOD> get_hazards_const_span() const noexcept { return pod_hazards_; }
 };
 
 /**
@@ -300,4 +300,4 @@ public:
     godot::Dictionary sample_sounding_at_world(const godot::Vector3& p_world_pos) const;
 };
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

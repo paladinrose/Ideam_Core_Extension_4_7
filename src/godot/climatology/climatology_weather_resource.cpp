@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 // ============================================================================
 // ClimatologySeedProfileResource
@@ -99,7 +99,7 @@ int ClimatologySeedProfileResource::get_grid_width() const { return grid_width_;
 void ClimatologySeedProfileResource::set_grid_height(int p_height) { grid_height_ = std::clamp(p_height, 8, 512); emit_changed(); }
 int ClimatologySeedProfileResource::get_grid_height() const { return grid_height_; }
 
-void ClimatologySeedProfileResource::set_max_vortices(int p_max) { max_vortices_ = std::clamp(p_max, 1, static_cast<int>(MAX_ACTIVE_TORNADO_VORTICES)); emit_changed(); }
+void ClimatologySeedProfileResource::set_max_vortices(int p_max) { max_vortices_ = std::clamp(p_max, 1, static_cast<int>(core::MAX_ACTIVE_TORNADO_VORTICES)); emit_changed(); }
 int ClimatologySeedProfileResource::get_max_vortices() const { return max_vortices_; }
 
 void ClimatologySeedProfileResource::set_cell_size_meters(float p_size) { cell_size_meters_ = std::max(1.0f, p_size); emit_changed(); }
@@ -146,8 +146,8 @@ int64_t ClimatologySeedProfileResource::get_baroclinic_wave_seed() const { retur
 int64_t ClimatologySeedProfileResource::get_convective_storm_seed() const { return static_cast<int64_t>(to_pod().convective_storm_seed); }
 int64_t ClimatologySeedProfileResource::get_tornado_vortex_seed() const { return static_cast<int64_t>(to_pod().tornado_vortex_seed); }
 
-ClimatologySeedProfilePOD ClimatologySeedProfileResource::to_pod() const noexcept {
-    ClimatologySeedProfilePOD pod = ClimatologyKernelMath::make_seed_profile(
+core::ClimatologySeedProfilePOD ClimatologySeedProfileResource::to_pod() const noexcept {
+    core::ClimatologySeedProfilePOD pod = core::ClimatologyKernelMath::make_seed_profile(
         static_cast<uint64_t>(master_seed_),
         static_cast<uint32_t>(grid_width_),
         static_cast<uint32_t>(grid_height_),
@@ -168,7 +168,7 @@ ClimatologySeedProfilePOD ClimatologySeedProfileResource::to_pod() const noexcep
     return pod;
 }
 
-void ClimatologySeedProfileResource::from_pod(const ClimatologySeedProfilePOD& pod) {
+void ClimatologySeedProfileResource::from_pod(const core::ClimatologySeedProfilePOD& pod) {
     master_seed_ = static_cast<int64_t>(pod.master_seed);
     grid_width_ = static_cast<int>(pod.grid_width);
     grid_height_ = static_cast<int>(pod.grid_height);
@@ -256,7 +256,7 @@ void TornadoVortexProfileResource::set_default_lifetime_sec(float p_val) { defau
 float TornadoVortexProfileResource::get_default_lifetime_sec() const { return default_lifetime_sec_; }
 
 int TornadoVortexProfileResource::get_ef_rating() const {
-    return static_cast<int>(ClimatologyKernelMath::classify_ef_scale(max_tangential_wind_mps_));
+    return static_cast<int>(core::ClimatologyKernelMath::classify_ef_scale(max_tangential_wind_mps_));
 }
 
 // ============================================================================
@@ -357,7 +357,7 @@ void ClimatologyAtmosphereResource::_ensure_buffers_allocated() {
     if (default_tornado_profile_.is_null()) {
         default_tornado_profile_.instantiate();
     }
-    const ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
     const size_t cell_count = static_cast<size_t>(seed.grid_width) * static_cast<size_t>(seed.grid_height);
     const size_t vort_count = std::max<size_t>(1, seed.max_vortices);
 
@@ -369,14 +369,14 @@ void ClimatologyAtmosphereResource::_ensure_buffers_allocated() {
 
 void ClimatologyAtmosphereResource::generate_initial_climate() {
     _ensure_buffers_allocated();
-    const ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
-    ideam::tasks::climatology::ClimatologyDOD::initialize_atmosphere_from_seed(
+    const core::ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
+    core::ClimatologyDOD::initialize_atmosphere_from_seed(
         seed,
         custom_terrain_elevations_m_,
         pod_atmo_,
         pod_moisture_,
         pod_vortices_);
-    ClimatologyKernelMath::evaluate_severe_weather_hazards(
+    core::ClimatologyKernelMath::evaluate_severe_weather_hazards(
         seed,
         pod_atmo_,
         pod_moisture_,
@@ -387,13 +387,13 @@ void ClimatologyAtmosphereResource::generate_initial_climate() {
 
 void ClimatologyAtmosphereResource::step_simulation(int p_steps, float p_dt_synoptic_sec, float p_dt_vortex_sec) {
     _ensure_buffers_allocated();
-    const ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
     const float dt_syn = (p_dt_synoptic_sec > 0.0f) ? p_dt_synoptic_sec : default_synoptic_dt_sec_;
     const float dt_vor = (p_dt_vortex_sec > 0.0f) ? p_dt_vortex_sec : default_vortex_dt_sec_;
     const int steps = std::max(1, p_steps);
 
     for (int i = 0; i < steps; ++i) {
-        ideam::tasks::climatology::ClimatologyDOD::execute_step(
+        core::ClimatologyDOD::execute_step(
             seed,
             pod_atmo_,
             pod_moisture_,
@@ -409,18 +409,18 @@ void ClimatologyAtmosphereResource::step_simulation(int p_steps, float p_dt_syno
 
 bool ClimatologyAtmosphereResource::spawn_tornado_at_cell(int p_x, int p_y, float p_max_wind_mps, float p_core_radius_m) {
     _ensure_buffers_allocated();
-    const ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::ClimatologySeedProfilePOD seed = seed_profile_->to_pod();
     const uint32_t gx = static_cast<uint32_t>(std::clamp(p_x, 0, seed_profile_->get_grid_width() - 1));
     const uint32_t gy = static_cast<uint32_t>(std::clamp(p_y, 0, seed_profile_->get_grid_height() - 1));
     const float v_max = (p_max_wind_mps > 0.0f) ? p_max_wind_mps : default_tornado_profile_->get_max_tangential_wind_mps();
     const float r_core = (p_core_radius_m > 0.0f) ? p_core_radius_m : default_tornado_profile_->get_core_radius_m();
 
-    const bool ok = ClimatologyKernelMath::spawn_supercell_tornado_at_grid(
+    const bool ok = core::ClimatologyKernelMath::spawn_supercell_tornado_at_grid(
         seed, gx, gy, v_max, r_core, pod_vortices_);
     if (ok) {
-        ClimatologyKernelMath::step_convective_cape_and_tornado_vortices(
+        core::ClimatologyKernelMath::step_convective_cape_and_tornado_vortices(
             seed, 1.0f, pod_atmo_, pod_moisture_, pod_vortices_);
-        ClimatologyKernelMath::evaluate_severe_weather_hazards(
+        core::ClimatologyKernelMath::evaluate_severe_weather_hazards(
             seed, pod_atmo_, pod_moisture_, pod_hazards_);
         emit_changed();
     }
@@ -500,7 +500,7 @@ godot::Ref<godot::Image> ClimatologyAtmosphereResource::render_map_layer_image(i
     const int h = seed_profile_->get_grid_height();
     godot::Ref<godot::Image> img = godot::Image::create_empty(w, h, false, godot::Image::FORMAT_RGBA8);
 
-    const auto layer_enum = static_cast<ClimatologyMapLayer>(p_layer);
+    const auto layer_enum = static_cast<core::ClimatologyMapLayer>(p_layer);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
@@ -510,48 +510,48 @@ godot::Ref<godot::Image> ClimatologyAtmosphereResource::render_map_layer_image(i
 
             godot::Color c(0.12f, 0.16f, 0.22f, 1.0f);
             switch (layer_enum) {
-                case ClimatologyMapLayer::POTENTIAL_TEMPERATURE_KELVIN: {
+                case core::ClimatologyMapLayer::POTENTIAL_TEMPERATURE_KELVIN: {
                     const float t_norm = std::clamp((atmo.surface_air_temperature_k - 258.15f) / 48.0f, 0.0f, 1.0f);
                     c = godot::Color::from_hsv((1.0f - t_norm) * 0.66f, 0.78f, 0.88f);
                     break;
                 }
-                case ClimatologyMapLayer::SURFACE_PRESSURE_HPA: {
+                case core::ClimatologyMapLayer::SURFACE_PRESSURE_HPA: {
                     const float p_sl = atmo.boundary_pressure_hpa * std::exp(atmo.surface_elevation_m / 8430.0f);
                     const float p_norm = std::clamp((p_sl - 975.0f) / 65.0f, 0.0f, 1.0f);
                     c = godot::Color(0.25f + 0.65f * p_norm, 0.22f + 0.45f * (1.0f - std::abs(p_norm - 0.5f) * 2.0f), 0.90f - 0.65f * p_norm, 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::GEOSTROPHIC_AND_OROGRAPHIC_WIND: {
+                case core::ClimatologyMapLayer::GEOSTROPHIC_AND_OROGRAPHIC_WIND: {
                     const float spd = std::hypot(atmo.wind_velocity_u_mps, atmo.wind_velocity_v_mps);
                     const float s_norm = std::clamp(spd / 28.0f, 0.0f, 1.0f);
                     const float oro = std::clamp(atmo.orographic_lift_mps * 0.25f, -0.5f, 0.5f);
                     c = godot::Color(0.15f + 0.75f * s_norm + std::max(0.0f, oro), 0.32f + 0.55f * s_norm, 0.55f - std::min(0.0f, oro), 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::RELATIVE_HUMIDITY_AND_CLOUD_WATER: {
+                case core::ClimatologyMapLayer::RELATIVE_HUMIDITY_AND_CLOUD_WATER: {
                     const float rh = std::clamp(moist.relative_humidity_01, 0.0f, 1.0f);
                     const float cld = std::clamp(moist.cloud_cover_fraction, 0.0f, 1.0f);
                     c = godot::Color(0.18f + 0.72f * cld, 0.35f + 0.55f * rh, 0.45f + 0.52f * std::max(rh, cld), 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::PRECIPITATION_AND_SNOWPACK: {
+                case core::ClimatologyMapLayer::PRECIPITATION_AND_SNOWPACK: {
                     const float rain = std::clamp(moist.rainfall_rate_mm_hr / 18.0f, 0.0f, 1.0f);
                     const float snow = std::clamp((moist.snowfall_rate_mm_hr + moist.snowpack_water_equiv_mm * 0.25f) / 15.0f, 0.0f, 1.0f);
                     c = godot::Color(0.14f + 0.82f * snow, 0.28f + 0.65f * std::max(rain, snow), 0.35f + 0.62f * std::max(rain, snow), 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::CONVECTIVE_CAPE_AND_HELICITY: {
+                case core::ClimatologyMapLayer::CONVECTIVE_CAPE_AND_HELICITY: {
                     const float cape_norm = std::clamp(moist.convective_cape_j_kg / 3500.0f, 0.0f, 1.0f);
                     const float srh_norm = std::clamp(moist.storm_rel_helicity_m2_s2 / 400.0f, 0.0f, 1.0f);
                     c = godot::Color(0.20f + 0.80f * cape_norm, 0.15f + 0.55f * srh_norm, 0.30f + 0.60f * (1.0f - cape_norm), 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::SUPERCELL_TORNADO_VORTICITY: {
+                case core::ClimatologyMapLayer::SUPERCELL_TORNADO_VORTICITY: {
                     const float v_norm = std::clamp(moist.vortex_tangential_wind_mps / 85.0f, 0.0f, 1.0f);
                     c = godot::Color(0.14f + 0.86f * v_norm, 0.14f + 0.25f * (1.0f - v_norm), 0.26f + 0.70f * v_norm, 1.0f);
                     break;
                 }
-                case ClimatologyMapLayer::KOPPEN_CLIMATE_CLASSIFICATION: {
+                case core::ClimatologyMapLayer::KOPPEN_CLIMATE_CLASSIFICATION: {
                     static const godot::Color kKoppenColors[10] = {
                         godot::Color(0.05f, 0.42f, 0.18f, 1.0f), // Af
                         godot::Color(0.32f, 0.68f, 0.24f, 1.0f), // Aw
@@ -567,7 +567,7 @@ godot::Ref<godot::Image> ClimatologyAtmosphereResource::render_map_layer_image(i
                     c = kKoppenColors[static_cast<int>(atmo.koppen_zone) % 10];
                     break;
                 }
-                case ClimatologyMapLayer::SURFACE_RADIATIVE_ENERGY_BUDGET: {
+                case core::ClimatologyMapLayer::SURFACE_RADIATIVE_ENERGY_BUDGET: {
                     const float net_rad = atmo.shortwave_insolation_w_m2 - atmo.longwave_outgoing_w_m2;
                     const float r_norm = std::clamp((net_rad + 150.0f) / 850.0f, 0.0f, 1.0f);
                     c = godot::Color(0.18f + 0.80f * r_norm, 0.22f + 0.62f * r_norm, 0.48f * (1.0f - r_norm), 1.0f);
@@ -690,4 +690,4 @@ godot::Dictionary ClimatologyWeatherNode3D::sample_sounding_at_world(const godot
     return atmosphere_resource_->inspect_cell_sounding(g.x, g.y);
 }
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

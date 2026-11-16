@@ -9,7 +9,7 @@
 #include "core/climatology/climatology_types.h"
 #include <cstdint>
 
-namespace ideam::tasks::climatology {
+namespace ideam::core {
 
 /**
  * @enum ClimatologyBufferSlot
@@ -40,4 +40,4 @@ enum class ClimatologyStageFlags : uint32_t {
     ALL_STAGES                  = 0x3Fu
 };
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::core

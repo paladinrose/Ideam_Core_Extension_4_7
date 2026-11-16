@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::ecology {
+namespace ideam::godot_ext {
 
 EcologyTaskHost::EcologyTaskHost() {
     dod_ecology_.instantiate();
@@ -42,14 +42,14 @@ void EcologyTaskHost::_process(double p_delta) {
     }
 }
 
-void EcologyTaskHost::set_biosphere_resource(const godot::Ref<ideam::ecology::EcologyBiosphereResource>& p_biosphere) {
+void EcologyTaskHost::set_biosphere_resource(const godot::Ref<EcologyBiosphereResource>& p_biosphere) {
     biosphere_resource_ = p_biosphere;
     if (dod_ecology_.is_valid()) {
         dod_ecology_->bind_biosphere_resource(biosphere_resource_);
     }
 }
 
-godot::Ref<ideam::ecology::EcologyBiosphereResource> EcologyTaskHost::get_biosphere_resource() const {
+godot::Ref<EcologyBiosphereResource> EcologyTaskHost::get_biosphere_resource() const {
     return biosphere_resource_;
 }
 
@@ -80,4 +80,4 @@ void EcologyTaskHost::step_once() {
     }
 }
 
-} // namespace ideam::tasks::ecology
+} // namespace ideam::godot_ext

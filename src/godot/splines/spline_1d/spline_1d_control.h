@@ -187,6 +187,7 @@ public:
 
     void set_spline_1d(const godot::Ref<Spline1DResource> &p_spline);
     [[nodiscard]] godot::Ref<Spline1DResource> get_spline_1d() const;
+    void set_spline(const godot::Ref<Spline1DResource> &p_spline) { set_spline_1d(p_spline); }
 
     [[nodiscard]] Spline1DEqualizerCanvas *get_equalizer_canvas() const noexcept { return equalizer_canvas; }
 };

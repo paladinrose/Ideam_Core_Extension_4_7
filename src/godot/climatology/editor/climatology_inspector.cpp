@@ -11,7 +11,7 @@
 #include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 void ClimatologyInspector::_bind_methods() {}
 
@@ -104,4 +104,4 @@ void ClimatologyInspector::_parse_begin(godot::Object* p_object) {
     add_custom_control(root_vbox);
 }
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

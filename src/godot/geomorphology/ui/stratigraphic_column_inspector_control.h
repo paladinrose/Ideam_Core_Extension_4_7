@@ -16,7 +16,7 @@
 
 #include "godot/geomorphology/geomorphology_terrain_resource.h"
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 class StratigraphicColumnInspectorControl : public godot::Control {
     GDCLASS(StratigraphicColumnInspectorControl, godot::Control)
@@ -43,4 +43,4 @@ public:
     void _draw() override;
 };
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

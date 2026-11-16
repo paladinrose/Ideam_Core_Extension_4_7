@@ -4,7 +4,7 @@
  * @file ecology_biome_map_preview_canvas.h
  * @brief Interactive 2D biome, succession & wildfire heatmap canvas for IdeamEcology.
  *
- * Displays any of the 9 EcologyMapLayer views, emits `cell_selected(grid_coords)`
+ * Displays any of the 9 core::EcologyMapLayer views, emits `cell_selected(grid_coords)`
  * on left click, and ignites a Rothermel wildfire at the clicked cell on right click.
  */
 
@@ -15,7 +15,7 @@
 
 #include "godot/ecology/ecology_biosphere_resource.h"
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 class EcologyBiomeMapPreviewCanvas : public godot::Control {
     GDCLASS(EcologyBiomeMapPreviewCanvas, godot::Control)
@@ -23,7 +23,7 @@ class EcologyBiomeMapPreviewCanvas : public godot::Control {
 private:
     godot::Ref<EcologyBiosphereResource> biosphere_resource_;
     godot::Ref<godot::ImageTexture> preview_texture_;
-    int active_map_layer_ = static_cast<int>(EcologyMapLayer::WHITTAKER_HOLDRIDGE_BIOME);
+    int active_map_layer_ = static_cast<int>(core::EcologyMapLayer::WHITTAKER_HOLDRIDGE_BIOME);
     godot::Vector2i selected_cell_{32, 32};
 
 protected:
@@ -48,4 +48,4 @@ public:
     void _draw() override;
 };
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ideam::ecology {
+namespace ideam::core {
 
 inline constexpr size_t DEFAULT_ECOLOGY_GUILD_COUNT = 8;
 
@@ -82,7 +82,8 @@ enum class EcologicalDisturbanceState : uint8_t {
     SMOLDERING_PEAT_EMBER       = 3,
     WINDTHROW_TORNADO_BLOWDOWN  = 4,
     DROUGHT_BARK_BEETLE_DIEBACK = 5,
-    FLOOD_SCOUR_ALLUVIAL        = 6
+    FLOOD_SCOUR_ALLUVIAL        = 6,
+    POST_DISTURBANCE_SNAG_BURN  = 7
 };
 
 /**
@@ -228,4 +229,4 @@ struct alignas(32) EcologyHarvestAndDisturbanceSamplePOD {
 };
 static_assert(sizeof(EcologyHarvestAndDisturbanceSamplePOD) == 32, "EcologyHarvestAndDisturbanceSamplePOD must be 32 bytes");
 
-} // namespace ideam::ecology
+} // namespace ideam::core

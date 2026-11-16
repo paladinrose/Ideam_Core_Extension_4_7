@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 EcologyBiomeMapPreviewCanvas::EcologyBiomeMapPreviewCanvas() {
     set_custom_minimum_size(godot::Vector2(260.0f, 260.0f));
@@ -41,7 +41,7 @@ godot::Ref<EcologyBiosphereResource> EcologyBiomeMapPreviewCanvas::get_biosphere
 }
 
 void EcologyBiomeMapPreviewCanvas::set_active_map_layer(int p_layer) {
-    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(EcologyMapLayer::COUNT) - 1);
+    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(core::EcologyMapLayer::COUNT) - 1);
     rebuild_preview_texture();
 }
 
@@ -111,4 +111,4 @@ void EcologyBiomeMapPreviewCanvas::_draw() {
     draw_rect(Rect2(Vector2(0, 0), sz), Color(0.28f, 0.42f, 0.32f, 1.0f), false, 1.0f);
 }
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

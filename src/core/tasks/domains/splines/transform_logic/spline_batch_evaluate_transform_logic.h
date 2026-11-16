@@ -118,6 +118,11 @@ struct alignas(64) SplineBatchEvaluateTransformLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(const TaskContextPOD &p_context, T_View &p_view) const noexcept {
+        execute_transform<T_View, T_Strategy>(p_context, p_view);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_transform(const TaskContextPOD &p_context, T_View &p_view) const noexcept {
         (void)p_view;
         const GrantPartPOD *hdr_part  = p_context.get_grant_part(spline_header_buffer_id);

@@ -15,6 +15,7 @@
 #include "../../../geometry/resources/polygon_2d_resource.h"
 #include "../../../geometry/resources/sdf_grid_2d_resource.h"
 #include "../../../geometry/resources/voronoi_diagram_2d_resource.h"
+#include "../../../geometry/resources/tensor_field_2d_resource.h"
 #include "../../task_graph_resource.h"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -52,7 +53,7 @@ private:
     godot::TypedArray<Polygon2DResource> polygons_;
     godot::Ref<VoronoiDiagram2DResource> voronoi_diagram_;
     godot::TypedArray<SDFGrid2DResource> sdf_grids_;
-    TypedArray<TensorField2DResource> tensor_fields_;
+    godot::TypedArray<TensorField2DResource> tensor_fields_;
 
     // --- Inspector Configuration ---
     GeometryDODExecutionMode dod_execution_mode_ = GEOMETRY_DOD_EXEC_COMPOSABLE_STAGES;

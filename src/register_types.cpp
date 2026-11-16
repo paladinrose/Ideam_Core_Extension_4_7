@@ -136,6 +136,7 @@
 #include "godot/geometry/ui/geometry_canvas_2d_base.h"
 #include "godot/geometry/ui/voronoi_2d_canvas.h"
 #include "godot/geometry/ui/sdf_grid_2d_canvas.h"
+#include "godot/geometry/ui/tensor_field_2d_canvas.h"
 #include "godot/geometry/ui/geometry_csg_bridge_control.h"
 #include "godot/geometry/ui/polygon_2d_control.h"
 #include "godot/geometry/editor/geometry_editor_inspector_base.h"
@@ -494,6 +495,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Polygon2DResource);
         GDREGISTER_CLASS(ideam::godot_ext::VoronoiDiagram2DResource);
         GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::TensorField2DResource);
         GDREGISTER_CLASS(ideam::godot_ext::Geometry2DProjector3D);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedGeometry);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryTaskHost);
@@ -504,6 +506,8 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Voronoi2DControl);
         GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DControl);
+        GDREGISTER_CLASS(ideam::godot_ext::TensorField2DCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::TensorField2DControl);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGPreviewCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGBridgeControl);
         GDREGISTER_CLASS(ideam::godot_ext::Polygon2DControl);
@@ -628,34 +632,34 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::CharactersTaskHost);
 
         // --- Geomorphology (Section 2.3) ---
-        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologySeedProfileResource);
-        GDREGISTER_CLASS(ideam::geomorphology::LithologyStratumResource);
-        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyTerrainResource);
-        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyTerrainNode3D);
-        GDREGISTER_CLASS(ideam::geomorphology::StratigraphicColumnInspectorControl);
-        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyMapLayerPreviewCanvas);
-        GDREGISTER_CLASS(ideam::tasks::geomorphology::DataOrientedGeomorphology);
-        GDREGISTER_CLASS(ideam::tasks::geomorphology::GeomorphologyTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::godot_ext::LithologyStratumResource);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyTerrainResource);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyTerrainNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::StratigraphicColumnInspectorControl);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyMapLayerPreviewCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedGeomorphology);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyTaskHost);
 
         // --- Climatology (Section 2.3) ---
-        GDREGISTER_CLASS(ideam::climatology::ClimatologySeedProfileResource);
-        GDREGISTER_CLASS(ideam::climatology::TornadoVortexProfileResource);
-        GDREGISTER_CLASS(ideam::climatology::ClimatologyAtmosphereResource);
-        GDREGISTER_CLASS(ideam::climatology::ClimatologyWeatherNode3D);
-        GDREGISTER_CLASS(ideam::climatology::ThermodynamicSoundingSkewTControl);
-        GDREGISTER_CLASS(ideam::climatology::ClimatologySynopticMapPreviewCanvas);
-        GDREGISTER_CLASS(ideam::tasks::climatology::DataOrientedClimatology);
-        GDREGISTER_CLASS(ideam::tasks::climatology::ClimatologyTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::godot_ext::TornadoVortexProfileResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologyAtmosphereResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologyWeatherNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::ThermodynamicSoundingSkewTControl);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologySynopticMapPreviewCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedClimatology);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologyTaskHost);
 
         // --- Ecology (Section 2.3) ---
-        GDREGISTER_CLASS(ideam::ecology::EcologySeedProfileResource);
-        GDREGISTER_CLASS(ideam::ecology::FloraGuildArchetypeResource);
-        GDREGISTER_CLASS(ideam::ecology::EcologyBiosphereResource);
-        GDREGISTER_CLASS(ideam::ecology::EcologyBiosphereNode3D);
-        GDREGISTER_CLASS(ideam::ecology::WhittakerOrdinationAndTrophicControl);
-        GDREGISTER_CLASS(ideam::ecology::EcologyBiomeMapPreviewCanvas);
-        GDREGISTER_CLASS(ideam::tasks::ecology::DataOrientedEcology);
-        GDREGISTER_CLASS(ideam::tasks::ecology::EcologyTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologySeedProfileResource);
+        GDREGISTER_CLASS(ideam::godot_ext::FloraGuildArchetypeResource);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyBiosphereResource);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyBiosphereNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::WhittakerOrdinationAndTrophicControl);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyBiomeMapPreviewCanvas);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedEcology);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyTaskHost);
 
         // --- Procedural Generation, Wave Function Collapse & Quantum Darwinism ---
         GDREGISTER_CLASS(ideam::godot_ext::ProceduralGeneratorResource);
@@ -835,12 +839,12 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::IdeamDesignPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::CharactersInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamCharactersPlugin);
-        GDREGISTER_CLASS(ideam::geomorphology::GeomorphologyInspector);
-        GDREGISTER_CLASS(ideam::geomorphology::IdeamGeomorphologyPlugin);
-        GDREGISTER_CLASS(ideam::climatology::ClimatologyInspector);
-        GDREGISTER_CLASS(ideam::climatology::IdeamClimatologyPlugin);
-        GDREGISTER_CLASS(ideam::ecology::EcologyInspector);
-        GDREGISTER_CLASS(ideam::ecology::IdeamEcologyPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamGeomorphologyPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologyInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamClimatologyPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamEcologyPlugin);
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamProceduralGenerationPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::WFCRuleTensorInspector);

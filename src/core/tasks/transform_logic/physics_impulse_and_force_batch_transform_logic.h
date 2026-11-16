@@ -214,7 +214,7 @@ struct alignas(64) PhysicsImpulseAndForceBatchTransformLogic {
                 if (application_mode == PhysicsForceAppMode::CENTRAL_IMPULSE) {
                     ps->body_apply_central_impulse(body_rid, vec);
                 } else if (application_mode == PhysicsForceAppMode::CONTINUOUS_FORCE) {
-                    ps->body_add_central_force(body_rid, vec);
+                    ps->body_apply_central_force(body_rid, vec);
                 } else if (application_mode == PhysicsForceAppMode::TORQUE_IMPULSE) {
                     ps->body_apply_torque_impulse(body_rid, vec);
                 } else if (application_mode == PhysicsForceAppMode::POSITIONED_IMPULSE) {

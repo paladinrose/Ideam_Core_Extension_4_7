@@ -18,6 +18,7 @@
 #include "../../../../memory/memory_common.h"
 #include "../../../../memory/memory_manager_dod.h"
 #include "../../../../memory/memory_buffer_selection_pod.h"
+#include "../../../../memory/views/sparse_set_view.h"
 #include "../../../../memory/views/strategies.h"
 #include "../../../i_native_task.h"
 #include "../../../query_logic/query_logic_traits.h"

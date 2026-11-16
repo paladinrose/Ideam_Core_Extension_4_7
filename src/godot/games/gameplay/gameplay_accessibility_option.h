@@ -248,6 +248,7 @@ public:
 
     void set_caption_speaker_labels(bool p_enabled);
     bool get_caption_speaker_labels() const;
+    bool is_caption_speaker_labels_enabled() const { return get_caption_speaker_labels(); }
 
     void set_mono_audio_downmix(bool p_mono);
     bool get_mono_audio_downmix() const;

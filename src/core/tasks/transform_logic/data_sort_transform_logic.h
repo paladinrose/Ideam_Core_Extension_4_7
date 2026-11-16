@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef _ENABLE_EXTENDED_ALIGNED_STORAGE
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE
+#endif
+
 #include "../../memory/memory_common.h"
 #include "../../memory/memory_manager_dod.h"
 #include "../../memory/memory_buffer_selection_pod.h"

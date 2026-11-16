@@ -45,7 +45,7 @@ struct alignas(64) GPUParticlesEmitBridgeTransformLogic {
     static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS;
     static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR;
     static constexpr DataType required_types              =
-        DataType::VECTOR3 | DataType::COLOR | DataType::TRANSFORM3D;
+        DataType::VECTOR3 | DataType::COLOR | DataType::CUSTOM;
 
     // --- Explicit Spatial & Kernel Contracts ---
     static constexpr size_t dimensions           = 0;

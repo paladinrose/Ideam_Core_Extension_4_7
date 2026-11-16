@@ -9,14 +9,14 @@
 
 #include "godot/tasks/domains/climatology/data_oriented_climatology.h"
 
-namespace ideam::tasks::climatology {
+namespace ideam::godot_ext {
 
 class ClimatologyTaskHost : public godot::Node {
     GDCLASS(ClimatologyTaskHost, godot::Node)
 
 private:
     godot::Ref<DataOrientedClimatology> dod_climatology_;
-    godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> atmosphere_resource_;
+    godot::Ref<ClimatologyAtmosphereResource> atmosphere_resource_;
     bool auto_step_in_process_ = false;
     float synoptic_dt_per_step_sec_ = 30.0f;
     float vortex_dt_per_step_sec_ = 10.0f;
@@ -31,8 +31,8 @@ public:
     void _ready() override;
     void _process(double p_delta) override;
 
-    void set_atmosphere_resource(const godot::Ref<ideam::climatology::ClimatologyAtmosphereResource>& p_atmosphere);
-    godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> get_atmosphere_resource() const;
+    void set_atmosphere_resource(const godot::Ref<ClimatologyAtmosphereResource>& p_atmosphere);
+    godot::Ref<ClimatologyAtmosphereResource> get_atmosphere_resource() const;
 
     godot::Ref<DataOrientedClimatology> get_dod_climatology() const;
 
@@ -48,4 +48,4 @@ public:
     void step_once();
 };
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::godot_ext

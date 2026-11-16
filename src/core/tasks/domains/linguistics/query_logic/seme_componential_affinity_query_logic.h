@@ -45,7 +45,7 @@ struct alignas(64) SemeComponentialAffinityQueryLogic {
     static constexpr ViewCapability required_capabilities = ViewCapability::NONE;
     static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR;
     static constexpr DataType required_types =
-        DataType::INT32 | DataType::UINT32 | DataType::FLOAT32 | DataType::BYTE;
+        DataType::INT32 | DataType::INT32 | DataType::FLOAT32 | DataType::BYTE;
 
     static constexpr bool supports_cull               = true;
     static constexpr bool supports_addition           = true;
@@ -192,24 +192,35 @@ struct alignas(64) SemeComponentialAffinityQueryLogic {
                 scores[i] = aff;
             }
 
-            if (sel && sel->sparse_indices && static_cast<int64_t>(i) < sel->capacity) {
+            if (sel && sel->data.indices && static_cast<int64_t>(i) < sel->capacity) {
                 const bool passes = (aff >= threshold);
                 if constexpr (Op == QueryOp::ADD) {
                     if (passes && out_sparse_count < sel->capacity) {
-                        sel->sparse_indices[out_sparse_count++] = static_cast<int64_t>(i);
+                        sel->data.indices[out_sparse_count++] = static_cast<int64_t>(i);
                     }
                 } else {
                     // QueryOp::CULL keeps only passing elements
                     if (passes && out_sparse_count < sel->capacity) {
-                        sel->sparse_indices[out_sparse_count++] = static_cast<int64_t>(i);
+                        sel->data.indices[out_sparse_count++] = static_cast<int64_t>(i);
                     }
                 }
             }
         }
 
-        if (sel && sel->sparse_indices) {
+        if (sel && sel->data.indices) {
             sel->element_count = out_sparse_count;
         }
+    }
+
+    template <QueryOp Op, typename T_ActiveView, typename T_ActiveStrategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_ctx,
+        const T_ActiveView &p_view
+    ) const noexcept {
+        (void)r_selection;
+        T_ActiveView &mut_view = const_cast<T_ActiveView &>(p_view);
+        execute<Op, T_ActiveView, T_ActiveStrategy>(p_ctx, mut_view);
     }
 
     template <QueryOp Op, typename T_ActiveView, typename T_ActiveStrategy>

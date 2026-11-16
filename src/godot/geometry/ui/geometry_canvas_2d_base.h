@@ -146,8 +146,14 @@ protected:
     [[nodiscard]] virtual bool _is_canvas_wrapped() const { return false; }
     [[nodiscard]] virtual bool _has_non_point_content() const { return false; }
 
-    [[nodiscard]] virtual godot::Vector2 _get_point_world_pos(int p_index) const = 0;
-    virtual void _set_point_world_pos(int p_index, const godot::Vector2 &p_world_pos) = 0;
+    [[nodiscard]] virtual godot::Vector2 _get_point_world_pos(int p_index) const {
+        (void)p_index;
+        return godot::Vector2();
+    }
+    virtual void _set_point_world_pos(int p_index, const godot::Vector2 &p_world_pos) {
+        (void)p_index;
+        (void)p_world_pos;
+    }
 
     [[nodiscard]] virtual bool _has_wrap_ghost_endpoint(godot::Vector2 &r_ghost_world_pos) const {
         (void)r_ghost_world_pos;
@@ -186,7 +192,10 @@ protected:
     // --- Sampled Polyline & Bounds ---
     [[nodiscard]] virtual godot::PackedVector2Array _sample_curve_screen_points(
         const godot::Rect2 &p_plot
-    ) const = 0;
+    ) const {
+        (void)p_plot;
+        return godot::PackedVector2Array();
+    }
     [[nodiscard]] virtual bool _compute_world_bounds(godot::Rect2 &r_bounds) const;
 
     // --- Structural Mouse Actions ---
@@ -198,8 +207,9 @@ protected:
     virtual void _on_right_click_point(int p_index) { (void)p_index; }
 
     // --- Custom Subclass Overlays & Custom Drag Hooks ---
-    virtual void _draw_plot_background_overlay(const godot::Rect2 &p_plot) {}
-    virtual void _draw_plot_foreground_overlay(const godot::Rect2 &p_plot) {}
+    virtual void _draw_plot_background_overlay(const godot::Rect2 &p_plot) { (void)p_plot; }
+    virtual void _draw_plot_foreground_overlay(const godot::Rect2 &p_plot) { (void)p_plot; }
+    virtual void _draw_geometry_canvas() {}
     [[nodiscard]] virtual bool _try_begin_custom_drag(
         const godot::Ref<godot::InputEvent> &p_event,
         const godot::Rect2 &p_plot
@@ -239,6 +249,22 @@ public:
         const godot::Vector2 &p_screen,
         const godot::Rect2 &p_plot
     ) const;
+    [[nodiscard]] godot::Vector2 world_to_screen(const godot::Vector2 &p_world) const {
+        return world_to_screen(p_world, get_plot_rect());
+    }
+    [[nodiscard]] godot::Vector2 screen_to_world(const godot::Vector2 &p_screen) const {
+        return screen_to_world(p_screen, get_plot_rect());
+    }
+    [[nodiscard]] real_t get_zoom_scale() const {
+        const godot::Rect2 plot = get_plot_rect();
+        const real_t span_x = std::max<real_t>(static_cast<real_t>(1e-4), view_max.x - view_min.x);
+        const real_t span_y = std::max<real_t>(static_cast<real_t>(1e-4), view_max.y - view_min.y);
+        return std::min<real_t>(plot.size.x / span_x, plot.size.y / span_y);
+    }
+    void frame_rect(const godot::Rect2 &p_world_rect, float p_margin_px = 12.0f) {
+        set_plot_margins(p_margin_px, p_margin_px, p_margin_px, p_margin_px);
+        set_view_bounds(p_world_rect.position, p_world_rect.position + p_world_rect.size);
+    }
 
     // --- Viewport Bounds, Pan, Zoom & Auto-Fit ---
     void set_view_bounds(const godot::Vector2 &p_min, const godot::Vector2 &p_max);

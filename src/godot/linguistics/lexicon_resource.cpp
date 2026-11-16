@@ -927,17 +927,17 @@ int LexiconResource::import_wordnet_synsets_json(const godot::String &p_json_tex
             sem->set_canonical_label(godot::StringName(label));
         }
         if (item.has("synset_id")) {
-            sem->set_wordnet_synset_id(static_cast<int>(item["synset_id"]));
+            sem->set_wordnet_synset_id(godot::String(item["synset_id"]));
         }
         if (item.has("gloss")) {
-            sem->set_gloss_definition(item["gloss"]);
+            sem->set_gloss_description(item["gloss"]);
         }
         if (item.has("upos")) {
             if (item["upos"].get_type() == godot::Variant::STRING) {
                 const godot::String upos_str = item["upos"];
-                sem->set_upos_tag(static_cast<int>(core::parse_upos_tag(upos_str.utf8().get_data())));
+                sem->set_upos_tag(upos_str);
             } else {
-                sem->set_upos_tag(static_cast<int>(item["upos"]));
+                sem->set_lexical_category(static_cast<int>(item["upos"]));
             }
         }
         if (item.has("nuclear_semes") && item["nuclear_semes"].get_type() == godot::Variant::ARRAY) {
@@ -974,7 +974,7 @@ int LexiconResource::import_wordnet_synsets_json(const godot::String &p_json_tex
         if (!sememe_resources_.has(sem)) {
             sememe_resources_.push_back(sem);
         }
-        register_lexeme_entry(label, godot::StringName(label), sem->get_upos_tag(), default_lect_id_);
+        register_lexeme_entry(label, godot::StringName(label), sem->get_lexical_category(), default_lect_id_);
         ++imported;
     }
 
@@ -1443,7 +1443,7 @@ void LanguageAssetResource::populate_builtin_godot_and_wizard_vocabulary() {
         godot::Ref<SememeResource> sem;
         sem.instantiate();
         sem->set_canonical_label(godot::StringName(p_word));
-        sem->set_upos_tag(static_cast<int>(p_cat));
+        sem->set_lexical_category(static_cast<int>(p_cat));
         sem->set_primary_domain_id(static_cast<int>(p_dom));
         sem->set_emotive_valence(p_valence);
         for (const char *t : p_nuclear) {
@@ -1758,7 +1758,7 @@ godot::Ref<SememeResource> LanguageAssetResource::lookup_or_infer_sememe_for_tok
     godot::Ref<SememeResource> inferred;
     inferred.instantiate();
     inferred->set_canonical_label(label_sn);
-    inferred->set_upos_tag(static_cast<int>(morph.inferred_category));
+    inferred->set_lexical_category(static_cast<int>(morph.inferred_category));
     inferred->set_emotive_valence(morph.composed_descriptor.emotive_valence);
 
     const auto &seme_names = unified_core_.seme_names();

@@ -327,7 +327,7 @@ struct alignas(64) CausalDependencyDepthMetadataLogic {
                 if (!cond_rows || cid == INVALID_ID || static_cast<int64_t>(cid) >= crow_cap) return INVALID_ID;
                 const ConditionEvaluationRowPOD& row = cond_rows[cid];
                 if (row.condition_type != CONDITION_TYPE_CAUSAL) return INVALID_ID;
-                return row.resolved_lhs_id;
+                return row.resolved_subject_id;
             };
 
             auto compute_incident_depth = [&](auto& self, uint32_t inc_id, uint32_t* path_stack, uint8_t path_len) noexcept -> uint8_t {
@@ -389,9 +389,9 @@ struct alignas(64) CausalDependencyDepthMetadataLogic {
 
                 if (resolution_mode == CAUSAL_DEPTH_CONDITION_CHAIN && cond_rows && idx < crow_cap) {
                     const ConditionEvaluationRowPOD& row = cond_rows[idx];
-                    if (row.condition_type == CONDITION_TYPE_CAUSAL && row.resolved_lhs_id != INVALID_ID &&
-                        !is_incident_completed(row.resolved_lhs_id)) {
-                        const uint8_t inc_dep = compute_incident_depth(compute_incident_depth, row.resolved_lhs_id, path_stack, 0u);
+                    if (row.condition_type == CONDITION_TYPE_CAUSAL && row.resolved_subject_id != INVALID_ID &&
+                        !is_incident_completed(row.resolved_subject_id)) {
+                        const uint8_t inc_dep = compute_incident_depth(compute_incident_depth, row.resolved_subject_id, path_stack, 0u);
                         depth = (inc_dep == cycle_fallback_depth)
                             ? cycle_fallback_depth
                             : static_cast<uint8_t>(std::min<uint32_t>(static_cast<uint32_t>(inc_dep) + 1u, max_causal_depth));

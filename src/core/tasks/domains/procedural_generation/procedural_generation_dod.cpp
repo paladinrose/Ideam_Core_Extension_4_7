@@ -41,14 +41,14 @@ bool ProceduralGenerationDOD::initialize_procedural_generation_memory(MemoryMana
     for (size_t i = 0; i < PROCGEN_BUFFER_SPECS.size(); ++i) {
         const ProceduralGenerationBufferSpec &spec = PROCGEN_BUFFER_SPECS[i];
         const int64_t cap = capacities_.resolve(spec.capacity_kind);
-        const uint32_t buf_id = p_mem->create_buffer(
-            godot::String(spec.buffer_name.data()),
-            cap,
-            spec.data_type,
-            BufferLayoutType::FLAT,
-            BufferAlignmentMode::TIGHT,
-            static_cast<int64_t>(spec.element_bytes)
-        );
+        const size_t safe_cap = static_cast<size_t>(std::max<int64_t>(1, cap));
+        const size_t total_bytes = safe_cap * static_cast<size_t>(spec.element_bytes);
+        const uint32_t buf_id = p_mem->create_buffer(BufferLayoutType::FLAT, total_bytes, 64u);
+        if (MemoryBufferPOD *buf = p_mem->get_buffer(buf_id)) {
+            buf->max_elements   = static_cast<int64_t>(safe_cap);
+            buf->current_count  = 0;
+            buf->element_stride = static_cast<uint32_t>(spec.element_bytes);
+        }
         manifest_.set(spec.slot, buf_id);
     }
     return manifest_.has(ProceduralGenerationBufferSlot::ENVIRONMENT_SLOT_POD);

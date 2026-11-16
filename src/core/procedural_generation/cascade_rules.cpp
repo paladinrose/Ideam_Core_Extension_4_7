@@ -1,3 +1,7 @@
+#ifndef _ENABLE_EXTENDED_ALIGNED_STORAGE
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE
+#endif
+
 #include "cascade_rules.h"
 #include <algorithm>
 

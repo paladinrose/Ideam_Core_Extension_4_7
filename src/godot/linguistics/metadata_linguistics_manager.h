@@ -126,6 +126,11 @@ public:
     [[nodiscard]] static godot::Ref<SemanticTagSetResource> read_tag_set_from_metadata(
         const godot::Object *p_object
     );
+    [[nodiscard]] static godot::Ref<SemanticTagSetResource> extract_tag_set_from_metadata(
+        const godot::Object *p_object
+    ) {
+        return read_tag_set_from_metadata(p_object);
+    }
 
     static void write_profile_pod_to_metadata(
         godot::Object *p_object,

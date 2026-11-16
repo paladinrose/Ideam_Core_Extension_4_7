@@ -35,6 +35,26 @@ public:
     void create_action(const String &name, UndoRedo::MergeMode merge_mode = UndoRedo::MERGE_DISABLE, Object *custom_context = nullptr);
     void add_do_method(const Callable &callable);
     void add_undo_method(const Callable &callable);
+
+    template <typename... Args>
+    void add_do_method(Object *p_object, const StringName &p_method, Args&&... p_args) {
+        if (!p_object) return;
+        Callable c(p_object, p_method);
+        if constexpr (sizeof...(Args) > 0) {
+            c = c.bind(std::forward<Args>(p_args)...);
+        }
+        add_do_method(c);
+    }
+
+    template <typename... Args>
+    void add_undo_method(Object *p_object, const StringName &p_method, Args&&... p_args) {
+        if (!p_object) return;
+        Callable c(p_object, p_method);
+        if constexpr (sizeof...(Args) > 0) {
+            c = c.bind(std::forward<Args>(p_args)...);
+        }
+        add_undo_method(c);
+    }
     void add_do_property(Object *object, const StringName &property, const Variant &value);
     void add_undo_property(Object *object, const StringName &property, const Variant &value);
     void commit_action(bool execute = true);

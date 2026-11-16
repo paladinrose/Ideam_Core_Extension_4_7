@@ -129,7 +129,7 @@ void LinguisticsInspector::_refresh_summary_panel() {
 
     if (const auto *sem = godot::Object::cast_to<SememeResource>(obj)) {
         lbl->set_text(
-            "UPOS: " + godot::String(core::upos_to_string(static_cast<core::UniversalPOS>(sem->get_upos_tag())).data()) +
+            "UPOS: " + sem->get_upos_tag() +
             "  |  Nuclear Bits: " + godot::String::num_int64(sem->get_nuclear_popcount()) +
             " / 192  |  MRL Dims: " + godot::String::num_int64(sem->get_mrl_float_embedding().size()) +
             "  |  Coherence Mask32: 0x" + godot::String::num_uint64(static_cast<uint64_t>(sem->get_coherence_trait_mask32()), 16)

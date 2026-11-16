@@ -99,6 +99,15 @@ struct alignas(64) SpatialHashPartitionMetadataLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        T_View &p_view
+    ) const noexcept {
+        execute_metadata<T_View, T_Strategy>(p_view, r_selection, p_context);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_metadata(
         T_View &p_view,
         MemoryBufferSelectionPOD &r_selection,

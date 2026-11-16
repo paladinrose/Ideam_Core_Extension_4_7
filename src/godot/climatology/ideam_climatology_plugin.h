@@ -13,7 +13,7 @@
 
 #include "godot/climatology/editor/climatology_inspector.h"
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 class IdeamClimatologyPlugin : public godot::EditorPlugin {
     GDCLASS(IdeamClimatologyPlugin, godot::EditorPlugin)
@@ -37,4 +37,4 @@ public:
     }
 };
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

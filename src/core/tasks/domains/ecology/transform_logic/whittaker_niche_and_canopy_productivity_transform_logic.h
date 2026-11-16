@@ -106,20 +106,20 @@ struct alignas(64) WhittakerNicheAndCanopyProductivityTransformLogic {
         if (!seed_part || !seed_part->raw_base_ptr || !eco_part || !eco_part->raw_base_ptr || !bio_part || !bio_part->raw_base_ptr) {
             return;
         }
-        const auto *seed = reinterpret_cast<const ideam::ecology::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        const auto *seed = reinterpret_cast<const ideam::core::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
         const auto *cat  = (cat_part && cat_part->raw_base_ptr)
-            ? reinterpret_cast<const ideam::ecology::FloraGuildArchetypePOD *>(cat_part->raw_base_ptr)
+            ? reinterpret_cast<const ideam::core::FloraGuildArchetypePOD *>(cat_part->raw_base_ptr)
             : nullptr;
-        auto *eco        = reinterpret_cast<ideam::ecology::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
-        auto *bio        = reinterpret_cast<ideam::ecology::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
+        auto *eco        = reinterpret_cast<ideam::core::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
+        auto *bio        = reinterpret_cast<ideam::core::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
         const size_t n   = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        const size_t c_cnt = cat ? (cat_part->capacity_bytes / sizeof(ideam::ecology::FloraGuildArchetypePOD)) : 0u;
-        ideam::ecology::EcologyKernelMath::step_whittaker_niche_and_canopy_npp(
+        const size_t c_cnt = cat ? (cat_part->capacity_bytes / sizeof(ideam::core::FloraGuildArchetypePOD)) : 0u;
+        ideam::core::EcologyKernelMath::step_whittaker_niche_and_canopy_npp(
             *seed,
-            std::span<const ideam::ecology::FloraGuildArchetypePOD>(cat, c_cnt),
+            std::span<const ideam::core::FloraGuildArchetypePOD>(cat, c_cnt),
             dt_years,
-            std::span<ideam::ecology::EcologicalCellStatePOD>(eco, n),
-            std::span<ideam::ecology::BiogeochemicalAndTrophicCellPOD>(bio, n));
+            std::span<ideam::core::EcologicalCellStatePOD>(eco, n),
+            std::span<ideam::core::BiogeochemicalAndTrophicCellPOD>(bio, n));
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

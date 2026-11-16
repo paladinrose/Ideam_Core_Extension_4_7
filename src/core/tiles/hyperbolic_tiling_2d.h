@@ -86,6 +86,11 @@ public:
     /**
      * Returns true iff `{p, q}` forms a valid hyperbolic tessellation: `(p - 2) * (q - 2) > 4`.
      */
+    [[nodiscard]] static constexpr bool is_hyperbolic_schlafli(int p_p, int p_q) noexcept {
+        if (p_p < 3 || p_q < 3) return false;
+        return (p_p - 2) * (p_q - 2) > 4;
+    }
+
     [[nodiscard]] static constexpr bool is_valid_hyperbolic_pq(uint32_t p_p, uint32_t p_q) noexcept {
         if (p_p < 3u || p_q < 3u) return false;
         return (p_p - 2u) * (p_q - 2u) > 4u;
@@ -97,6 +102,9 @@ public:
      *   r_0 = sqrt( cos(pi/p + pi/q) / cos(pi/p - pi/q) ).
      */
     [[nodiscard]] static T compute_fundamental_vertex_radius(uint32_t p_p, uint32_t p_q) noexcept;
+    [[nodiscard]] static T compute_central_vertex_radius(uint32_t p_p, uint32_t p_q) noexcept {
+        return compute_fundamental_vertex_radius(p_p, p_q);
+    }
 
     /**
      * Builds an SU(1, 1) hyperbolic translation mapping the origin `(0, 0)` to `p_target` (`|p_target| < 1`).
@@ -140,6 +148,13 @@ public:
         const Vec2& p_b,
         uint32_t p_subdivisions = 8u
     );
+    [[nodiscard]] static std::vector<Vec2> sample_geodesic_arc(
+        const Vec2& p_a,
+        const Vec2& p_b,
+        uint32_t p_subdivisions = 8u
+    ) {
+        return sample_geodesic_segment(p_a, p_b, p_subdivisions);
+    }
 
     /**
      * Hyperbolic metric distance `d_H(z1, z2) = acosh(1 + 2*|z1 - z2|^2 / ((1 - |z1|^2)*(1 - |z2|^2)))`.
@@ -150,6 +165,18 @@ public:
     // Configuration & TilingRegion2D Generation
     // ========================================================================
 
+    void configure(
+        uint32_t p_p,
+        uint32_t p_q,
+        uint32_t p_rings,
+        uint32_t p_subdivs,
+        const Vec2& p_focus
+    ) noexcept {
+        set_schlafli_pq(p_p, p_q);
+        set_generation_rings(p_rings);
+        set_arc_subdivisions(p_subdivs);
+        set_mobius_focus(p_focus);
+    }
     void set_schlafli_pq(uint32_t p_p, uint32_t p_q) noexcept;
     [[nodiscard]] constexpr uint32_t get_schlafli_p() const noexcept { return schlafli_p_; }
     [[nodiscard]] constexpr uint32_t get_schlafli_q() const noexcept { return schlafli_q_; }

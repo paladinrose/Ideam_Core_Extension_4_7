@@ -89,8 +89,8 @@ void LinguisticsTaskHost::setup_linguistics_host() {
     }
 
     domain_resource_->setup_dod_pipeline();
-    memory_manager = domain_resource_->get_memory_manager_shared();
-    task_graph     = domain_resource_->get_active_task_graph_shared();
+    active_manager = domain_resource_->get_memory_manager_shared();
+    active_graph   = domain_resource_->get_active_task_graph_shared();
 }
 
 void LinguisticsTaskHost::execute_linguistics_step(double p_delta) {
@@ -105,8 +105,8 @@ bool LinguisticsTaskHost::bind_shared_task_host(TaskGraphHost *p_other_host) {
     if (!shared_mgr) return false;
 
     domain_resource_->setup_dod_pipeline_with_manager(shared_mgr, nullptr);
-    memory_manager = domain_resource_->get_memory_manager_shared();
-    task_graph     = domain_resource_->get_active_task_graph_shared();
+    active_manager = domain_resource_->get_memory_manager_shared();
+    active_graph   = domain_resource_->get_active_task_graph_shared();
     return true;
 }
 

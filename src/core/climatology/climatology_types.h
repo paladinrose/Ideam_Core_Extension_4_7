@@ -17,7 +17,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace ideam::climatology {
+namespace ideam::core {
 
 inline constexpr size_t MAX_ACTIVE_TORNADO_VORTICES = 16;
 
@@ -236,4 +236,4 @@ struct alignas(32) ClimatologyHazardAndBiomeSamplePOD {
 };
 static_assert(sizeof(ClimatologyHazardAndBiomeSamplePOD) == 32, "ClimatologyHazardAndBiomeSamplePOD must be 32 bytes");
 
-} // namespace ideam::climatology
+} // namespace ideam::core

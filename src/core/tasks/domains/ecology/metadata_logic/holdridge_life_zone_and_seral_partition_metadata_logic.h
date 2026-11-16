@@ -85,6 +85,15 @@ struct alignas(64) HoldridgeLifeZoneAndSeralPartitionMetadataLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        T_View &p_view
+    ) const noexcept {
+        execute_metadata<T_View, T_Strategy>(p_view, r_selection, p_context);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_metadata(
         T_View &p_view,
         MemoryBufferSelectionPOD &r_selection,
@@ -99,15 +108,15 @@ struct alignas(64) HoldridgeLifeZoneAndSeralPartitionMetadataLogic {
             return;
         }
 
-        const auto *seed = reinterpret_cast<const ideam::ecology::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        auto *eco        = reinterpret_cast<ideam::ecology::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
-        auto *bio        = reinterpret_cast<ideam::ecology::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
+        const auto *seed = reinterpret_cast<const ideam::core::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto *eco        = reinterpret_cast<ideam::core::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
+        auto *bio        = reinterpret_cast<ideam::core::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
 
         const size_t n = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        ideam::ecology::EcologyKernelMath::compute_holdridge_and_seral_partition(
+        ideam::core::EcologyKernelMath::compute_holdridge_and_seral_partition(
             *seed,
-            std::span<ideam::ecology::EcologicalCellStatePOD>(eco, n),
-            std::span<ideam::ecology::BiogeochemicalAndTrophicCellPOD>(bio, n));
+            std::span<ideam::core::EcologicalCellStatePOD>(eco, n),
+            std::span<ideam::core::BiogeochemicalAndTrophicCellPOD>(bio, n));
 
         const size_t sel_lim = static_cast<size_t>(std::max<int64_t>(0, r_selection.element_count));
         for (size_t i = 0; i < n && i < sel_lim; ++i) {

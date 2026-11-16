@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 ThermodynamicSoundingSkewTControl::ThermodynamicSoundingSkewTControl() {
     set_custom_minimum_size(godot::Vector2(260.0f, 210.0f));
@@ -114,4 +114,4 @@ void ThermodynamicSoundingSkewTControl::_draw() {
                 ef_tier > 0 ? Color(1.0f, 0.38f, 0.42f) : Color(0.75f, 0.85f, 0.92f));
 }
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

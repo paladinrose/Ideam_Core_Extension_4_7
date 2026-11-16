@@ -22,8 +22,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <vector>
 
-namespace ideam::climatology {
+namespace ideam::core {
 
 struct ClimatologyKernelMath {
     // ========================================================================
@@ -728,4 +729,4 @@ struct ClimatologyKernelMath {
     }
 };
 
-} // namespace ideam::climatology
+} // namespace ideam::core

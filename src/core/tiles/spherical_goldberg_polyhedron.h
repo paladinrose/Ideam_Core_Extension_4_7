@@ -35,9 +35,11 @@ struct GoldbergCell3DPOD {
     uint8_t valence           = 6u; // 5 for the 12 icosahedral pentagons, 6 for all hexagons
     uint8_t colour_id         = 0u; // 0, 1, or 2
     uint16_t generation_ring  = 0u; // Topological distance from North Pole pentagon (cell 0)
+    bool is_pentagon          = false;
     T elevation               = static_cast<T>(0.0);
 
     Vec3 unit_normal{static_cast<T>(0.0), static_cast<T>(1.0), static_cast<T>(0.0)};
+    Vec3 center_3d{static_cast<T>(0.0), static_cast<T>(1.0), static_cast<T>(0.0)};
     Vec3 tangent_u{static_cast<T>(1.0), static_cast<T>(0.0), static_cast<T>(0.0)};
     Vec3 tangent_v{static_cast<T>(0.0), static_cast<T>(0.0), static_cast<T>(1.0)};
 
@@ -73,9 +75,50 @@ public:
     }
     [[nodiscard]] constexpr T get_radius() const noexcept { return radius_; }
 
+    void configure(uint32_t p_frequency, T p_radius) noexcept {
+        set_frequency(p_frequency);
+        set_radius(p_radius);
+    }
+    void build_spherical_region(Region& r_out_topology_region) {
+        build_goldberg_sphere(r_out_topology_region);
+    }
+
     [[nodiscard]] size_t get_cell_count() const noexcept { return cells_3d_.size(); }
+    [[nodiscard]] size_t cell_count() const noexcept { return cells_3d_.size(); }
     [[nodiscard]] std::span<const Cell3D> get_cells_3d() const noexcept { return cells_3d_; }
+    [[nodiscard]] std::span<const Cell3D> cells() const noexcept { return cells_3d_; }
     [[nodiscard]] std::span<Cell3D> get_cells_3d_mut() noexcept { return cells_3d_; }
+
+    [[nodiscard]] std::vector<Vec3> cell_polygon_3d(uint32_t p_cell_id) const {
+        std::vector<Vec3> out;
+        if (p_cell_id < cells_3d_.size()) {
+            const auto& c = cells_3d_[p_cell_id];
+            out.reserve(c.valence);
+            for (uint8_t k = 0u; k < c.valence; ++k) {
+                out.push_back(c.unit_vertices[k] * radius_);
+            }
+        }
+        return out;
+    }
+
+    [[nodiscard]] std::vector<int32_t> cell_neighbors(uint32_t p_cell_id) const {
+        std::vector<int32_t> out;
+        if (p_cell_id < cells_3d_.size()) {
+            const auto& c = cells_3d_[p_cell_id];
+            out.reserve(c.valence);
+            for (uint8_t k = 0u; k < c.valence; ++k) {
+                if (c.neighbor_cell_ids[k] >= 0) {
+                    out.push_back(c.neighbor_cell_ids[k]);
+                }
+            }
+        }
+        return out;
+    }
+
+    [[nodiscard]] uint32_t locate_cell_from_direction(const Vec3& p_direction) const noexcept {
+        const int32_t cid = find_closest_cell(p_direction);
+        return (cid < 0) ? INVALID_TILE_ID : static_cast<uint32_t>(cid);
+    }
 
     /**
      * Builds the Goldberg polyhedron `GP(frequency_, 0)` (`10 * f^2 + 2` cells) and populates

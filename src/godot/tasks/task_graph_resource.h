@@ -23,6 +23,7 @@ private:
     // --- Command Arena Capacities ---
     int command_arena_capacity_bytes = 1024 * 1024; // 1 MB default (Tier 1 Graph Commands)
     int selection_queue_capacity_elements = 250000; // Default element count (Tier 2 Wave Commands)
+    mutable std::shared_ptr<core::TaskGraphDOD> cached_dod_graph_;
 
 protected:
     static void _bind_methods();
@@ -59,9 +60,29 @@ public:
         const std::shared_ptr<core::TaskGraphDOD>& p_graph,
         const godot::HashMap<godot::StringName, core::NodeID>& p_ui_to_dod_map);
         
+    void compile_to_task_graph(
+        core::TaskGraphDOD& r_target_graph,
+        godot::HashMap<godot::StringName, core::NodeID>& r_ui_to_dod_map) const;
+
     std::shared_ptr<core::TaskGraphDOD> compile_to_task_graph(
         core::MemoryManagerDOD* p_manager, 
         godot::HashMap<godot::StringName, core::NodeID>& r_ui_to_dod_map) const;
+
+    void bake_to_dod(
+        core::TaskGraphDOD& r_target_graph,
+        core::MemoryManagerDOD* p_manager,
+        godot::HashMap<godot::StringName, core::NodeID>& r_ui_to_dod_map) const {
+        (void)p_manager;
+        compile_to_task_graph(r_target_graph, r_ui_to_dod_map);
+    }
+
+    core::TaskGraphDOD* get_dod_graph() const {
+        if (!cached_dod_graph_ && get_memory_manager().is_valid()) {
+            godot::HashMap<godot::StringName, core::NodeID> dummy_map;
+            cached_dod_graph_ = compile_to_task_graph(get_memory_manager()->get_dod_manager(), dummy_map);
+        }
+        return cached_dod_graph_.get();
+    }
 };
 
 } // namespace ideam::godot_ext

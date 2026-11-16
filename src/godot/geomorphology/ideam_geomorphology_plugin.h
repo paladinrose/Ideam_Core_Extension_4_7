@@ -13,7 +13,7 @@
 
 #include "godot/geomorphology/editor/geomorphology_inspector.h"
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 class IdeamGeomorphologyPlugin : public godot::EditorPlugin {
     GDCLASS(IdeamGeomorphologyPlugin, godot::EditorPlugin)
@@ -37,4 +37,4 @@ public:
     }
 };
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

@@ -58,7 +58,7 @@ namespace {
     template <typename C, typename S> struct GeomorphologyQueryLogicResolver<GeomorphologyQueryLogicID::GeomorphicHazardAndResourceVein, C, S> { using Type = GeomorphicHazardAndResourceVeinQueryLogic<C>; static constexpr bool is_valid = true; };
 
     template <GeomorphologyQueryLogicID LogicID, typename C, typename S>
-    struct GeomorphologyQueryLogicKernelExtractor : GeomorphologyQueryLogicKernelExtractorImpl<GeomorphologyQueryLogicResolver<LogicID, C, S>> {};
+    struct GeomorphologyQueryLogicKernelExtractor : GeomorphologyQueryKernelExtractorImpl<GeomorphologyQueryLogicResolver<LogicID, C, S>> {};
 
     template <MemoryStrategy ID> struct GeomorphologyQueryStrategyResolver { static constexpr bool is_valid = false; };
     template <> struct GeomorphologyQueryStrategyResolver<MemoryStrategy::FlatStrategy> { using Type = FlatStrategy; static constexpr bool is_valid = true; };

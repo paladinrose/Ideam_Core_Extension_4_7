@@ -11,7 +11,7 @@
 
 #include "godot/ecology/ecology_biosphere_resource.h"
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 class WhittakerOrdinationAndTrophicControl : public godot::Control {
     GDCLASS(WhittakerOrdinationAndTrophicControl, godot::Control)
@@ -38,4 +38,4 @@ public:
     void _draw() override;
 };
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

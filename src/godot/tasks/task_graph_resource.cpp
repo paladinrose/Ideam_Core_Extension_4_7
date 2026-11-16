@@ -229,6 +229,16 @@ std::shared_ptr<core::TaskGraphDOD> TaskGraphResource::compile_to_task_graph(
     godot::HashMap<godot::StringName, core::NodeID>& r_ui_to_dod_map) const 
 {
     auto task_graph = std::make_shared<core::TaskGraphDOD>(p_manager);
+    compile_to_task_graph(*task_graph, r_ui_to_dod_map);
+    return task_graph;
+}
+
+void TaskGraphResource::compile_to_task_graph(
+    core::TaskGraphDOD& r_target_graph,
+    godot::HashMap<godot::StringName, core::NodeID>& r_ui_to_dod_map) const 
+{
+    core::TaskGraphDOD* task_graph = &r_target_graph;
+    core::MemoryManagerDOD* p_manager = task_graph->get_memory_manager();
     
     godot::TypedArray<godot::Ref<IdeamGraphNodeResource>> current_nodes = get_nodes();
     godot::TypedArray<godot::Dictionary> current_edges = get_edges();
@@ -630,8 +640,6 @@ std::shared_ptr<core::TaskGraphDOD> TaskGraphResource::compile_to_task_graph(
             }
         }
     }
-
-    return task_graph;
 }
 
 } // namespace ideam::godot_ext

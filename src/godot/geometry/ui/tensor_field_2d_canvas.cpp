@@ -1,8 +1,11 @@
 #include "godot/geometry/ui/tensor_field_2d_canvas.h"
 #include <godot_cpp/core/class_db.hpp>
 #include <algorithm>
+#include <cmath>
 
-namespace godot {
+namespace ideam::godot_ext {
+
+using namespace godot;
 
 static void draw_tensor_field_common(
     CanvasItem *p_canvas,
@@ -27,7 +30,7 @@ static void draw_tensor_field_common(
             PackedVector2Array poly = parcels[i];
             if (poly.size() >= 3) {
                 Color c = p_fill_color;
-                c.h = std::fmod(c.h + static_cast<float>(i) * 0.13f, 1.0f);
+                c.set_h(std::fmod(c.get_h() + static_cast<float>(i) * 0.13f, 1.0f));
                 p_canvas->draw_colored_polygon(poly, c);
             }
         }
@@ -38,13 +41,13 @@ static void draw_tensor_field_common(
         const auto &maj = p_tf->get_core_major_eigenvectors();
         const auto &min_v = p_tf->get_core_minor_eigenvectors();
         const int stride = std::max(1, p_stride);
-        const float half_len = std::min(hdr.cell_size_x, hdr.cell_size_y) * static_cast<float>(stride) * 0.35f;
+        const float half_len = std::min(hdr.cell_size.x, hdr.cell_size.y) * static_cast<float>(stride) * 0.35f;
 
-        for (uint32_t gy = 0; gy < hdr.height; gy += static_cast<uint32_t>(stride)) {
-            for (uint32_t gx = 0; gx < hdr.width; gx += static_cast<uint32_t>(stride)) {
-                const size_t idx = static_cast<size_t>(gy) * hdr.width + gx;
+        for (uint32_t gy = 0; gy < static_cast<uint32_t>(hdr.height); gy += static_cast<uint32_t>(stride)) {
+            for (uint32_t gx = 0; gx < static_cast<uint32_t>(hdr.width); gx += static_cast<uint32_t>(stride)) {
+                const size_t idx = static_cast<size_t>(gy) * static_cast<size_t>(hdr.width) + gx;
                 if (idx >= maj.size()) continue;
-                const glm::vec2 wp = hdr.grid_to_world(static_cast<float>(gx), static_cast<float>(gy));
+                const glm::vec2 wp = hdr.origin + glm::vec2(static_cast<float>(gx), static_cast<float>(gy)) * hdr.cell_size;
                 const Vector2 center(wp.x, wp.y);
                 const Vector2 v_maj(maj[idx].x * half_len, maj[idx].y * half_len);
                 const Vector2 v_min(min_v[idx].x * half_len, min_v[idx].y * half_len);
@@ -78,14 +81,14 @@ static void draw_tensor_field_common(
         const auto &sings = p_tf->get_core_singularities();
         for (const auto &s : sings) {
             Color sc = Color(1.0f, 0.35f, 0.35f, 1.0f); // Wedge (+1/2)
-            if (s.singularity_type == static_cast<uint32_t>(ideam::geometry::TensorSingularityType::SINGULARITY_TRISECTOR)) {
+            if (s.singularity_type == core::TENSOR_SINGULARITY_TRISECTOR) {
                 sc = Color(0.35f, 0.95f, 0.55f, 1.0f); // Trisector (-1/2)
-            } else if (s.singularity_type == static_cast<uint32_t>(ideam::geometry::TensorSingularityType::SINGULARITY_NODE_CENTER)) {
+            } else if (s.singularity_type == core::TENSOR_SINGULARITY_NODE_CENTER) {
                 sc = Color(0.95f, 0.85f, 0.25f, 1.0f); // Center (+1)
-            } else if (s.singularity_type == static_cast<uint32_t>(ideam::geometry::TensorSingularityType::SINGULARITY_SADDLE)) {
+            } else if (s.singularity_type == core::TENSOR_SINGULARITY_SADDLE) {
                 sc = Color(0.85f, 0.45f, 1.0f, 1.0f); // Saddle (-1)
             }
-            p_canvas->draw_circle(Vector2(s.world_x, s.world_y), 4.5f, sc);
+            p_canvas->draw_circle(Vector2(s.position.x, s.position.y), 4.5f, sc);
         }
     }
 }
@@ -98,13 +101,13 @@ void TensorField2DCanvas::set_draw_closed_parcels(bool p_draw) { draw_closed_par
 void TensorField2DCanvas::set_cross_field_stride(int p_stride) { cross_field_stride_ = std::max(1, p_stride); queue_redraw(); }
 
 void TensorField2DCanvas::_draw() {
-    Ref<TensorField2DResource> tf = geometry_resource_;
+    Ref<TensorField2DResource> tf = geometry_resource;
     draw_tensor_field_common(
         this, tf,
         draw_cross_field_, draw_major_streamlines_, draw_minor_streamlines_,
         draw_singularities_, draw_closed_parcels_, cross_field_stride_,
-        fill_color_, major_streamline_color_, minor_streamline_color_, cross_field_color_,
-        line_width_
+        Color(0.20f, 0.55f, 0.85f, 0.18f), major_streamline_color_, minor_streamline_color_, cross_field_color_,
+        2.0f
     );
 }
 
@@ -142,13 +145,13 @@ void TensorField2DControl::set_draw_closed_parcels(bool p_draw) { draw_closed_pa
 void TensorField2DControl::set_cross_field_stride(int p_stride) { cross_field_stride_ = std::max(1, p_stride); queue_redraw(); }
 
 void TensorField2DControl::_draw() {
-    Ref<TensorField2DResource> tf = geometry_resource_;
+    Ref<TensorField2DResource> tf = geometry_resource;
     draw_tensor_field_common(
         this, tf,
         draw_cross_field_, draw_major_streamlines_, draw_minor_streamlines_,
         draw_singularities_, draw_closed_parcels_, cross_field_stride_,
-        fill_color_, Color(0.95f, 0.75f, 0.25f, 0.9f), Color(0.25f, 0.78f, 0.95f, 0.75f),
-        Color(0.75f, 0.82f, 0.9f, 0.35f), line_width_
+        Color(0.20f, 0.55f, 0.85f, 0.18f), Color(0.95f, 0.75f, 0.25f, 0.9f), Color(0.25f, 0.78f, 0.95f, 0.75f),
+        Color(0.75f, 0.82f, 0.9f, 0.35f), 2.0f
     );
 }
 
@@ -178,4 +181,4 @@ void TensorField2DControl::_bind_methods() {
     ADD_PROPERTY(PropertyInfo(Variant::INT, "cross_field_stride", PROPERTY_HINT_RANGE, "1,16,1"), "set_cross_field_stride", "get_cross_field_stride");
 }
 
-} // namespace godot
+} // namespace ideam::godot_ext

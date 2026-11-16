@@ -140,6 +140,8 @@ public:
 
     // --- Compiled 192-Bit Bitmasks & DOD Descriptor ---
     [[nodiscard]] const core::SememeDescriptorPOD &get_compiled_descriptor() const;
+    [[nodiscard]] const core::SememeDescriptorPOD &get_core_descriptor() const { return get_compiled_descriptor(); }
+    [[nodiscard]] const core::SememeDescriptorPOD &compile_combined_descriptor() const { return get_compiled_descriptor(); }
     [[nodiscard]] godot::PackedInt64Array get_nuclear_bitmask_words() const;
     [[nodiscard]] godot::PackedInt64Array get_peripheral_bitmask_words() const;
     [[nodiscard]] int get_nuclear_popcount() const;
@@ -242,6 +244,8 @@ public:
     // --- Compiled Bitmasks & DOD Serialization ---
     void mark_dirty() const noexcept { union_dirty_ = true; }
     [[nodiscard]] const core::SememeDescriptorPOD &get_compiled_descriptor() const;
+    [[nodiscard]] const core::SememeDescriptorPOD &get_core_descriptor() const { return get_compiled_descriptor(); }
+    [[nodiscard]] const core::SememeDescriptorPOD &compile_combined_descriptor() const { return get_compiled_descriptor(); }
     [[nodiscard]] godot::PackedInt64Array get_nuclear_bitmask_words() const;
     [[nodiscard]] godot::PackedInt64Array get_peripheral_bitmask_words() const;
     void set_raw_bitmask_words(

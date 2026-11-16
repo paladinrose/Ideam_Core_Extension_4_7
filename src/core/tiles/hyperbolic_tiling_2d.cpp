@@ -344,16 +344,15 @@ void HyperbolicTiling2D<T>::build_poincare_region(Region& r_out_region) {
 
         const Vec2 shifted_center = apply_mobius(focus_mobius, gen_cells[i].center);
         IsoCellPOD cell_pod{};
-        cell_pod.cell_id    = static_cast<uint32_t>(i);
-        cell_pod.centroid   = shifted_center;
-        cell_pod.generation = gen_cells[i].generation;
-        cell_pod.colour_id  = gen_cells[i].colour_id;
-        cell_pod.aspect_id  = static_cast<uint8_t>(i % schlafli_p_);
+        cell_pod.center       = glm::vec2(shifted_center);
+        cell_pod.generation   = gen_cells[i].generation;
+        cell_pod.colour_id    = gen_cells[i].colour_id;
+        cell_pod.aspect_index = static_cast<uint8_t>(i % schlafli_p_);
 
         TileTransformPOD xf_pod{};
-        xf_pod.col0 = Vec2(static_cast<T>(1.0), static_cast<T>(0.0));
-        xf_pod.col1 = Vec2(static_cast<T>(0.0), static_cast<T>(1.0));
-        xf_pod.col2 = shifted_center;
+        xf_pod.position = glm::vec2(shifted_center);
+        xf_pod.scale    = glm::vec2(1.0f, 1.0f);
+        xf_pod.cell_id  = static_cast<uint32_t>(i);
 
         cell_polygons.push_back(std::move(poly_verts));
         cell_templates.push_back(cell_pod);

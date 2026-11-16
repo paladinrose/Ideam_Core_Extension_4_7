@@ -245,7 +245,7 @@ godot::Array SemanticPromptParser::extract_structured_tokens(
 
         const bool final_negated = negate_next || static_cast<bool>(morph.get("is_negated", false));
         const int upos_val       = sem.is_valid()
-            ? sem->get_upos_tag()
+            ? sem->get_lexical_category()
             : static_cast<int>(morph.get("inferred_category", 0));
 
         godot::Dictionary entry;
@@ -313,7 +313,7 @@ godot::Ref<SemanticTagSetResource> SemanticPromptParser::parse_prompt_to_tag_set
                 valence_sum -= sem->get_emotive_valence();
                 ++valence_count;
             } else if (diminish_next || (treat_modifiers_as_peripheral_ &&
-                                         sem->get_upos_tag() == static_cast<int>(core::UniversalPOS::ADJ))) {
+                                         sem->get_lexical_category() == static_cast<int>(core::UniversalPOS::ADJ))) {
                 for (int j = 0; j < nuc.size(); ++j) {
                     tag_set->add_peripheral_tag(nuc[j]);
                 }
@@ -440,7 +440,7 @@ godot::Dictionary SemanticPromptParser::parse_prompt_to_semantic_frame(
         }
 
         godot::Ref<SememeResource> sem = language_asset_->lookup_or_infer_sememe_for_token(tok);
-        const int upos = sem.is_valid() ? sem->get_upos_tag() : static_cast<int>(core::UniversalPOS::NOUN);
+        const int upos = sem.is_valid() ? sem->get_lexical_category() : static_cast<int>(core::UniversalPOS::NOUN);
 
         if (upos == static_cast<int>(core::UniversalPOS::VERB) && !seen_verb) {
             verb_tok  = tok;

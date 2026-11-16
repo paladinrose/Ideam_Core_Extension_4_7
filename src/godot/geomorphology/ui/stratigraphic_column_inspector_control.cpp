@@ -9,7 +9,7 @@
 
 #include <algorithm>
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 StratigraphicColumnInspectorControl::StratigraphicColumnInspectorControl() {
     set_custom_minimum_size(godot::Vector2(260.0f, 220.0f));
@@ -152,4 +152,4 @@ void StratigraphicColumnInspectorControl::_draw() {
     }
 }
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

@@ -343,7 +343,7 @@ struct alignas(64) StoryArcIslandClusterMetadataLogic {
                 const int8_t st = (st_stride == sizeof(int32_t))
                     ? static_cast<int8_t>(reinterpret_cast<const int32_t*>(st_raw)[idx])
                     : reinterpret_cast<const int8_t*>(st_raw)[idx];
-                return (st == PLOT_STATUS_SUCCESS || st == PLOT_STATUS_FAILURE);
+                return (st == PLOT_STATUS_COMPLETE || st == PLOT_STATUS_CANNOT_COMPLETE || st == PLOT_STATUS_FAILED);
             };
 
             int32_t n = 0;
@@ -434,10 +434,10 @@ struct alignas(64) StoryArcIslandClusterMetadataLogic {
                 for (uint32_t ea = off_a; ea < end_a; ++ea) {
                     const PlotEventPOD& pa = plot_events[ea];
                     if (pa.incident_id == INVALID_ID) continue;
-                    if (ignore_forbidden_incidents && pa.requirement_type == INCIDENT_REQ_FORBIDDEN) continue;
+                    if (ignore_forbidden_incidents && pa.requirement == INCIDENT_REQ_DOD_CANNOT_HAPPEN) continue;
                     for (uint32_t eb = off_b; eb < end_b; ++eb) {
                         const PlotEventPOD& pb = plot_events[eb];
-                        if (ignore_forbidden_incidents && pb.requirement_type == INCIDENT_REQ_FORBIDDEN) continue;
+                        if (ignore_forbidden_incidents && pb.requirement == INCIDENT_REQ_DOD_CANNOT_HAPPEN) continue;
                         if (pa.incident_id == pb.incident_id) return true;
                     }
                 }

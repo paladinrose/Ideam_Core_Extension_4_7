@@ -18,22 +18,22 @@
 #include "core/tasks/domains/geomorphology/transform_logic/shallow_water_pipe_hydrology_transform_logic.h"
 #include "core/tasks/domains/geomorphology/transform_logic/stream_power_and_talus_erosion_transform_logic.h"
 #include "core/tasks/domains/geomorphology/transform_logic/tectonic_uplift_and_orogeny_transform_logic.h"
-#include "core/tasks/task_graph.h"
+#include "core/tasks/task_graph_dod.h"
 
 #include <cstdint>
 #include <span>
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::core {
 
 class GeomorphologyDOD {
 public:
-    using GeomorphologySeedProfilePOD = ideam::geomorphology::GeomorphologySeedProfilePOD;
-    using LithologyArchetypePOD       = ideam::geomorphology::LithologyArchetypePOD;
-    using StratigraphicColumnPOD      = ideam::geomorphology::StratigraphicColumnPOD;
-    using TectonicPlatePOD            = ideam::geomorphology::TectonicPlatePOD;
-    using CrustalTectonicCellPOD      = ideam::geomorphology::CrustalTectonicCellPOD;
-    using HydrologyCellStatePOD       = ideam::geomorphology::HydrologyCellStatePOD;
-    using GeomorphicHazardSamplePOD   = ideam::geomorphology::GeomorphicHazardSamplePOD;
+    using GeomorphologySeedProfilePOD = ideam::core::GeomorphologySeedProfilePOD;
+    using LithologyArchetypePOD       = ideam::core::LithologyArchetypePOD;
+    using StratigraphicColumnPOD      = ideam::core::StratigraphicColumnPOD;
+    using TectonicPlatePOD            = ideam::core::TectonicPlatePOD;
+    using CrustalTectonicCellPOD      = ideam::core::CrustalTectonicCellPOD;
+    using HydrologyCellStatePOD       = ideam::core::HydrologyCellStatePOD;
+    using GeomorphicHazardSamplePOD   = ideam::core::GeomorphicHazardSamplePOD;
 
     /**
      * @brief Populates a TaskGraph with the complete Geomorphology simulation pipeline.
@@ -47,7 +47,7 @@ public:
      * 6. GEO_Q1: GeomorphicHazardAndResourceVein
      */
     static void build_geomorphology_pipeline(
-        TaskGraph& graph,
+        TaskGraphDOD& graph,
         uint32_t stage_mask = static_cast<uint32_t>(GeomorphologyStageFlags::ALL_STAGES));
 
     /**
@@ -78,4 +78,4 @@ public:
         uint32_t stage_mask = static_cast<uint32_t>(GeomorphologyStageFlags::ALL_STAGES)) noexcept;
 };
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::core

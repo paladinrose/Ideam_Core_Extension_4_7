@@ -11,12 +11,14 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <array>
 #include <vector>
 
 #include "../../memory/memory_common.h"
 #include "../../memory/memory_buffer_pod.h"
 #include "../../memory/memory_grant_pod.h"
 #include "../../memory/memory_manager_dod.h"
+#include "../../graphs/ideam_graph_dod.h"
 
 namespace ideam::core {
 
@@ -128,5 +130,59 @@ public:
     part.selection.capacity = p_element_count;
     return part;
 }
+
+
+class TaskGraphDOD;
+using SelectionGrantPOD = MemoryBufferSelectionPOD;
+
+template <uint32_t T_DefaultMask>
+struct DomainNodeExecutionConfig {
+    uint32_t stage_mask        = T_DefaultMask;
+    int32_t execution_priority = 0;
+    bool use_registry_factory  = false;
+};
+
+struct DomainStageAnchor {
+    uint32_t stage    = 0u;
+    NodeID entry_node = INVALID_ID;
+    NodeID exit_node  = INVALID_ID;
+    std::vector<NodeID> nodes;
+
+    [[nodiscard]] constexpr bool is_valid() const noexcept {
+        return entry_node != INVALID_ID && exit_node != INVALID_ID;
+    }
+};
+
+template <size_t T_StageCount>
+struct DomainPipelineTopology {
+    NodeID first_node = INVALID_ID;
+    NodeID last_node  = INVALID_ID;
+    std::array<DomainStageAnchor, T_StageCount> stages{};
+};
+
+template <typename T_SlotEnum>
+struct DomainBufferManifest {
+    std::array<uint32_t, static_cast<size_t>(T_SlotEnum::COUNT)> buffer_ids{};
+
+    constexpr DomainBufferManifest() noexcept {
+        reset();
+    }
+
+    constexpr void reset() noexcept {
+        buffer_ids.fill(INVALID_ID);
+    }
+
+    [[nodiscard]] constexpr uint32_t get(T_SlotEnum p_slot) const noexcept {
+        return buffer_ids[static_cast<size_t>(p_slot)];
+    }
+
+    constexpr void set(T_SlotEnum p_slot, uint32_t p_id) noexcept {
+        buffer_ids[static_cast<size_t>(p_slot)] = p_id;
+    }
+
+    [[nodiscard]] constexpr bool has(T_SlotEnum p_slot) const noexcept {
+        return get(p_slot) != INVALID_ID;
+    }
+};
 
 } // namespace ideam::core

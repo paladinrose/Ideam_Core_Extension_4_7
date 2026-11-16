@@ -93,6 +93,15 @@ struct alignas(64) DrainageBasinAndStrahlerPartitionMetadataLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        T_View &p_view
+    ) const noexcept {
+        execute_metadata<T_View, T_Strategy>(p_view, r_selection, p_context);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_metadata(
         T_View &p_view,
         MemoryBufferSelectionPOD &r_selection,
@@ -107,15 +116,15 @@ struct alignas(64) DrainageBasinAndStrahlerPartitionMetadataLogic {
             return;
         }
 
-        const auto *seed   = reinterpret_cast<const ideam::geomorphology::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        const auto *strata = reinterpret_cast<const ideam::geomorphology::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
-        auto *hydro        = reinterpret_cast<ideam::geomorphology::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
+        const auto *seed   = reinterpret_cast<const ideam::core::GeomorphologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        const auto *strata = reinterpret_cast<const ideam::core::StratigraphicColumnPOD *>(strata_part->raw_base_ptr);
+        auto *hydro        = reinterpret_cast<ideam::core::HydrologyCellStatePOD *>(hydro_part->raw_base_ptr);
 
         const size_t n = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        ideam::geomorphology::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
+        ideam::core::GeomorphologyKernelMath::compute_d8_drainage_and_strahler(
             *seed,
-            std::span<const ideam::geomorphology::StratigraphicColumnPOD>(strata, n),
-            std::span<ideam::geomorphology::HydrologyCellStatePOD>(hydro, n));
+            std::span<const ideam::core::StratigraphicColumnPOD>(strata, n),
+            std::span<ideam::core::HydrologyCellStatePOD>(hydro, n));
 
         const size_t sel_lim = static_cast<size_t>(std::max<int64_t>(0, r_selection.element_count));
         for (size_t i = 0; i < n && i < sel_lim; ++i) {

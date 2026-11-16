@@ -82,6 +82,11 @@ struct alignas(64) TilingInstanceTransformLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(const TaskContextPOD &p_context, T_View &p_view) const noexcept {
+        execute_transform<T_View, T_Strategy>(p_context, p_view);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_transform(const TaskContextPOD &p_context, T_View &p_view) const noexcept {
         (void)p_view;
         const GrantPartPOD *proto_part = p_context.get_grant_part(prototile_descriptor_buffer_id);
@@ -113,8 +118,8 @@ struct alignas(64) TilingInstanceTransformLogic {
 
             const glm::vec2 lattice_offset =
                 proto.lattice_basis.origin +
-                proto.lattice_basis.u_axis * static_cast<float>(cell.lattice_i) +
-                proto.lattice_basis.v_axis * static_cast<float>(cell.lattice_j);
+                proto.lattice_basis.t1 * static_cast<float>(cell.lattice_i) +
+                proto.lattice_basis.t2 * static_cast<float>(cell.lattice_j);
 
             const glm::mat3 &asp_m = proto.aspect_xforms[asp];
             const glm::vec2 asp_translation(asp_m[2][0], asp_m[2][1]);

@@ -399,6 +399,16 @@ struct GeometryKernelMath {
      * 2D World-to-Grid linear cell index helper (shared by SpatialInclusion/Projection bridges,
      * PolygonScanlineGridBuild, and CymaticMap). Returns -1 if out of bounds.
      */
+    [[nodiscard]] static inline int64_t spatial_hash_2d(
+        const Vec2& p_pos,
+        const Vec2& p_origin,
+        const Vec2& p_cell_size,
+        uint32_t p_grid_width,
+        uint32_t p_grid_height
+    ) noexcept {
+        return world_to_grid_index_2d(p_pos, p_origin, p_cell_size, p_grid_width, p_grid_height);
+    }
+
     [[nodiscard]] static inline int64_t world_to_grid_index_2d(
         const Vec2& p_pos,
         const Vec2& p_origin,

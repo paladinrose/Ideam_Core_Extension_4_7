@@ -332,7 +332,7 @@ struct alignas(64) HeatmapGridBufferSyncTransformLogic {
         if (push_to_heatmap_control && heatmap_grid_object_id != 0ULL) {
             if (godot::Object* obj = godot::ObjectDB::get_instance(godot::ObjectID(heatmap_grid_object_id))) {
                 if (auto* heatmap = godot::Object::cast_to<godot_ext::HeatmapGrid>(obj)) {
-                    heatmap->set_grid_data(dst_bytes, total_cells, sync_columns_to_width ? grid_w : -1);
+                    heatmap->set_data(dst_bytes, total_cells, sync_columns_to_width ? grid_w : -1);
                 }
             }
         }

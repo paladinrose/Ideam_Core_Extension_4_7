@@ -186,6 +186,9 @@ public:
     void register_domain_pack(const TaskDomainPack& p_pack);
     bool has_domain_pack(const godot::StringName& p_domain) const;
     void set_domain_pack_active(const godot::StringName& p_domain, bool p_active);
+    void set_domain_active(const godot::StringName& p_domain, bool p_active) {
+        set_domain_pack_active(p_domain, p_active);
+    }
     void sync_active_domains_from_config();
 
     bool are_active_manifests_valid() const;

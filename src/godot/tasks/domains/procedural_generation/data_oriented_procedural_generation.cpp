@@ -63,8 +63,8 @@ void DataOrientedProceduralGeneration::set_memory_manager_resource(const godot::
     memory_manager_resource_ = p_mem;
     if (dod_engine_ && memory_manager_resource_.is_valid()) {
         dod_engine_->bind_execution_context(
-            &memory_manager_resource_->get_dod_manager(),
-            task_graph_resource_.is_valid() ? &task_graph_resource_->get_dod_graph() : nullptr
+            memory_manager_resource_->get_dod_manager(),
+            task_graph_resource_.is_valid() ? task_graph_resource_->get_dod_graph() : nullptr
         );
     }
     emit_changed();
@@ -74,8 +74,8 @@ void DataOrientedProceduralGeneration::set_task_graph_resource(const godot::Ref<
     task_graph_resource_ = p_graph;
     if (dod_engine_ && task_graph_resource_.is_valid()) {
         dod_engine_->bind_execution_context(
-            memory_manager_resource_.is_valid() ? &memory_manager_resource_->get_dod_manager() : nullptr,
-            &task_graph_resource_->get_dod_graph()
+            memory_manager_resource_.is_valid() ? memory_manager_resource_->get_dod_manager() : nullptr,
+            task_graph_resource_->get_dod_graph()
         );
     }
     emit_changed();
@@ -100,7 +100,7 @@ void DataOrientedProceduralGeneration::set_max_propagation_sweeps(int p_sweeps) 
 
 bool DataOrientedProceduralGeneration::initialize_dod_buffers() {
     if (!dod_engine_ || memory_manager_resource_.is_null()) return false;
-    return dod_engine_->initialize_procedural_generation_memory(&memory_manager_resource_->get_dod_manager());
+    return dod_engine_->initialize_procedural_generation_memory(memory_manager_resource_->get_dod_manager());
 }
 
 void DataOrientedProceduralGeneration::set_slot_children(int p_parent_slot, const godot::PackedInt32Array &p_child_slots) {

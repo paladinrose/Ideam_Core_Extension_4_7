@@ -316,8 +316,8 @@ struct alignas(16) TensorBasisElementPod {
  */
 struct alignas(16) TensorGridHeaderPod {
     uint32_t cell_offset  = 0u;   // Start index in GEOM_TENSOR_CELL_POD / EIGEN_MAJOR / EIGEN_MINOR
-    uint32_t width        = 64u;  // Grid width in cells
-    uint32_t height       = 64u;  // Grid height in cells
+    uint16_t width        = 64u;  // Grid width in cells
+    uint16_t height       = 64u;  // Grid height in cells
     uint16_t basis_offset = 0u;   // Start index in GEOM_TENSOR_BASIS_POD
     uint16_t basis_count  = 0u;   // Number of basis elements contributing to this grid
     uint32_t sdf_grid_slot= 0xFFFFFFFFu; // Optional bound SDFGridHeaderPOD slot for terrain/coastline alignment

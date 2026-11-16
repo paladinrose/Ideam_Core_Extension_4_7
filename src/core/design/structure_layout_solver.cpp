@@ -1,3 +1,7 @@
+#ifndef _ENABLE_EXTENDED_ALIGNED_STORAGE
+#define _ENABLE_EXTENDED_ALIGNED_STORAGE
+#endif
+
 #include "structure_layout_solver.h"
 #include "../geometry/csg_2d.h"
 #include <algorithm>

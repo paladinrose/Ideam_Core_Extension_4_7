@@ -58,7 +58,7 @@ struct alignas(64) PhoneticHammingLexemeDecodeTransformLogic {
     static constexpr ViewCapability required_capabilities = ViewCapability::NONE;
     static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR;
     static constexpr DataType required_types =
-        DataType::INT32 | DataType::UINT32 | DataType::FLOAT32 | DataType::BYTE;
+        DataType::INT32 | DataType::INT32 | DataType::FLOAT32 | DataType::BYTE;
 
     static constexpr size_t dimensions                = 0;
     static constexpr bool requires_static_kernel      = false;

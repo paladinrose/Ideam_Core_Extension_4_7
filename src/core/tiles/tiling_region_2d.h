@@ -176,6 +176,45 @@ public:
     [[nodiscard]] size_t get_edge_count() const noexcept { return edges_.size(); }
     [[nodiscard]] size_t get_hex_super_cell_count() const noexcept { return hex_super_cells_.size(); }
 
+    [[nodiscard]] size_t cell_count() const noexcept { return cells_.size(); }
+    [[nodiscard]] size_t edge_count() const noexcept { return edges_.size(); }
+    [[nodiscard]] size_t hex_super_cell_count() const noexcept { return hex_super_cells_.size(); }
+    [[nodiscard]] std::span<const IsoCellPOD> cells() const noexcept { return cells_; }
+    [[nodiscard]] std::span<const HexSuperCellPOD> hex_super_cells() const noexcept { return hex_super_cells_; }
+    [[nodiscard]] std::span<const Vec2> shared_vertices() const noexcept { return shared_vertices_; }
+    [[nodiscard]] std::vector<Vec2> cell_polygon(uint32_t p_cell_id) const { return get_cell_polygon_points(p_cell_id); }
+    [[nodiscard]] std::span<const int32_t> cell_neighbors(uint32_t p_cell_id) const noexcept { return get_cell_neighbors(p_cell_id); }
+    [[nodiscard]] uint32_t contains_point(const Vec2& p_point) const noexcept {
+        int32_t cid = -1;
+        return (contains_point(p_point, cid) && cid >= 0) ? static_cast<uint32_t>(cid) : INVALID_TILE_ID;
+    }
+    void populate_from_aabb(
+        const Tiling& p_tiling,
+        const Vec2& p_min,
+        const Vec2& p_max,
+        const Vec2& p_seed,
+        int32_t p_priority = 0,
+        int p_edge_subdivisions = 12
+    ) {
+        set_tiling(p_tiling);
+        set_priority(p_priority);
+        build_from_aabb(AABB2D<T>{p_min, p_max}, p_seed, false, p_edge_subdivisions);
+    }
+    void populate_from_spline(
+        const Tiling& p_tiling,
+        const Spline2& p_spline,
+        const Vec2& p_seed,
+        int32_t p_priority = 0,
+        TilingCoverageMode p_mode = TilingCoverageMode::INCLUDE_STRADDLING,
+        int p_subdivs = 12
+    ) {
+        set_tiling(p_tiling);
+        set_priority(p_priority);
+        std::span<const Spline2> sp(&p_spline, 1);
+        build_from_splines(sp, p_seed, p_mode, p_subdivs, false);
+    }
+    void build_hex_super_cells() { hexize(); }
+
     [[nodiscard]] std::span<const IsoCellPOD> get_cells() const noexcept { return cells_; }
     [[nodiscard]] std::span<IsoCellPOD> get_cells_mut() noexcept { return cells_; }
 

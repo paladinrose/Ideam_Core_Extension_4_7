@@ -187,6 +187,15 @@ public:
     [[nodiscard]] static std::array<uint64_t, 2> compute_character_ngram_simhash128(
         std::string_view p_text
     ) noexcept;
+    static void compute_character_ngram_simhash128(
+        std::string_view p_text,
+        uint64_t &r_word_lo,
+        uint64_t &r_word_hi
+    ) noexcept {
+        const auto h = compute_character_ngram_simhash128(p_text);
+        r_word_lo = h[0];
+        r_word_hi = h[1];
+    }
 
     // --- CMUdict ARPAbet Importer & Context-Sensitive G2P ---
     bool import_cmudict_entry(
@@ -194,6 +203,15 @@ public:
         std::string_view p_arpabet_pronunciation,
         UniversalPOS p_default_pos = UniversalPOS::NOUN
     );
+    bool import_cmudict_entry(
+        std::string_view p_word,
+        std::string_view p_arpabet_pronunciation,
+        uint16_t p_lect_id,
+        UniversalPOS p_default_pos = UniversalPOS::NOUN
+    ) {
+        (void)p_lect_id;
+        return import_cmudict_entry(p_word, p_arpabet_pronunciation, p_default_pos);
+    }
     uint32_t import_cmudict_lines(std::string_view p_multiline_cmudict_text);
 
     void approximate_phonemes_from_text(
@@ -208,6 +226,16 @@ public:
         float p_unigram_score = 0.0f,
         uint32_t p_mapped_sememe_id = 0xFFFFFFFFu
     );
+    uint32_t register_bpe_vocab_entry(
+        std::string_view p_piece,
+        uint32_t p_token_id,
+        float p_unigram_score,
+        uint32_t p_mapped_sememe_id,
+        bool p_is_special
+    ) {
+        (void)p_is_special;
+        return register_bpe_vocab_entry(p_piece, p_token_id, p_unigram_score, p_mapped_sememe_id);
+    }
     uint32_t register_bpe_merge_rule(
         uint32_t p_left_token_id,
         uint32_t p_right_token_id,
@@ -215,6 +243,12 @@ public:
         uint32_t p_priority_rank
     );
     [[nodiscard]] int32_t find_bpe_token_by_piece(std::string_view p_piece) const noexcept;
+    [[nodiscard]] int32_t find_bpe_token_id(std::string_view p_piece) const noexcept {
+        return find_bpe_token_by_piece(p_piece);
+    }
+    [[nodiscard]] std::string_view get_bpe_token_piece(uint32_t p_token_id) const noexcept {
+        return (p_token_id < bpe_pieces_.size()) ? std::string_view(bpe_pieces_[p_token_id]) : std::string_view{};
+    }
     void tokenize_bpe_subwords(
         std::string_view p_text,
         std::vector<uint32_t> &r_out_bpe_ids,

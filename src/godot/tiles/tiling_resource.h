@@ -92,29 +92,29 @@ enum TilingEdgeShapeType : int32_t {
  * Godot-facing enum for `core::TilingBoundaryCoverageMode`.
  */
 enum TilingCoverageModeType : int32_t {
-    COVERAGE_STRICT_INTERIOR       = static_cast<int32_t>(core::TilingBoundaryCoverageMode::STRICT_INTERIOR),
-    COVERAGE_CENTROID_INSIDE       = static_cast<int32_t>(core::TilingBoundaryCoverageMode::CENTROID_INSIDE),
-    COVERAGE_INCLUDE_STRADDLING    = static_cast<int32_t>(core::TilingBoundaryCoverageMode::INCLUDE_STRADDLING),
-    COVERAGE_CLIP_EXACT_TO_SPLINE  = static_cast<int32_t>(core::TilingBoundaryCoverageMode::CLIP_EXACT_TO_SPLINE)
+    COVERAGE_STRICT_INTERIOR       = static_cast<int32_t>(core::TilingCoverageMode::STRICT_INTERIOR),
+    COVERAGE_CENTROID_INSIDE       = static_cast<int32_t>(core::TilingCoverageMode::CENTROID_INSIDE),
+    COVERAGE_INCLUDE_STRADDLING    = static_cast<int32_t>(core::TilingCoverageMode::INCLUDE_STRADDLING),
+    COVERAGE_CLIP_EXACT_TO_SPLINE  = static_cast<int32_t>(core::TilingCoverageMode::CLIP_EXACT_TO_SPLINE)
 };
 
 /**
  * Godot-facing enum for `core::TilingSeamStitchMode`.
  */
 enum TilingStitchModeType : int32_t {
-    STITCH_QUAD_BRIDGE              = static_cast<int32_t>(core::TilingSeamStitchMode::QUAD_BRIDGE_CELLS),
-    STITCH_TOPOLOGICAL_SEAM_WELD    = static_cast<int32_t>(core::TilingSeamStitchMode::TOPOLOGICAL_SEAM_WELD),
-    STITCH_CURVILINEAR_METRIC_MORPH = static_cast<int32_t>(core::TilingSeamStitchMode::CURVILINEAR_METRIC_MORPH)
+    STITCH_QUAD_BRIDGE              = static_cast<int32_t>(core::TilingStitchMode::QUAD_BRIDGE),
+    STITCH_TOPOLOGICAL_SEAM_WELD    = static_cast<int32_t>(core::TilingStitchMode::TOPOLOGICAL_SEAM_WELD),
+    STITCH_CURVILINEAR_METRIC_MORPH = static_cast<int32_t>(core::TilingStitchMode::CURVILINEAR_METRIC_MORPH)
 };
 
 /**
  * Godot-facing enum for `core::TileEdgePortDirection` (`SymmetryNeighbor.Direction`).
  */
 enum TilingPortDirectionType : int32_t {
-    PORT_DIR_FREE     = static_cast<int32_t>(core::TileEdgePortDirection::BIDIRECTIONAL),
-    PORT_DIR_IN_ONLY  = static_cast<int32_t>(core::TileEdgePortDirection::IN_ONLY),
-    PORT_DIR_OUT_ONLY = static_cast<int32_t>(core::TileEdgePortDirection::OUT_ONLY),
-    PORT_DIR_CLOSED   = static_cast<int32_t>(core::TileEdgePortDirection::CLOSED)
+    PORT_DIR_FREE     = static_cast<int32_t>(core::TilePortDirection::PORT_FREE),
+    PORT_DIR_IN_ONLY  = static_cast<int32_t>(core::TilePortDirection::PORT_IN_ONLY),
+    PORT_DIR_OUT_ONLY = static_cast<int32_t>(core::TilePortDirection::PORT_OUT_ONLY),
+    PORT_DIR_CLOSED   = static_cast<int32_t>(core::TilePortDirection::PORT_CLOSED)
 };
 
 class TilingResource : public GeometryResource {

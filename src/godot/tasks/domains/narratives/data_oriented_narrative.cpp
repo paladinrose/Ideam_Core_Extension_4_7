@@ -553,7 +553,7 @@ void DataOrientedNarrative::bake_to_dod() {
                 if (inc_slot >= 0) {
                     core::PlotEventPOD pod{};
                     pod.incident_id      = static_cast<uint32_t>(inc_slot);
-                    pod.requirement_type = static_cast<uint8_t>(pev->get_requirement());
+                    pod.requirement = static_cast<uint8_t>(pev->get_requirement());
                     dod_events.push_back(pod);
                 }
             }

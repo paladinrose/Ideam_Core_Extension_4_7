@@ -20,26 +20,26 @@
 #include "core/tasks/domains/ecology/transform_logic/lotka_volterra_trophic_web_transform_logic.h"
 #include "core/tasks/domains/ecology/transform_logic/rothermel_wildfire_and_disturbance_transform_logic.h"
 #include "core/tasks/domains/ecology/transform_logic/whittaker_niche_and_canopy_productivity_transform_logic.h"
-#include "core/tasks/task_graph.h"
+#include "core/tasks/task_graph_dod.h"
 
 #include <cstdint>
 #include <span>
 
-namespace ideam::tasks::ecology {
+namespace ideam::core {
 
 class EcologyDOD {
 public:
-    using EcologySeedProfilePOD               = ideam::ecology::EcologySeedProfilePOD;
-    using FloraGuildArchetypePOD              = ideam::ecology::FloraGuildArchetypePOD;
-    using EcologicalCellStatePOD              = ideam::ecology::EcologicalCellStatePOD;
-    using BiogeochemicalAndTrophicCellPOD     = ideam::ecology::BiogeochemicalAndTrophicCellPOD;
-    using EcologyHarvestAndDisturbanceSamplePOD = ideam::ecology::EcologyHarvestAndDisturbanceSamplePOD;
+    using EcologySeedProfilePOD               = ideam::core::EcologySeedProfilePOD;
+    using FloraGuildArchetypePOD              = ideam::core::FloraGuildArchetypePOD;
+    using EcologicalCellStatePOD              = ideam::core::EcologicalCellStatePOD;
+    using BiogeochemicalAndTrophicCellPOD     = ideam::core::BiogeochemicalAndTrophicCellPOD;
+    using EcologyHarvestAndDisturbanceSamplePOD = ideam::core::EcologyHarvestAndDisturbanceSamplePOD;
 
     /**
      * @brief Ensures the Ecology domain is registered with IdeamTaskRegistry.
      */
     static void build_ecology_pipeline(
-        TaskGraph& graph,
+        TaskGraphDOD& graph,
         uint32_t stage_mask = static_cast<uint32_t>(EcologyStageFlags::ALL_STAGES));
 
     /**
@@ -64,4 +64,4 @@ public:
         uint32_t stage_mask = static_cast<uint32_t>(EcologyStageFlags::ALL_STAGES)) noexcept;
 };
 
-} // namespace ideam::tasks::ecology
+} // namespace ideam::core

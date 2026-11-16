@@ -80,6 +80,12 @@ public:
     godot::TypedArray<godot::StringName> get_selected_buffer_names(const godot::PackedInt32Array& p_buffer_ids) const;
     
     std::shared_ptr<core::MemoryManagerDOD> get_backend() const;
+    core::MemoryManagerDOD* get_dod_manager() const {
+        if (!backend_manager) {
+            const_cast<MemoryManagerResource*>(this)->initialize_backend();
+        }
+        return backend_manager.get();
+    }
 
     void set_buffer_schemas(const godot::TypedArray<MemoryBufferResource>& p_schemas);
     godot::TypedArray<MemoryBufferResource> get_buffer_schemas() const;

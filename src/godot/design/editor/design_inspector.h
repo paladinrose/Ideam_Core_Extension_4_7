@@ -20,6 +20,7 @@ public:
 
     bool _can_handle(godot::Object *p_object) const override;
     void _parse_begin(godot::Object *p_object) override;
+    bool _parse_property(godot::Object *p_object, godot::Variant::Type p_type, const godot::String &p_name, godot::PropertyHint p_hint_type, const godot::String &p_hint_string, godot::BitField<godot::PropertyUsageFlags> p_usage_flags, bool p_wide) override { return false; }
 };
 
 } // namespace ideam::godot_ext

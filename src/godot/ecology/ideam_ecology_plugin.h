@@ -13,7 +13,7 @@
 
 #include "godot/ecology/editor/ecology_inspector.h"
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 class IdeamEcologyPlugin : public godot::EditorPlugin {
     GDCLASS(IdeamEcologyPlugin, godot::EditorPlugin)
@@ -37,4 +37,4 @@ public:
     }
 };
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

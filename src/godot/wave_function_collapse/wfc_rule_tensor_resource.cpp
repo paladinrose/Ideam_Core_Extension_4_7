@@ -406,7 +406,8 @@ godot::Ref<WFCRuleTensorResource> WFCSceneAnalyzer::extract_rules_from_packed_sc
     // Use ProceduralPatterner to harvest the full CSS cascade pattern from SceneState
     godot::Ref<ProceduralPatterner> patterner;
     patterner.instantiate();
-    godot::Ref<ProceduralPattern> pattern = patterner->create_pattern_from_packed_scene(p_scene, p_style);
+    if (p_style.is_valid()) patterner->set_analysis_style(p_style);
+    godot::Ref<ProceduralPattern> pattern = patterner->create_pattern_from_packed_scene(p_scene);
     if (pattern.is_valid()) {
         rules->compile_from_procedural_pattern(pattern);
     }
@@ -435,7 +436,8 @@ godot::Ref<WFCRuleTensorResource> WFCSceneAnalyzer::extract_rules_from_object_hi
     }
     godot::Ref<ProceduralPatterner> patterner;
     patterner.instantiate();
-    godot::Ref<ProceduralPattern> pattern = patterner->create_pattern_from_object(p_root, p_style);
+    if (p_style.is_valid()) patterner->set_analysis_style(p_style);
+    godot::Ref<ProceduralPattern> pattern = patterner->create_pattern_from_object(p_root);
     if (pattern.is_valid()) {
         rules->compile_from_procedural_pattern(pattern);
     }

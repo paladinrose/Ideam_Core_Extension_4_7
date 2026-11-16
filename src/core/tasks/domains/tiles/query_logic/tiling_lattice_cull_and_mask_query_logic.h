@@ -111,6 +111,39 @@ struct alignas(64) TilingLatticeCullAndMaskQueryLogic {
         (void)p_context;
     }
 
+    template <QueryOp Op, typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        const T_View &p_view
+    ) const noexcept {
+        const uint32_t tgt_id = get_target_buffer_id();
+        const int64_t cap = r_selection.capacity;
+        int64_t out_sparse = 0;
+        for (int64_t i = 0; i < cap; ++i) {
+            const bool match = evaluate_element<T_View, T_Strategy>(i, p_view, p_context);
+            if constexpr (Op == QueryOp::ADD) {
+                if (match) {
+                    if (r_selection.mode == SelectionMode::DENSE && r_selection.data.bitset) {
+                        r_selection.data.bitset[i >> 6] |= (1ULL << (i & 63));
+                    } else if (r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices && out_sparse < r_selection.capacity) {
+                        r_selection.data.indices[out_sparse++] = i;
+                    }
+                    p_context.queue_selection_command(tgt_id, i);
+                }
+            } else {
+                if (!match && r_selection.mode == SelectionMode::DENSE && r_selection.data.bitset) {
+                    r_selection.data.bitset[i >> 6] &= ~(1ULL << (i & 63));
+                } else if (match && r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices && out_sparse < r_selection.capacity) {
+                    r_selection.data.indices[out_sparse++] = i;
+                }
+            }
+        }
+        if (r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices) {
+            r_selection.element_count = out_sparse;
+        }
+    }
+
     template <typename T_View, typename T_Strategy>
     [[nodiscard]] inline bool evaluate_element(
         int64_t p_index,
@@ -132,7 +165,7 @@ struct alignas(64) TilingLatticeCullAndMaskQueryLogic {
             : nullptr;
 
         if ((cell.flags & CELL_FLAG_MASKED) != 0u) {
-            if (cls_flags) cls_flags[p_index] = static_cast<uint8_t>(ClipClassification2D::STRICTLY_OUTSIDE);
+            if (cls_flags) cls_flags[p_index] = static_cast<uint8_t>(ClipClassification2D::FULLY_OUTSIDE);
             return negate_result;
         }
         if (filter_group_slot != 0xFFu && cell.group_slot != filter_group_slot) {
@@ -142,7 +175,7 @@ struct alignas(64) TilingLatticeCullAndMaskQueryLogic {
         // 1. Coarse AABB Cull
         if (cell.center.x < cull_min.x || cell.center.x > cull_max.x ||
             cell.center.y < cull_min.y || cell.center.y > cull_max.y) {
-            if (cls_flags) cls_flags[p_index] = static_cast<uint8_t>(ClipClassification2D::STRICTLY_OUTSIDE);
+            if (cls_flags) cls_flags[p_index] = static_cast<uint8_t>(ClipClassification2D::FULLY_OUTSIDE);
             return negate_result;
         }
 
@@ -196,7 +229,7 @@ struct alignas(64) TilingLatticeCullAndMaskQueryLogic {
             }
 
             const bool center_in = PolygonMath2D<float>::contains_point(boundary_span, cell.center);
-            ClipClassification2D cls = ClipClassification2D::STRICTLY_OUTSIDE;
+            ClipClassification2D cls = ClipClassification2D::FULLY_OUTSIDE;
             if (v_cnt > 0u && inside_verts == v_cnt) {
                 cls = ClipClassification2D::FULLY_INSIDE;
             } else if (inside_verts > 0u || center_in) {
@@ -214,7 +247,7 @@ struct alignas(64) TilingLatticeCullAndMaskQueryLogic {
                 case TilingCoverageMode::INCLUDE_STRADDLING:
                 case TilingCoverageMode::CLIP_EXACT_TO_SPLINE:
                 default:
-                    match = (cls != ClipClassification2D::STRICTLY_OUTSIDE);
+                    match = (cls != ClipClassification2D::FULLY_OUTSIDE);
                     break;
             }
         }

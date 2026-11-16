@@ -64,6 +64,8 @@ namespace ideam::core {
  * SDFGridHeaderPOD (32 Bytes, Cache-Line Aligned)
  * Descriptor for a 2D scalar Signed Distance Field or Chladni cymatic grid slice in `GEOM_SDF_GRID_FLOAT32`.
  */
+#ifndef IDEAM_SDF_GRID_HEADER_POD_DEFINED
+#define IDEAM_SDF_GRID_HEADER_POD_DEFINED
 struct alignas(16) SDFGridHeaderPOD {
     uint32_t cell_offset   = 0u;    // Start index in GEOM_SDF_GRID_FLOAT32
     uint32_t width         = 64u;   // Grid width in samples
@@ -74,6 +76,7 @@ struct alignas(16) SDFGridHeaderPOD {
 };
 
 static_assert(sizeof(SDFGridHeaderPOD) == 32, "SDFGridHeaderPOD must be 32 bytes!");
+#endif // IDEAM_SDF_GRID_HEADER_POD_DEFINED
 
 /**
  * GeometrySignalCommandPOD (16 Bytes)

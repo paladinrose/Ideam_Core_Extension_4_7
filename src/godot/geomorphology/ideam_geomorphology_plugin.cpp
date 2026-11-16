@@ -1,6 +1,6 @@
 #include "godot/geomorphology/ideam_geomorphology_plugin.h"
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 void IdeamGeomorphologyPlugin::_bind_methods() {
     using namespace godot;
@@ -22,4 +22,4 @@ void IdeamGeomorphologyPlugin::_exit_tree() {
     }
 }
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

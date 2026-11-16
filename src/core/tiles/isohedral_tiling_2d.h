@@ -188,6 +188,9 @@ public:
     // ========================================================================
 
     [[nodiscard]] constexpr uint8_t get_edge_shape_count() const noexcept { return baked_.num_edge_shapes; }
+    [[nodiscard]] constexpr uint8_t get_edge_shape_id(size_t p_edge_index) const noexcept {
+        return (p_edge_index < baked_.num_vertices) ? baked_.edges[p_edge_index].edge_shape_id : 0u;
+    }
     [[nodiscard]] TactileEdgeShape get_edge_shape_constraint(uint8_t p_edge_shape_id) const noexcept;
 
     void set_edge_spline(uint8_t p_edge_shape_id, const Spline2& p_canonical_spline);

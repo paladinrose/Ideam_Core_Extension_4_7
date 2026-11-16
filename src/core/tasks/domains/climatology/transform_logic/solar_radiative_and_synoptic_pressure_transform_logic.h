@@ -101,12 +101,12 @@ struct alignas(64) SolarRadiativeAndSynopticPressureTransformLogic {
         if (!seed_part || !seed_part->raw_base_ptr || !atmo_part || !atmo_part->raw_base_ptr) {
             return;
         }
-        auto seed = *reinterpret_cast<const ideam::climatology::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto seed = *reinterpret_cast<const ideam::core::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
         seed.solar_constant_w_m2 *= insolation_multiplier;
-        auto *atmo = reinterpret_cast<ideam::climatology::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
+        auto *atmo = reinterpret_cast<ideam::core::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
         const size_t n = static_cast<size_t>(seed.grid_width) * static_cast<size_t>(seed.grid_height);
-        ideam::climatology::ClimatologyKernelMath::step_radiative_and_synoptic_pressure(
-            seed, dt_seconds, std::span<ideam::climatology::AtmosphericColumnCellPOD>(atmo, n));
+        ideam::core::ClimatologyKernelMath::step_radiative_and_synoptic_pressure(
+            seed, dt_seconds, std::span<ideam::core::AtmosphericColumnCellPOD>(atmo, n));
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

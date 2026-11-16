@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::godot_ext {
 
 GeomorphologyTaskHost::GeomorphologyTaskHost() {
     dod_geomorphology_.instantiate();
@@ -50,14 +50,14 @@ void GeomorphologyTaskHost::_process(double p_delta) {
     }
 }
 
-void GeomorphologyTaskHost::set_terrain_resource(const godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource>& p_terrain) {
+void GeomorphologyTaskHost::set_terrain_resource(const godot::Ref<GeomorphologyTerrainResource>& p_terrain) {
     terrain_resource_ = p_terrain;
     if (dod_geomorphology_.is_valid()) {
         dod_geomorphology_->bind_terrain_resource(terrain_resource_);
     }
 }
 
-godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> GeomorphologyTaskHost::get_terrain_resource() const {
+godot::Ref<GeomorphologyTerrainResource> GeomorphologyTaskHost::get_terrain_resource() const {
     return terrain_resource_;
 }
 
@@ -107,4 +107,4 @@ void GeomorphologyTaskHost::step_once() {
     }
 }
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::godot_ext

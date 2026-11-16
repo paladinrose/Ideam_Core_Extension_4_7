@@ -13,9 +13,16 @@ out_dir        = "#" + project_folder + "/addons/" + out_filename + "/lib/"
 # --- COMPILER & LANGUAGE STANDARDS ---
 # Targeting C++26 explicitly.
 if env.get("is_msvc", False):
+    # Remove godot-cpp default /std:c++17 to avoid MSVC D9025 override warnings.
+    if "CXXFLAGS" in env:
+        env["CXXFLAGS"] = [f for f in env["CXXFLAGS"] if f != "/std:c++17"]
+    if "CCFLAGS" in env:
+        env["CCFLAGS"] = [f for f in env["CCFLAGS"] if f != "/std:c++17"]
     # MSVC uses /std:c++latest for bleeding edge / C++26.
     # /Zc:__cplusplus is REQUIRED so MSVC correctly sets the __cplusplus macro for C++26 features.
+    # _ENABLE_EXTENDED_ALIGNED_STORAGE allows std::stable_sort temporary buffers on alignas(64) PODs.
     env.Append(CXXFLAGS=["/std:c++latest", "/Zc:__cplusplus"])
+    env.Append(CPPDEFINES=["_ENABLE_EXTENDED_ALIGNED_STORAGE"])
 else:
     # GCC 14+ / Clang 18+ support.
     env.Append(CXXFLAGS=["-std=c++26"])

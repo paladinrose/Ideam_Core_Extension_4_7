@@ -26,11 +26,11 @@
 
 #include <vector>
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 /**
  * @class EcologySeedProfileResource
- * @brief Serializable Resource wrapping EcologySeedProfilePOD with SplitMix64 sub-seed derivation.
+ * @brief Serializable Resource wrapping core::EcologySeedProfilePOD with SplitMix64 sub-seed derivation.
  */
 class EcologySeedProfileResource : public godot::Resource {
     GDCLASS(EcologySeedProfileResource, godot::Resource)
@@ -109,8 +109,8 @@ public:
     int64_t get_trophic_lotka_volterra_seed() const;
     int64_t get_rothermel_wildfire_seed() const;
 
-    EcologySeedProfilePOD to_pod() const noexcept;
-    void from_pod(const EcologySeedProfilePOD& pod);
+    core::EcologySeedProfilePOD to_pod() const noexcept;
+    void from_pod(const core::EcologySeedProfilePOD& pod);
 };
 
 /**
@@ -122,7 +122,7 @@ class FloraGuildArchetypeResource : public godot::Resource {
 
 private:
     int guild_id_ = 0;
-    int trophic_role_ = static_cast<int>(TrophicGuildRole::PRIMARY_PRODUCER_CANOPY);
+    int trophic_role_ = static_cast<int>(core::TrophicGuildRole::PRIMARY_PRODUCER_CANOPY);
     int preferred_seral_stage_ = 5;
     godot::String guild_name_ = "Temperate Broadleaf Canopy";
     float optimal_temp_c_ = 14.5f;
@@ -201,8 +201,8 @@ public:
     void set_specific_leaf_area_m2_kg(float p_val);
     float get_specific_leaf_area_m2_kg() const;
 
-    FloraGuildArchetypePOD to_pod() const noexcept;
-    void from_pod(const FloraGuildArchetypePOD& pod);
+    core::FloraGuildArchetypePOD to_pod() const noexcept;
+    void from_pod(const core::FloraGuildArchetypePOD& pod);
 };
 
 /**
@@ -219,12 +219,12 @@ private:
     godot::TypedArray<FloraGuildArchetypeResource> guild_catalog_;
 
     float default_step_dt_years_ = 0.25f;
-    int active_stage_mask_ = static_cast<int>(ideam::tasks::ecology::EcologyStageFlags::ALL_STAGES);
+    int active_stage_mask_ = static_cast<int>(core::EcologyStageFlags::ALL_STAGES);
 
-    std::vector<FloraGuildArchetypePOD> pod_guilds_;
-    std::vector<EcologicalCellStatePOD> pod_eco_;
-    std::vector<BiogeochemicalAndTrophicCellPOD> pod_biogeo_;
-    std::vector<EcologyHarvestAndDisturbanceSamplePOD> pod_samples_;
+    std::vector<core::FloraGuildArchetypePOD> pod_guilds_;
+    std::vector<core::EcologicalCellStatePOD> pod_eco_;
+    std::vector<core::BiogeochemicalAndTrophicCellPOD> pod_biogeo_;
+    std::vector<core::EcologyHarvestAndDisturbanceSamplePOD> pod_samples_;
     uint32_t simulation_step_counter_ = 0;
 
     void _sync_pod_guilds();
@@ -277,7 +277,7 @@ public:
     godot::Dictionary inspect_cell_quadrat(int p_x, int p_y) const;
 
     /**
-     * @brief Renders a 2D heatmap preview image of the requested EcologyMapLayer.
+     * @brief Renders a 2D heatmap preview image of the requested core::EcologyMapLayer.
      */
     godot::Ref<godot::Image> render_map_layer_image(int p_layer) const;
 
@@ -287,14 +287,14 @@ public:
     godot::Dictionary get_domain_telemetry() const;
 
     // Raw span accessors for DOD / TaskHost zero-copy bridging
-    std::span<const FloraGuildArchetypePOD> get_guilds_span() const noexcept { return pod_guilds_; }
-    std::span<EcologicalCellStatePOD> get_eco_span() noexcept { return pod_eco_; }
-    std::span<BiogeochemicalAndTrophicCellPOD> get_biogeo_span() noexcept { return pod_biogeo_; }
-    std::span<EcologyHarvestAndDisturbanceSamplePOD> get_samples_span() noexcept { return pod_samples_; }
+    std::span<const core::FloraGuildArchetypePOD> get_guilds_span() const noexcept { return pod_guilds_; }
+    std::span<core::EcologicalCellStatePOD> get_eco_span() noexcept { return pod_eco_; }
+    std::span<core::BiogeochemicalAndTrophicCellPOD> get_biogeo_span() noexcept { return pod_biogeo_; }
+    std::span<core::EcologyHarvestAndDisturbanceSamplePOD> get_samples_span() noexcept { return pod_samples_; }
 
-    std::span<const EcologicalCellStatePOD> get_eco_const_span() const noexcept { return pod_eco_; }
-    std::span<const BiogeochemicalAndTrophicCellPOD> get_biogeo_const_span() const noexcept { return pod_biogeo_; }
-    std::span<const EcologyHarvestAndDisturbanceSamplePOD> get_samples_const_span() const noexcept { return pod_samples_; }
+    std::span<const core::EcologicalCellStatePOD> get_eco_const_span() const noexcept { return pod_eco_; }
+    std::span<const core::BiogeochemicalAndTrophicCellPOD> get_biogeo_const_span() const noexcept { return pod_biogeo_; }
+    std::span<const core::EcologyHarvestAndDisturbanceSamplePOD> get_samples_const_span() const noexcept { return pod_samples_; }
 };
 
 /**
@@ -329,4 +329,4 @@ public:
     godot::Dictionary sample_quadrat_at_world(const godot::Vector3& p_world_pos) const;
 };
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

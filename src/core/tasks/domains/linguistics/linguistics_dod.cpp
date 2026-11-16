@@ -235,7 +235,7 @@ GrantPartPOD LinguisticsDOD::make_buffer_requirement(uint32_t p_buffer_id, Buffe
     if (mgr && p_buffer_id != INVALID_ID) {
         if (const MemoryBufferPOD *buf = mgr->get_buffer(p_buffer_id)) {
             const int64_t active_elems = (buf->current_count > 0) ? buf->current_count : buf->max_elements;
-            return make_grant_requirement(p_buffer_id, p_access, buf->element_stride, active_elems, buf->default_selection_mode);
+            return make_grant_requirement(p_buffer_id, p_access, buf->element_stride, active_elems, ((buf->layout_type == BufferLayoutType::SPARSE_SET) ? SelectionMode::SPARSE : SelectionMode::RANGE));
         }
     }
     return make_grant_requirement(p_buffer_id, p_access, sizeof(uint32_t), 0);

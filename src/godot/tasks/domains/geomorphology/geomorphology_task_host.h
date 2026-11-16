@@ -9,14 +9,14 @@
 
 #include "godot/tasks/domains/geomorphology/data_oriented_geomorphology.h"
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::godot_ext {
 
 class GeomorphologyTaskHost : public godot::Node {
     GDCLASS(GeomorphologyTaskHost, godot::Node)
 
 private:
     godot::Ref<DataOrientedGeomorphology> dod_geomorphology_;
-    godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> terrain_resource_;
+    godot::Ref<GeomorphologyTerrainResource> terrain_resource_;
     bool auto_step_in_process_ = false;
     float geological_dt_per_step_myr_ = 0.01f;
     float hydrological_dt_per_step_sec_ = 0.20f;
@@ -32,8 +32,8 @@ public:
     void _ready() override;
     void _process(double p_delta) override;
 
-    void set_terrain_resource(const godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource>& p_terrain);
-    godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> get_terrain_resource() const;
+    void set_terrain_resource(const godot::Ref<GeomorphologyTerrainResource>& p_terrain);
+    godot::Ref<GeomorphologyTerrainResource> get_terrain_resource() const;
 
     godot::Ref<DataOrientedGeomorphology> get_dod_geomorphology() const;
 
@@ -52,4 +52,4 @@ public:
     void step_once();
 };
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::godot_ext

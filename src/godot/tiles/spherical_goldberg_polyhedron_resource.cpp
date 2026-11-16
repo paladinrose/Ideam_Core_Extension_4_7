@@ -137,7 +137,7 @@ godot::PackedVector2Array SphericalGoldbergPolyhedronResource::get_prototile_out
     godot::PackedVector2Array hex;
     hex.resize(6);
     for (int i = 0; i < 6; ++i) {
-        const float angle = static_cast<float>(i) * (Godot::Math::TAU / 6.0f);
+        const float angle = static_cast<float>(i) * (6.283185307179586f / 6.0f);
         hex.set(i, godot::Vector2(std::cos(angle), std::sin(angle)));
     }
     return hex;
@@ -448,7 +448,7 @@ godot::PackedVector3Array SphericalGoldbergPolyhedronResource::compute_spherical
     const size_t n = core_goldberg_.cell_count();
     out.resize(static_cast<int64_t>(n));
     for (size_t cid = 0; cid < n; ++cid) {
-        const uint32_t next_id = (cid < field.next_cell.size()) ? field.next_cell[cid] : core::INVALID_TILE_ID;
+        const uint32_t next_id = (cid < field.next_cell_ids.size() && field.next_cell_ids[cid] >= 0) ? static_cast<uint32_t>(field.next_cell_ids[cid]) : core::INVALID_TILE_ID;
         if (next_id == core::INVALID_TILE_ID || next_id == cid || next_id >= n) {
             out.set(static_cast<int64_t>(cid), godot::Vector3(0.0f, 0.0f, 0.0f));
             continue;
@@ -1226,7 +1226,7 @@ void SphericalGoldbergPreviewCanvas::_draw_geometry_canvas() {
         draw_polyline(poly2, Color(0.88f, 0.95f, 1.0f, 0.55f), 1.1f, true);
     }
 
-    draw_arc(center_scr, rad_px, 0.0f, Godot::Math::TAU, 96, Color(0.45f, 0.76f, 0.96f, 0.85f), 2.0f, true);
+    draw_arc(center_scr, rad_px, 0.0f, 6.283185307179586f, 96, Color(0.45f, 0.76f, 0.96f, 0.85f), 2.0f, true);
 }
 
 SphericalGoldbergControl::SphericalGoldbergControl() {

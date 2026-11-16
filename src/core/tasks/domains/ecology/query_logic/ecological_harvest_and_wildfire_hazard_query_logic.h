@@ -89,6 +89,39 @@ struct alignas(64) EcologicalHarvestAndWildfireHazardQueryLogic {
         (void)p_context;
     }
 
+    template <QueryOp Op, typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        const T_View &p_view
+    ) const noexcept {
+        const uint32_t tgt_id = get_target_buffer_id();
+        const int64_t cap = r_selection.capacity;
+        int64_t out_sparse = 0;
+        for (int64_t i = 0; i < cap; ++i) {
+            const bool match = evaluate_element<T_View, T_Strategy>(i, p_view, p_context);
+            if constexpr (Op == QueryOp::ADD) {
+                if (match) {
+                    if (r_selection.mode == SelectionMode::DENSE && r_selection.data.bitset) {
+                        r_selection.data.bitset[i >> 6] |= (1ULL << (i & 63));
+                    } else if (r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices && out_sparse < r_selection.capacity) {
+                        r_selection.data.indices[out_sparse++] = i;
+                    }
+                    p_context.queue_selection_command(tgt_id, i);
+                }
+            } else {
+                if (!match && r_selection.mode == SelectionMode::DENSE && r_selection.data.bitset) {
+                    r_selection.data.bitset[i >> 6] &= ~(1ULL << (i & 63));
+                } else if (match && r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices && out_sparse < r_selection.capacity) {
+                    r_selection.data.indices[out_sparse++] = i;
+                }
+            }
+        }
+        if (r_selection.mode == SelectionMode::SPARSE && r_selection.data.indices) {
+            r_selection.element_count = out_sparse;
+        }
+    }
+
     template <typename T_View, typename T_Strategy>
     [[nodiscard]] inline bool evaluate_element(
         int64_t p_index,
@@ -100,7 +133,7 @@ struct alignas(64) EcologicalHarvestAndWildfireHazardQueryLogic {
         if (!harv_part || !harv_part->raw_base_ptr || p_index < 0 || p_index >= harv_part->selection.capacity) {
             return !negate_result;
         }
-        const auto *samples = reinterpret_cast<const ideam::ecology::EcologyHarvestAndDisturbanceSamplePOD *>(harv_part->raw_base_ptr);
+        const auto *samples = reinterpret_cast<const ideam::core::EcologyHarvestAndDisturbanceSamplePOD *>(harv_part->raw_base_ptr);
         const auto &s = samples[p_index];
         const bool match = (s.wildfire_spread_risk_01 >= wildfire_risk_threshold) ||
                            (s.alchemical_botanical_grade >= alchemical_grade_threshold) ||

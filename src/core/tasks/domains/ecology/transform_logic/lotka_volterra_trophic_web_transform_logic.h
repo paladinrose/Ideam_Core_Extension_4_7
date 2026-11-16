@@ -101,15 +101,15 @@ struct alignas(64) LotkaVolterraTrophicWebTransformLogic {
         if (!seed_part || !seed_part->raw_base_ptr || !eco_part || !eco_part->raw_base_ptr || !bio_part || !bio_part->raw_base_ptr) {
             return;
         }
-        const auto *seed = reinterpret_cast<const ideam::ecology::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        auto *eco        = reinterpret_cast<ideam::ecology::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
-        auto *bio        = reinterpret_cast<ideam::ecology::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
+        const auto *seed = reinterpret_cast<const ideam::core::EcologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto *eco        = reinterpret_cast<ideam::core::EcologicalCellStatePOD *>(eco_part->raw_base_ptr);
+        auto *bio        = reinterpret_cast<ideam::core::BiogeochemicalAndTrophicCellPOD *>(bio_part->raw_base_ptr);
         const size_t n   = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        ideam::ecology::EcologyKernelMath::step_lotka_volterra_trophic_web(
+        ideam::core::EcologyKernelMath::step_lotka_volterra_trophic_web(
             *seed,
             dt_years,
-            std::span<ideam::ecology::EcologicalCellStatePOD>(eco, n),
-            std::span<ideam::ecology::BiogeochemicalAndTrophicCellPOD>(bio, n));
+            std::span<ideam::core::EcologicalCellStatePOD>(eco, n),
+            std::span<ideam::core::BiogeochemicalAndTrophicCellPOD>(bio, n));
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

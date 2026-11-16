@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 ClimatologySynopticMapPreviewCanvas::ClimatologySynopticMapPreviewCanvas() {
     set_custom_minimum_size(godot::Vector2(260.0f, 260.0f));
@@ -41,7 +41,7 @@ godot::Ref<ClimatologyAtmosphereResource> ClimatologySynopticMapPreviewCanvas::g
 }
 
 void ClimatologySynopticMapPreviewCanvas::set_active_map_layer(int p_layer) {
-    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(ClimatologyMapLayer::COUNT) - 1);
+    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(core::ClimatologyMapLayer::COUNT) - 1);
     rebuild_preview_texture();
 }
 
@@ -121,4 +121,4 @@ void ClimatologySynopticMapPreviewCanvas::_draw() {
     draw_rect(Rect2(Vector2(0, 0), sz), Color(0.32f, 0.38f, 0.46f, 1.0f), false, 1.0f);
 }
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

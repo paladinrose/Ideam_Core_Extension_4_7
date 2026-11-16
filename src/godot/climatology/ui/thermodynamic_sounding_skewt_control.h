@@ -15,7 +15,7 @@
 
 #include "godot/climatology/climatology_weather_resource.h"
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 class ThermodynamicSoundingSkewTControl : public godot::Control {
     GDCLASS(ThermodynamicSoundingSkewTControl, godot::Control)
@@ -42,4 +42,4 @@ public:
     void _draw() override;
 };
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

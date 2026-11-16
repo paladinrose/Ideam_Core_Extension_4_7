@@ -236,4 +236,23 @@ struct SDFMath {
      */
 };
 
+
+#ifndef IDEAM_SDF_GRID_HEADER_POD_DEFINED
+#define IDEAM_SDF_GRID_HEADER_POD_DEFINED
+/**
+ * SDFGridHeaderPOD (32 Bytes, Cache-Line Aligned)
+ * Descriptor for a 2D scalar Signed Distance Field or Chladni cymatic grid slice in `GEOM_SDF_GRID_FLOAT32`.
+ */
+struct alignas(16) SDFGridHeaderPOD {
+    uint32_t cell_offset   = 0u;    // Start index in GEOM_SDF_GRID_FLOAT32
+    uint32_t width         = 64u;   // Grid width in samples
+    uint32_t height        = 64u;   // Grid height in samples
+    float iso_value        = 0.0f;  // Iso-contour threshold
+    glm::vec2 origin{-5.0f, -5.0f}; // World-space min corner
+    glm::vec2 cell_size{0.15873f, 0.15873f}; // World-space step per cell
+};
+
+static_assert(sizeof(SDFGridHeaderPOD) == 32, "SDFGridHeaderPOD must be 32 bytes!");
+#endif // IDEAM_SDF_GRID_HEADER_POD_DEFINED
+
 } // namespace ideam::core

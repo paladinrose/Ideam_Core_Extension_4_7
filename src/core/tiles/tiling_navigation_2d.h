@@ -69,13 +69,38 @@ struct TilingNavigation2D {
      *
      * @return Ordered sequence of cell IDs from `p_start_cell` to `p_end_cell` (inclusive), or empty if unreachable.
      */
+    struct TilingPathSearchResult {
+        bool reachable = false;
+        std::vector<uint32_t> cell_path;
+        std::vector<Vec2> world_points;
+    };
+
     [[nodiscard]] static std::vector<uint32_t> find_path_cells(
         const Region& p_region,
         uint32_t p_start_cell,
         uint32_t p_end_cell,
-        std::span<const T> p_cell_cost_multipliers = {},
+        std::span<const T> p_cell_cost_multipliers,
         bool p_manhattan_heuristic = false
     );
+
+    [[nodiscard]] static TilingPathSearchResult find_path_cells(
+        const Region& p_region,
+        uint32_t p_start_cell,
+        uint32_t p_end_cell,
+        bool p_manhattan_heuristic = false
+    ) {
+        TilingPathSearchResult res;
+        res.cell_path = find_path_cells(p_region, p_start_cell, p_end_cell, std::span<const T>{}, p_manhattan_heuristic);
+        res.reachable = !res.cell_path.empty();
+        res.world_points.reserve(res.cell_path.size());
+        const auto cells = p_region.get_cells();
+        for (uint32_t cid : res.cell_path) {
+            if (cid < cells.size()) {
+                res.world_points.emplace_back(static_cast<T>(cells[cid].center.x), static_cast<T>(cells[cid].center.y));
+            }
+        }
+        return res;
+    }
 
     /**
      * Binary min-heap A* search across aggregated `HexSuperCellPOD` macro-hexagons in `p_region`

@@ -47,7 +47,7 @@ struct alignas(64) TilingDualGraphWFCTransformLogic {
         BufferLayoutType::FLAT | BufferLayoutType::AOS | BufferLayoutType::SOA |
         BufferLayoutType::SPARSE_SET | BufferLayoutType::TILED_SOA;
     static constexpr DataType required_types =
-        DataType::INT32 | DataType::UINT32 | DataType::FLOAT32 | DataType::VECTOR2;
+        DataType::INT32 | DataType::INT32 | DataType::FLOAT32 | DataType::VECTOR2;
 
     // --- Explicit Spatial & Kernel Contracts ---
     static constexpr size_t dimensions           = 0;

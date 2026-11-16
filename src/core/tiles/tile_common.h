@@ -41,6 +41,8 @@ enum class TilingAuthoringMode : uint8_t {
  * Multi-modal region coverage rules when filling or masking against a closed `Spline2D` contour.
  * Modernizes `requireAllPointsCoverage` and `GetMaskedSymmetries(thoroughCheck)` from `SymmetryGroup.cs`.
  */
+static constexpr uint32_t INVALID_TILE_ID = 0xFFFFFFFFu;
+
 enum class TilingCoverageMode : uint8_t {
     STRICT_INTERIOR      = 0, // Keep only cells whose vertices all lie strictly inside the boundary
     CENTROID_INSIDE      = 1, // Keep cells whose area centroid lies inside the boundary
@@ -70,14 +72,19 @@ enum class TilePortDirection : uint8_t {
 /**
  * Bitmask state flags stored on each `IsoCellPOD::flags`.
  */
+using TilingBoundaryCoverageMode = TilingCoverageMode;
+
 enum TileCellFlags : uint8_t {
-    CELL_FLAG_NONE        = 0u,
-    CELL_FLAG_ON_BORDER   = 1u << 0, // Cell has at least one exposed boundary edge (cell_b == -1)
-    CELL_FLAG_BRIDGE_QUAD = 1u << 1, // Synthesized 4-sided seam bridge cell from MergeGroup
-    CELL_FLAG_MASKED      = 1u << 2, // Pruned / deactivated by a higher-priority group or mask spline
-    CELL_FLAG_REFLECTED   = 1u << 3, // Aspect transform has negative determinant (mirror / glide reflection)
-    CELL_FLAG_HEX_MEMBER  = 1u << 4, // Belongs to a valid HexSuperCellPOD cluster (`Hexize`)
-    CELL_FLAG_CLIPPED_CAP = 1u << 5  // Boundary cell whose polygon was clipped against a Spline2D contour
+    CELL_FLAG_NONE             = 0u,
+    CELL_FLAG_ON_BORDER        = 1u << 0, // Cell has at least one exposed boundary edge (cell_b == -1)
+    CELL_FLAG_BRIDGE_QUAD      = 1u << 1, // Synthesized 4-sided seam bridge cell from MergeGroup
+    CELL_FLAG_MASKED           = 1u << 2, // Pruned / deactivated by a higher-priority group or mask spline
+    CELL_FLAG_REFLECTED        = 1u << 3, // Aspect transform has negative determinant (mirror / glide reflection)
+    CELL_FLAG_HEX_MEMBER       = 1u << 4, // Belongs to a valid HexSuperCellPOD cluster (`Hexize`)
+    CELL_FLAG_CLIPPED_CAP      = 1u << 5, // Boundary cell whose polygon was clipped against a Spline2D contour
+    TILE_CELL_BORDER           = CELL_FLAG_ON_BORDER,
+    TILE_CELL_BRIDGE_STITCH    = CELL_FLAG_BRIDGE_QUAD,
+    TILE_CELL_BOUNDARY_CLIPPED = CELL_FLAG_CLIPPED_CAP
 };
 
 /**

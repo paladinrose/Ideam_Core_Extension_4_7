@@ -185,6 +185,9 @@ public:
     // ========================================================================
 
     [[nodiscard]] real_t sample(real_t p_percent, bool p_weighted = true) const;
+    [[nodiscard]] real_t sample_normalized(real_t p_percent, bool p_weighted = true) const {
+        return sample(p_percent, p_weighted);
+    }
     [[nodiscard]] real_t get_point(real_t p_percent, bool p_weighted = true) const {
         return sample(p_percent, p_weighted);
     }

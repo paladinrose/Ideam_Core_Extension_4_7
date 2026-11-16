@@ -11,7 +11,7 @@
 #include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 void EcologyInspector::_bind_methods() {}
 
@@ -104,4 +104,4 @@ void EcologyInspector::_parse_begin(godot::Object* p_object) {
     add_custom_control(root_vbox);
 }
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

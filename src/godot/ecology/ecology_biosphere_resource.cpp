@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace ideam::ecology {
+namespace ideam::godot_ext {
 
 // ============================================================================
 // EcologySeedProfileResource
@@ -132,8 +132,8 @@ int64_t EcologySeedProfileResource::get_succession_dispersal_seed() const { retu
 int64_t EcologySeedProfileResource::get_trophic_lotka_volterra_seed() const { return static_cast<int64_t>(to_pod().trophic_lotka_volterra_seed); }
 int64_t EcologySeedProfileResource::get_rothermel_wildfire_seed() const { return static_cast<int64_t>(to_pod().rothermel_wildfire_seed); }
 
-EcologySeedProfilePOD EcologySeedProfileResource::to_pod() const noexcept {
-    EcologySeedProfilePOD pod = EcologyKernelMath::make_seed_profile(
+core::EcologySeedProfilePOD EcologySeedProfileResource::to_pod() const noexcept {
+    core::EcologySeedProfilePOD pod = core::EcologyKernelMath::make_seed_profile(
         static_cast<uint64_t>(master_seed_),
         static_cast<uint32_t>(grid_width_),
         static_cast<uint32_t>(grid_height_),
@@ -152,7 +152,7 @@ EcologySeedProfilePOD EcologySeedProfileResource::to_pod() const noexcept {
     return pod;
 }
 
-void EcologySeedProfileResource::from_pod(const EcologySeedProfilePOD& pod) {
+void EcologySeedProfileResource::from_pod(const core::EcologySeedProfilePOD& pod) {
     master_seed_ = static_cast<int64_t>(pod.master_seed);
     grid_width_ = static_cast<int>(pod.grid_width);
     grid_height_ = static_cast<int>(pod.grid_height);
@@ -305,10 +305,10 @@ float FloraGuildArchetypeResource::get_alchemical_reagent_affinity() const { ret
 void FloraGuildArchetypeResource::set_specific_leaf_area_m2_kg(float p_val) { specific_leaf_area_m2_kg_ = p_val; emit_changed(); }
 float FloraGuildArchetypeResource::get_specific_leaf_area_m2_kg() const { return specific_leaf_area_m2_kg_; }
 
-FloraGuildArchetypePOD FloraGuildArchetypeResource::to_pod() const noexcept {
-    FloraGuildArchetypePOD pod{};
+core::FloraGuildArchetypePOD FloraGuildArchetypeResource::to_pod() const noexcept {
+    core::FloraGuildArchetypePOD pod{};
     pod.guild_id = static_cast<uint16_t>(guild_id_);
-    pod.trophic_role = static_cast<TrophicGuildRole>(trophic_role_);
+    pod.trophic_role = static_cast<core::TrophicGuildRole>(trophic_role_);
     pod.preferred_seral_stage = static_cast<uint8_t>(preferred_seral_stage_);
     pod.optimal_temp_c = optimal_temp_c_;
     pod.temp_tolerance_sigma_c = temp_tolerance_sigma_c_;
@@ -327,7 +327,7 @@ FloraGuildArchetypePOD FloraGuildArchetypeResource::to_pod() const noexcept {
     return pod;
 }
 
-void FloraGuildArchetypeResource::from_pod(const FloraGuildArchetypePOD& pod) {
+void FloraGuildArchetypeResource::from_pod(const core::FloraGuildArchetypePOD& pod) {
     guild_id_ = static_cast<int>(pod.guild_id);
     trophic_role_ = static_cast<int>(pod.trophic_role);
     preferred_seral_stage_ = static_cast<int>(pod.preferred_seral_stage);
@@ -419,7 +419,7 @@ void EcologyBiosphereResource::set_active_stage_mask(int p_mask) {
 int EcologyBiosphereResource::get_active_stage_mask() const { return active_stage_mask_; }
 
 void EcologyBiosphereResource::reset_default_guild_catalog() {
-    auto defaults = EcologyKernelMath::build_default_guild_catalog();
+    auto defaults = core::EcologyKernelMath::build_default_guild_catalog();
     static const char* kGuildNames[8] = {
         "Boreal/Montane Conifer Canopy",
         "Temperate Broadleaf Deciduous",
@@ -450,7 +450,7 @@ void EcologyBiosphereResource::_sync_pod_guilds() {
         }
     }
     if (pod_guilds_.empty()) {
-        auto defaults = EcologyKernelMath::build_default_guild_catalog();
+        auto defaults = core::EcologyKernelMath::build_default_guild_catalog();
         pod_guilds_.assign(defaults.begin(), defaults.end());
     }
 }
@@ -460,7 +460,7 @@ void EcologyBiosphereResource::_ensure_buffers_allocated() {
         seed_profile_.instantiate();
     }
     _sync_pod_guilds();
-    const EcologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::EcologySeedProfilePOD seed = seed_profile_->to_pod();
     const size_t cell_count = static_cast<size_t>(seed.grid_width) * static_cast<size_t>(seed.grid_height);
     pod_eco_.resize(cell_count);
     pod_biogeo_.resize(cell_count);
@@ -469,13 +469,13 @@ void EcologyBiosphereResource::_ensure_buffers_allocated() {
 
 void EcologyBiosphereResource::generate_initial_biosphere() {
     _ensure_buffers_allocated();
-    const EcologySeedProfilePOD seed = seed_profile_->to_pod();
-    ideam::tasks::ecology::EcologyDOD::initialize_biosphere_from_seed(
+    const core::EcologySeedProfilePOD seed = seed_profile_->to_pod();
+    core::EcologyDOD::initialize_biosphere_from_seed(
         seed,
         pod_guilds_,
         pod_eco_,
         pod_biogeo_);
-    EcologyKernelMath::evaluate_ecological_harvest_and_hazards(
+    core::EcologyKernelMath::evaluate_ecological_harvest_and_hazards(
         seed,
         pod_eco_,
         pod_biogeo_,
@@ -486,12 +486,12 @@ void EcologyBiosphereResource::generate_initial_biosphere() {
 
 void EcologyBiosphereResource::step_simulation(int p_steps, float p_dt_years) {
     _ensure_buffers_allocated();
-    const EcologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::EcologySeedProfilePOD seed = seed_profile_->to_pod();
     const float dt = (p_dt_years > 0.0f) ? p_dt_years : default_step_dt_years_;
     const int steps = std::max(1, p_steps);
 
     for (int i = 0; i < steps; ++i) {
-        ideam::tasks::ecology::EcologyDOD::execute_step(
+        core::EcologyDOD::execute_step(
             seed,
             pod_guilds_,
             pod_eco_,
@@ -506,13 +506,13 @@ void EcologyBiosphereResource::step_simulation(int p_steps, float p_dt_years) {
 
 bool EcologyBiosphereResource::ignite_wildfire_at_cell(int p_x, int p_y, float p_intensity_kw_m) {
     _ensure_buffers_allocated();
-    const EcologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::EcologySeedProfilePOD seed = seed_profile_->to_pod();
     const uint32_t gx = static_cast<uint32_t>(std::clamp(p_x, 0, seed_profile_->get_grid_width() - 1));
     const uint32_t gy = static_cast<uint32_t>(std::clamp(p_y, 0, seed_profile_->get_grid_height() - 1));
-    const bool ok = EcologyKernelMath::ignite_wildfire_at_grid(
+    const bool ok = core::EcologyKernelMath::ignite_wildfire_at_grid(
         seed, gx, gy, p_intensity_kw_m, pod_eco_, pod_biogeo_);
     if (ok) {
-        EcologyKernelMath::evaluate_ecological_harvest_and_hazards(
+        core::EcologyKernelMath::evaluate_ecological_harvest_and_hazards(
             seed, pod_eco_, pod_biogeo_, pod_samples_);
         emit_changed();
     }
@@ -605,7 +605,7 @@ godot::Ref<godot::Image> EcologyBiosphereResource::render_map_layer_image(int p_
     const int h = seed_profile_->get_grid_height();
     godot::Ref<godot::Image> img = godot::Image::create_empty(w, h, false, godot::Image::FORMAT_RGBA8);
 
-    const auto layer_enum = static_cast<EcologyMapLayer>(p_layer);
+    const auto layer_enum = static_cast<core::EcologyMapLayer>(p_layer);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
@@ -616,7 +616,7 @@ godot::Ref<godot::Image> EcologyBiosphereResource::render_map_layer_image(int p_
 
             godot::Color c(0.12f, 0.18f, 0.14f, 1.0f);
             switch (layer_enum) {
-                case EcologyMapLayer::WHITTAKER_HOLDRIDGE_BIOME: {
+                case core::EcologyMapLayer::WHITTAKER_HOLDRIDGE_BIOME: {
                     static const godot::Color kBiomeColors[12] = {
                         godot::Color(0.04f, 0.44f, 0.18f, 1.0f), // Tropical Rain Forest
                         godot::Color(0.18f, 0.58f, 0.22f, 1.0f), // Tropical Seasonal Forest
@@ -634,7 +634,7 @@ godot::Ref<godot::Image> EcologyBiosphereResource::render_map_layer_image(int p_
                     c = kBiomeColors[static_cast<int>(eco.life_zone) % 12];
                     break;
                 }
-                case EcologyMapLayer::SUCCESSION_SERAL_STAGE: {
+                case core::EcologyMapLayer::SUCCESSION_SERAL_STAGE: {
                     const int s = static_cast<int>(eco.seral_stage);
                     if (s == 6) {
                         c = godot::Color(0.78f, 0.24f, 0.16f, 1.0f);
@@ -644,40 +644,40 @@ godot::Ref<godot::Image> EcologyBiosphereResource::render_map_layer_image(int p_
                     }
                     break;
                 }
-                case EcologyMapLayer::CANOPY_AND_UNDERSTORY_BIOMASS: {
+                case core::EcologyMapLayer::CANOPY_AND_UNDERSTORY_BIOMASS: {
                     const float b_norm = std::clamp((eco.canopy_biomass_kg_m2 + eco.understory_biomass_kg_m2) / 42.0f, 0.0f, 1.0f);
                     c = godot::Color(0.28f * (1.0f - b_norm), 0.22f + 0.72f * b_norm, 0.16f + 0.20f * b_norm, 1.0f);
                     break;
                 }
-                case EcologyMapLayer::SOIL_CARBON_AND_NITROGEN_NPK: {
+                case core::EcologyMapLayer::SOIL_CARBON_AND_NITROGEN_NPK: {
                     const float c_norm = std::clamp(bio.soil_organic_carbon_kg_m2 / 22.0f, 0.0f, 1.0f);
                     const float n_norm = std::clamp(bio.mineral_nitrogen_g_m2 / 85.0f, 0.0f, 1.0f);
                     c = godot::Color(0.24f + 0.45f * c_norm, 0.20f + 0.62f * n_norm, 0.14f + 0.25f * c_norm, 1.0f);
                     break;
                 }
-                case EcologyMapLayer::ROTHERMEL_WILDFIRE_INTENSITY: {
+                case core::EcologyMapLayer::ROTHERMEL_WILDFIRE_INTENSITY: {
                     const float risk = smp.wildfire_spread_risk_01;
                     const float flame = std::clamp(bio.wildfire_intensity_kw_m / 1200.0f, 0.0f, 1.0f);
                     c = godot::Color(0.22f + 0.78f * std::max(risk, flame), 0.18f + 0.55f * flame, 0.12f, 1.0f);
                     break;
                 }
-                case EcologyMapLayer::TROPHIC_HERBIVORE_PREDATOR_DENSITY: {
+                case core::EcologyMapLayer::TROPHIC_HERBIVORE_PREDATOR_DENSITY: {
                     const float herb = std::clamp((bio.grazer_herbivore_density + bio.browser_herbivore_density) / 1.8f, 0.0f, 1.0f);
                     const float pred = std::clamp(bio.apex_predator_density / 0.65f, 0.0f, 1.0f);
                     c = godot::Color(0.20f + 0.75f * pred, 0.25f + 0.68f * herb, 0.28f, 1.0f);
                     break;
                 }
-                case EcologyMapLayer::EVAPOTRANSPIRATION_AND_ALBEDO_FEEDBACK: {
+                case core::EcologyMapLayer::EVAPOTRANSPIRATION_AND_ALBEDO_FEEDBACK: {
                     const float et = std::clamp(eco.evapotranspiration_mm_day / 6.5f, 0.0f, 1.0f);
                     c = godot::Color(0.16f * (1.0f - et), 0.34f + 0.55f * et, 0.42f + 0.54f * et, 1.0f);
                     break;
                 }
-                case EcologyMapLayer::SHANNON_BIODIVERSITY_INDEX: {
+                case core::EcologyMapLayer::SHANNON_BIODIVERSITY_INDEX: {
                     const float h_norm = std::clamp(eco.shannon_diversity_h / 2.2f, 0.0f, 1.0f);
                     c = godot::Color::from_hsv(0.78f - 0.52f * h_norm, 0.72f, 0.86f);
                     break;
                 }
-                case EcologyMapLayer::ALCHEMICAL_PHYTOCHEMICAL_POTENCY: {
+                case core::EcologyMapLayer::ALCHEMICAL_PHYTOCHEMICAL_POTENCY: {
                     const float alc = std::clamp(bio.alchemical_phytochemical_grade, 0.0f, 1.0f);
                     c = godot::Color(0.24f + 0.68f * alc, 0.16f + 0.72f * (alc * alc), 0.36f + 0.62f * alc, 1.0f);
                     break;
@@ -705,8 +705,8 @@ godot::Dictionary EcologyBiosphereResource::get_domain_telemetry() const {
         mean_canopy += pod_eco_[i].canopy_biomass_kg_m2;
         mean_soc += pod_biogeo_[i].soil_organic_carbon_kg_m2;
         mean_diversity += pod_eco_[i].shannon_diversity_h;
-        if (pod_eco_[i].disturbance_state == EcologicalDisturbanceState::ACTIVE_CROWN_WILDFIRE ||
-            pod_eco_[i].disturbance_state == EcologicalDisturbanceState::ACTIVE_SURFACE_BRUSHFIRE) {
+        if (pod_eco_[i].disturbance_state == core::EcologicalDisturbanceState::ACTIVE_CROWN_WILDFIRE ||
+            pod_eco_[i].disturbance_state == core::EcologicalDisturbanceState::ACTIVE_SURFACE_BRUSHFIRE) {
             ++active_fires;
         }
     }
@@ -797,4 +797,4 @@ godot::Dictionary EcologyBiosphereNode3D::sample_quadrat_at_world(const godot::V
     return biosphere_resource_->inspect_cell_quadrat(g.x, g.y);
 }
 
-} // namespace ideam::ecology
+} // namespace ideam::godot_ext

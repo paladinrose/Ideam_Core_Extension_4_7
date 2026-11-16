@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::ecology {
+namespace ideam::godot_ext {
 
 void DataOrientedEcology::_bind_methods() {
     using namespace godot;
@@ -19,11 +19,11 @@ void DataOrientedEcology::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_pipeline_telemetry"), &DataOrientedEcology::get_pipeline_telemetry);
 }
 
-void DataOrientedEcology::bind_biosphere_resource(const godot::Ref<ideam::ecology::EcologyBiosphereResource>& p_biosphere) {
+void DataOrientedEcology::bind_biosphere_resource(const godot::Ref<EcologyBiosphereResource>& p_biosphere) {
     active_biosphere_ = p_biosphere;
 }
 
-godot::Ref<ideam::ecology::EcologyBiosphereResource> DataOrientedEcology::get_bound_biosphere_resource() const {
+godot::Ref<EcologyBiosphereResource> DataOrientedEcology::get_bound_biosphere_resource() const {
     return active_biosphere_;
 }
 
@@ -46,7 +46,7 @@ void DataOrientedEcology::execute_pipeline_step(float p_dt_years) {
         return;
     }
     const auto seed = active_biosphere_->get_seed_profile()->to_pod();
-    EcologyDOD::execute_step(
+    core::EcologyDOD::execute_step(
         seed,
         active_biosphere_->get_guilds_span(),
         active_biosphere_->get_eco_span(),
@@ -63,4 +63,4 @@ godot::Dictionary DataOrientedEcology::get_pipeline_telemetry() const {
     return godot::Dictionary();
 }
 
-} // namespace ideam::tasks::ecology
+} // namespace ideam::godot_ext

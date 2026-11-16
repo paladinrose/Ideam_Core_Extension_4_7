@@ -4,7 +4,7 @@
  * @file climatology_synoptic_map_preview_canvas.h
  * @brief Interactive 2D synoptic weather map & tornado vortex canvas for IdeamClimatology.
  *
- * Displays any of the 9 ClimatologyMapLayer views, overlays active supercell
+ * Displays any of the 9 core::ClimatologyMapLayer views, overlays active supercell
  * tornado vortex cores, emits `cell_selected(grid_coords)` on left click, and
  * spawns a supercell tornado vortex on right click.
  */
@@ -16,7 +16,7 @@
 
 #include "godot/climatology/climatology_weather_resource.h"
 
-namespace ideam::climatology {
+namespace ideam::godot_ext {
 
 class ClimatologySynopticMapPreviewCanvas : public godot::Control {
     GDCLASS(ClimatologySynopticMapPreviewCanvas, godot::Control)
@@ -24,7 +24,7 @@ class ClimatologySynopticMapPreviewCanvas : public godot::Control {
 private:
     godot::Ref<ClimatologyAtmosphereResource> atmosphere_resource_;
     godot::Ref<godot::ImageTexture> preview_texture_;
-    int active_map_layer_ = static_cast<int>(ClimatologyMapLayer::POTENTIAL_TEMPERATURE_KELVIN);
+    int active_map_layer_ = static_cast<int>(core::ClimatologyMapLayer::POTENTIAL_TEMPERATURE_KELVIN);
     godot::Vector2i selected_cell_{32, 32};
 
 protected:
@@ -49,4 +49,4 @@ public:
     void _draw() override;
 };
 
-} // namespace ideam::climatology
+} // namespace ideam::godot_ext

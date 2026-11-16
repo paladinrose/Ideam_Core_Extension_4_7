@@ -110,8 +110,8 @@ void MindTaskHost::setup_mind_host() {
     }
 
     mind_resource_->setup_dod_pipeline();
-    memory_manager = mind_resource_->get_memory_manager_shared();
-    task_graph     = mind_resource_->get_active_task_graph_shared();
+    active_manager = mind_resource_->get_memory_manager_shared();
+    active_graph   = mind_resource_->get_active_task_graph_shared();
 }
 
 void MindTaskHost::execute_mind_step(double p_delta) {
@@ -126,8 +126,8 @@ bool MindTaskHost::bind_shared_task_host(TaskGraphHost *p_other_host) {
     if (!shared_mgr) return false;
 
     mind_resource_->setup_dod_pipeline_with_manager(shared_mgr, nullptr);
-    memory_manager = mind_resource_->get_memory_manager_shared();
-    task_graph     = mind_resource_->get_active_task_graph_shared();
+    active_manager = mind_resource_->get_memory_manager_shared();
+    active_graph   = mind_resource_->get_active_task_graph_shared();
     return true;
 }
 

@@ -153,6 +153,12 @@ public:
         const godot::Dictionary &p_before_state,
         const godot::Dictionary &p_after_state
     );
+    void commit_snapshot_mutation(
+        const godot::String &p_action_name,
+        const godot::Dictionary &p_before_state
+    ) {
+        commit_snapshot_action(p_action_name, p_before_state, get_snapshot_state());
+    }
 };
 
 } // namespace ideam::godot_ext

@@ -101,15 +101,15 @@ struct alignas(64) ClausiusClapeyronAndFoehnMicrophysicsTransformLogic {
         if (!seed_part || !seed_part->raw_base_ptr || !atmo_part || !atmo_part->raw_base_ptr || !moist_part || !moist_part->raw_base_ptr) {
             return;
         }
-        const auto *seed = reinterpret_cast<const ideam::climatology::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        auto *atmo       = reinterpret_cast<ideam::climatology::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
-        auto *moist      = reinterpret_cast<ideam::climatology::MoistureAndCloudCellPOD *>(moist_part->raw_base_ptr);
+        const auto *seed = reinterpret_cast<const ideam::core::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto *atmo       = reinterpret_cast<ideam::core::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
+        auto *moist      = reinterpret_cast<ideam::core::MoistureAndCloudCellPOD *>(moist_part->raw_base_ptr);
         const size_t n   = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        ideam::climatology::ClimatologyKernelMath::step_thermodynamics_and_microphysics(
+        ideam::core::ClimatologyKernelMath::step_thermodynamics_and_microphysics(
             *seed,
             dt_seconds,
-            std::span<ideam::climatology::AtmosphericColumnCellPOD>(atmo, n),
-            std::span<ideam::climatology::MoistureAndCloudCellPOD>(moist, n));
+            std::span<ideam::core::AtmosphericColumnCellPOD>(atmo, n),
+            std::span<ideam::core::MoistureAndCloudCellPOD>(moist, n));
     }
 
     template <typename T_ActiveView, typename T_ActiveStrategy>

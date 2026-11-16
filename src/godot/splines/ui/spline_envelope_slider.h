@@ -52,11 +52,12 @@ private:
 
 protected:
     static void _bind_methods();
-    void _value_changed(double p_new_value) override;
 
 public:
     SplineEnvelopeSlider();
     ~SplineEnvelopeSlider() override;
+
+    void _value_changed(double p_new_value) override;
 
     void _draw() override;
     void _gui_input(const godot::Ref<godot::InputEvent> &p_event) override;

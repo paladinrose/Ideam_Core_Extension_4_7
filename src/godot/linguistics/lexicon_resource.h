@@ -321,6 +321,9 @@ public:
 
     void set_lexicons(const godot::TypedArray<LexiconResource> &p_lexicons);
     [[nodiscard]] godot::TypedArray<LexiconResource> get_lexicons() const { return lexicons_; }
+    [[nodiscard]] godot::Ref<LexiconResource> get_lexicon() const {
+        return lexicons_.size() > 0 ? godot::Ref<LexiconResource>(lexicons_[0]) : godot::Ref<LexiconResource>();
+    }
 
     void set_grammar_rules(const godot::TypedArray<GrammarRuleResource> &p_rules);
     [[nodiscard]] godot::TypedArray<GrammarRuleResource> get_grammar_rules() const { return grammar_rules_; }

@@ -24,7 +24,7 @@
 #include <span>
 #include <vector>
 
-namespace ideam::ecology {
+namespace ideam::core {
 
 struct EcologyKernelMath {
     // ========================================================================
@@ -676,4 +676,4 @@ struct EcologyKernelMath {
     }
 };
 
-} // namespace ideam::ecology
+} // namespace ideam::core

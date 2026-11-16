@@ -86,6 +86,15 @@ struct alignas(64) KoppenAndAirMassFrontPartitionMetadataLogic {
     }
 
     template <typename T_View, typename T_Strategy>
+    inline void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_context,
+        T_View &p_view
+    ) const noexcept {
+        execute_metadata<T_View, T_Strategy>(p_view, r_selection, p_context);
+    }
+
+    template <typename T_View, typename T_Strategy>
     inline void execute_metadata(
         T_View &p_view,
         MemoryBufferSelectionPOD &r_selection,
@@ -100,15 +109,15 @@ struct alignas(64) KoppenAndAirMassFrontPartitionMetadataLogic {
             return;
         }
 
-        const auto *seed = reinterpret_cast<const ideam::climatology::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
-        auto *atmo       = reinterpret_cast<ideam::climatology::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
-        auto *moist      = reinterpret_cast<ideam::climatology::MoistureAndCloudCellPOD *>(moist_part->raw_base_ptr);
+        const auto *seed = reinterpret_cast<const ideam::core::ClimatologySeedProfilePOD *>(seed_part->raw_base_ptr);
+        auto *atmo       = reinterpret_cast<ideam::core::AtmosphericColumnCellPOD *>(atmo_part->raw_base_ptr);
+        auto *moist      = reinterpret_cast<ideam::core::MoistureAndCloudCellPOD *>(moist_part->raw_base_ptr);
 
         const size_t n = static_cast<size_t>(seed->grid_width) * static_cast<size_t>(seed->grid_height);
-        ideam::climatology::ClimatologyKernelMath::compute_koppen_and_air_mass_partition(
+        ideam::core::ClimatologyKernelMath::compute_koppen_and_air_mass_partition(
             *seed,
-            std::span<ideam::climatology::AtmosphericColumnCellPOD>(atmo, n),
-            std::span<ideam::climatology::MoistureAndCloudCellPOD>(moist, n));
+            std::span<ideam::core::AtmosphericColumnCellPOD>(atmo, n),
+            std::span<ideam::core::MoistureAndCloudCellPOD>(moist, n));
 
         const size_t sel_lim = static_cast<size_t>(std::max<int64_t>(0, r_selection.element_count));
         for (size_t i = 0; i < n && i < sel_lim; ++i) {

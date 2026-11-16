@@ -103,6 +103,7 @@ public:
 
     void set_color_gradient_mode(bool p_enabled);
     [[nodiscard]] bool get_color_gradient_mode() const noexcept { return color_gradient_mode; }
+    [[nodiscard]] bool is_color_gradient_mode() const noexcept { return color_gradient_mode; }
 
     void set_wrap(bool p_wrap) override;
     [[nodiscard]] bool get_wrap() const override;
@@ -182,6 +183,8 @@ public:
 
     void set_point_xyz(int p_index, const godot::Vector3 &p_xyz);
     [[nodiscard]] godot::Vector3 get_point_xyz(int p_index) const;
+    void set_point_position_3d(int p_index, const godot::Vector3 &p_xyz) { set_point_xyz(p_index, p_xyz); }
+    [[nodiscard]] godot::Vector3 get_point_position_3d(int p_index) const { return get_point_xyz(p_index); }
 
     void set_point_w(int p_index, real_t p_w);
     [[nodiscard]] real_t get_point_w(int p_index) const;
@@ -235,6 +238,13 @@ public:
     // ========================================================================
 
     [[nodiscard]] godot::Vector4 sample(real_t p_percent, bool p_weighted = true) const;
+    [[nodiscard]] godot::Vector3 sample_3d(real_t p_percent, bool p_weighted = true) const {
+        const godot::Vector4 v = sample(p_percent, p_weighted);
+        return godot::Vector3(v.x, v.y, v.z);
+    }
+    [[nodiscard]] real_t sample_w(real_t p_percent, bool p_weighted = true) const {
+        return sample(p_percent, p_weighted).w;
+    }
     [[nodiscard]] godot::Vector4 get_point(real_t p_percent, bool p_weighted = true) const {
         return sample(p_percent, p_weighted);
     }
@@ -280,6 +290,13 @@ public:
         const godot::Vector3 &p_initial_up = godot::Vector3(0.0f, 1.0f, 0.0f),
         bool p_w_is_roll = false
     ) const;
+    [[nodiscard]] godot::TypedArray<godot::Transform3D> compute_bishop_transforms_3d(
+        int p_subdivisions_per_section = 10,
+        const godot::Vector3 &p_initial_up = godot::Vector3(0.0f, 1.0f, 0.0f),
+        bool p_w_is_roll = false
+    ) const {
+        return compute_bishop_transforms(p_subdivisions_per_section, p_initial_up, p_w_is_roll);
+    }
 
     [[nodiscard]] godot::PackedVector4Array get_smoothed_points(int p_max_subdivisions = 10) const;
 
@@ -295,6 +312,17 @@ public:
         int p_samples = 10,
         bool p_weighted = false
     ) const;
+    [[nodiscard]] real_t get_closest_percent_on_spline_3d(
+        const godot::Vector3 &p_target,
+        int p_samples = 10,
+        bool p_weighted = false
+    ) const {
+        return get_closest_percent_on_spline(
+            godot::Vector4(p_target.x, p_target.y, p_target.z, 0.0f),
+            p_samples,
+            p_weighted
+        );
+    }
 
     // ========================================================================
     // Semi-Spatial 3D Transformations (XYZ Transformed, W Preserved) & Presets

@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::godot_ext {
 
 void DataOrientedGeomorphology::_bind_methods() {
     using namespace godot;
@@ -19,11 +19,11 @@ void DataOrientedGeomorphology::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_pipeline_telemetry"), &DataOrientedGeomorphology::get_pipeline_telemetry);
 }
 
-void DataOrientedGeomorphology::bind_terrain_resource(const godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource>& p_terrain) {
+void DataOrientedGeomorphology::bind_terrain_resource(const godot::Ref<GeomorphologyTerrainResource>& p_terrain) {
     active_terrain_ = p_terrain;
 }
 
-godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> DataOrientedGeomorphology::get_bound_terrain_resource() const {
+godot::Ref<GeomorphologyTerrainResource> DataOrientedGeomorphology::get_bound_terrain_resource() const {
     return active_terrain_;
 }
 
@@ -49,7 +49,7 @@ void DataOrientedGeomorphology::execute_pipeline_step(
         return;
     }
     const auto seed = active_terrain_->get_seed_profile()->to_pod();
-    GeomorphologyDOD::execute_step(
+    core::GeomorphologyDOD::execute_step(
         seed,
         active_terrain_->get_catalog_span(),
         active_terrain_->get_plates_span(),
@@ -70,4 +70,4 @@ godot::Dictionary DataOrientedGeomorphology::get_pipeline_telemetry() const {
     return godot::Dictionary();
 }
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::godot_ext

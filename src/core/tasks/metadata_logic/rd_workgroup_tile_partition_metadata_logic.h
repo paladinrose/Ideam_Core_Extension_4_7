@@ -40,7 +40,7 @@ struct alignas(64) RDWorkgroupTilePartitionMetadataLogic {
     static constexpr BufferLayoutType required_layouts    =
         BufferLayoutType::ANY_LINEAR | BufferLayoutType::ANY_SPATIAL;
     static constexpr DataType required_types =
-        DataType::UINT32 | DataType::INT32 | DataType::FLOAT32;
+        DataType::INT32 | DataType::INT32 | DataType::FLOAT32;
 
     // --- Explicit Spatial & Kernel Contracts ---
     static constexpr size_t dimensions           = 0;

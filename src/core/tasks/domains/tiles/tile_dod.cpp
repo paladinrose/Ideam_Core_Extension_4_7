@@ -276,12 +276,10 @@ BakedPrototilePOD<float> TileDOD::_convert_prototile_to_float(const BakedPrototi
         out.num_edge_shapes = p_src.num_edge_shapes;
         out.shape_preset    = p_src.shape_preset;
 
-        out.lattice_basis.type        = p_src.lattice_basis.type;
-        out.lattice_basis.u_axis      = glm::vec2(p_src.lattice_basis.u_axis);
-        out.lattice_basis.v_axis      = glm::vec2(p_src.lattice_basis.v_axis);
-        out.lattice_basis.origin      = glm::vec2(p_src.lattice_basis.origin);
-        out.lattice_basis.basis_mat   = glm::mat2(p_src.lattice_basis.basis_mat);
-        out.lattice_basis.inv_basis_mat = glm::mat2(p_src.lattice_basis.inv_basis_mat);
+        out.lattice_basis.t1        = glm::vec2(p_src.lattice_basis.t1);
+        out.lattice_basis.t2        = glm::vec2(p_src.lattice_basis.t2);
+        out.lattice_basis.origin    = glm::vec2(p_src.lattice_basis.origin);
+        out.lattice_basis.inv_basis = glm::mat2(p_src.lattice_basis.inv_basis);
 
         for (size_t i = 0; i < BakedPrototilePOD<float>::MAX_PARAMETERS; ++i) {
             out.parameters[i] = static_cast<float>(p_src.parameters[i]);
@@ -361,7 +359,7 @@ uint32_t TileDOD::bake_region(
         ms.vertex_offset  = base_vtx_offset;
         ms.vertex_count   = write_verts;
         ms.index_offset   = base_idx_offset;
-        ms.triangle_count = write_tris / 3u;
+        ms.index_count    = write_tris;
         mesh_slices[bridged_polygon_mesh_cursor_] = ms;
         ++bridged_polygon_mesh_cursor_;
     }
@@ -626,7 +624,13 @@ NodeID TileDOD::add_tile_task_node(
     }
 
     if (!task) return INVALID_ID;
-    return r_graph.add_task_node(std::move(task), reqs, p_config.execution_priority);
+    const NodeID node_id = r_graph.add_task_node(
+        IsQueryLogic<T_Logic> ? TaskTypeDOD::QUERY_CULLER : TaskTypeDOD::NATIVE_CPU
+    );
+    r_graph.set_node_priority(node_id, p_config.execution_priority);
+    r_graph.configure_native_interface(node_id, std::move(task));
+    r_graph.set_node_requirements(node_id, reqs);
+    return node_id;
 }
 
 template NodeID TileDOD::add_tile_task_node<TilingGenerationAndHexPartitionMetadataLogic<>>(
@@ -727,10 +731,10 @@ TilesPipelineTopology TileDOD::inject_pipeline_stages(
         anchor.exit_node  = anchor.nodes.back();
 
         for (size_t i = 0; i + 1 < anchor.nodes.size(); ++i) {
-            r_graph.connect_Execution_flow(anchor.nodes[i], anchor.nodes[i + 1]);
+            r_graph.connect_nodes(anchor.nodes[i], 0, anchor.nodes[i + 1], 0);
         }
         if (p_auto_connect_stages && topo.last_node != INVALID_ID) {
-            r_graph.connect_Execution_flow(topo.last_node, anchor.entry_node);
+            r_graph.connect_nodes(topo.last_node, 0, anchor.entry_node, 0);
         }
         if (topo.first_node == INVALID_ID) {
             topo.first_node = anchor.entry_node;
@@ -773,10 +777,10 @@ bool TileDOD::schedule_node_with_stage(
     for (size_t i = 0; i < p_topology.stages.size(); ++i) {
         if (p_topology.stages[i].stage == p_target_stage && p_topology.stages[i].is_valid()) {
             if (i > 0 && p_topology.stages[i - 1].is_valid()) {
-                r_graph.connect_Execution_flow(p_topology.stages[i - 1].exit_node, p_custom_node);
+                r_graph.connect_nodes(p_topology.stages[i - 1].exit_node, 0, p_custom_node, 0);
             }
             if (p_join_downstream && i + 1 < p_topology.stages.size() && p_topology.stages[i + 1].is_valid()) {
-                r_graph.connect_Execution_flow(p_custom_node, p_topology.stages[i + 1].entry_node);
+                r_graph.connect_nodes(p_custom_node, 0, p_topology.stages[i + 1].entry_node, 0);
             }
             return true;
         }
@@ -795,8 +799,8 @@ bool TileDOD::schedule_node_between_stages(
     const TilesStageAnchor *up   = p_topology.get_stage_anchor(p_upstream_stage);
     const TilesStageAnchor *down = p_topology.get_stage_anchor(p_downstream_stage);
     if (!up || !down || !up->is_valid() || !down->is_valid()) return false;
-    r_graph.connect_Execution_flow(up->exit_node, p_custom_node);
-    r_graph.connect_Execution_flow(p_custom_node, down->entry_node);
+    r_graph.connect_nodes(up->exit_node, 0, p_custom_node, 0);
+    r_graph.connect_nodes(p_custom_node, 0, down->entry_node, 0);
     return true;
 }
 
@@ -805,7 +809,7 @@ void TileDOD::execute_step(double p_delta, TaskGraphDOD *p_override_graph) {
     sync_selection_ranges();
     TaskGraphDOD *graph = p_override_graph ? p_override_graph : default_task_graph_.get();
     if (graph) {
-        graph->execute_graph();
+        graph->execute_graph_dod(p_delta);
     }
 }
 

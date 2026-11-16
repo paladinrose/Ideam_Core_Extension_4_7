@@ -14,14 +14,14 @@
 #include "core/tasks/domains/geomorphology/geomorphology_dod.h"
 #include "godot/geomorphology/geomorphology_terrain_resource.h"
 
-namespace ideam::tasks::geomorphology {
+namespace ideam::godot_ext {
 
 class DataOrientedGeomorphology : public godot::RefCounted {
     GDCLASS(DataOrientedGeomorphology, godot::RefCounted)
 
 private:
-    godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> active_terrain_;
-    uint32_t stage_mask_ = static_cast<uint32_t>(GeomorphologyStageFlags::ALL_STAGES);
+    godot::Ref<GeomorphologyTerrainResource> active_terrain_;
+    uint32_t stage_mask_ = static_cast<uint32_t>(core::GeomorphologyStageFlags::ALL_STAGES);
 
 protected:
     static void _bind_methods();
@@ -30,8 +30,8 @@ public:
     DataOrientedGeomorphology() = default;
     ~DataOrientedGeomorphology() override = default;
 
-    void bind_terrain_resource(const godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource>& p_terrain);
-    godot::Ref<ideam::geomorphology::GeomorphologyTerrainResource> get_bound_terrain_resource() const;
+    void bind_terrain_resource(const godot::Ref<GeomorphologyTerrainResource>& p_terrain);
+    godot::Ref<GeomorphologyTerrainResource> get_bound_terrain_resource() const;
 
     void set_stage_mask(int p_mask);
     int get_stage_mask() const;
@@ -41,4 +41,4 @@ public:
     godot::Dictionary get_pipeline_telemetry() const;
 };
 
-} // namespace ideam::tasks::geomorphology
+} // namespace ideam::godot_ext

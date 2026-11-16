@@ -2,7 +2,7 @@
 
 #include <godot_cpp/core/class_db.hpp>
 
-namespace ideam::tasks::climatology {
+namespace ideam::godot_ext {
 
 void DataOrientedClimatology::_bind_methods() {
     using namespace godot;
@@ -19,11 +19,11 @@ void DataOrientedClimatology::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_pipeline_telemetry"), &DataOrientedClimatology::get_pipeline_telemetry);
 }
 
-void DataOrientedClimatology::bind_atmosphere_resource(const godot::Ref<ideam::climatology::ClimatologyAtmosphereResource>& p_atmosphere) {
+void DataOrientedClimatology::bind_atmosphere_resource(const godot::Ref<ClimatologyAtmosphereResource>& p_atmosphere) {
     active_atmosphere_ = p_atmosphere;
 }
 
-godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> DataOrientedClimatology::get_bound_atmosphere_resource() const {
+godot::Ref<ClimatologyAtmosphereResource> DataOrientedClimatology::get_bound_atmosphere_resource() const {
     return active_atmosphere_;
 }
 
@@ -46,7 +46,7 @@ void DataOrientedClimatology::execute_pipeline_step(float p_dt_synoptic_sec, flo
         return;
     }
     const auto seed = active_atmosphere_->get_seed_profile()->to_pod();
-    ClimatologyDOD::execute_step(
+    core::ClimatologyDOD::execute_step(
         seed,
         active_atmosphere_->get_atmo_span(),
         active_atmosphere_->get_moisture_span(),
@@ -64,4 +64,4 @@ godot::Dictionary DataOrientedClimatology::get_pipeline_telemetry() const {
     return godot::Dictionary();
 }
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::godot_ext

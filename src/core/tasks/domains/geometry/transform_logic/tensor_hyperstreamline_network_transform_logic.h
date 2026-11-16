@@ -16,6 +16,8 @@
 #include "../../../transform_logic/transform_logic_traits.h"
 #include "../../../../geometry/tensor_field_2d.h"
 #include "../../../../memory/memory_common.h"
+#include "../../../../memory/views/single_element_view.h"
+#include "../../../../memory/views/strategies.h"
 
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
@@ -32,15 +34,20 @@ namespace ideam::core {
 
 template <typename T = float>
 struct alignas(64) TensorHyperstreamlineNetworkTransformLogic {
-    using ValueType = T;
+    using ValueType       = T;
+    using DefaultStrategy = FlatStrategy;
+    using DefaultView     = SingleElementView<T, DefaultStrategy>;
 
     // --- Compile-Time DOD Traits ---
     static constexpr std::string_view display_name        = "Tensor Field: Trace Hyperstreamlines & Parcel Regions";
     static constexpr std::string_view ui_category         = "Geometry/TensorField";
-    static constexpr ViewCapability required_capabilities = ViewCapability::READ_WRITE;
-    static constexpr ViewLayout compatible_layouts        = ViewLayout::SINGLE_ELEMENT;
+    static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS;
+    static constexpr BufferLayoutType required_layouts    = BufferLayoutType::ANY_LINEAR | BufferLayoutType::ANY_SPATIAL;
     static constexpr DataType required_types              = DataType::FLOAT32 | DataType::INT32 | DataType::BYTE;
-    static constexpr size_t required_dimensions           = 0;
+    static constexpr size_t dimensions                    = 0;
+    static constexpr bool requires_static_kernel          = false;
+    static constexpr size_t kernel_size                   = 0;
+    static constexpr size_t transient_workspace_bytes     = 0;
 
     // --- 64-Byte Cache-Line Layout (16 x 4B = 64 Bytes) ---
     uint32_t target_buffer_id                = INVALID_ID; // 4B [0..3]   (GEOM_POLYLINE_SLICE_POD)

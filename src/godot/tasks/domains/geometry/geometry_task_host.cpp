@@ -110,8 +110,8 @@ void GeometryTaskHost::setup_geometry_host() {
     }
 
     geometry_resource_->setup_dod_pipeline();
-    memory_manager = geometry_resource_->get_memory_manager_shared();
-    task_graph     = geometry_resource_->get_active_task_graph_shared();
+    active_manager = geometry_resource_->get_memory_manager_shared();
+    active_graph   = geometry_resource_->get_active_task_graph_shared();
 }
 
 void GeometryTaskHost::execute_geometry_step(double p_delta) {
@@ -126,8 +126,8 @@ bool GeometryTaskHost::bind_shared_task_host(TaskGraphHost *p_other_host) {
     if (!shared_mgr) return false;
 
     geometry_resource_->setup_dod_pipeline_with_manager(shared_mgr, nullptr);
-    memory_manager = geometry_resource_->get_memory_manager_shared();
-    task_graph     = geometry_resource_->get_active_task_graph_shared();
+    active_manager = geometry_resource_->get_memory_manager_shared();
+    active_graph   = geometry_resource_->get_active_task_graph_shared();
     return true;
 }
 

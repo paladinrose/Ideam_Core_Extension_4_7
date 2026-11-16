@@ -25,15 +25,15 @@
 
 #include "core/geomorphology/geomorphology_core.h"
 #include "core/tasks/domains/geomorphology/geomorphology_dod.h"
-#include "godot/core/ideam_undo_redo.h"
+#include "godot/utilities/ideam_undo_redo.h"
 
 #include <vector>
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 /**
  * @class GeomorphologySeedProfileResource
- * @brief Serializable Resource wrapping GeomorphologySeedProfilePOD with deterministic SplitMix64 sub-seed derivation.
+ * @brief Serializable Resource wrapping core::GeomorphologySeedProfilePOD with deterministic SplitMix64 sub-seed derivation.
  */
 class GeomorphologySeedProfileResource : public godot::Resource {
     GDCLASS(GeomorphologySeedProfileResource, godot::Resource)
@@ -105,8 +105,8 @@ public:
     int64_t get_karst_seed() const;
     int64_t get_resource_vein_seed() const;
 
-    GeomorphologySeedProfilePOD to_pod() const noexcept;
-    void from_pod(const GeomorphologySeedProfilePOD& pod);
+    core::GeomorphologySeedProfilePOD to_pod() const noexcept;
+    void from_pod(const core::GeomorphologySeedProfilePOD& pod);
 };
 
 /**
@@ -117,8 +117,8 @@ class LithologyStratumResource : public godot::Resource {
     GDCLASS(LithologyStratumResource, godot::Resource)
 
 private:
-    int lithology_id_ = static_cast<int>(CanonicalLithologyId::GRANITE);
-    int genesis_class_ = static_cast<int>(RockGenesisClass::IGNEOUS_PLUTONIC);
+    int lithology_id_ = static_cast<int>(core::CanonicalLithologyId::GRANITE);
+    int genesis_class_ = static_cast<int>(core::RockGenesisClass::IGNEOUS_PLUTONIC);
     godot::String archetype_name_ = "Granite";
     float density_kg_m3_ = 2700.0f;
     float hardness_mohs_ = 6.5f;
@@ -181,8 +181,8 @@ public:
     void set_pedogenesis_humus_retention(float p_val);
     float get_pedogenesis_humus_retention() const;
 
-    LithologyArchetypePOD to_pod() const noexcept;
-    void from_pod(const LithologyArchetypePOD& pod);
+    core::LithologyArchetypePOD to_pod() const noexcept;
+    void from_pod(const core::LithologyArchetypePOD& pod);
 };
 
 /**
@@ -200,14 +200,14 @@ private:
     float default_geological_dt_myr_ = 0.02f;
     float default_hydrological_dt_sec_ = 0.25f;
     float uniform_precipitation_rate_ = 0.018f;
-    int active_stage_mask_ = static_cast<int>(ideam::tasks::geomorphology::GeomorphologyStageFlags::ALL_STAGES);
+    int active_stage_mask_ = static_cast<int>(core::GeomorphologyStageFlags::ALL_STAGES);
 
-    std::vector<LithologyArchetypePOD> pod_catalog_;
-    std::vector<TectonicPlatePOD> pod_plates_;
-    std::vector<CrustalTectonicCellPOD> pod_crust_;
-    std::vector<StratigraphicColumnPOD> pod_strata_;
-    std::vector<HydrologyCellStatePOD> pod_hydrology_;
-    std::vector<GeomorphicHazardSamplePOD> pod_hazards_;
+    std::vector<core::LithologyArchetypePOD> pod_catalog_;
+    std::vector<core::TectonicPlatePOD> pod_plates_;
+    std::vector<core::CrustalTectonicCellPOD> pod_crust_;
+    std::vector<core::StratigraphicColumnPOD> pod_strata_;
+    std::vector<core::HydrologyCellStatePOD> pod_hydrology_;
+    std::vector<core::GeomorphicHazardSamplePOD> pod_hazards_;
     uint32_t simulation_step_counter_ = 0;
 
     void _sync_pod_catalog();
@@ -261,7 +261,7 @@ public:
     godot::Dictionary inspect_cell_column(int p_x, int p_y) const;
 
     /**
-     * @brief Renders a 2D heatmap preview image of the requested GeomorphologyMapLayer.
+     * @brief Renders a 2D heatmap preview image of the requested core::GeomorphologyMapLayer.
      */
     godot::Ref<godot::Image> render_map_layer_image(int p_layer) const;
 
@@ -277,17 +277,17 @@ public:
     void apply_snapshot_state(const godot::Dictionary& p_state);
 
     // Raw span accessors for DOD / TaskHost zero-copy bridging
-    std::span<const LithologyArchetypePOD> get_catalog_span() const noexcept { return pod_catalog_; }
-    std::span<TectonicPlatePOD> get_plates_span() noexcept { return pod_plates_; }
-    std::span<CrustalTectonicCellPOD> get_crust_span() noexcept { return pod_crust_; }
-    std::span<StratigraphicColumnPOD> get_strata_span() noexcept { return pod_strata_; }
-    std::span<HydrologyCellStatePOD> get_hydrology_span() noexcept { return pod_hydrology_; }
-    std::span<GeomorphicHazardSamplePOD> get_hazards_span() noexcept { return pod_hazards_; }
+    std::span<const core::LithologyArchetypePOD> get_catalog_span() const noexcept { return pod_catalog_; }
+    std::span<core::TectonicPlatePOD> get_plates_span() noexcept { return pod_plates_; }
+    std::span<core::CrustalTectonicCellPOD> get_crust_span() noexcept { return pod_crust_; }
+    std::span<core::StratigraphicColumnPOD> get_strata_span() noexcept { return pod_strata_; }
+    std::span<core::HydrologyCellStatePOD> get_hydrology_span() noexcept { return pod_hydrology_; }
+    std::span<core::GeomorphicHazardSamplePOD> get_hazards_span() noexcept { return pod_hazards_; }
 
-    std::span<const StratigraphicColumnPOD> get_strata_const_span() const noexcept { return pod_strata_; }
-    std::span<const CrustalTectonicCellPOD> get_crust_const_span() const noexcept { return pod_crust_; }
-    std::span<const HydrologyCellStatePOD> get_hydrology_const_span() const noexcept { return pod_hydrology_; }
-    std::span<const GeomorphicHazardSamplePOD> get_hazards_const_span() const noexcept { return pod_hazards_; }
+    std::span<const core::StratigraphicColumnPOD> get_strata_const_span() const noexcept { return pod_strata_; }
+    std::span<const core::CrustalTectonicCellPOD> get_crust_const_span() const noexcept { return pod_crust_; }
+    std::span<const core::HydrologyCellStatePOD> get_hydrology_const_span() const noexcept { return pod_hydrology_; }
+    std::span<const core::GeomorphicHazardSamplePOD> get_hazards_const_span() const noexcept { return pod_hazards_; }
 };
 
 /**
@@ -321,4 +321,4 @@ public:
     godot::Dictionary sample_column_at_world(const godot::Vector3& p_world_pos) const;
 };
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

@@ -2,7 +2,7 @@
 
 #include "linguistics_transform_task_registry.h"
 #include "../../../registration/task_view_bridge.h"
-#include "../../../metadata_logic/transform_logic_traits.h"
+#include "../../../transform_logic/transform_logic_traits.h"
 #include "../../../transform_task.h"
 #include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/string.hpp>

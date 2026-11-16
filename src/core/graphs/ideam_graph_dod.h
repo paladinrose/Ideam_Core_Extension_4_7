@@ -208,6 +208,7 @@ public:
      */
     bool bake_topology_grant(MemoryGrantPOD& r_grant);
     
+    MemoryManagerDOD* get_memory_manager() const noexcept { return manager; }
     size_t get_node_count() const { return build_nodes.size(); }
     uint32_t get_wave_meta_id() const { return wave_meta_id; }
 

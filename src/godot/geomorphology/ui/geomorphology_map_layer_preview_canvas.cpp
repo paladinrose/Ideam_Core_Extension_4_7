@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 GeomorphologyMapLayerPreviewCanvas::GeomorphologyMapLayerPreviewCanvas() {
     set_custom_minimum_size(godot::Vector2(260.0f, 260.0f));
@@ -41,7 +41,7 @@ godot::Ref<GeomorphologyTerrainResource> GeomorphologyMapLayerPreviewCanvas::get
 }
 
 void GeomorphologyMapLayerPreviewCanvas::set_active_map_layer(int p_layer) {
-    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(GeomorphologyMapLayer::COUNT) - 1);
+    active_map_layer_ = std::clamp(p_layer, 0, static_cast<int>(core::GeomorphologyMapLayer::COUNT) - 1);
     rebuild_preview_texture();
 }
 
@@ -109,4 +109,4 @@ void GeomorphologyMapLayerPreviewCanvas::_draw() {
     draw_rect(Rect2(Vector2(0, 0), sz), Color(0.32f, 0.38f, 0.46f, 1.0f), false, 1.0f);
 }
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

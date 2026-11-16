@@ -13,14 +13,14 @@
 #include "core/tasks/domains/climatology/climatology_dod.h"
 #include "godot/climatology/climatology_weather_resource.h"
 
-namespace ideam::tasks::climatology {
+namespace ideam::godot_ext {
 
 class DataOrientedClimatology : public godot::RefCounted {
     GDCLASS(DataOrientedClimatology, godot::RefCounted)
 
 private:
-    godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> active_atmosphere_;
-    uint32_t stage_mask_ = static_cast<uint32_t>(ClimatologyStageFlags::ALL_STAGES);
+    godot::Ref<ClimatologyAtmosphereResource> active_atmosphere_;
+    uint32_t stage_mask_ = static_cast<uint32_t>(core::ClimatologyStageFlags::ALL_STAGES);
 
 protected:
     static void _bind_methods();
@@ -29,8 +29,8 @@ public:
     DataOrientedClimatology() = default;
     ~DataOrientedClimatology() override = default;
 
-    void bind_atmosphere_resource(const godot::Ref<ideam::climatology::ClimatologyAtmosphereResource>& p_atmosphere);
-    godot::Ref<ideam::climatology::ClimatologyAtmosphereResource> get_bound_atmosphere_resource() const;
+    void bind_atmosphere_resource(const godot::Ref<ClimatologyAtmosphereResource>& p_atmosphere);
+    godot::Ref<ClimatologyAtmosphereResource> get_bound_atmosphere_resource() const;
 
     void set_stage_mask(int p_mask);
     int get_stage_mask() const;
@@ -40,4 +40,4 @@ public:
     godot::Dictionary get_pipeline_telemetry() const;
 };
 
-} // namespace ideam::tasks::climatology
+} // namespace ideam::godot_ext

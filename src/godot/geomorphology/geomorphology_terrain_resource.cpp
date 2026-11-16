@@ -1,14 +1,14 @@
 #include "godot/geomorphology/geomorphology_terrain_resource.h"
 
 #include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/variant/Array.hpp>
+#include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/color.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <algorithm>
 #include <cmath>
 
-namespace ideam::geomorphology {
+namespace ideam::godot_ext {
 
 // ============================================================================
 // GeomorphologySeedProfileResource
@@ -101,7 +101,7 @@ void GeomorphologySeedProfileResource::set_plate_count(int p_count) {
 int GeomorphologySeedProfileResource::get_plate_count() const { return plate_count_; }
 
 void GeomorphologySeedProfileResource::set_active_strata_per_column(int p_strata) {
-    active_strata_per_column_ = std::clamp(p_strata, 1, static_cast<int>(MAX_STRATA_PER_COLUMN));
+    active_strata_per_column_ = std::clamp(p_strata, 1, static_cast<int>(core::MAX_STRATA_PER_COLUMN));
     emit_changed();
 }
 int GeomorphologySeedProfileResource::get_active_strata_per_column() const { return active_strata_per_column_; }
@@ -170,8 +170,8 @@ int64_t GeomorphologySeedProfileResource::get_resource_vein_seed() const {
     return static_cast<int64_t>(to_pod().resource_vein_seed);
 }
 
-GeomorphologySeedProfilePOD GeomorphologySeedProfileResource::to_pod() const noexcept {
-    GeomorphologySeedProfilePOD pod = GeomorphologyKernelMath::make_seed_profile(
+core::GeomorphologySeedProfilePOD GeomorphologySeedProfileResource::to_pod() const noexcept {
+    core::GeomorphologySeedProfilePOD pod = core::GeomorphologyKernelMath::make_seed_profile(
         static_cast<uint64_t>(master_seed_),
         static_cast<uint32_t>(grid_width_),
         static_cast<uint32_t>(grid_height_),
@@ -188,7 +188,7 @@ GeomorphologySeedProfilePOD GeomorphologySeedProfileResource::to_pod() const noe
     return pod;
 }
 
-void GeomorphologySeedProfileResource::from_pod(const GeomorphologySeedProfilePOD& pod) {
+void GeomorphologySeedProfileResource::from_pod(const core::GeomorphologySeedProfilePOD& pod) {
     master_seed_ = static_cast<int64_t>(pod.master_seed);
     grid_width_ = static_cast<int>(pod.grid_width);
     grid_height_ = static_cast<int>(pod.grid_height);
@@ -311,10 +311,10 @@ float LithologyStratumResource::get_sediment_grain_diameter_mm() const { return 
 void LithologyStratumResource::set_pedogenesis_humus_retention(float p_val) { pedogenesis_humus_retention_ = p_val; emit_changed(); }
 float LithologyStratumResource::get_pedogenesis_humus_retention() const { return pedogenesis_humus_retention_; }
 
-LithologyArchetypePOD LithologyStratumResource::to_pod() const noexcept {
-    LithologyArchetypePOD pod{};
+core::LithologyArchetypePOD LithologyStratumResource::to_pod() const noexcept {
+    core::LithologyArchetypePOD pod{};
     pod.lithology_id = static_cast<uint16_t>(lithology_id_);
-    pod.genesis_class = static_cast<RockGenesisClass>(genesis_class_);
+    pod.genesis_class = static_cast<core::RockGenesisClass>(genesis_class_);
     pod.density_kg_m3 = density_kg_m3_;
     pod.hardness_mohs = hardness_mohs_;
     pod.fluvial_erodibility_k = fluvial_erodibility_k_;
@@ -329,7 +329,7 @@ LithologyArchetypePOD LithologyStratumResource::to_pod() const noexcept {
     return pod;
 }
 
-void LithologyStratumResource::from_pod(const LithologyArchetypePOD& pod) {
+void LithologyStratumResource::from_pod(const core::LithologyArchetypePOD& pod) {
     lithology_id_ = static_cast<int>(pod.lithology_id);
     genesis_class_ = static_cast<int>(pod.genesis_class);
     density_kg_m3_ = pod.density_kg_m3;
@@ -438,7 +438,7 @@ void GeomorphologyTerrainResource::set_active_stage_mask(int p_mask) {
 int GeomorphologyTerrainResource::get_active_stage_mask() const { return active_stage_mask_; }
 
 void GeomorphologyTerrainResource::reset_default_lithology_catalog() {
-    auto defaults = GeomorphologyKernelMath::build_default_lithology_catalog();
+    auto defaults = core::GeomorphologyKernelMath::build_default_lithology_catalog();
     static const char* kNames[8] = {
         "Granite (Plutonic)",
         "Basalt (Volcanic)",
@@ -469,7 +469,7 @@ void GeomorphologyTerrainResource::_sync_pod_catalog() {
         }
     }
     if (pod_catalog_.empty()) {
-        auto defaults = GeomorphologyKernelMath::build_default_lithology_catalog();
+        auto defaults = core::GeomorphologyKernelMath::build_default_lithology_catalog();
         pod_catalog_.assign(defaults.begin(), defaults.end());
     }
 }
@@ -479,7 +479,7 @@ void GeomorphologyTerrainResource::_ensure_buffers_allocated() {
         seed_profile_.instantiate();
     }
     _sync_pod_catalog();
-    const GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
     const size_t cell_count = static_cast<size_t>(seed.grid_width) * static_cast<size_t>(seed.grid_height);
     const size_t plate_count = std::max<size_t>(2, seed.plate_count);
 
@@ -492,15 +492,15 @@ void GeomorphologyTerrainResource::_ensure_buffers_allocated() {
 
 void GeomorphologyTerrainResource::generate_initial_world() {
     _ensure_buffers_allocated();
-    const GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
-    ideam::tasks::geomorphology::GeomorphologyDOD::initialize_world_from_seed(
+    const core::GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
+    core::GeomorphologyDOD::initialize_world_from_seed(
         seed,
         pod_catalog_,
         pod_plates_,
         pod_crust_,
         pod_strata_,
         pod_hydrology_);
-    GeomorphologyKernelMath::evaluate_hazards_and_resource_veins(
+    core::GeomorphologyKernelMath::evaluate_hazards_and_resource_veins(
         seed,
         pod_crust_,
         pod_strata_,
@@ -512,13 +512,13 @@ void GeomorphologyTerrainResource::generate_initial_world() {
 
 void GeomorphologyTerrainResource::step_simulation(int p_steps, float p_dt_geological_myr, float p_dt_hydrological_sec) {
     _ensure_buffers_allocated();
-    const GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
+    const core::GeomorphologySeedProfilePOD seed = seed_profile_->to_pod();
     const float dt_geo = (p_dt_geological_myr >= 0.0f) ? p_dt_geological_myr : default_geological_dt_myr_;
     const float dt_hydro = (p_dt_hydrological_sec > 0.0f) ? p_dt_hydrological_sec : default_hydrological_dt_sec_;
     const int steps = std::max(1, p_steps);
 
     for (int i = 0; i < steps; ++i) {
-        ideam::tasks::geomorphology::GeomorphologyDOD::execute_step(
+        core::GeomorphologyDOD::execute_step(
             seed,
             pod_catalog_,
             pod_plates_,
@@ -628,7 +628,7 @@ godot::Ref<godot::Image> GeomorphologyTerrainResource::render_map_layer_image(in
         max_elev = std::max(max_elev, col.total_column_height_m);
     }
     const float elev_span = std::max(1.0f, max_elev - min_elev);
-    const auto layer_enum = static_cast<GeomorphologyMapLayer>(p_layer);
+    const auto layer_enum = static_cast<core::GeomorphologyMapLayer>(p_layer);
 
     for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
@@ -640,7 +640,7 @@ godot::Ref<godot::Image> GeomorphologyTerrainResource::render_map_layer_image(in
 
             godot::Color c(0.15f, 0.18f, 0.22f, 1.0f);
             switch (layer_enum) {
-                case GeomorphologyMapLayer::ELEVATION_SHADED_RELIEF: {
+                case core::GeomorphologyMapLayer::ELEVATION_SHADED_RELIEF: {
                     const float norm = std::clamp((col.total_column_height_m - min_elev) / elev_span, 0.0f, 1.0f);
                     if (col.total_column_height_m < sea_level) {
                         c = godot::Color(0.08f, 0.24f + 0.35f * norm, 0.58f + 0.25f * norm, 1.0f);
@@ -649,14 +649,14 @@ godot::Ref<godot::Image> GeomorphologyTerrainResource::render_map_layer_image(in
                     }
                     break;
                 }
-                case GeomorphologyMapLayer::TECTONIC_PLATES_AND_STRESS: {
+                case core::GeomorphologyMapLayer::TECTONIC_PLATES_AND_STRESS: {
                     const float hue = std::fmod(static_cast<float>(crust.primary_plate_id) * 0.21f, 1.0f);
                     c = godot::Color::from_hsv(hue, 0.55f, 0.65f);
                     const float stress = std::clamp(std::abs(crust.convergent_stress) * 0.45f, 0.0f, 1.0f);
                     c = c.lerp(godot::Color(1.0f, 0.28f, 0.12f, 1.0f), stress);
                     break;
                 }
-                case GeomorphologyMapLayer::TOP_EXPOSED_LITHOLOGY: {
+                case core::GeomorphologyMapLayer::TOP_EXPOSED_LITHOLOGY: {
                     const uint16_t top_id = col.top_exposed_lithology();
                     static const godot::Color kLithColors[8] = {
                         godot::Color(0.76f, 0.48f, 0.52f, 1.0f), // Granite
@@ -671,18 +671,18 @@ godot::Ref<godot::Image> GeomorphologyTerrainResource::render_map_layer_image(in
                     c = kLithColors[top_id % 8];
                     break;
                 }
-                case GeomorphologyMapLayer::SURFACE_WATER_DEPTH: {
+                case core::GeomorphologyMapLayer::SURFACE_WATER_DEPTH: {
                     const float d_norm = std::clamp(hydro.water_depth_m / 5.0f, 0.0f, 1.0f);
                     const float q_norm = std::clamp(std::log1p(hydro.volumetric_discharge_m3s) / 5.0f, 0.0f, 1.0f);
                     c = godot::Color(0.12f * (1.0f - d_norm), 0.30f + 0.55f * q_norm, 0.45f + 0.55f * std::max(d_norm, q_norm), 1.0f);
                     break;
                 }
-                case GeomorphologyMapLayer::STREAM_POWER_EROSION: {
+                case core::GeomorphologyMapLayer::STREAM_POWER_EROSION: {
                     const float sp = std::clamp(std::log1p(hydro.stream_power_index) / 6.0f, 0.0f, 1.0f);
                     c = godot::Color(0.18f + 0.82f * sp, 0.15f + 0.55f * sp, 0.35f * (1.0f - sp), 1.0f);
                     break;
                 }
-                case GeomorphologyMapLayer::STRAHLER_STREAM_ORDER: {
+                case core::GeomorphologyMapLayer::STRAHLER_STREAM_ORDER: {
                     const float s_norm = std::clamp(static_cast<float>(hydro.strahler_order) / 6.0f, 0.0f, 1.0f);
                     const float basin_hue = std::fmod(static_cast<float>(hydro.drainage_basin_id) * 0.137f, 1.0f);
                     c = godot::Color::from_hsv(basin_hue, 0.35f, 0.35f);
@@ -691,17 +691,17 @@ godot::Ref<godot::Image> GeomorphologyTerrainResource::render_map_layer_image(in
                     }
                     break;
                 }
-                case GeomorphologyMapLayer::KARST_CAVITY_POTENTIAL: {
+                case core::GeomorphologyMapLayer::KARST_CAVITY_POTENTIAL: {
                     const float k_norm = std::clamp(col.karst_cavity_void_m / 8.0f, 0.0f, 1.0f);
                     c = godot::Color(0.22f + 0.68f * k_norm, 0.16f + 0.20f * k_norm, 0.32f + 0.65f * k_norm, 1.0f);
                     break;
                 }
-                case GeomorphologyMapLayer::SOIL_HUMUS_FERTILITY: {
+                case core::GeomorphologyMapLayer::SOIL_HUMUS_FERTILITY: {
                     const float h_norm = std::clamp(col.soil_organic_humus, 0.0f, 1.0f);
                     c = godot::Color(0.38f * (1.0f - 0.5f * h_norm), 0.25f + 0.65f * h_norm, 0.18f, 1.0f);
                     break;
                 }
-                case GeomorphologyMapLayer::MINERAL_VEIN_POTENTIAL: {
+                case core::GeomorphologyMapLayer::MINERAL_VEIN_POTENTIAL: {
                     const float ore = std::clamp(std::max({haz.hydrothermal_ore_grade, haz.placer_alluvial_grade, haz.evaporite_brine_grade}), 0.0f, 1.0f);
                     c = godot::Color(0.20f + 0.80f * ore, 0.18f + 0.68f * ore, 0.15f, 1.0f);
                     break;
@@ -868,4 +868,4 @@ godot::Dictionary GeomorphologyTerrainNode3D::sample_column_at_world(const godot
     return terrain_resource_->inspect_cell_column(g.x, g.y);
 }
 
-} // namespace ideam::geomorphology
+} // namespace ideam::godot_ext

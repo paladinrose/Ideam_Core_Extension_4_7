@@ -261,7 +261,7 @@ struct alignas(64) SplinePhysicsRopeBridgeTransformLogic {
                 const float local_u  = std::clamp(scaled - static_cast<float>(s_idx), 0.0f, 1.0f);
 
                 const auto &seg = coeffs[seg_offset + s_idx];
-                const glm::vec4 pos4 = seg.evaluate_horner(local_u);
+                const glm::vec4 pos4 = seg.evaluate(local_u);
                 solver_pos[i] = glm::vec3(pos4.x, pos4.y, pos4.z);
 
                 if (rids && ps && i < rid_cap && rids[i] != 0ULL) {

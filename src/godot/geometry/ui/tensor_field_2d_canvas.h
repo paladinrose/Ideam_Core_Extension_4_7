@@ -1,13 +1,12 @@
-#ifndef IDEAM_TENSOR_FIELD_2D_CANVAS_H
-#define IDEAM_TENSOR_FIELD_2D_CANVAS_H
+#pragma once
 
-#include "godot/geometry/geometry_canvas_base.h"
+#include "godot/geometry/ui/geometry_canvas_2d_base.h"
 #include "godot/geometry/resources/tensor_field_2d_resource.h"
 
-namespace godot {
+namespace ideam::godot_ext {
 
 // ============================================================================
-// TensorField2DCanvas (Node2D) & TensorField2DControl (Control)
+// TensorField2DCanvas & TensorField2DControl
 // Visualizes 2D symmetric tensor cross-fields, topological singularities
 // (Wedges, Trisectors, Centers, Saddles), RK4 major/minor hyperstreamlines,
 // and closed DCEL parcel blocks.
@@ -23,9 +22,9 @@ private:
     bool draw_closed_parcels_ = true;
     int cross_field_stride_ = 4;
 
-    Color major_streamline_color_ = Color(0.95f, 0.75f, 0.25f, 0.9f);
-    Color minor_streamline_color_ = Color(0.25f, 0.78f, 0.95f, 0.75f);
-    Color cross_field_color_ = Color(0.75f, 0.82f, 0.9f, 0.35f);
+    godot::Color major_streamline_color_ = godot::Color(0.95f, 0.75f, 0.25f, 0.9f);
+    godot::Color minor_streamline_color_ = godot::Color(0.25f, 0.78f, 0.95f, 0.75f);
+    godot::Color cross_field_color_ = godot::Color(0.75f, 0.82f, 0.9f, 0.35f);
 
 protected:
     static void _bind_methods();
@@ -55,8 +54,8 @@ public:
     void _draw() override;
 };
 
-class TensorField2DControl : public GeometryControl2DBase {
-    GDCLASS(TensorField2DControl, GeometryControl2DBase)
+class TensorField2DControl : public GeometryCanvas2DBase {
+    GDCLASS(TensorField2DControl, GeometryCanvas2DBase)
 
 private:
     bool draw_cross_field_ = true;
@@ -94,6 +93,4 @@ public:
     void _draw() override;
 };
 
-} // namespace godot
-
-#endif // IDEAM_TENSOR_FIELD_2D_CANVAS_H
+} // namespace ideam::godot_ext
