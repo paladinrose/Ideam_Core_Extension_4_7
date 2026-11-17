@@ -373,3 +373,4 @@ public:
 };
 
 } // namespace ideam::godot_ext
+VARIANT_ENUM_CAST(ideam::godot_ext::CommunicationSpeechBox2D::TextClass);

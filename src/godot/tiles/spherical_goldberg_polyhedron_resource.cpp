@@ -974,7 +974,7 @@ void GeodesicPlanetGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
         p_gizmo->add_lines(hub_lines, get_material("pentagon_hub_material", p_gizmo));
     }
     if (!handles.is_empty()) {
-        p_gizmo->add_handles(handles, get_material("handles", p_gizmo));
+        p_gizmo->add_handles(handles, get_material("handles", p_gizmo), PackedInt32Array());
     }
 }
 

@@ -4,6 +4,8 @@
 #include <godot_cpp/classes/script.hpp>
 #include <algorithm>
 #include <cstring>
+#include <string>
+#include <unordered_set>
 
 namespace ideam::godot_ext {
 
@@ -52,6 +54,27 @@ namespace {
            p_name == "process_priority" || p_name == "process_physics_priority" ||
            p_name == "process_thread_group" || p_name == "physics_interpolation_mode" ||
            p_name == "auto_translate_mode" || p_name == "editor_description";
+}
+
+// src/godot/linguistics/linguistic_object_profiler.cpp (after line 55)
+[[nodiscard]] bool is_engine_base_property(const godot::String &p_name) {
+    static const std::unordered_set<std::string> base_props = []() {
+        std::unordered_set<std::string> props;
+        const char *classes[] = { "Node3D", "Node2D", "Control", "CanvasItem" };
+        for (const char *cls : classes) {
+            const godot::TypedArray<godot::Dictionary> plist =
+                godot::ClassDB::class_get_property_list(cls, false);
+            for (int i = 0; i < plist.size(); ++i) {
+                const godot::Dictionary entry = plist[i];
+                const godot::String prop_name = entry.get("name", "");
+                if (!prop_name.is_empty()) {
+                    props.insert(prop_name.utf8().get_data());
+                }
+            }
+        }
+        return props;
+    }();
+    return base_props.find(p_name.utf8().get_data()) != base_props.end();
 }
 
 void map_godot_class_to_structural_semes(
@@ -496,12 +519,9 @@ void LinguisticObjectProfiler::_harvest_reflected_properties(
         const bool is_script_var = (usage & godot::PROPERTY_USAGE_SCRIPT_VARIABLE) != 0u;
         const bool is_stored_ed  = (usage & godot::PROPERTY_USAGE_EDITOR) != 0u &&
                                    (usage & godot::PROPERTY_USAGE_STORAGE) != 0u;
+        
         if (!include_engine_base_members_ && !is_script_var) {
-            if (!is_stored_ed ||
-                godot::ClassDB::class_has_property("Node3D", name) ||
-                godot::ClassDB::class_has_property("Node2D", name) ||
-                godot::ClassDB::class_has_property("Control", name) ||
-                godot::ClassDB::class_has_property("CanvasItem", name)) {
+            if (!is_stored_ed || is_engine_base_property(name)) {
                 continue;
             }
         }

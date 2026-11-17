@@ -42,6 +42,7 @@ for root, dirs, files in os.walk("src"):
 if env["platform"] == "windows":
     if env.get("is_msvc", False):
         env.Append(CXXFLAGS=["/bigobj"])
+        env.Append(LINKFLAGS=["/INCREMENTAL:NO", "/PDBPAGESIZE:32768", "/OPT:REF", "/OPT:ICF"])
     else:
         env.Append(CXXFLAGS=["-Wa,-mbig-obj"])
 

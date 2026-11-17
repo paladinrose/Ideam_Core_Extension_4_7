@@ -79,7 +79,7 @@ void WhittakerOrdinationAndTrophicControl::_draw() {
     String title = String("Quadrat (") + String::num_int64(inspected_cell_.x) + ", " +
                    String::num_int64(inspected_cell_.y) + ") | " + biome_name;
     draw_string(font, Vector2(10.0f, 18.0f), title, HORIZONTAL_ALIGNMENT_LEFT, -1.0f, 12, Color(0.90f, 0.98f, 0.92f));
-    draw_string(font, Vector2(10.0f, 35.0f), seral_name + " | Alchemical Grade: " + String::num(alch * 100.0f, 0) + "%",
+    draw_string(font, Vector2(10.0f, 35.0f), seral_name + String(" | Alchemical Grade: ") + String::num(alch * 100.0f, 0) + "%",
                 HORIZONTAL_ALIGNMENT_LEFT, -1.0f, 11, Color(0.76f, 0.92f, 0.80f));
 
     const float bar_x = 12.0f;

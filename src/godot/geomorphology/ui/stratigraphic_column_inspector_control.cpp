@@ -121,7 +121,7 @@ void StratigraphicColumnInspectorControl::_draw() {
         draw_rect(r, Color(0.15f, 0.15f, 0.18f, 1.0f), false, 1.0f);
 
         if (font.is_valid()) {
-            String label = name + " (" + String::num(thick, 1) + "m)";
+            String label = name + String(" (") + String::num(thick, 1) + String("m)");
             draw_string(font, Vector2(col_x + col_w + 10.0f, cursor_y + bar_h * 0.65f), label, HORIZONTAL_ALIGNMENT_LEFT, -1.0f, 11, Color(0.86f, 0.88f, 0.92f));
         }
     }

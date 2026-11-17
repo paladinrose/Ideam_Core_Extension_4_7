@@ -47,9 +47,9 @@ void DataOrientedNarrative::_bind_methods() {
         PROPERTY_HINT_FLAGS,
         "Symbolic Assignment:1,Condition Gather:2,Causal Wave:4,Incident & Plot:8,Spatial & Resource Commit:16,Goal & Relationship:32,Observability:64"
     );
-    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_connect_pipeline_stages", set_auto_connect_pipeline_stages, get_auto_connect_pipeline_stages);
-    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_dispatch_signals_to_oop", set_auto_dispatch_signals_to_oop, get_auto_dispatch_signals_to_oop);
-    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_sync_resources_from_dod", set_auto_sync_resources_from_dod, get_auto_sync_resources_from_dod);
+    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_connect_pipeline_stages", set_auto_connect_pipeline_stages, get_auto_connect_pipeline_stages, PROPERTY_HINT_NONE);
+    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_dispatch_signals_to_oop", set_auto_dispatch_signals_to_oop, get_auto_dispatch_signals_to_oop, PROPERTY_HINT_NONE);
+    IDEAM_BIND_NARRATIVE_PROP(Variant::BOOL, "dod_auto_sync_resources_from_dod", set_auto_sync_resources_from_dod, get_auto_sync_resources_from_dod, PROPERTY_HINT_NONE);
     IDEAM_BIND_NARRATIVE_PROP(
         Variant::OBJECT, "dod_custom_task_graph_resource", set_custom_task_graph_resource, get_custom_task_graph_resource,
         PROPERTY_HINT_RESOURCE_TYPE, "TaskGraphResource"

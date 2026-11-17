@@ -14,6 +14,10 @@ namespace ideam::godot_ext {
 void SplineEnvelopeSlider::_bind_methods() {
     using namespace godot;
 
+    ClassDB::bind_method(D_METHOD("set_editable", "editable"), &SplineEnvelopeSlider::set_editable);
+    ClassDB::bind_method(D_METHOD("is_editable"), &SplineEnvelopeSlider::is_editable);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editable"), "set_editable", "is_editable");
+    
     ADD_GROUP("Spline Envelope Slider", "");
 
     ClassDB::bind_method(D_METHOD("set_track_spline_2d", "spline"), &SplineEnvelopeSlider::set_track_spline_2d);

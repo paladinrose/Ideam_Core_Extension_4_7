@@ -18,9 +18,9 @@ void NarrativeTaskHost::_bind_methods() {
 
     IDEAM_BIND_HOST_PROP(Variant::OBJECT, "narrative_resource", set_narrative_resource, get_narrative_resource, PROPERTY_HINT_RESOURCE_TYPE, "DataOrientedNarrative");
     IDEAM_BIND_HOST_PROP(Variant::NODE_PATH, "game_node_path", set_game_node_path, get_game_node_path, PROPERTY_HINT_NODE_PATH_VALID_TYPES, "DataOrientedGame");
-    IDEAM_BIND_HOST_PROP(Variant::BOOL, "auto_setup_on_ready", set_auto_setup_on_ready, get_auto_setup_on_ready);
-    IDEAM_BIND_HOST_PROP(Variant::BOOL, "auto_execute_in_process", set_auto_execute_in_process, get_auto_execute_in_process);
-    IDEAM_BIND_HOST_PROP(Variant::BOOL, "share_game_memory_manager", set_share_game_memory_manager, get_share_game_memory_manager);
+    IDEAM_BIND_HOST_PROP(Variant::BOOL, "auto_setup_on_ready", set_auto_setup_on_ready, get_auto_setup_on_ready, PROPERTY_HINT_NONE);
+    IDEAM_BIND_HOST_PROP(Variant::BOOL, "auto_execute_in_process", set_auto_execute_in_process, get_auto_execute_in_process, PROPERTY_HINT_NONE);
+    IDEAM_BIND_HOST_PROP(Variant::BOOL, "share_game_memory_manager", set_share_game_memory_manager, get_share_game_memory_manager, PROPERTY_HINT_NONE);
 
 #undef IDEAM_BIND_HOST_PROP
 

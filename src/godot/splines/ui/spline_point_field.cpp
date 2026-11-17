@@ -70,23 +70,23 @@ void SplinePointField::_build_ui() {
 
     normal_style.instantiate();
     normal_style->set_bg_color(Color(0.20f, 0.22f, 0.26f, 0.95f));
-    normal_style->set_border_width_left(3);
+    normal_style->set_border_width(SIDE_LEFT, 3);
     normal_style->set_border_color(Color(0.88f, 0.64f, 0.24f, 0.90f));
     normal_style->set_corner_radius_all(4);
-    normal_style->set_content_margin_left(6.0f);
-    normal_style->set_content_margin_right(6.0f);
-    normal_style->set_content_margin_top(4.0f);
-    normal_style->set_content_margin_bottom(4.0f);
+    normal_style->set_content_margin(SIDE_LEFT, 6.0f);
+    normal_style->set_content_margin(SIDE_RIGHT, 6.0f);
+    normal_style->set_content_margin(SIDE_TOP, 4.0f);
+    normal_style->set_content_margin(SIDE_BOTTOM, 4.0f);
 
     selected_style.instantiate();
     selected_style->set_bg_color(Color(0.27f, 0.25f, 0.19f, 0.98f));
-    selected_style->set_border_width_left(4);
+    selected_style->set_border_width(SIDE_LEFT, 4);
     selected_style->set_border_color(Color(1.0f, 0.80f, 0.30f, 1.0f));
     selected_style->set_corner_radius_all(4);
-    selected_style->set_content_margin_left(6.0f);
-    selected_style->set_content_margin_right(6.0f);
-    selected_style->set_content_margin_top(4.0f);
-    selected_style->set_content_margin_bottom(4.0f);
+    selected_style->set_content_margin(SIDE_LEFT, 6.0f);
+    selected_style->set_content_margin(SIDE_RIGHT, 6.0f);
+    selected_style->set_content_margin(SIDE_TOP, 4.0f);
+    selected_style->set_content_margin(SIDE_BOTTOM, 4.0f);
 
     _apply_selection_style();
 

@@ -39,6 +39,7 @@ private:
     bool show_value_label_   = true;
     bool is_dragging_thumb_  = false;
     bool is_syncing_value_   = false;
+    bool editable_        = true;
 
     godot::Color track_bg_color_   = godot::Color(0.18f, 0.21f, 0.27f, 0.92f);
     godot::Color track_fill_color_ = godot::Color(0.32f, 0.80f, 0.98f, 0.96f);
@@ -61,6 +62,9 @@ public:
 
     void _draw() override;
     void _gui_input(const godot::Ref<godot::InputEvent> &p_event) override;
+
+    void set_editable(bool p_editable) { editable_ = p_editable; }
+    [[nodiscard]] bool is_editable() const noexcept { return editable_; }
 
     void set_track_spline_2d(const godot::Ref<Spline2DResource> &p_spline);
     [[nodiscard]] godot::Ref<Spline2DResource> get_track_spline_2d() const { return track_spline_2d_; }

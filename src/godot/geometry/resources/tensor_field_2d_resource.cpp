@@ -455,9 +455,8 @@ TypedArray<Polygon2DResource> TensorField2DResource::bake_parcel_polygon_resourc
     return out;
 }
 
-Ref<HeatmapGrid> TensorField2DResource::to_anisotropy_heatmap() const {
-    Ref<HeatmapGrid> hm;
-    hm.instantiate();
+HeatmapGrid *TensorField2DResource::to_anisotropy_heatmap() const {
+    HeatmapGrid *hm = memnew(HeatmapGrid);
     return hm;
 }
 

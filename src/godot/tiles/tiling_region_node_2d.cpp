@@ -592,11 +592,12 @@ godot::PackedVector2Array TilingRegionNode2D::find_local_path(
         return out;
     }
 
-    const auto path = core::TilingNavigation2D<real_t>::find_path_cells(
+    const auto search = core::TilingNavigation2D<real_t>::find_path_cells(
         *region,
         static_cast<uint32_t>(s_cid),
         static_cast<uint32_t>(g_cid)
     );
+    const auto &path = search.cell_path;
     if (path.empty()) return out;
 
     const auto cells = region->get_cells();

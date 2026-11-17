@@ -10,8 +10,6 @@ void HeatmapGrid::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_data", "data"), &HeatmapGrid::set_data);
     ClassDB::bind_method(D_METHOD("get_data"), &HeatmapGrid::get_data);
 
-    ClassDB::bind_method(D_METHOD("set_grid_data", "bytes", "count", "columns"), &HeatmapGrid::set_grid_data);
-    
     ClassDB::bind_method(D_METHOD("set_gradient", "gradient"), &HeatmapGrid::set_gradient);
     ClassDB::bind_method(D_METHOD("get_gradient"), &HeatmapGrid::get_gradient);
 

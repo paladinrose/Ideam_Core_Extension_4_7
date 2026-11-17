@@ -54,23 +54,23 @@ void SplineSectionField::_build_ui() {
     // Subtle indented connector styling to distinguish sections from anchor points
     normal_style.instantiate();
     normal_style->set_bg_color(Color(0.14f, 0.16f, 0.20f, 0.85f));
-    normal_style->set_border_width_left(3);
+    normal_style->set_border_width(SIDE_LEFT, 3);
     normal_style->set_border_color(Color(0.32f, 0.52f, 0.78f, 0.75f));
     normal_style->set_corner_radius_all(3);
-    normal_style->set_content_margin_left(10.0f);
-    normal_style->set_content_margin_right(6.0f);
-    normal_style->set_content_margin_top(3.0f);
-    normal_style->set_content_margin_bottom(3.0f);
+    normal_style->set_content_margin(SIDE_LEFT, 10.0f);
+    normal_style->set_content_margin(SIDE_RIGHT, 6.0f);
+    normal_style->set_content_margin(SIDE_TOP, 3.0f);
+    normal_style->set_content_margin(SIDE_BOTTOM, 3.0f);
 
     selected_style.instantiate();
     selected_style->set_bg_color(Color(0.18f, 0.25f, 0.34f, 0.95f));
-    selected_style->set_border_width_left(4);
+    selected_style->set_border_width(SIDE_LEFT, 4);
     selected_style->set_border_color(Color(0.45f, 0.78f, 1.0f, 1.0f));
     selected_style->set_corner_radius_all(3);
-    selected_style->set_content_margin_left(10.0f);
-    selected_style->set_content_margin_right(6.0f);
-    selected_style->set_content_margin_top(3.0f);
-    selected_style->set_content_margin_bottom(3.0f);
+    selected_style->set_content_margin(SIDE_LEFT, 10.0f);
+    selected_style->set_content_margin(SIDE_RIGHT, 6.0f);
+    selected_style->set_content_margin(SIDE_TOP, 3.0f);
+    selected_style->set_content_margin(SIDE_BOTTOM, 3.0f);
 
     _apply_selection_style();
 

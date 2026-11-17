@@ -147,7 +147,7 @@ public:
     godot::TypedArray<godot::PackedVector2Array> get_minor_streamlines();
     godot::TypedArray<godot::PackedVector2Array> get_closed_parcel_polygons();
     godot::TypedArray<Polygon2DResource> bake_parcel_polygon_resources();
-    godot::Ref<HeatmapGrid> to_anisotropy_heatmap() const;
+    HeatmapGrid *to_anisotropy_heatmap() const;
 
     // --- GeometryResource Overrides & Helpers ---
     [[nodiscard]] int get_geometry_dimension() const override { return 2; }

@@ -641,13 +641,13 @@ void SplineTweenResource::commit_clear_tracks() {
 int SplineTweenResource::commit_populate_blend_shapes_from_mesh(godot::MeshInstance3D *p_mesh_instance) {
     if (!p_mesh_instance || p_mesh_instance->get_mesh().is_null()) return 0;
     godot::Ref<godot::Mesh> mesh = p_mesh_instance->get_mesh();
-    const int bs_count = mesh->get_blend_shape_count();
+    const int bs_count = mesh->_get_blend_shape_count();
     if (bs_count <= 0) return 0;
 
     const godot::Dictionary before = get_snapshot_state();
     int added = 0;
     for (int i = 0; i < bs_count; ++i) {
-        const godot::StringName bs_name = mesh->get_blend_shape_name(i);
+        const godot::StringName bs_name = mesh->_get_blend_shape_name(i);
         bool exists = false;
         for (const auto &tr : tracks_) {
             if (tr.is_valid() && tr->get_track_mode() == TWEEN_TRACK_BLEND_SHAPE && tr->get_target_key() == bs_name) {

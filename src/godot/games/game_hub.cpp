@@ -255,7 +255,7 @@ void GameHub::_on_openxr_visible_state() {
             godot::Array keys = loaded_games.keys();
             for (int i = 0; i < keys.size(); ++i) {
                 if (Game* g = godot::Object::cast_to<Game>(loaded_games[keys[i]])) {
-                    g->game_pause();
+                    g->pause_game();
                 }
             }
         }
@@ -270,7 +270,7 @@ void GameHub::_on_openxr_focused_state() {
             godot::Array keys = loaded_games.keys();
             for (int i = 0; i < keys.size(); ++i) {
                 if (Game* g = godot::Object::cast_to<Game>(loaded_games[keys[i]])) {
-                    g->game_continue();
+                    g->pause_game();
                 }
             }
         }
