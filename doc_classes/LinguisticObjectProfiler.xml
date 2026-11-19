@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="LinguisticObjectProfiler" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Linguistic Object Profiler class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Linguistic Object Profiler (RefCounted subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="prompt_parser" type="SemanticPromptParser" setter="set_prompt_parser" getter="get_prompt_parser">
+			Configures prompt parser for this LinguisticObjectProfiler.
+		</member>
+		<member name="metadata_manager" type="MetadataLinguisticsManager" setter="set_metadata_manager" getter="get_metadata_manager">
+			Configures metadata manager for this LinguisticObjectProfiler.
+		</member>
+		<member name="enabled_channels_mask" type="int" setter="set_enabled_channels_mask" getter="get_enabled_channels_mask">
+			Configures enabled channels mask for this LinguisticObjectProfiler (Class Hierarchy:1,Object &amp; Node Name:2,Node Groups:4,UI Text Controls:8,Reflected Properties:16,Reflected Methods:32,Reflected Signals:64,Object Metadata:128,Explicit Resources:256,SceneState:512).
+		</member>
+		<member name="max_inheritance_depth" type="int" setter="set_max_inheritance_depth" getter="get_max_inheritance_depth">
+			Configures max inheritance depth for this LinguisticObjectProfiler.
+		</member>
+		<member name="max_ui_items_to_sample" type="int" setter="set_max_ui_items_to_sample" getter="get_max_ui_items_to_sample">
+			Configures max ui items to sample for this LinguisticObjectProfiler.
+		</member>
+		<member name="include_engine_base_members" type="bool" setter="set_include_engine_base_members" getter="get_include_engine_base_members">
+			Configures include engine base members for this LinguisticObjectProfiler.
+		</member>
+		<member name="include_child_ui_labels" type="bool" setter="set_include_child_ui_labels" getter="get_include_child_ui_labels">
+			Configures include child ui labels for this LinguisticObjectProfiler.
+		</member>
+		<member name="auto_cache_pod_in_metadata" type="bool" setter="set_auto_cache_pod_in_metadata" getter="get_auto_cache_pod_in_metadata">
+			Configures auto cache pod in metadata for this LinguisticObjectProfiler.
+		</member>
+	</members>
+</class>

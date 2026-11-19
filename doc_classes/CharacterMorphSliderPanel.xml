@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterMorphSliderPanel" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Character Morph Slider Panel class in IdeamCharacters.
+	</brief_description>
+	<description>
+		Character Morph Slider Panel (VBoxContainer subclass) belonging to IdeamCharacters (parametric anatomy, morph sliders, and apparel).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_undo_redo">
+			<return type="Variant" />
+			<param index="0" name="undo_redo" type="Variant" />
+			<description>
+				Executes set undo redo on CharacterMorphSliderPanel.
+			</description>
+		</method>
+		<method name="get_undo_redo">
+			<return type="Variant" />
+			<description>
+				Executes get undo redo on CharacterMorphSliderPanel.
+			</description>
+		</method>
+		<method name="refresh_from_blueprint">
+			<return type="Variant" />
+			<description>
+				Executes refresh from blueprint on CharacterMorphSliderPanel.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="blueprint" type="CharacterBlueprintResource" setter="set_blueprint" getter="get_blueprint">
+			Configures blueprint for this CharacterMorphSliderPanel.
+		</member>
+	</members>
+	<signals>
+		<signal name="morph_sliders_changed">
+			<description>
+				Emitted when morph sliders changed occurs on this CharacterMorphSliderPanel.
+			</description>
+		</signal>
+	</signals>
+</class>

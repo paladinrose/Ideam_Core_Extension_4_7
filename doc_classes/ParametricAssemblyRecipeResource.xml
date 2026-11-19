@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ParametricAssemblyRecipeResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Parametric Assembly Recipe Resource class in IdeamDesign.
+	</brief_description>
+	<description>
+		Parametric Assembly Recipe Resource (Resource subclass) belonging to IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_parameter_value">
+			<return type="Variant" />
+			<param index="0" name="param_name" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes set parameter value on ParametricAssemblyRecipeResource.
+			</description>
+		</method>
+		<method name="get_parameter_value">
+			<return type="Variant" />
+			<param index="0" name="param_name" type="Variant" />
+			<param index="1" name="default_value" type="Variant" />
+			<description>
+				Executes get parameter value on ParametricAssemblyRecipeResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="preset_archetype" type="String" setter="set_preset_archetype" getter="get_preset_archetype">
+			Configures preset archetype for this ParametricAssemblyRecipeResource (Chair,Table,OrganicTree,GeologicOutcrop).
+		</member>
+		<member name="root_semantic_role_id" type="int" setter="set_root_semantic_role_id" getter="get_root_semantic_role_id">
+			Configures root semantic role id for this ParametricAssemblyRecipeResource.
+		</member>
+		<member name="nuclear_seme_mask" type="int" setter="set_nuclear_seme_mask" getter="get_nuclear_seme_mask">
+			Configures nuclear seme mask for this ParametricAssemblyRecipeResource.
+		</member>
+		<member name="peripheral_seme_mask" type="int" setter="set_peripheral_seme_mask" getter="get_peripheral_seme_mask">
+			Configures peripheral seme mask for this ParametricAssemblyRecipeResource.
+		</member>
+		<member name="parameter_overrides" type="Dictionary" setter="set_parameter_overrides" getter="get_parameter_overrides">
+			Configures parameter overrides for this ParametricAssemblyRecipeResource.
+		</member>
+	</members>
+</class>

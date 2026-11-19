@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SelectionList" inherits="HBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Selection List class in IdeamControls.
+	</brief_description>
+	<description>
+		Selection List (HBoxContainer subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,4 +1,12 @@
 #include "ideam_design_plugin.h"
+
+#include "../controls/ideam_tier1_control_registry.h"
+#include "blueprint_resource.h"
+#include "ui/blueprint_editor_control.h"
+#include "ui/design_composer.h"
+
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -23,9 +31,65 @@ void IdeamDesignPlugin::_enter_tree() {
     register_to_ecosystem("WizardSettings", "IdeamDesign", godot::String(DESIGN_SETTINGS_PATH.data()));
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
+
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
+
+    reg.register_control({
+        ws_id, "BlueprintResource", "Blueprints", "Architectural Blueprint", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            (void)p_ctx;
+            godot::Ref<BlueprintResource> bp = p_asset;
+            if (bp.is_null()) return nullptr;
+            auto *ctrl = memnew(BlueprintEditorControl);
+            ctrl->set_blueprint(bp);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "ParametricAssemblyRecipeResource", "Recipes", "Assembly Recipe", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            using namespace godot;
+            (void)p_ctx;
+            if (p_asset.is_null()) return nullptr;
+            auto *vbox = memnew(VBoxContainer);
+            vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+            auto *lbl = memnew(Label);
+            lbl->set_text("Parametric Assembly Recipe — Author recipe rules, sockets, and assembly parameters in the Inspector on the right.");
+            lbl->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+            vbox->add_child(lbl);
+            return vbox;
+        },
+        nullptr
+    });
+
+    auto make_style_host = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        using namespace godot;
+        (void)p_ctx;
+        if (p_asset.is_null()) return nullptr;
+        auto *vbox = memnew(VBoxContainer);
+        vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+        auto *lbl = memnew(Label);
+        lbl->set_text(p_asset->get_class() + " — Inspect 3D CSS theme/style tokens and cascading rules in the Inspector on the right.");
+        lbl->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+        vbox->add_child(lbl);
+        return vbox;
+    };
+
+    reg.register_control({ws_id, "Theme3DResource", "Themes & Styles", "3D Theme", UPDATE_ON_COMMIT, make_style_host, nullptr});
+    reg.register_control({ws_id, "Style3DResource", "Themes & Styles", "3D Style", UPDATE_ON_COMMIT, make_style_host, nullptr});
 }
 
 void IdeamDesignPlugin::_exit_tree() {
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "BlueprintResource");
+    reg.unregister_class(ws_id, "ParametricAssemblyRecipeResource");
+    reg.unregister_class(ws_id, "Theme3DResource");
+    reg.unregister_class(ws_id, "Style3DResource");
+
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
         inspector_plugin_.unref();

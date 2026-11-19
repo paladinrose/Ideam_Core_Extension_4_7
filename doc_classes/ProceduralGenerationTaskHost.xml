@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralGenerationTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Procedural Generation Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Procedural Generation Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="step_procedural_generation_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes step procedural generation pipeline on ProceduralGenerationTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="domain_resource" type="DataOrientedProceduralGeneration" setter="set_domain_resource" getter="get_domain_resource">
+			Configures domain resource for this ProceduralGenerationTaskHost.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this ProceduralGenerationTaskHost (Wave1_CascadeCompile:1,Wave2_ReflectionMatch:2,Wave3_DomainInit:4,Wave4_HierarchyPropagate:8).
+		</member>
+		<member name="auto_stage_on_ready" type="bool" setter="set_auto_stage_on_ready" getter="get_auto_stage_on_ready">
+			Configures auto stage on ready for this ProceduralGenerationTaskHost.
+		</member>
+	</members>
+	<signals>
+		<signal name="procedural_generation_pipeline_executed">
+			<param index="0" name="slots" type="Array" />
+			<description>
+				Emitted when procedural generation pipeline executed occurs on this ProceduralGenerationTaskHost.
+			</description>
+		</signal>
+	</signals>
+</class>

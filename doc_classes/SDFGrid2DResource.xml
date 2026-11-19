@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SDFGrid2DResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SDFGrid2 DResource class in IdeamGeometry.
+	</brief_description>
+	<description>
+		SDFGrid2 DResource (GeometryResource subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_field">
+			<return type="Variant" />
+			<param index="0" name="fill_value" type="Variant" />
+			<description>
+				Executes clear field on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="sample_distance">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample distance on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="sample_gradient">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample gradient on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="get_min_max_distance">
+			<return type="Variant" />
+			<description>
+				Executes get min max distance on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="commit_set_resolution">
+			<return type="Variant" />
+			<param index="0" name="resolution" type="Variant" />
+			<description>
+				Executes commit set resolution on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="commit_set_world_bounds">
+			<return type="Variant" />
+			<param index="0" name="bounds" type="Variant" />
+			<description>
+				Executes commit set world bounds on SDFGrid2DResource.
+			</description>
+		</method>
+		<method name="commit_set_iso_value">
+			<return type="Variant" />
+			<param index="0" name="iso_value" type="Variant" />
+			<description>
+				Executes commit set iso value on SDFGrid2DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="resolution" type="Vector2i" setter="set_resolution" getter="get_resolution">
+			Configures resolution for this SDFGrid2DResource.
+		</member>
+		<member name="world_bounds" type="Rect2" setter="set_world_bounds" getter="get_world_bounds">
+			Configures world bounds for this SDFGrid2DResource.
+		</member>
+		<member name="iso_value" type="float" setter="set_iso_value" getter="get_iso_value">
+			Configures iso value for this SDFGrid2DResource.
+		</member>
+		<member name="grid_values" type="PackedFloat32Array" setter="set_grid_values" getter="get_grid_values">
+			Configures grid values for this SDFGrid2DResource.
+		</member>
+	</members>
+</class>

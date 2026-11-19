@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SphericalGoldbergPreviewCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Interactive orthographic globe preview canvas &amp; control for `SphericalGoldbergPolyhedronResource`.
+	</brief_description>
+	<description>
+		Interactive orthographic globe preview canvas &amp; control for `SphericalGoldbergPolyhedronResource`. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_goldberg_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set goldberg resource on SphericalGoldbergPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_goldberg_resource">
+			<return type="Variant" />
+			<description>
+				Executes get goldberg resource on SphericalGoldbergPreviewCanvas.
+			</description>
+		</method>
+	</methods>
+</class>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGraphNode" inherits="IdeamGraphNode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Graph Node class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Graph Node (IdeamGraphNode subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_memory_node_resource">
+			<return type="Variant" />
+			<description>
+				Executes get memory node resource on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="update_telemetry">
+			<return type="Variant" />
+			<param index="0" name="inspector" type="Variant" />
+			<description>
+				Executes update telemetry on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="get_port_signature">
+			<return type="Variant" />
+			<param index="0" name="port_idx" type="Variant" />
+			<param index="1" name="is_output" type="Variant" />
+			<description>
+				Executes get port signature on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="receive_buffer_names_list">
+			<return type="Variant" />
+			<param index="0" name="names" type="Variant" />
+			<description>
+				Executes receive buffer names list on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="update_memory_port">
+			<return type="Variant" />
+			<param index="0" name="slot_index" type="Variant" />
+			<param index="1" name="is_left" type="Variant" />
+			<param index="2" name="layout" type="Variant" />
+			<description>
+				Executes update memory port on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="set_header_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes set header state on MemoryGraphNode.
+			</description>
+		</method>
+		<method name="receive_memory_grant">
+			<return type="Variant" />
+			<param index="0" name="grant" type="Variant" />
+			<description>
+				Executes receive memory grant on MemoryGraphNode.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="inspect_memory_requested">
+			<param index="0" name="inspector" type="Object" />
+			<description>
+				Emitted when inspect memory requested occurs on this MemoryGraphNode.
+			</description>
+		</signal>
+		<signal name="buffer_names_requested">
+			<param index="0" name="node" type="Object" />
+			<param index="1" name="buffer_ids" type="Array" />
+			<description>
+				Emitted when buffer names requested occurs on this MemoryGraphNode.
+			</description>
+		</signal>
+		<signal name="memory_grant_requested">
+			<param index="0" name="node" type="Object" />
+			<description>
+				Emitted when memory grant requested occurs on this MemoryGraphNode.
+			</description>
+		</signal>
+		<signal name="active_grants_requested">
+			<param index="0" name="node" type="Object" />
+			<description>
+				Emitted when active grants requested occurs on this MemoryGraphNode.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="HEADER_VALID" value="0" enum="LayoutHeaderState">
+			Header valid constant.
+		</constant>
+		<constant name="HEADER_ERROR" value="1" enum="LayoutHeaderState">
+			Header error constant.
+		</constant>
+		<constant name="TELEMETRY_INACTIVE" value="0" enum="TelemetryBadgeState">
+			Telemetry inactive constant.
+		</constant>
+		<constant name="TELEMETRY_ACTIVE" value="1" enum="TelemetryBadgeState">
+			Telemetry active constant.
+		</constant>
+		<constant name="TELEMETRY_DIRTY" value="2" enum="TelemetryBadgeState">
+			Telemetry dirty constant.
+		</constant>
+		<constant name="TELEMETRY_ERROR" value="3" enum="TelemetryBadgeState">
+			Telemetry error constant.
+		</constant>
+	</constants>
+</class>

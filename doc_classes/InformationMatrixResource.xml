@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="InformationMatrixResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Information Matrix Resource class in IdeamMinds.
+	</brief_description>
+	<description>
+		Information Matrix Resource (Resource subclass) belonging to IdeamMinds (cognitive models, beliefs, goals, emotions, and decision making).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_facts">
+			<return type="Variant" />
+			<description>
+				Executes clear facts on InformationMatrixResource.
+			</description>
+		</method>
+		<method name="get_tome_count">
+			<return type="Variant" />
+			<description>
+				Executes get tome count on InformationMatrixResource.
+			</description>
+		</method>
+		<method name="get_fact_count">
+			<return type="Variant" />
+			<description>
+				Executes get fact count on InformationMatrixResource.
+			</description>
+		</method>
+		<method name="is_syllogism_form_valid" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="figure" type="Variant" />
+			<param index="1" name="major_q" type="Variant" />
+			<param index="2" name="minor_q" type="Variant" />
+			<param index="3" name="conclusion_q" type="Variant" />
+			<description>
+				Executes is syllogism form valid on InformationMatrixResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="default_tome_id" type="int" setter="set_default_tome_id" getter="get_default_tome_id">
+			Configures default tome id for this InformationMatrixResource.
+		</member>
+	</members>
+</class>

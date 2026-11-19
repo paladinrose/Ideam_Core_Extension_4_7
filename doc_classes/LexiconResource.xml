@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="LexiconResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Lexicon Resource class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Lexicon Resource (Resource subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_lexicon">
+			<return type="Variant" />
+			<description>
+				Executes clear lexicon on LexiconResource.
+			</description>
+		</method>
+		<method name="populate_default_english_ipa_inventory">
+			<return type="Variant" />
+			<description>
+				Executes populate default english ipa inventory on LexiconResource.
+			</description>
+		</method>
+		<method name="register_sememe_resource">
+			<return type="Variant" />
+			<param index="0" name="sememe" type="Variant" />
+			<description>
+				Executes register sememe resource on LexiconResource.
+			</description>
+		</method>
+		<method name="register_semantic_frame_resource">
+			<return type="Variant" />
+			<param index="0" name="frame" type="Variant" />
+			<description>
+				Executes register semantic frame resource on LexiconResource.
+			</description>
+		</method>
+		<method name="tokenize_bpe_subwords">
+			<return type="Variant" />
+			<param index="0" name="text" type="Variant" />
+			<description>
+				Executes tokenize bpe subwords on LexiconResource.
+			</description>
+		</method>
+		<method name="tokenize_bpe_pieces">
+			<return type="Variant" />
+			<param index="0" name="text" type="Variant" />
+			<description>
+				Executes tokenize bpe pieces on LexiconResource.
+			</description>
+		</method>
+		<method name="decode_bpe_tokens">
+			<return type="Variant" />
+			<param index="0" name="token_ids" type="Variant" />
+			<description>
+				Executes decode bpe tokens on LexiconResource.
+			</description>
+		</method>
+		<method name="get_phoneme_count">
+			<return type="Variant" />
+			<description>
+				Executes get phoneme count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_seme_count">
+			<return type="Variant" />
+			<description>
+				Executes get seme count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_sememe_count">
+			<return type="Variant" />
+			<description>
+				Executes get sememe count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_morpheme_count">
+			<return type="Variant" />
+			<description>
+				Executes get morpheme count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_lexeme_count">
+			<return type="Variant" />
+			<description>
+				Executes get lexeme count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_bpe_vocab_count">
+			<return type="Variant" />
+			<description>
+				Executes get bpe vocab count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_synset_relation_count">
+			<return type="Variant" />
+			<description>
+				Executes get synset relation count on LexiconResource.
+			</description>
+		</method>
+		<method name="get_semantic_frame_count">
+			<return type="Variant" />
+			<description>
+				Executes get semantic frame count on LexiconResource.
+			</description>
+		</method>
+		<method name="find_sememe_resource_by_label">
+			<return type="Variant" />
+			<param index="0" name="label" type="Variant" />
+			<description>
+				Executes find sememe resource by label on LexiconResource.
+			</description>
+		</method>
+		<method name="find_semantic_frame_resource_by_name">
+			<return type="Variant" />
+			<param index="0" name="name" type="Variant" />
+			<description>
+				Executes find semantic frame resource by name on LexiconResource.
+			</description>
+		</method>
+		<method name="encode_word_to_phoneme_masks">
+			<return type="Variant" />
+			<param index="0" name="word" type="Variant" />
+			<description>
+				Executes encode word to phoneme masks on LexiconResource.
+			</description>
+		</method>
+		<method name="decompose_word_into_morphemes">
+			<return type="Variant" />
+			<param index="0" name="word" type="Variant" />
+			<description>
+				Executes decompose word into morphemes on LexiconResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on LexiconResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on LexiconResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this LexiconResource.
+		</member>
+		<member name="lexicon_name" type="String" setter="set_lexicon_name" getter="get_lexicon_name">
+			Configures lexicon name for this LexiconResource.
+		</member>
+		<member name="default_lect_id" type="int" setter="set_default_lect_id" getter="get_default_lect_id">
+			Configures default lect id for this LexiconResource.
+		</member>
+		<member name="sememe_resources" type="Array" setter="set_sememe_resources" getter="get_sememe_resources">
+			Configures sememe resources for this LexiconResource.
+		</member>
+		<member name="semantic_frame_resources" type="Array" setter="set_semantic_frame_resources" getter="get_semantic_frame_resources">
+			Configures semantic frame resources for this LexiconResource.
+		</member>
+		<member name="morpheme_entries" type="Array" setter="set_morpheme_entries" getter="get_morpheme_entries">
+			Configures morpheme entries for this LexiconResource.
+		</member>
+		<member name="lexeme_entries" type="Array" setter="set_lexeme_entries" getter="get_lexeme_entries">
+			Configures lexeme entries for this LexiconResource.
+		</member>
+	</members>
+</class>

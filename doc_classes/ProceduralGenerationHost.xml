@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralGenerationHost" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Procedural Generation Host class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Procedural Generation Host (Node subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="generator_resource" type="ProceduralGeneratorResource" setter="set_generator_resource" getter="get_generator_resource">
+			Configures generator resource for this ProceduralGenerationHost.
+		</member>
+		<member name="auto_generate_on_ready" type="bool" setter="set_auto_generate_on_ready" getter="get_auto_generate_on_ready">
+			Configures auto generate on ready for this ProceduralGenerationHost.
+		</member>
+	</members>
+	<signals>
+		<signal name="generation_ready">
+			<description>
+				Emitted when generation ready occurs on this ProceduralGenerationHost.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Polygon2DResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Polygon2 DResource class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Polygon2 DResource (GeometryResource subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_vertex_count">
+			<return type="Variant" />
+			<description>
+				Executes get vertex count on Polygon2DResource.
+			</description>
+		</method>
+		<method name="add_vertex">
+			<return type="Variant" />
+			<param index="0" name="vertex" type="Variant" />
+			<description>
+				Executes add vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="insert_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="vertex" type="Variant" />
+			<description>
+				Executes insert vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="set_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="vertex" type="Variant" />
+			<description>
+				Executes set vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="remove_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="clear">
+			<return type="Variant" />
+			<description>
+				Executes clear on Polygon2DResource.
+			</description>
+		</method>
+		<method name="contains_point">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes contains point on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_signed_area">
+			<return type="Variant" />
+			<description>
+				Executes get signed area on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_abs_area">
+			<return type="Variant" />
+			<description>
+				Executes get abs area on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_perimeter">
+			<return type="Variant" />
+			<description>
+				Executes get perimeter on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_centroid">
+			<return type="Variant" />
+			<description>
+				Executes get centroid on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_winding_order">
+			<return type="Variant" />
+			<description>
+				Executes get winding order on Polygon2DResource.
+			</description>
+		</method>
+		<method name="distance_to_boundary">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes distance to boundary on Polygon2DResource.
+			</description>
+		</method>
+		<method name="closest_point_on_boundary">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes closest point on boundary on Polygon2DResource.
+			</description>
+		</method>
+		<method name="get_triangles">
+			<return type="Variant" />
+			<description>
+				Executes get triangles on Polygon2DResource.
+			</description>
+		</method>
+		<method name="compute_convex_hull">
+			<return type="Variant" />
+			<description>
+				Executes compute convex hull on Polygon2DResource.
+			</description>
+		</method>
+		<method name="replace_with_convex_hull">
+			<return type="Variant" />
+			<description>
+				Executes replace with convex hull on Polygon2DResource.
+			</description>
+		</method>
+		<method name="clip_convex">
+			<return type="Variant" />
+			<param index="0" name="convex_clip" type="Variant" />
+			<description>
+				Executes clip convex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="create_rectangle">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="size" type="Variant" />
+			<description>
+				Executes create rectangle on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_set_closed">
+			<return type="Variant" />
+			<param index="0" name="closed" type="Variant" />
+			<description>
+				Executes commit set closed on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_clear">
+			<return type="Variant" />
+			<description>
+				Executes commit clear on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_add_vertex">
+			<return type="Variant" />
+			<param index="0" name="vertex" type="Variant" />
+			<description>
+				Executes commit add vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_insert_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="vertex" type="Variant" />
+			<description>
+				Executes commit insert vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_set_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="vertex" type="Variant" />
+			<description>
+				Executes commit set vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_remove_vertex">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes commit remove vertex on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_replace_with_convex_hull">
+			<return type="Variant" />
+			<description>
+				Executes commit replace with convex hull on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_create_rectangle">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="size" type="Variant" />
+			<description>
+				Executes commit create rectangle on Polygon2DResource.
+			</description>
+		</method>
+		<method name="commit_clip_convex">
+			<return type="Variant" />
+			<param index="0" name="convex_clip" type="Variant" />
+			<description>
+				Executes commit clip convex on Polygon2DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="closed" type="bool" setter="set_closed" getter="is_closed">
+			Configures closed for this Polygon2DResource.
+		</member>
+		<member name="vertices" type="PackedVector2Array" setter="set_vertices" getter="get_vertices">
+			Configures vertices for this Polygon2DResource.
+		</member>
+	</members>
+</class>

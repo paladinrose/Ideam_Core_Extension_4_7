@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplinePathContainer" inherits="Container" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Path Container class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Path Container (Container subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="path_spline_2d" type="Spline2DResource" setter="set_path_spline_2d" getter="get_path_spline_2d">
+			Configures path spline 2d for this SplinePathContainer.
+		</member>
+		<member name="distribution_mode" type="int" setter="set_distribution_mode" getter="get_distribution_mode">
+			Configures distribution mode for this SplinePathContainer (Uniform Span:0,Center Clustered (Card Hand):1,Uniform Arc-Length:2).
+		</member>
+		<member name="normalize_to_container_rect" type="bool" setter="set_normalize_to_container_rect" getter="get_normalize_to_container_rect">
+			Configures normalize to container rect for this SplinePathContainer.
+		</member>
+		<member name="align_rotation_to_tangent" type="bool" setter="set_align_rotation_to_tangent" getter="get_align_rotation_to_tangent">
+			Configures align rotation to tangent for this SplinePathContainer.
+		</member>
+		<member name="rotation_offset_degrees" type="float" setter="set_rotation_offset_degrees" getter="get_rotation_offset_degrees">
+			Configures rotation offset degrees for this SplinePathContainer.
+		</member>
+		<member name="margin_start_percent" type="float" setter="set_margin_start_percent" getter="get_margin_start_percent">
+			Configures margin start percent for this SplinePathContainer.
+		</member>
+		<member name="margin_end_percent" type="float" setter="set_margin_end_percent" getter="get_margin_end_percent">
+			Configures margin end percent for this SplinePathContainer.
+		</member>
+		<member name="cluster_step_percent" type="float" setter="set_cluster_step_percent" getter="get_cluster_step_percent">
+			Configures cluster step percent for this SplinePathContainer.
+		</member>
+		<member name="scroll_offset" type="float" setter="set_scroll_offset" getter="get_scroll_offset">
+			Configures scroll offset for this SplinePathContainer.
+		</member>
+		<member name="scale_falloff_1d" type="Spline1DResource" setter="set_scale_falloff_1d" getter="get_scale_falloff_1d">
+			Configures scale falloff 1d for this SplinePathContainer.
+		</member>
+		<member name="opacity_falloff_1d" type="Spline1DResource" setter="set_opacity_falloff_1d" getter="get_opacity_falloff_1d">
+			Configures opacity falloff 1d for this SplinePathContainer.
+		</member>
+		<member name="show_debug_curve" type="bool" setter="set_show_debug_curve" getter="get_show_debug_curve">
+			Configures show debug curve for this SplinePathContainer.
+		</member>
+	</members>
+	<constants>
+		<constant name="SPLINE_PATH_DISTRIBUTE_UNIFORM" value="0">
+			Spline path distribute uniform constant.
+		</constant>
+		<constant name="SPLINE_PATH_DISTRIBUTE_CENTER_CLUSTER" value="0">
+			Spline path distribute center cluster constant.
+		</constant>
+		<constant name="SPLINE_PATH_DISTRIBUTE_ARC_LENGTH" value="0">
+			Spline path distribute arc length constant.
+		</constant>
+	</constants>
+</class>

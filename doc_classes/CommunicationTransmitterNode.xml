@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationTransmitterNode" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Communication Transmitter Node class in IdeamCommunications.
+	</brief_description>
+	<description>
+		Communication Transmitter Node (Node subclass) belonging to IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="transmitter_id" type="int" setter="set_transmitter_id" getter="get_transmitter_id">
+			Configures transmitter id for this CommunicationTransmitterNode.
+		</member>
+		<member name="mind_agent_id" type="int" setter="set_mind_agent_id" getter="get_mind_agent_id">
+			Configures mind agent id for this CommunicationTransmitterNode.
+		</member>
+		<member name="active_lect_id" type="int" setter="set_active_lect_id" getter="get_active_lect_id">
+			Configures active lect id for this CommunicationTransmitterNode.
+		</member>
+		<member name="elocution_skill" type="float" setter="set_elocution_skill" getter="get_elocution_skill">
+			Configures elocution skill for this CommunicationTransmitterNode.
+		</member>
+		<member name="projection_power_db" type="float" setter="set_projection_power_db" getter="get_projection_power_db">
+			Configures projection power db for this CommunicationTransmitterNode.
+		</member>
+		<member name="world_position" type="Vector3" setter="set_world_position" getter="get_world_position">
+			Configures world position for this CommunicationTransmitterNode.
+		</member>
+		<member name="speaker_display_name" type="String" setter="set_speaker_display_name" getter="get_speaker_display_name">
+			Configures speaker display name for this CommunicationTransmitterNode.
+		</member>
+		<member name="language_asset" type="LanguageAssetResource" setter="set_language_asset" getter="get_language_asset">
+			Configures language asset for this CommunicationTransmitterNode.
+		</member>
+		<member name="speaker_mind" type="AgentMindResource" setter="set_speaker_mind" getter="get_speaker_mind">
+			Configures speaker mind for this CommunicationTransmitterNode.
+		</member>
+		<member name="default_prosody_spline" type="Spline2DResource" setter="set_default_prosody_spline" getter="get_default_prosody_spline">
+			Configures default prosody spline for this CommunicationTransmitterNode.
+		</member>
+	</members>
+	<signals>
+		<signal name="transmission_started">
+			<param index="0" name="raw_text" type="String" />
+			<description>
+				Emitted when transmission started occurs on this CommunicationTransmitterNode.
+			</description>
+		</signal>
+		<signal name="signal_emitted">
+			<param index="0" name="packet_summary" type="Dictionary" />
+			<description>
+				Emitted when signal emitted occurs on this CommunicationTransmitterNode.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WallpaperTilingControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Wallpaper Tiling Control class in IdeamTiles.
+	</brief_description>
+	<description>
+		Wallpaper Tiling Control (VBoxContainer subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_group_selector">
+			<return type="Variant" />
+			<description>
+				Executes get group selector on WallpaperTilingControl.
+			</description>
+		</method>
+		<method name="get_domain_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get domain canvas on WallpaperTilingControl.
+			</description>
+		</method>
+		<method name="get_edge_spline_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get edge spline canvas on WallpaperTilingControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on WallpaperTilingControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="wallpaper_tiling" type="WallpaperTilingResource" setter="set_wallpaper_tiling" getter="get_wallpaper_tiling">
+			Configures wallpaper tiling for this WallpaperTilingControl.
+		</member>
+	</members>
+</class>

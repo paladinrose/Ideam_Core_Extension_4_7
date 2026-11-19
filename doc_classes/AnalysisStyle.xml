@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnalysisStyle" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Analysis Style class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Analysis Style (Resource subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_rule">
+			<return type="Variant" />
+			<param index="0" name="rule" type="Variant" />
+			<description>
+				Executes add rule on AnalysisStyle.
+			</description>
+		</method>
+		<method name="clear_rules">
+			<return type="Variant" />
+			<description>
+				Executes clear rules on AnalysisStyle.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="rules" type="Array" setter="set_rules" getter="get_rules">
+			Configures rules for this AnalysisStyle.
+		</member>
+	</members>
+</class>

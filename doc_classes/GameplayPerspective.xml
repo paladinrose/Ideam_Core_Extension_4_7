@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayPerspective" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayPerspective encapsulates camera projection, spatial rig offsets, spring-arm collision parameters, angular constraints, smoothing, look sensitivity, and player...
+	</brief_description>
+	<description>
+		GameplayPerspective encapsulates camera projection, spatial rig offsets, spring-arm collision parameters, angular constraints, smoothing, look sensitivity, and player movement/visibility alignment across standard game camera archetypes (First Person, Third Person Over the Shoulder, Third Person Orbit, Top Down, 3/4 View, Isometric, Dimetric, Side Scroller, and Fixed Cinematic). Beyond direct application to Godot 3D/2D camera rigs (`apply_to_camera_rig`, `apply_to_camera_2d`) and smooth runtime blending (`interpolate_with`), GameplayPerspective integrates with the `GameplayStyle` cascade via `collect_rules()`, emitting declarative `GameplayRule` instances for player/entity properties. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

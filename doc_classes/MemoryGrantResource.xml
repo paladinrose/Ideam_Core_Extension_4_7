@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGrantResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Grant Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Grant Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_buffer_ids">
+			<return type="Variant" />
+			<description>
+				Executes get buffer ids on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="add_part">
+			<return type="Variant" />
+			<param index="0" name="part" type="Variant" />
+			<description>
+				Executes add part on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="remove_part">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove part on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="clear_parts">
+			<return type="Variant" />
+			<description>
+				Executes clear parts on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="clear_emulation_state">
+			<return type="Variant" />
+			<description>
+				Executes clear emulation state on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="add_emulation_error">
+			<return type="Variant" />
+			<param index="0" name="error" type="Variant" />
+			<description>
+				Executes add emulation error on MemoryGrantResource.
+			</description>
+		</method>
+		<method name="validate_for_compilation">
+			<return type="Variant" />
+			<description>
+				Executes validate for compilation on MemoryGrantResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="grant_name" type="StringName" setter="set_grant_name" getter="get_grant_name">
+			Configures grant name for this MemoryGrantResource.
+		</member>
+		<member name="capacity_mode" type="int" setter="set_capacity_mode" getter="get_capacity_mode">
+			Configures capacity mode for this MemoryGrantResource (Lite (4 Parts),Heavy (8 Parts)).
+		</member>
+		<member name="configured_parts" type="Array" setter="set_configured_parts" getter="get_configured_parts">
+			Configures configured parts for this MemoryGrantResource.
+		</member>
+		<member name="emulated_valid" type="bool" getter="is_emulated_valid">
+			Configures emulated valid for this MemoryGrantResource.
+		</member>
+		<member name="emulation_errors" type="PackedStringArray" getter="get_emulation_errors">
+			Configures emulation errors for this MemoryGrantResource.
+		</member>
+	</members>
+</class>

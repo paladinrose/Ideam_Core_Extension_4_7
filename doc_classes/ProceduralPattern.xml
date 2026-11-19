@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralPattern" inherits="ProceduralGeneratorResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Procedural Pattern class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Procedural Pattern (ProceduralGeneratorResource subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_generation_rule">
+			<return type="Variant" />
+			<param index="0" name="rule" type="Variant" />
+			<description>
+				Executes add generation rule on ProceduralPattern.
+			</description>
+		</method>
+		<method name="clear_generation_rules">
+			<return type="Variant" />
+			<description>
+				Executes clear generation rules on ProceduralPattern.
+			</description>
+		</method>
+		<method name="get_generation_rule_count">
+			<return type="Variant" />
+			<description>
+				Executes get generation rule count on ProceduralPattern.
+			</description>
+		</method>
+		<method name="add_discovered_token">
+			<return type="Variant" />
+			<param index="0" name="token" type="Variant" />
+			<description>
+				Executes add discovered token on ProceduralPattern.
+			</description>
+		</method>
+		<method name="find_token_index">
+			<return type="Variant" />
+			<param index="0" name="token" type="Variant" />
+			<description>
+				Executes find token index on ProceduralPattern.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="generation_rules" type="Array" setter="set_generation_rules" getter="get_generation_rules">
+			Configures generation rules for this ProceduralPattern.
+		</member>
+		<member name="discovered_tokens" type="PackedStringArray" setter="set_discovered_tokens" getter="get_discovered_tokens">
+			Configures discovered tokens for this ProceduralPattern.
+		</member>
+	</members>
+</class>

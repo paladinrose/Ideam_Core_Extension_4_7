@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralGeneratorInspectorBase" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Shared Inspector launcher and cascade diagnostics bar for Procedural Generation, WFC, and Quantum Darwinism.
+	</brief_description>
+	<description>
+		Displays CSS cascade specificity/token diagnostics and an 'Open in ProceduralComposer' launcher bar for procedural generators, patterns, rules, WFC rule tensors, and Quantum Darwinism stabilizers.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

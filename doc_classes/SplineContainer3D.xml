@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineContainer3D" inherits="Container3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`SplineContainer3D`: Organic / botanical / architectural path container that distributes and tapers children along a 3D polyline / spline curve (`curve_points_3d_`).
+	</brief_description>
+	<description>
+		`SplineContainer3D`: Organic / botanical / architectural path container that distributes and tapers children along a 3D polyline / spline curve (`curve_points_3d_`). Part of IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="curve_points_3d" type="PackedVector3Array" setter="set_curve_points_3d" getter="get_curve_points_3d">
+			Configures curve points 3d for this SplineContainer3D.
+		</member>
+		<member name="taper_scale_start" type="float" setter="set_taper_scale_start" getter="get_taper_scale_start">
+			Configures taper scale start for this SplineContainer3D.
+		</member>
+		<member name="taper_scale_end" type="float" setter="set_taper_scale_end" getter="get_taper_scale_end">
+			Configures taper scale end for this SplineContainer3D.
+		</member>
+	</members>
+</class>

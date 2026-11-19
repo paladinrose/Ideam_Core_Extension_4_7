@@ -1,6 +1,11 @@
 #include "ideam_quantum_darwinism_plugin.h"
+#include "../controls/ideam_tier1_control_registry.h"
 #include "../procedural_generation/ideam_procedural_generation_plugin.h"
+#include "../procedural_generation/ui/procedural_composer.h"
 #include "../../core/tasks/domains/quantum_darwinism/registration/quantum_darwinism_task_domain_pack.h"
+
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -86,9 +91,34 @@ void IdeamQuantumDarwinismPlugin::_enter_tree() {
 
     qd_inspector_.instantiate();
     add_inspector_plugin(qd_inspector_);
+
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
+
+    reg.register_control({
+        ws_id, "QuantumDarwinismStabilizerResource", "Quantum Darwinism", "QD Stabilizer", UPDATE_EXPLICIT_TRIGGER,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            using namespace godot;
+            (void)p_ctx;
+            if (p_asset.is_null()) return nullptr;
+
+            auto *vbox = memnew(VBoxContainer);
+            vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+            auto *hdr = memnew(Label);
+            hdr->set_text("Quantum Darwinism Stabilizer — Configure pointer-state thresholds, redundancy, and decoherence channels in the Inspector on the right.");
+            hdr->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+            vbox->add_child(hdr);
+            return vbox;
+        },
+        nullptr
+    });
 }
 
 void IdeamQuantumDarwinismPlugin::_exit_tree() {
+    IdeamTier1ControlRegistry::get_singleton().unregister_class(
+        godot::StringName(ProceduralComposer::WORKSPACE_ID),
+        "QuantumDarwinismStabilizerResource"
+    );
     if (qd_inspector_.is_valid()) {
         remove_inspector_plugin(qd_inspector_);
         qd_inspector_.unref();

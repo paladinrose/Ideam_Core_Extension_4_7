@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SememeResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Sememe Resource class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Sememe Resource (Resource subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_upos_tag">
+			<return type="Variant" />
+			<param index="0" name="upos" type="Variant" />
+			<description>
+				Executes set upos tag on SememeResource.
+			</description>
+		</method>
+		<method name="get_upos_tag">
+			<return type="Variant" />
+			<description>
+				Executes get upos tag on SememeResource.
+			</description>
+		</method>
+		<method name="get_mrl_binary_embedding_words">
+			<return type="Variant" />
+			<description>
+				Executes get mrl binary embedding words on SememeResource.
+			</description>
+		</method>
+		<method name="add_nuclear_seme_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes add nuclear seme tag on SememeResource.
+			</description>
+		</method>
+		<method name="remove_nuclear_seme_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes remove nuclear seme tag on SememeResource.
+			</description>
+		</method>
+		<method name="add_peripheral_seme_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes add peripheral seme tag on SememeResource.
+			</description>
+		</method>
+		<method name="remove_peripheral_seme_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes remove peripheral seme tag on SememeResource.
+			</description>
+		</method>
+		<method name="has_nuclear_seme">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has nuclear seme on SememeResource.
+			</description>
+		</method>
+		<method name="has_peripheral_seme">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has peripheral seme on SememeResource.
+			</description>
+		</method>
+		<method name="has_any_seme">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has any seme on SememeResource.
+			</description>
+		</method>
+		<method name="get_nuclear_bitmask_words">
+			<return type="Variant" />
+			<description>
+				Executes get nuclear bitmask words on SememeResource.
+			</description>
+		</method>
+		<method name="get_peripheral_bitmask_words">
+			<return type="Variant" />
+			<description>
+				Executes get peripheral bitmask words on SememeResource.
+			</description>
+		</method>
+		<method name="get_nuclear_popcount">
+			<return type="Variant" />
+			<description>
+				Executes get nuclear popcount on SememeResource.
+			</description>
+		</method>
+		<method name="get_peripheral_popcount">
+			<return type="Variant" />
+			<description>
+				Executes get peripheral popcount on SememeResource.
+			</description>
+		</method>
+		<method name="get_coherence_trait_mask32">
+			<return type="Variant" />
+			<description>
+				Executes get coherence trait mask32 on SememeResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on SememeResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on SememeResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this SememeResource.
+		</member>
+		<member name="unique_id" type="int" setter="set_unique_id" getter="get_unique_id">
+			Configures unique id for this SememeResource.
+		</member>
+		<member name="canonical_label" type="StringName" setter="set_canonical_label" getter="get_canonical_label">
+			Configures canonical label for this SememeResource.
+		</member>
+		<member name="wordnet_synset_id" type="String" setter="set_wordnet_synset_id" getter="get_wordnet_synset_id">
+			Configures wordnet synset id for this SememeResource.
+		</member>
+		<member name="sememic_form" type="int" setter="set_sememic_form" getter="get_sememic_form">
+			Configures sememic form for this SememeResource (Not Set:0,Unknown:1,Primary Denotation:2,Secondary Denotation:3,Analogous Connotation:4,Emotive Connotation:5,Evaluative Connotation:6).
+		</member>
+		<member name="lexical_category" type="int" setter="set_lexical_category" getter="get_lexical_category">
+			Configures lexical category for this SememeResource (X (Undefined):0,NOUN:1,VERB:2,ADJ:3,ADV:4,ADP:5,PRON:6,DET:7,CCONJ:8,PART:9,PROPN:10,NUM:11,AUX:12,SCONJ:13,INTJ:14,SYM:15,PUNCT:16).
+		</member>
+		<member name="primary_domain_id" type="int" setter="set_primary_domain_id" getter="get_primary_domain_id">
+			Configures primary domain id for this SememeResource (General:0,Spatial Topology:1,Temporal Era:2,Genre &amp; Tone:3,System Mechanic:4,Entity Ontology:5,Capability &amp; Action:6,Affect &amp; Social:7,UI &amp; Reflection:8).
+		</member>
+		<member name="emotive_valence" type="float" setter="set_emotive_valence" getter="get_emotive_valence">
+			Configures emotive valence for this SememeResource.
+		</member>
+		<member name="gloss_description" type="String" setter="set_gloss_description" getter="get_gloss_description">
+			Configures gloss description for this SememeResource.
+		</member>
+		<member name="nuclear_seme_tags" type="PackedStringArray" setter="set_nuclear_seme_tags" getter="get_nuclear_seme_tags">
+			Configures nuclear seme tags for this SememeResource.
+		</member>
+		<member name="peripheral_seme_tags" type="PackedStringArray" setter="set_peripheral_seme_tags" getter="get_peripheral_seme_tags">
+			Configures peripheral seme tags for this SememeResource.
+		</member>
+		<member name="antonym_seme_tags" type="PackedStringArray" setter="set_antonym_seme_tags" getter="get_antonym_seme_tags">
+			Configures antonym seme tags for this SememeResource.
+		</member>
+		<member name="hypernym_labels" type="PackedStringArray" setter="set_hypernym_labels" getter="get_hypernym_labels">
+			Configures hypernym labels for this SememeResource.
+		</member>
+		<member name="holonym_labels" type="PackedStringArray" setter="set_holonym_labels" getter="get_holonym_labels">
+			Configures holonym labels for this SememeResource.
+		</member>
+		<member name="mrl_float_embedding" type="PackedFloat32Array" setter="set_mrl_float_embedding" getter="get_mrl_float_embedding">
+			Configures mrl float embedding for this SememeResource.
+		</member>
+	</members>
+</class>

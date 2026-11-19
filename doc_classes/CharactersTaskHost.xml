@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharactersTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Characters Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Characters Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="step_characters_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes step characters pipeline on CharactersTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="domain_resource" type="DataOrientedCharacters" setter="set_domain_resource" getter="get_domain_resource">
+			Configures domain resource for this CharactersTaskHost.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this CharactersTaskHost.
+		</member>
+		<member name="auto_stage_on_ready" type="bool" setter="set_auto_stage_on_ready" getter="get_auto_stage_on_ready">
+			Configures auto stage on ready for this CharactersTaskHost.
+		</member>
+	</members>
+</class>

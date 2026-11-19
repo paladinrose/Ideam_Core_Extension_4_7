@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ParametricAssemblyNode3D" inherits="SemanticStructure3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Parametric Assembly Node3 D class in IdeamDesign.
+	</brief_description>
+	<description>
+		Parametric Assembly Node3 D (SemanticStructure3D subclass) belonging to IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_assembly_parameter">
+			<return type="Variant" />
+			<param index="0" name="name" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes set assembly parameter on ParametricAssemblyNode3D.
+			</description>
+		</method>
+		<method name="get_assembly_parameter">
+			<return type="Variant" />
+			<param index="0" name="name" type="Variant" />
+			<description>
+				Executes get assembly parameter on ParametricAssemblyNode3D.
+			</description>
+		</method>
+		<method name="rebuild_assembly">
+			<return type="Variant" />
+			<description>
+				Executes rebuild assembly on ParametricAssemblyNode3D.
+			</description>
+		</method>
+		<method name="get_solved_assembly_snapshot">
+			<return type="Variant" />
+			<description>
+				Executes get solved assembly snapshot on ParametricAssemblyNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="recipe" type="ParametricAssemblyRecipeResource" setter="set_recipe" getter="get_recipe">
+			Configures recipe for this ParametricAssemblyNode3D.
+		</member>
+		<member name="dream_morph_factor" type="float" setter="set_dream_morph_factor" getter="get_dream_morph_factor">
+			Configures dream morph factor for this ParametricAssemblyNode3D.
+		</member>
+		<member name="random_seed" type="int" setter="set_random_seed" getter="get_random_seed">
+			Configures random seed for this ParametricAssemblyNode3D.
+		</member>
+		<member name="auto_rebuild_children" type="bool" setter="set_auto_rebuild_children" getter="get_auto_rebuild_children">
+			Configures auto rebuild children for this ParametricAssemblyNode3D.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WhittakerOrdinationAndTrophicControl" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Whittaker Ordination And Trophic Control class in IdeamEcology.
+	</brief_description>
+	<description>
+		Whittaker Ordination And Trophic Control (Control subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_biosphere_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set biosphere resource on WhittakerOrdinationAndTrophicControl.
+			</description>
+		</method>
+		<method name="get_biosphere_resource">
+			<return type="Variant" />
+			<description>
+				Executes get biosphere resource on WhittakerOrdinationAndTrophicControl.
+			</description>
+		</method>
+		<method name="set_inspected_cell">
+			<return type="Variant" />
+			<param index="0" name="cell" type="Variant" />
+			<description>
+				Executes set inspected cell on WhittakerOrdinationAndTrophicControl.
+			</description>
+		</method>
+		<method name="get_inspected_cell">
+			<return type="Variant" />
+			<description>
+				Executes get inspected cell on WhittakerOrdinationAndTrophicControl.
+			</description>
+		</method>
+		<method name="refresh_quadrat_view">
+			<return type="Variant" />
+			<description>
+				Executes refresh quadrat view on WhittakerOrdinationAndTrophicControl.
+			</description>
+		</method>
+	</methods>
+</class>

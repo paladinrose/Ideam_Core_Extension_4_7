@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SemanticFrameResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SemanticFrameResource FrameNet / PropBank / VerbNet Predicate-Argument Frame Resource .
+	</brief_description>
+	<description>
+		SemanticFrameResource FrameNet / PropBank / VerbNet Predicate-Argument Frame Resource . Models an event or relation schema (`frame_name`, evoking verb/noun `lexical_units`, and selectional restrictions on `Agent`/`ARG0`, `Patient`/`ARG1`, and `Instrument`/`ARG2`). Part of IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this SemanticFrameResource.
+		</member>
+		<member name="frame_name" type="StringName" setter="set_frame_name" getter="get_frame_name">
+			Configures frame name for this SemanticFrameResource.
+		</member>
+		<member name="parent_frame_name" type="StringName" setter="set_parent_frame_name" getter="get_parent_frame_name">
+			Configures parent frame name for this SemanticFrameResource.
+		</member>
+		<member name="evoking_lexical_units" type="PackedStringArray" setter="set_evoking_lexical_units" getter="get_evoking_lexical_units">
+			Configures evoking lexical units for this SemanticFrameResource.
+		</member>
+		<member name="required_agent_seme_tags" type="PackedStringArray" setter="set_required_agent_seme_tags" getter="get_required_agent_seme_tags">
+			Configures required agent seme tags for this SemanticFrameResource.
+		</member>
+		<member name="required_patient_seme_tags" type="PackedStringArray" setter="set_required_patient_seme_tags" getter="get_required_patient_seme_tags">
+			Configures required patient seme tags for this SemanticFrameResource.
+		</member>
+		<member name="required_instrument_seme_tags" type="PackedStringArray" setter="set_required_instrument_seme_tags" getter="get_required_instrument_seme_tags">
+			Configures required instrument seme tags for this SemanticFrameResource.
+		</member>
+		<member name="consequent_state_seme_tags" type="PackedStringArray" setter="set_consequent_state_seme_tags" getter="get_consequent_state_seme_tags">
+			Configures consequent state seme tags for this SemanticFrameResource.
+		</member>
+		<member name="valence_polarity" type="float" setter="set_valence_polarity" getter="get_valence_polarity">
+			Configures valence polarity for this SemanticFrameResource.
+		</member>
+	</members>
+</class>

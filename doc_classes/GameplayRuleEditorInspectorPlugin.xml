@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayRuleEditorInspectorPlugin" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayRuleEditorInspectorPlugin — Phase 4 Editor Inspector plugin for GameplayRule.
+	</brief_description>
+	<description>
+		GameplayRuleEditorInspectorPlugin — Phase 4 Editor Inspector plugin for GameplayRule. Responsibilities: 1. Header Specificity &amp; Scope Badge Pill: Displays computed CSS-like specificity (e.g., [0, 1, 1] -&gt; 110), scope (:host, *, :host,*), cascade @layer, and a live "Matches N entities in current scene (Select)" button. 2. Smart Selector Autocomplete Pickers: - target_class: Dropdown of Game, GameEntity, GameBoard, GameAgent, GamePiece, GameAgentAction, GamePieceAction, GameInteraction, GameProperty. - target_title_or_group: Dropdown populated from active scene GameEntity titles, Godot Node groups, and competes_with_groups tags. - target_property: Dropdown populated from reflected ClassDB properties on target_class plus active scene GameProperty titles (including :max_value, :min_value, :locked). Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

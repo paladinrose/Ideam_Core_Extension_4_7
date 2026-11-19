@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SemanticStructure3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`SemanticStructure3D`: The 3D `Control` Functional Shell Node (`Surface -&gt; Wall/Floor/Seat -&gt; Chair`, `Aperture -&gt; Door/Window`, `Organic -&gt; Trunk/Branch`).
+	</brief_description>
+	<description>
+		`SemanticStructure3D`: The 3D `Control` Functional Shell Node (`Surface -&gt; Wall/Floor/Seat -&gt; Chair`, `Aperture -&gt; Door/Window`, `Organic -&gt; Trunk/Branch`). Holds a 3D Box-Model (`rest_obb_extents`, `margin_extents`, `size_flags`), `SemanticRoleID`, `SemanticTagSetResource`, and `Theme3DResource`, and smartly applies resolved styles and bounds to its Godot children. Part of IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="semantic_role_id" type="int" setter="set_semantic_role_id" getter="get_semantic_role_id">
+			Configures semantic role id for this SemanticStructure3D.
+		</member>
+		<member name="rest_obb_extents" type="Vector3" setter="set_rest_obb_extents" getter="get_rest_obb_extents">
+			Configures rest obb extents for this SemanticStructure3D.
+		</member>
+		<member name="margin_extents" type="Vector3" setter="set_margin_extents" getter="get_margin_extents">
+			Configures margin extents for this SemanticStructure3D.
+		</member>
+		<member name="stretch_ratio" type="float" setter="set_stretch_ratio" getter="get_stretch_ratio">
+			Configures stretch ratio for this SemanticStructure3D.
+		</member>
+		<member name="scale_mode" type="int" setter="set_scale_mode" getter="get_scale_mode">
+			Configures scale mode for this SemanticStructure3D (Uniform Fit,Stretch Middle,Repeat Tiles,Spline Loft Deform,Proportional Axis).
+		</member>
+		<member name="edge_snap_policy" type="int" setter="set_edge_snap_policy" getter="get_edge_snap_policy">
+			Configures edge snap policy for this SemanticStructure3D (None,Watertight,Miter Corner,Socket Anchor,Surface Normal Drape).
+		</member>
+		<member name="active_theme_3d" type="Theme3DResource" setter="set_active_theme_3d" getter="get_active_theme_3d">
+			Configures active theme 3d for this SemanticStructure3D.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this SemanticStructure3D.
+		</member>
+	</members>
+</class>

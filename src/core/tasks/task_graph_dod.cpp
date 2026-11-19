@@ -166,7 +166,9 @@ void TaskGraphDOD::execute_graph_dod(double p_delta) {
     for (uint32_t w = 0; w < wave_count; ++w) {
         WaveInfo wave = m_view[w];
         if (wave.count == 0) {
+            #ifdef IDEAM_VERBOSE_TASK_LOGS
             godot::UtilityFunctions::print(godot::vformat("[DOD Pipeline] Wave %d has 0 nodes. Terminating wave execution loop.", w));
+            #endif
             break; 
         }
 

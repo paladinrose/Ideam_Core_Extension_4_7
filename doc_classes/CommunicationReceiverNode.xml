@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationReceiverNode" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Communication Receiver Node class in IdeamCommunications.
+	</brief_description>
+	<description>
+		Communication Receiver Node (Node subclass) belonging to IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_last_received_packet">
+			<return type="Variant" />
+			<description>
+				Executes get last received packet on CommunicationReceiverNode.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="receiver_id" type="int" setter="set_receiver_id" getter="get_receiver_id">
+			Configures receiver id for this CommunicationReceiverNode.
+		</member>
+		<member name="mind_agent_id" type="int" setter="set_mind_agent_id" getter="get_mind_agent_id">
+			Configures mind agent id for this CommunicationReceiverNode.
+		</member>
+		<member name="expected_sememe_id" type="int" setter="set_expected_sememe_id" getter="get_expected_sememe_id">
+			Configures expected sememe id for this CommunicationReceiverNode.
+		</member>
+		<member name="listen_skill" type="float" setter="set_listen_skill" getter="get_listen_skill">
+			Configures listen skill for this CommunicationReceiverNode.
+		</member>
+		<member name="perception_bonus_db" type="float" setter="set_perception_bonus_db" getter="get_perception_bonus_db">
+			Configures perception bonus db for this CommunicationReceiverNode.
+		</member>
+		<member name="world_position" type="Vector3" setter="set_world_position" getter="get_world_position">
+			Configures world position for this CommunicationReceiverNode.
+		</member>
+		<member name="auto_speak_tts" type="bool" setter="set_auto_speak_tts" getter="get_auto_speak_tts">
+			Configures auto speak tts for this CommunicationReceiverNode.
+		</member>
+		<member name="language_asset" type="LanguageAssetResource" setter="set_language_asset" getter="get_language_asset">
+			Configures language asset for this CommunicationReceiverNode.
+		</member>
+		<member name="listener_mind" type="AgentMindResource" setter="set_listener_mind" getter="get_listener_mind">
+			Configures listener mind for this CommunicationReceiverNode.
+		</member>
+		<member name="akashic_tome" type="InformationMatrixResource" setter="set_akashic_tome" getter="get_akashic_tome">
+			Configures akashic tome for this CommunicationReceiverNode.
+		</member>
+		<member name="speech_box_2d_path" type="NodePath" setter="set_speech_box_2d_path" getter="get_speech_box_2d_path">
+			Configures speech box 2d path for this CommunicationReceiverNode.
+		</member>
+		<member name="speech_bubble_3d_path" type="NodePath" setter="set_speech_bubble_3d_path" getter="get_speech_bubble_3d_path">
+			Configures speech bubble 3d path for this CommunicationReceiverNode.
+		</member>
+	</members>
+	<signals>
+		<signal name="signal_received">
+			<param index="0" name="packet_summary" type="Dictionary" />
+			<description>
+				Emitted when signal received occurs on this CommunicationReceiverNode.
+			</description>
+		</signal>
+		<signal name="utterance_decoded">
+			<param index="0" name="decoded_text" type="String" />
+			<param index="1" name="effective_snr_db" type="float" />
+			<param index="2" name="honest_misreference" type="bool" />
+			<description>
+				Emitted when utterance decoded occurs on this CommunicationReceiverNode.
+			</description>
+		</signal>
+		<signal name="honest_misreference_recorded">
+			<param index="0" name="source_fact_id" type="int" />
+			<param index="1" name="decoded_fact_id" type="int" />
+			<description>
+				Emitted when honest misreference recorded occurs on this CommunicationReceiverNode.
+			</description>
+		</signal>
+	</signals>
+</class>

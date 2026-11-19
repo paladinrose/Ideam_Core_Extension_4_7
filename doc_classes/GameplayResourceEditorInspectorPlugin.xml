@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayResourceEditorInspectorPlugin" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayResourceEditorInspectorPlugin — Phase 4 Editor Inspector plugin for GameplayResource subclasses (GameplayControlMap, GameplayDifficulty, GameplayPerspective,...
+	</brief_description>
+	<description>
+		GameplayResourceEditorInspectorPlugin — Phase 4 Editor Inspector plugin for GameplayResource subclasses (GameplayControlMap, GameplayDifficulty, GameplayPerspective, GameplayAccessibilityOption, GameplayAudioOption, GameplayGraphicsOption, GameplayStyle, GameplayMode). Responsibilities: 1. Embedded Live Preview Header: - GameplayControlMap -&gt; embeds ControlStickDeadzoneVisualizer - GameplayDifficulty -&gt; embeds DifficultyProfileRadar - GameplayPerspective -&gt; embeds PerspectiveFrustumVisualizer - GameplayAccessibilityOption -&gt; embeds AccessibilityLivePreviewCard 2. Collapsible "Synthesized Cascade Rules (collect_rules())" Preview Box: Shows all auto-synthesized and custom GameplayRule declarations emitted by collect_rules() with a [Refresh] button and per-rule [Inspect] buttons. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

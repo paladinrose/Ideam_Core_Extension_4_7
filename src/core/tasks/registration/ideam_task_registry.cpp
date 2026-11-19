@@ -414,7 +414,9 @@ void IdeamTaskRegistry::bake_manifest() {
         if (err == godot::OK) {
             baked_count++;
             log_with_registry("SUCCESS [" + godot::String(pack.domain_name) + "]: Manifest baked (v" + godot::itos(pack.expected_manifest_version) + ").");
+            #ifdef IDEAM_VERBOSE_TASK_LOGS
             godot::UtilityFunctions::print("IdeamTasks: Manifest baked for domain '", pack.domain_name, "' -> ", pack.manifest_path);
+            #endif
         } else {
             all_saved_ok = false;
             log_with_registry("ERROR [" + godot::String(pack.domain_name) + "]: Failed to save manifest. Error code: " + godot::itos(err));

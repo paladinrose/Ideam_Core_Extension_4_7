@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineTweenTrack" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineTweenTrack (`GeometryResource`) Single spline-driven tween track (BlendShape, Property Lerp, Shader Uniform, 3D Offset, or Color Gradient).
+	</brief_description>
+	<description>
+		SplineTweenTrack (`GeometryResource`) Single spline-driven tween track (BlendShape, Property Lerp, Shader Uniform, 3D Offset, or Color Gradient). Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="track_name" type="String" setter="set_track_name" getter="get_track_name">
+			Configures track name for this SplineTweenTrack.
+		</member>
+		<member name="enabled" type="bool" setter="set_enabled" getter="is_enabled">
+			Configures enabled for this SplineTweenTrack.
+		</member>
+		<member name="track_mode" type="int" setter="set_track_mode" getter="get_track_mode">
+			Configures track mode for this SplineTweenTrack (BlendShape Weight:0,Property Lerp:1,Shader Uniform:2,Spline3D Vector Offset:3,Spline4D Color Gradient:4).
+		</member>
+		<member name="target_subpath" type="NodePath" setter="set_target_subpath" getter="get_target_subpath">
+			Configures target subpath for this SplineTweenTrack.
+		</member>
+		<member name="target_key" type="StringName" setter="set_target_key" getter="get_target_key">
+			Configures target key for this SplineTweenTrack.
+		</member>
+		<member name="weight_scale" type="float" setter="set_weight_scale" getter="get_weight_scale">
+			Configures weight scale for this SplineTweenTrack.
+		</member>
+		<member name="weight_bias" type="float" setter="set_weight_bias" getter="get_weight_bias">
+			Configures weight bias for this SplineTweenTrack.
+		</member>
+		<member name="from_value" type="Variant" setter="set_from_value" getter="get_from_value">
+			Configures from value for this SplineTweenTrack.
+		</member>
+		<member name="to_value" type="Variant" setter="set_to_value" getter="get_to_value">
+			Configures to value for this SplineTweenTrack.
+		</member>
+		<member name="curve_1d" type="Spline1DResource" setter="set_curve_1d" getter="get_curve_1d">
+			Configures curve 1d for this SplineTweenTrack.
+		</member>
+		<member name="offset_spline_3d" type="Spline3DResource" setter="set_offset_spline_3d" getter="get_offset_spline_3d">
+			Configures offset spline 3d for this SplineTweenTrack.
+		</member>
+		<member name="color_spline_4d" type="Spline4DResource" setter="set_color_spline_4d" getter="get_color_spline_4d">
+			Configures color spline 4d for this SplineTweenTrack.
+		</member>
+	</members>
+	<constants>
+		<constant name="TWEEN_TRACK_BLEND_SHAPE" value="0">
+			Tween track blend shape constant.
+		</constant>
+		<constant name="TWEEN_TRACK_PROPERTY_LERP" value="0">
+			Tween track property lerp constant.
+		</constant>
+		<constant name="TWEEN_TRACK_SHADER_PARAMETER" value="0">
+			Tween track shader parameter constant.
+		</constant>
+		<constant name="TWEEN_TRACK_VECTOR3_OFFSET" value="0">
+			Tween track vector3 offset constant.
+		</constant>
+		<constant name="TWEEN_TRACK_COLOR_GRADIENT" value="0">
+			Tween track color gradient constant.
+		</constant>
+	</constants>
+</class>

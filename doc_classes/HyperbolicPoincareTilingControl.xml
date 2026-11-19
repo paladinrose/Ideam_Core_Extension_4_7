@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HyperbolicPoincareTilingControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Complete composite inspector &amp; runtime editor control for `HyperbolicPoincareTilingResource`.
+	</brief_description>
+	<description>
+		Complete composite inspector &amp; runtime editor control for `HyperbolicPoincareTilingResource`. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_tiling_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set tiling resource on HyperbolicPoincareTilingControl.
+			</description>
+		</method>
+		<method name="get_tiling_resource">
+			<return type="Variant" />
+			<description>
+				Executes get tiling resource on HyperbolicPoincareTilingControl.
+			</description>
+		</method>
+		<method name="set_undo_redo">
+			<return type="Variant" />
+			<param index="0" name="undo_redo" type="Variant" />
+			<description>
+				Executes set undo redo on HyperbolicPoincareTilingControl.
+			</description>
+		</method>
+		<method name="get_undo_redo">
+			<return type="Variant" />
+			<description>
+				Executes get undo redo on HyperbolicPoincareTilingControl.
+			</description>
+		</method>
+		<method name="get_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get canvas on HyperbolicPoincareTilingControl.
+			</description>
+		</method>
+	</methods>
+</class>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayRule" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayRule represents a single CSS-like cascading rule (Selector + Declaration) targeting the Uniform "DOM" Hierarchy (Game, GameBoard, GamePlayer, GameEntity,...
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayRule represents a single CSS-like cascading rule (Selector + Declaration) targeting the Uniform "DOM" Hierarchy (Game, GameBoard, GamePlayer, GameEntity, GameAgent, GamePiece, GameAgentAction, GamePieceAction, GameInteraction, and GameProperty) as well as duck-typed reflection targets (PartSignature) and runtime pseudo-states (:state / Gameplay_Condition). It supports all 4 Rule Payloads from the Cascading Rules Architecture: 1. GameProperty Modifiers (value, max_value, min_value, flags, and STATIC/TIMED/DIMINISHING/RESOURCE modifiers). 2. Direct Property Overrides with authoritative Base Value caching, SET/ADD/MULTIPLY/CLAMP, and clean restoration. 3. Action &amp; Interaction Laws (GameAgentAction::priority, competes_with_groups tag injection/removal, and GameInteraction instigator vs. competition score weighting). 4. Reactive Signal/Method &amp; Node Retarget Hooks via SignalConnector and NodeRetargeter. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

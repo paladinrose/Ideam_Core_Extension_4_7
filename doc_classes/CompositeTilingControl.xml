@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CompositeTilingControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Composite Tiling Control class in IdeamTiles.
+	</brief_description>
+	<description>
+		Composite Tiling Control (VBoxContainer subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_region_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get region canvas on CompositeTilingControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on CompositeTilingControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="composite_tiling" type="CompositeTilingResource" setter="set_composite_tiling" getter="get_composite_tiling">
+			Configures composite tiling for this CompositeTilingControl.
+		</member>
+	</members>
+</class>

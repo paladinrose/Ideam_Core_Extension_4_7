@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralPatterner" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Procedural Patterner class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Procedural Patterner (RefCounted subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="analysis_style" type="AnalysisStyle" setter="set_analysis_style" getter="get_analysis_style">
+			Configures analysis style for this ProceduralPatterner.
+		</member>
+	</members>
+</class>

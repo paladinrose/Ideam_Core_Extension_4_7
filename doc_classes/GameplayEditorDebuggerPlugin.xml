@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayEditorDebuggerPlugin" inherits="EditorDebuggerPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayEditorDebuggerPlugin — Phase 4 Live Editor Debugger &amp; Hardware/VR Simulator.
+	</brief_description>
+	<description>
+		GameplayEditorDebuggerPlugin — Phase 4 Live Editor Debugger &amp; Hardware/VR Simulator. Responsibilities: 1. Live Cascade Hot-Reload: Broadcasts `ideam_games:apply_style` and `ideam_games:apply_rule` packets to active EditorDebuggerSession instances and applies directly to edited scene nodes so tuning sliders or rules in the Inspector updates running/edited games in real time. 2. Hardware &amp; VR Input Injector: Interactive test bench for sending synthetic Arduino/USB serial lines (`feed_custom_serial_line("AX:1023,AY:512,BTN1:1")`), 8/16-bit HID byte packets (`feed_custom_hid_bytes()`), and simulated VR 6DoF controller poses/velocities (`feed_vr_controller_state()`) without requiring physical hardware attached. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

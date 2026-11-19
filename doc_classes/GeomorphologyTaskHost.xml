@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeomorphologyTaskHost" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geomorphology Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Geomorphology Task Host (Node subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_dod_geomorphology">
+			<return type="Variant" />
+			<description>
+				Executes get dod geomorphology on GeomorphologyTaskHost.
+			</description>
+		</method>
+		<method name="step_once">
+			<return type="Variant" />
+			<description>
+				Executes step once on GeomorphologyTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="terrain_resource" type="GeomorphologyTerrainResource" setter="set_terrain_resource" getter="get_terrain_resource">
+			Configures terrain resource for this GeomorphologyTaskHost.
+		</member>
+		<member name="auto_step_in_process" type="bool" setter="set_auto_step_in_process" getter="get_auto_step_in_process">
+			Configures auto step in process for this GeomorphologyTaskHost.
+		</member>
+		<member name="geological_dt_per_step_myr" type="float" setter="set_geological_dt_per_step_myr" getter="get_geological_dt_per_step_myr">
+			Configures geological dt per step myr for this GeomorphologyTaskHost.
+		</member>
+		<member name="hydrological_dt_per_step_sec" type="float" setter="set_hydrological_dt_per_step_sec" getter="get_hydrological_dt_per_step_sec">
+			Configures hydrological dt per step sec for this GeomorphologyTaskHost.
+		</member>
+		<member name="precipitation_rate" type="float" setter="set_precipitation_rate" getter="get_precipitation_rate">
+			Configures precipitation rate for this GeomorphologyTaskHost.
+		</member>
+	</members>
+</class>

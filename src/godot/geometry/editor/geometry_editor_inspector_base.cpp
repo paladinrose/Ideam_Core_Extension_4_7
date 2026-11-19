@@ -6,6 +6,12 @@
 #include "../ui/polygon_2d_control.h"
 #include "../ui/voronoi_2d_canvas.h"
 #include "../ui/sdf_grid_2d_canvas.h"
+#include "../ui/tensor_field_2d_canvas.h"
+#include "../ui/geometry_composer.h"
+#include <godot_cpp/classes/button.hpp>
+#include <godot_cpp/classes/h_box_container.hpp>
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/variant/callable.hpp>
 #include "../../splines/ideam_splines_plugin.h"
 #include "../../tiles/ideam_tiles_plugin.h"
 
@@ -37,6 +43,25 @@ void GeometryEditorInspectorBase::_bind_methods() {
         "set_hide_managed_geometry_properties",
         "get_hide_managed_geometry_properties"
     );
+
+    ClassDB::bind_method(
+        D_METHOD("set_embed_full_control_in_inspector", "embed"),
+        &GeometryEditorInspectorBase::set_embed_full_control_in_inspector
+    );
+    ClassDB::bind_method(
+        D_METHOD("get_embed_full_control_in_inspector"),
+        &GeometryEditorInspectorBase::get_embed_full_control_in_inspector
+    );
+    ADD_PROPERTY(
+        PropertyInfo(Variant::BOOL, "embed_full_control_in_inspector"),
+        "set_embed_full_control_in_inspector",
+        "get_embed_full_control_in_inspector"
+    );
+
+    ClassDB::bind_method(
+        D_METHOD("_on_open_in_geometry_composer", "resource"),
+        &GeometryEditorInspectorBase::_on_open_in_geometry_composer
+    );
 }
 
 void GeometryEditorInspectorBase::set_editor_root(godot::Control *p_root) {
@@ -45,6 +70,16 @@ void GeometryEditorInspectorBase::set_editor_root(godot::Control *p_root) {
 
 void GeometryEditorInspectorBase::set_hide_managed_geometry_properties(bool p_hide) {
     hide_managed_geometry_properties = p_hide;
+}
+
+void GeometryEditorInspectorBase::set_embed_full_control_in_inspector(bool p_embed) {
+    embed_full_control_in_inspector = p_embed;
+}
+
+void GeometryEditorInspectorBase::_on_open_in_geometry_composer(const godot::Ref<godot::Resource> &p_resource) {
+    if (p_resource.is_valid()) {
+        GeometryComposer::open_geometry_resource(p_resource);
+    }
 }
 
 #ifdef TOOLS_ENABLED
@@ -69,9 +104,32 @@ void GeometryEditorInspectorBase::_parse_begin(godot::Object *p_object) {
     // 1. Inject IdeamUndoRedo into `p_object->get("undo_redo")` first.
     IdeamEditorInspectorPlugin::_parse_begin(p_object);
 
-    // 2. Instantiate and mount the subclass-specific custom Inspector UI control.
-    if (godot::Control *custom_ctrl = _create_inspector_control(p_object)) {
-        add_custom_control(custom_ctrl);
+    // 2. Thin Inspector Launcher Bar -> Opens the resource in Tier 2 `GeometryComposer`.
+    godot::Resource *res = godot::Object::cast_to<godot::Resource>(p_object);
+    if (res) {
+        godot::Ref<godot::Resource> res_ref(res);
+        godot::HBoxContainer *bar = memnew(godot::HBoxContainer);
+        bar->set_h_size_flags(godot::Control::SIZE_EXPAND_FILL);
+
+        godot::Label *lbl = memnew(godot::Label);
+        lbl->set_text(res->get_class());
+        lbl->set_h_size_flags(godot::Control::SIZE_EXPAND_FILL);
+        bar->add_child(lbl);
+
+        godot::Button *open_btn = memnew(godot::Button);
+        open_btn->set_text("Open in GeometryComposer");
+        open_btn->set_tooltip_text("Edit this resource in the full Tier 2 GeometryComposer workspace.");
+        open_btn->connect("pressed", godot::Callable(this, "_on_open_in_geometry_composer").bind(res_ref));
+        bar->add_child(open_btn);
+
+        add_custom_control(bar);
+    }
+
+    // 3. Only mount the full Tier 1 control inline if explicitly enabled (or for non-Resource Nodes).
+    if (embed_full_control_in_inspector || res == nullptr) {
+        if (godot::Control *custom_ctrl = _create_inspector_control(p_object)) {
+            add_custom_control(custom_ctrl);
+        }
     }
 }
 
@@ -169,6 +227,34 @@ bool SDFGrid2DResourceInspector::_is_managed_property(
 ) const {
     (void)p_object;
     return p_name == "grid_values" || p_name == "resolution" || p_name == "iso_value";
+}
+
+
+// ============================================================================
+// TensorField2DResourceInspector Implementation
+// ============================================================================
+
+bool TensorField2DResourceInspector::_can_handle(godot::Object *p_object) {
+    return p_object != nullptr && godot::Object::cast_to<TensorField2DResource>(p_object) != nullptr;
+}
+
+godot::Control *TensorField2DResourceInspector::_create_inspector_control(godot::Object *p_object) {
+    TensorField2DResource *tf = godot::Object::cast_to<TensorField2DResource>(p_object);
+    if (!tf) return nullptr;
+
+    TensorField2DControl *ctrl = memnew(TensorField2DControl);
+    ctrl->set_custom_minimum_size(godot::Vector2(0.0f, 220.0f));
+    ctrl->set_geometry_resource(godot::Ref<TensorField2DResource>(tf));
+    return ctrl;
+}
+
+bool TensorField2DResourceInspector::_is_managed_property(
+    godot::Object *p_object,
+    const godot::String &p_name
+) const {
+    (void)p_object;
+    (void)p_name;
+    return false;
 }
 
 } // namespace ideam::godot_ext

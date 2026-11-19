@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_element_stride">
+			<return type="Variant" />
+			<description>
+				Executes get element stride on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="get_tile_count">
+			<return type="Variant" />
+			<description>
+				Executes get tile count on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="get_page_count">
+			<return type="Variant" />
+			<description>
+				Executes get page count on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="add_column">
+			<return type="Variant" />
+			<param index="0" name="name" type="Variant" />
+			<param index="1" name="data_type" type="Variant" />
+			<param index="2" name="custom_size" type="Variant" />
+			<description>
+				Executes add column on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="remove_column">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove column on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="clear_columns">
+			<return type="Variant" />
+			<description>
+				Executes clear columns on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="calculate_raw_data_bytes">
+			<return type="Variant" />
+			<description>
+				Executes calculate raw data bytes on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="calculate_unpadded_data_bytes">
+			<return type="Variant" />
+			<description>
+				Executes calculate unpadded data bytes on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="calculate_padding_bytes">
+			<return type="Variant" />
+			<description>
+				Executes calculate padding bytes on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="calculate_shadow_bytes">
+			<return type="Variant" />
+			<description>
+				Executes calculate shadow bytes on MemoryBufferResource.
+			</description>
+		</method>
+		<method name="calculate_projected_footprint_bytes">
+			<return type="Variant" />
+			<description>
+				Executes calculate projected footprint bytes on MemoryBufferResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="buffer_name" type="StringName" setter="set_buffer_name" getter="get_buffer_name">
+			Configures buffer name for this MemoryBufferResource.
+		</member>
+		<member name="layout_type" type="int" setter="set_layout_type" getter="get_layout_type">
+			Configures layout type for this MemoryBufferResource (Flat:1,AOS:2,SOA:4,Sparse Set:8,Tiled SOA:16,Ring:32,Paged:64).
+		</member>
+		<member name="alignment_mode" type="int" setter="set_alignment_mode" getter="get_alignment_mode">
+			Configures alignment mode for this MemoryBufferResource (Tight:0,STD430:1,STD140:2).
+		</member>
+		<member name="alignment" type="int" setter="set_alignment" getter="get_alignment">
+			Configures alignment for this MemoryBufferResource.
+		</member>
+		<member name="max_elements" type="int" setter="set_max_elements" getter="get_max_elements">
+			Configures max elements for this MemoryBufferResource.
+		</member>
+		<member name="needs_gpu_compute" type="bool" setter="set_needs_gpu_compute" getter="get_needs_gpu_compute">
+			Configures needs gpu compute for this MemoryBufferResource.
+		</member>
+		<member name="elements_per_tile" type="int" setter="set_elements_per_tile" getter="get_elements_per_tile">
+			Configures elements per tile for this MemoryBufferResource.
+		</member>
+		<member name="page_size_bytes" type="int" setter="set_page_size_bytes" getter="get_page_size_bytes">
+			Configures page size bytes for this MemoryBufferResource.
+		</member>
+		<member name="sparse_universe_size" type="int" setter="set_sparse_universe_size" getter="get_sparse_universe_size">
+			Configures sparse universe size for this MemoryBufferResource.
+		</member>
+		<member name="enable_shadowing" type="bool" setter="set_enable_shadowing" getter="get_enable_shadowing">
+			Configures enable shadowing for this MemoryBufferResource.
+		</member>
+		<member name="selection_mode" type="int" setter="set_selection_mode" getter="get_selection_mode">
+			Configures selection mode for this MemoryBufferResource (Dense:0,Sparse:1).
+		</member>
+		<member name="columns" type="Array" setter="set_columns" getter="get_columns">
+			Configures columns for this MemoryBufferResource.
+		</member>
+	</members>
+	<constants>
+		<constant name="SELECTION_DENSE" value="0" enum="SelectionMode">
+			Selection dense constant.
+		</constant>
+		<constant name="SELECTION_SPARSE" value="1" enum="SelectionMode">
+			Selection sparse constant.
+		</constant>
+	</constants>
+</class>

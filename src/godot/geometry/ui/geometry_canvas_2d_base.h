@@ -24,6 +24,7 @@
  *     snapshot commits.
  */
 
+#include "../../controls/ideam_tool_context.h"
 #include "../geometry_resource.h"
 #include "../resources/polygon_2d_resource.h"
 
@@ -92,6 +93,8 @@ protected:
     bool show_grid          = true;
     bool show_origin_axes   = true;
     bool show_point_labels  = true;
+    bool y_down             = false;
+    IdeamUpdateCommitPolicy update_commit_policy = UPDATE_ON_COMMIT;
 
     GeometryCanvasAxisConstraint anchor_drag_constraint = GEOM_DRAG_AXIS_FREE_2D;
     GeometryCanvasPointStyle point_style                = GEOM_POINT_STYLE_CIRCLE;
@@ -121,6 +124,10 @@ protected:
     godot::Vector2 pan_start_view_max;
     godot::Dictionary drag_before_snapshot;
     bool drag_modified                     = false;
+    bool drag_preview_active               = false;
+    godot::Vector2 drag_preview_world_pos;
+    godot::Vector2 drag_preview_screen_pos;
+    godot::Rect2 drag_preview_plot;
     godot::String active_drag_action_name = "Edit Geometry Canvas";
 
     // --- Internal Helpers ---
@@ -300,6 +307,14 @@ public:
 
     void set_show_point_labels(bool p_show);
     [[nodiscard]] bool get_show_point_labels() const noexcept { return show_point_labels; }
+
+    void set_y_down(bool p_y_down);
+    [[nodiscard]] bool get_y_down() const noexcept { return y_down; }
+
+    void set_update_commit_policy(IdeamUpdateCommitPolicy p_policy);
+    [[nodiscard]] IdeamUpdateCommitPolicy get_update_commit_policy() const noexcept {
+        return update_commit_policy;
+    }
 
     // --- Selection ---
     void set_selected_point_index(int p_index);

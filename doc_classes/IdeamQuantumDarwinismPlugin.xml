@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamQuantumDarwinismPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Quantum Darwinism Plugin class in IdeamQuantumDarwinism.
+	</brief_description>
+	<description>
+		Ideam Quantum Darwinism Plugin (IdeamEditorPlugin subclass) belonging to IdeamQuantumDarwinism (pointer-state stabilization and observer redundancy).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

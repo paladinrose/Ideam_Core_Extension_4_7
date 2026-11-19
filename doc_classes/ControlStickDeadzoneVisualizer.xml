@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ControlStickDeadzoneVisualizer" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: ControlStickDeadzoneVisualizer renders a hardware-agnostic 2D telemetry and response-curve plot for `GameplayControlMap` using immediate-mode `CanvasItem` primitives...
+	</brief_description>
+	<description>
+		DOD NOTE: ControlStickDeadzoneVisualizer renders a hardware-agnostic 2D telemetry and response-curve plot for `GameplayControlMap` using immediate-mode `CanvasItem` primitives (`_notification(NOTIFICATION_DRAW)`), avoiding child `Control` node bloat. It visualizes: 1. Left Stick Gate: Outer unit circle, `left_stick_deadzone_outer` ring, shaded `left_stick_deadzone_inner` zone (radial circle or axial crossband), raw input deflection dot, and filtered output deflection vector. 2. Deadzone &amp; Response Curve Plot: Maps input magnitude [0..1] -&gt; output strength [0..1] across `DEADZONE_RADIAL_SCALED`, `DEADZONE_AXIAL_INDEPENDENT`, and `DEADZONE_CUBIC_PRECISION` combined with `gamepad_response_exponent`. 3. Right Stick Gate &amp; L2/R2 Analog Trigger Bars: Displays `right_stick_deadzone_inner`/`outer` and vertical trigger meters with `trigger_deadzone` threshold markers. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

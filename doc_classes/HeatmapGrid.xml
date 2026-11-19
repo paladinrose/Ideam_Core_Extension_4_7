@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HeatmapGrid" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Heatmap Grid class in IdeamControls.
+	</brief_description>
+	<description>
+		Heatmap Grid (Control subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_value">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes set value on HeatmapGrid.
+			</description>
+		</method>
+		<method name="get_value">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get value on HeatmapGrid.
+			</description>
+		</method>
+		<method name="clear_data">
+			<return type="Variant" />
+			<description>
+				Executes clear data on HeatmapGrid.
+			</description>
+		</method>
+		<method name="resize_data">
+			<return type="Variant" />
+			<param index="0" name="size" type="Variant" />
+			<description>
+				Executes resize data on HeatmapGrid.
+			</description>
+		</method>
+		<method name="set_hovered_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set hovered index on HeatmapGrid.
+			</description>
+		</method>
+		<method name="get_hovered_index">
+			<return type="Variant" />
+			<description>
+				Executes get hovered index on HeatmapGrid.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data" type="PackedByteArray" setter="set_data" getter="get_data">
+			Configures data for this HeatmapGrid.
+		</member>
+		<member name="color_gradient" type="Gradient" setter="set_gradient" getter="get_gradient">
+			Configures color gradient for this HeatmapGrid.
+		</member>
+		<member name="columns" type="int" setter="set_columns" getter="get_columns">
+			Configures columns for this HeatmapGrid.
+		</member>
+		<member name="square_cells" type="bool" setter="set_square_cells" getter="get_square_cells">
+			Configures square cells for this HeatmapGrid.
+		</member>
+		<member name="selected_index" type="int" setter="set_selected_index" getter="get_selected_index">
+			Configures selected index for this HeatmapGrid.
+		</member>
+	</members>
+	<signals>
+		<signal name="cell_hovered">
+			<param index="0" name="index" type="int" />
+			<description>
+				Emitted when cell hovered occurs on this HeatmapGrid.
+			</description>
+		</signal>
+		<signal name="cell_clicked">
+			<param index="0" name="index" type="int" />
+			<param index="1" name="button_index" type="int" />
+			<description>
+				Emitted when cell clicked occurs on this HeatmapGrid.
+			</description>
+		</signal>
+	</signals>
+</class>

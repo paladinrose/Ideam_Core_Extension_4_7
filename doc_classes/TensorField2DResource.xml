@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TensorField2DResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tensor Field2 DResource class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Tensor Field2 DResource (GeometryResource subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_basis_elements">
+			<return type="Variant" />
+			<description>
+				Executes clear basis elements on TensorField2DResource.
+			</description>
+		</method>
+		<method name="get_basis_element_count">
+			<return type="Variant" />
+			<description>
+				Executes get basis element count on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_gridline_basis">
+			<return type="Variant" />
+			<param index="0" name="origin" type="Variant" />
+			<param index="1" name="direction" type="Variant" />
+			<param index="2" name="weight" type="Variant" />
+			<param index="3" name="decay" type="Variant" />
+			<param index="4" name="radius" type="Variant" />
+			<description>
+				Executes add gridline basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_transform_basis">
+			<return type="Variant" />
+			<param index="0" name="transform" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<param index="2" name="decay" type="Variant" />
+			<param index="3" name="radius" type="Variant" />
+			<description>
+				Executes add transform basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_radial_basis">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<param index="2" name="decay" type="Variant" />
+			<param index="3" name="radius" type="Variant" />
+			<description>
+				Executes add radial basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_vortex_basis">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<param index="2" name="decay" type="Variant" />
+			<param index="3" name="radius" type="Variant" />
+			<description>
+				Executes add vortex basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_polyline_basis">
+			<return type="Variant" />
+			<param index="0" name="polyline" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<param index="2" name="decay" type="Variant" />
+			<param index="3" name="radius" type="Variant" />
+			<description>
+				Executes add polyline basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_sdf_gradient_basis">
+			<return type="Variant" />
+			<param index="0" name="weight" type="Variant" />
+			<param index="1" name="decay" type="Variant" />
+			<description>
+				Executes add sdf gradient basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_wedge_singularity_basis">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="orientation_rad" type="Variant" />
+			<param index="2" name="weight" type="Variant" />
+			<param index="3" name="decay" type="Variant" />
+			<description>
+				Executes add wedge singularity basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="add_trisector_singularity_basis">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="orientation_rad" type="Variant" />
+			<param index="2" name="weight" type="Variant" />
+			<param index="3" name="decay" type="Variant" />
+			<description>
+				Executes add trisector singularity basis on TensorField2DResource.
+			</description>
+		</method>
+		<method name="sample_tensor_vec4">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample tensor vec4 on TensorField2DResource.
+			</description>
+		</method>
+		<method name="sample_major_eigenvector">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample major eigenvector on TensorField2DResource.
+			</description>
+		</method>
+		<method name="sample_minor_eigenvector">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample minor eigenvector on TensorField2DResource.
+			</description>
+		</method>
+		<method name="sample_anisotropy">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample anisotropy on TensorField2DResource.
+			</description>
+		</method>
+		<method name="sample_eigen_transform">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample eigen transform on TensorField2DResource.
+			</description>
+		</method>
+		<method name="bake_field_and_streamlines">
+			<return type="Variant" />
+			<description>
+				Executes bake field and streamlines on TensorField2DResource.
+			</description>
+		</method>
+		<method name="get_singularities">
+			<return type="Variant" />
+			<description>
+				Executes get singularities on TensorField2DResource.
+			</description>
+		</method>
+		<method name="get_major_streamlines">
+			<return type="Variant" />
+			<description>
+				Executes get major streamlines on TensorField2DResource.
+			</description>
+		</method>
+		<method name="get_minor_streamlines">
+			<return type="Variant" />
+			<description>
+				Executes get minor streamlines on TensorField2DResource.
+			</description>
+		</method>
+		<method name="get_closed_parcel_polygons">
+			<return type="Variant" />
+			<description>
+				Executes get closed parcel polygons on TensorField2DResource.
+			</description>
+		</method>
+		<method name="bake_parcel_polygon_resources">
+			<return type="Variant" />
+			<description>
+				Executes bake parcel polygon resources on TensorField2DResource.
+			</description>
+		</method>
+		<method name="to_anisotropy_heatmap">
+			<return type="Variant" />
+			<description>
+				Executes to anisotropy heatmap on TensorField2DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="grid_width" type="int" setter="set_grid_width" getter="get_grid_width">
+			Configures grid width for this TensorField2DResource.
+		</member>
+		<member name="grid_height" type="int" setter="set_grid_height" getter="get_grid_height">
+			Configures grid height for this TensorField2DResource.
+		</member>
+		<member name="domain_bounds" type="Rect2" setter="set_domain_bounds" getter="get_domain_bounds">
+			Configures domain bounds for this TensorField2DResource.
+		</member>
+		<member name="blend_mode" type="int" setter="set_blend_mode" getter="get_blend_mode">
+			Configures blend mode for this TensorField2DResource (WeightedAverage,Additive).
+		</member>
+		<member name="step_size" type="float" setter="set_step_size" getter="get_step_size">
+			Configures step size for this TensorField2DResource.
+		</member>
+		<member name="min_streamline_separation" type="float" setter="set_min_streamline_separation" getter="get_min_streamline_separation">
+			Configures min streamline separation for this TensorField2DResource.
+		</member>
+		<member name="simplify_tolerance" type="float" setter="set_simplify_tolerance" getter="get_simplify_tolerance">
+			Configures simplify tolerance for this TensorField2DResource.
+		</member>
+		<member name="max_streamline_steps" type="int" setter="set_max_streamline_steps" getter="get_max_streamline_steps">
+			Configures max streamline steps for this TensorField2DResource.
+		</member>
+		<member name="trace_minor_streamlines" type="bool" setter="set_trace_minor_streamlines" getter="get_trace_minor_streamlines">
+			Configures trace minor streamlines for this TensorField2DResource.
+		</member>
+		<member name="extract_closed_parcels" type="bool" setter="set_extract_closed_parcels" getter="get_extract_closed_parcels">
+			Configures extract closed parcels for this TensorField2DResource.
+		</member>
+		<member name="sdf_source" type="SDFGrid2DResource" setter="set_sdf_source" getter="get_sdf_source">
+			Configures sdf source for this TensorField2DResource.
+		</member>
+	</members>
+	<constants>
+		<constant name="BASIS_GRIDLINE" value="0">
+			Basis gridline constant.
+		</constant>
+		<constant name="BASIS_RADIAL" value="0">
+			Basis radial constant.
+		</constant>
+		<constant name="BASIS_VORTEX" value="0">
+			Basis vortex constant.
+		</constant>
+		<constant name="BASIS_POLYLINE" value="0">
+			Basis polyline constant.
+		</constant>
+		<constant name="BASIS_SDF_GRADIENT" value="0">
+			Basis sdf gradient constant.
+		</constant>
+		<constant name="BASIS_WEDGE_SINGULARITY" value="0">
+			Basis wedge singularity constant.
+		</constant>
+		<constant name="BASIS_TRISECTOR" value="0">
+			Basis trisector constant.
+		</constant>
+		<constant name="BLEND_WEIGHTED_AVERAGE" value="0">
+			Blend weighted average constant.
+		</constant>
+		<constant name="BLEND_ADDITIVE" value="0">
+			Blend additive constant.
+		</constant>
+	</constants>
+</class>

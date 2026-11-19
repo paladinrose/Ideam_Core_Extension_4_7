@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MetadataTaskResource" inherits="TaskResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Metadata Task Resource class in IdeamTasks.
+	</brief_description>
+	<description>
+		Metadata Task Resource (TaskResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

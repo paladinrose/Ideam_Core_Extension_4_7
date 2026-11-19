@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGeometryPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Geometry Plugin class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Ideam Geometry Plugin (IdeamEditorPlugin subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_plugin_domain_name">
+			<return type="Variant" />
+			<description>
+				Executes get plugin domain name on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="register_task_domain_pack">
+			<return type="Variant" />
+			<description>
+				Executes register task domain pack on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="is_splines_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is splines handshake available on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="is_tiles_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is tiles handshake available on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="is_tasks_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is tasks handshake available on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="is_cymatics_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is cymatics handshake available on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="undo_redo" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes undo redo on IdeamGeometryPlugin.
+			</description>
+		</method>
+		<method name="create_undo_redo_wrapper" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes create undo redo wrapper on IdeamGeometryPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

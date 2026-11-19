@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBlockButton" inherits="Button" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Block Button class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Block Button (Button subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="id" type="Variant" />
+			<description>
+				Executes set buffer id on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<description>
+				Executes get buffer id on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="set_selected">
+			<return type="Variant" />
+			<param index="0" name="selected" type="Variant" />
+			<description>
+				Executes set selected on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="get_selected">
+			<return type="Variant" />
+			<description>
+				Executes get selected on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="set_dimmed">
+			<return type="Variant" />
+			<param index="0" name="dimmed" type="Variant" />
+			<description>
+				Executes set dimmed on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="get_dimmed">
+			<return type="Variant" />
+			<description>
+				Executes get dimmed on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="set_cut">
+			<return type="Variant" />
+			<param index="0" name="cut" type="Variant" />
+			<description>
+				Executes set cut on MemoryBlockButton.
+			</description>
+		</method>
+		<method name="get_cut">
+			<return type="Variant" />
+			<description>
+				Executes get cut on MemoryBlockButton.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="copy_requested">
+			<description>
+				Emitted when copy requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="cut_requested">
+			<description>
+				Emitted when cut requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="paste_requested">
+			<description>
+				Emitted when paste requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="cancel_requested">
+			<description>
+				Emitted when cancel requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="select_all_requested">
+			<description>
+				Emitted when select all requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="invert_selection_requested">
+			<description>
+				Emitted when invert selection requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="drag_initiated">
+			<param index="0" name="buffer_id" type="int" />
+			<description>
+				Emitted when drag initiated occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="delete_requested">
+			<param index="0" name="bypass_confirm" type="bool" />
+			<description>
+				Emitted when delete requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="block_selected">
+			<param index="0" name="buffer_id" type="int" />
+			<param index="1" name="shift_pressed" type="bool" />
+			<param index="2" name="ctrl_pressed" type="bool" />
+			<description>
+				Emitted when block selected occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="block_context_menu_requested">
+			<param index="0" name="global_position" type="Vector2" />
+			<param index="1" name="buffer_id" type="int" />
+			<description>
+				Emitted when block context menu requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="block_navigated">
+			<param index="0" name="buffer_id" type="int" />
+			<param index="1" name="direction" type="int" />
+			<description>
+				Emitted when block navigated occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+		<signal name="tooltip_requested">
+			<param index="0" name="buffer_id" type="int" />
+			<param index="1" name="out_data" type="Dictionary" />
+			<description>
+				Emitted when tooltip requested occurs on this MemoryBlockButton.
+			</description>
+		</signal>
+	</signals>
+</class>

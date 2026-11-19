@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineEnvelopeSlider" inherits="Range" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Envelope Slider class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Envelope Slider (Range subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="editable" type="bool" setter="set_editable" getter="is_editable">
+			Configures editable for this SplineEnvelopeSlider.
+		</member>
+		<member name="track_spline_2d" type="Spline2DResource" setter="set_track_spline_2d" getter="get_track_spline_2d">
+			Configures track spline 2d for this SplineEnvelopeSlider.
+		</member>
+		<member name="response_envelope_1d" type="Spline1DResource" setter="set_response_envelope_1d" getter="get_response_envelope_1d">
+			Configures response envelope 1d for this SplineEnvelopeSlider.
+		</member>
+		<member name="track_gradient_4d" type="Spline4DResource" setter="set_track_gradient_4d" getter="get_track_gradient_4d">
+			Configures track gradient 4d for this SplineEnvelopeSlider.
+		</member>
+		<member name="track_percent" type="float" setter="set_track_percent" getter="get_track_percent">
+			Configures track percent for this SplineEnvelopeSlider.
+		</member>
+		<member name="track_thickness" type="float" setter="set_track_thickness" getter="get_track_thickness">
+			Configures track thickness for this SplineEnvelopeSlider.
+		</member>
+		<member name="thumb_radius" type="float" setter="set_thumb_radius" getter="get_thumb_radius">
+			Configures thumb radius for this SplineEnvelopeSlider.
+		</member>
+		<member name="show_value_label" type="bool" setter="set_show_value_label" getter="get_show_value_label">
+			Configures show value label for this SplineEnvelopeSlider.
+		</member>
+	</members>
+</class>

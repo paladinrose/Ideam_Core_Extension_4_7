@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ParametricCharacterNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Parametric Character Node3 D class in IdeamCharacters.
+	</brief_description>
+	<description>
+		Parametric Character Node3 D (Node3D subclass) belonging to IdeamCharacters (parametric anatomy, morph sliders, and apparel).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="rebuild_character_meshes">
+			<return type="Variant" />
+			<description>
+				Executes rebuild character meshes on ParametricCharacterNode3D.
+			</description>
+		</method>
+		<method name="get_character_telemetry_summary">
+			<return type="Variant" />
+			<description>
+				Executes get character telemetry summary on ParametricCharacterNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="blueprint" type="CharacterBlueprintResource" setter="set_blueprint" getter="get_blueprint">
+			Configures blueprint for this ParametricCharacterNode3D.
+		</member>
+		<member name="primary_apparel" type="CharacterApparelResource" setter="set_primary_apparel" getter="get_primary_apparel">
+			Configures primary apparel for this ParametricCharacterNode3D.
+		</member>
+		<member name="auto_rebuild_meshes" type="bool" setter="set_auto_rebuild_meshes" getter="get_auto_rebuild_meshes">
+			Configures auto rebuild meshes for this ParametricCharacterNode3D.
+		</member>
+	</members>
+</class>

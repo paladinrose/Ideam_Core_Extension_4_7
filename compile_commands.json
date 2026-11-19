@@ -8952,6 +8952,12 @@
         "output": "src\\godot\\characters\\editor\\characters_inspector.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\characters\\ui\\character_modeler.windows.template_debug.x86_64.obj /c src\\godot\\characters\\ui\\character_modeler.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\characters\\ui\\character_modeler.cpp",
+        "output": "src\\godot\\characters\\ui\\character_modeler.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\characters\\ui\\character_morph_slider_panel.windows.template_debug.x86_64.obj /c src\\godot\\characters\\ui\\character_morph_slider_panel.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\characters\\ui\\character_morph_slider_panel.cpp",
@@ -9028,6 +9034,24 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\controls\\heatmap_grid.cpp",
         "output": "src\\godot\\controls\\heatmap_grid.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\controls\\ideam_tier1_control_registry.windows.template_debug.x86_64.obj /c src\\godot\\controls\\ideam_tier1_control_registry.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\controls\\ideam_tier1_control_registry.cpp",
+        "output": "src\\godot\\controls\\ideam_tier1_control_registry.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\controls\\ideam_tool_context.windows.template_debug.x86_64.obj /c src\\godot\\controls\\ideam_tool_context.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\controls\\ideam_tool_context.cpp",
+        "output": "src\\godot\\controls\\ideam_tool_context.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\controls\\ideam_tool_workspace.windows.template_debug.x86_64.obj /c src\\godot\\controls\\ideam_tool_workspace.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\controls\\ideam_tool_workspace.cpp",
+        "output": "src\\godot\\controls\\ideam_tool_workspace.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\controls\\runtime_inspector.windows.template_debug.x86_64.obj /c src\\godot\\controls\\runtime_inspector.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -9112,6 +9136,18 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\design\\editor\\design_inspector.cpp",
         "output": "src\\godot\\design\\editor\\design_inspector.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\design\\ui\\blueprint_editor_control.windows.template_debug.x86_64.obj /c src\\godot\\design\\ui\\blueprint_editor_control.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\design\\ui\\blueprint_editor_control.cpp",
+        "output": "src\\godot\\design\\ui\\blueprint_editor_control.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\design\\ui\\design_composer.windows.template_debug.x86_64.obj /c src\\godot\\design\\ui\\design_composer.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\design\\ui\\design_composer.cpp",
+        "output": "src\\godot\\design\\ui\\design_composer.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\ecology\\ecology_biosphere_resource.windows.template_debug.x86_64.obj /c src\\godot\\ecology\\ecology_biosphere_resource.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -9498,6 +9534,12 @@
         "output": "src\\godot\\geometry\\ui\\geometry_canvas_2d_base.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\geometry\\ui\\geometry_composer.windows.template_debug.x86_64.obj /c src\\godot\\geometry\\ui\\geometry_composer.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\geometry\\ui\\geometry_composer.cpp",
+        "output": "src\\godot\\geometry\\ui\\geometry_composer.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\geometry\\ui\\geometry_csg_bridge_control.windows.template_debug.x86_64.obj /c src\\godot\\geometry\\ui\\geometry_csg_bridge_control.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\geometry\\ui\\geometry_csg_bridge_control.cpp",
@@ -9550,6 +9592,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\geomorphology\\ui\\geomorphology_map_layer_preview_canvas.cpp",
         "output": "src\\godot\\geomorphology\\ui\\geomorphology_map_layer_preview_canvas.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\geomorphology\\ui\\planetary_systems_modeler.windows.template_debug.x86_64.obj /c src\\godot\\geomorphology\\ui\\planetary_systems_modeler.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\geomorphology\\ui\\planetary_systems_modeler.cpp",
+        "output": "src\\godot\\geomorphology\\ui\\planetary_systems_modeler.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\geomorphology\\ui\\stratigraphic_column_inspector_control.windows.template_debug.x86_64.obj /c src\\godot\\geomorphology\\ui\\stratigraphic_column_inspector_control.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -10008,6 +10056,12 @@
         "output": "src\\godot\\procedural_generation\\editor\\procedural_generator_inspector_base.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\godot\\procedural_generation\\ui\\procedural_composer.windows.template_debug.x86_64.obj /c src\\godot\\procedural_generation\\ui\\procedural_composer.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\procedural_generation\\ui\\procedural_composer.cpp",
+        "output": "src\\godot\\procedural_generation\\ui\\procedural_composer.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\godot\\quantum_darwinism\\ideam_quantum_darwinism_plugin.windows.template_debug.x86_64.obj /c src\\godot\\quantum_darwinism\\ideam_quantum_darwinism_plugin.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\quantum_darwinism\\ideam_quantum_darwinism_plugin.cpp",
@@ -10048,6 +10102,12 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\splines\\editor\\spline_2d_resource_inspector.cpp",
         "output": "src\\godot\\splines\\editor\\spline_2d_resource_inspector.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\godot\\splines\\editor\\spline_2d_viewport_editor.windows.template_debug.x86_64.obj /c src\\godot\\splines\\editor\\spline_2d_viewport_editor.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\godot\\splines\\editor\\spline_2d_viewport_editor.cpp",
+        "output": "src\\godot\\splines\\editor\\spline_2d_viewport_editor.windows.template_debug.x86_64.obj"
     },
     {
         "command": "cl /Fosrc\\godot\\splines\\editor\\spline_3d_resource_inspector.windows.template_debug.x86_64.obj /c src\\godot\\splines\\editor\\spline_3d_resource_inspector.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
@@ -10660,5 +10720,11 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\wave_function_collapse\\wfc_rule_tensor_resource.cpp",
         "output": "src\\godot\\wave_function_collapse\\wfc_rule_tensor_resource.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data.gen.cpp",
+        "output": "src\\gen\\doc_data.gen.windows.template_debug.x86_64.obj"
     }
 ]

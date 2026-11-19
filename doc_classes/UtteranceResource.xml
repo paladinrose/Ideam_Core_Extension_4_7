@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="UtteranceResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Utterance Resource class in IdeamCommunications.
+	</brief_description>
+	<description>
+		Utterance Resource (Resource subclass) belonging to IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="speak">
+			<return type="Variant" />
+			<description>
+				Executes speak on UtteranceResource.
+			</description>
+		</method>
+		<method name="stop_speaking">
+			<return type="Variant" />
+			<description>
+				Executes stop speaking on UtteranceResource.
+			</description>
+		</method>
+		<method name="sample_prosody_at">
+			<return type="Variant" />
+			<param index="0" name="normalized_time" type="Variant" />
+			<description>
+				Executes sample prosody at on UtteranceResource.
+			</description>
+		</method>
+		<method name="parse_from_ssml">
+			<return type="Variant" />
+			<param index="0" name="ssml" type="Variant" />
+			<description>
+				Executes parse from ssml on UtteranceResource.
+			</description>
+		</method>
+		<method name="export_to_ssml">
+			<return type="Variant" />
+			<description>
+				Executes export to ssml on UtteranceResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on UtteranceResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on UtteranceResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="raw_text" type="String" setter="set_raw_text" getter="get_raw_text">
+			Configures raw text for this UtteranceResource.
+		</member>
+		<member name="prosody_spline" type="Spline2DResource" setter="set_prosody_spline" getter="get_prosody_spline">
+			Configures prosody spline for this UtteranceResource.
+		</member>
+		<member name="tcu_type" type="int" setter="set_tcu_type" getter="get_tcu_type">
+			Configures tcu type for this UtteranceResource (Undefined:0,Lexical:1,Phrasal:2,Clausal:3,Sentential:4).
+		</member>
+		<member name="resolution_type" type="int" setter="set_resolution_type" getter="get_resolution_type">
+			Configures resolution type for this UtteranceResource (Unresolved:0,Intonational:1,Grammatical:2,Pragmatical:3).
+		</member>
+		<member name="voice_name" type="String" setter="set_voice_name" getter="get_voice_name">
+			Configures voice name for this UtteranceResource.
+		</member>
+		<member name="gender" type="int" setter="set_gender" getter="get_gender">
+			Configures gender for this UtteranceResource (Unspecified:0,Female:1,Male:2,Neutral:3).
+		</member>
+		<member name="age" type="int" setter="set_age" getter="get_age">
+			Configures age for this UtteranceResource.
+		</member>
+		<member name="variant" type="int" setter="set_variant" getter="get_variant">
+			Configures variant for this UtteranceResource.
+		</member>
+		<member name="desired_languages" type="PackedStringArray" setter="set_desired_languages" getter="get_desired_languages">
+			Configures desired languages for this UtteranceResource.
+		</member>
+		<member name="volume" type="int" setter="set_volume" getter="get_volume">
+			Configures volume for this UtteranceResource.
+		</member>
+		<member name="pitch" type="float" setter="set_pitch" getter="get_pitch">
+			Configures pitch for this UtteranceResource.
+		</member>
+		<member name="rate" type="float" setter="set_rate" getter="get_rate">
+			Configures rate for this UtteranceResource.
+		</member>
+		<member name="utterance_id" type="int" setter="set_utterance_id" getter="get_utterance_id">
+			Configures utterance id for this UtteranceResource.
+		</member>
+		<member name="interrupt" type="bool" setter="set_interrupt" getter="get_interrupt">
+			Configures interrupt for this UtteranceResource.
+		</member>
+		<member name="source_fact_id" type="int" setter="set_source_fact_id" getter="get_source_fact_id">
+			Configures source fact id for this UtteranceResource.
+		</member>
+		<member name="expected_sememe_id" type="int" setter="set_expected_sememe_id" getter="get_expected_sememe_id">
+			Configures expected sememe id for this UtteranceResource.
+		</member>
+		<member name="active_lect_id" type="int" setter="set_active_lect_id" getter="get_active_lect_id">
+			Configures active lect id for this UtteranceResource.
+		</member>
+		<member name="phoneme_masks" type="PackedInt32Array" setter="set_phoneme_masks" getter="get_phoneme_masks">
+			Configures phoneme masks for this UtteranceResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this UtteranceResource.
+		</member>
+	</members>
+</class>

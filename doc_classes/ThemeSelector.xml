@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ThemeSelector" inherits="HBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Theme Selector class in IdeamControls.
+	</brief_description>
+	<description>
+		Theme Selector (HBoxContainer subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<signals>
+		<signal name="theme_applied">
+			<param index="0" name="theme" type="Object" />
+			<description>
+				Emitted when theme applied occurs on this ThemeSelector.
+			</description>
+		</signal>
+	</signals>
+</class>

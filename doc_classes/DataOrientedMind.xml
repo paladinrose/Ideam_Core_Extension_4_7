@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedMind" inherits="InformationMatrixResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Mind class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Mind (InformationMatrixResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_dod_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes setup dod pipeline on DataOrientedMind.
+			</description>
+		</method>
+		<method name="bake_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes bake to dod on DataOrientedMind.
+			</description>
+		</method>
+		<method name="rebuild_dod_task_graph">
+			<return type="Variant" />
+			<description>
+				Executes rebuild dod task graph on DataOrientedMind.
+			</description>
+		</method>
+		<method name="execute_dod_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute dod step on DataOrientedMind.
+			</description>
+		</method>
+		<method name="sync_oop_resources_from_dod">
+			<return type="Variant" />
+			<description>
+				Executes sync oop resources from dod on DataOrientedMind.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="semantic_name" type="Variant" />
+			<description>
+				Executes get buffer id on DataOrientedMind.
+			</description>
+		</method>
+		<method name="get_buffer_manifest_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes get buffer manifest dictionary on DataOrientedMind.
+			</description>
+		</method>
+		<method name="get_agent_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="mind" type="Variant" />
+			<description>
+				Executes get agent dod slot on DataOrientedMind.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="agent_minds" type="Array" setter="set_agent_minds" getter="get_agent_minds">
+			Configures agent minds for this DataOrientedMind.
+		</member>
+		<member name="dod_execution_mode" type="int" setter="set_dod_execution_mode" getter="get_dod_execution_mode">
+			Configures dod execution mode for this DataOrientedMind (Disabled:0,Composable Stages:1,Custom TaskGraphResource:2,Manual Graph:3).
+		</member>
+		<member name="pipeline_stage_mask" type="int" setter="set_pipeline_stage_mask" getter="get_pipeline_stage_mask">
+			Configures pipeline stage mask for this DataOrientedMind.
+		</member>
+		<member name="auto_connect_pipeline_stages" type="bool" setter="set_auto_connect_pipeline_stages" getter="get_auto_connect_pipeline_stages">
+			Configures auto connect pipeline stages for this DataOrientedMind.
+		</member>
+		<member name="auto_sync_resources_from_dod" type="bool" setter="set_auto_sync_resources_from_dod" getter="get_auto_sync_resources_from_dod">
+			Configures auto sync resources from dod for this DataOrientedMind.
+		</member>
+		<member name="custom_task_graph_resource" type="TaskGraphResource" setter="set_custom_task_graph_resource" getter="get_custom_task_graph_resource">
+			Configures custom task graph resource for this DataOrientedMind.
+		</member>
+		<member name="max_dod_akashic_tomes" type="int" setter="set_max_dod_akashic_tomes" getter="get_max_dod_akashic_tomes">
+			Configures max dod akashic tomes for this DataOrientedMind.
+		</member>
+		<member name="max_dod_facts" type="int" setter="set_max_dod_facts" getter="get_max_dod_facts">
+			Configures max dod facts for this DataOrientedMind.
+		</member>
+		<member name="max_dod_agents" type="int" setter="set_max_dod_agents" getter="get_max_dod_agents">
+			Configures max dod agents for this DataOrientedMind.
+		</member>
+		<member name="max_dod_beliefs" type="int" setter="set_max_dod_beliefs" getter="get_max_dod_beliefs">
+			Configures max dod beliefs for this DataOrientedMind.
+		</member>
+	</members>
+	<constants>
+		<constant name="MIND_DOD_EXEC_DISABLED" value="0">
+			Mind dod exec disabled constant.
+		</constant>
+		<constant name="MIND_DOD_EXEC_COMPOSABLE_STAGES" value="0">
+			Mind dod exec composable stages constant.
+		</constant>
+		<constant name="MIND_DOD_EXEC_CUSTOM_GRAPH_RESOURCE" value="0">
+			Mind dod exec custom graph resource constant.
+		</constant>
+		<constant name="MIND_DOD_EXEC_MANUAL_GRAPH" value="0">
+			Mind dod exec manual graph constant.
+		</constant>
+	</constants>
+</class>

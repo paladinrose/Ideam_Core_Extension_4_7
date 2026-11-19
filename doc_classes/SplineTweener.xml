@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineTweener" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineTweener (`godot::Node`) SceneTree node that plays, loops, or scrubs a `SplineTweenResource` against a target `Node` or `MeshInstance3D` (driving blend shapes, properties,...
+	</brief_description>
+	<description>
+		SplineTweener (`godot::Node`) SceneTree node that plays, loops, or scrubs a `SplineTweenResource` against a target `Node` or `MeshInstance3D` (driving blend shapes, properties, shader uniforms, and 3D offsets). Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="play">
+			<return type="Variant" />
+			<param index="0" name="from_start" type="Variant" />
+			<description>
+				Executes play on SplineTweener.
+			</description>
+		</method>
+		<method name="pause">
+			<return type="Variant" />
+			<description>
+				Executes pause on SplineTweener.
+			</description>
+		</method>
+		<method name="stop">
+			<return type="Variant" />
+			<param index="0" name="reset" type="Variant" />
+			<description>
+				Executes stop on SplineTweener.
+			</description>
+		</method>
+		<method name="step">
+			<return type="Variant" />
+			<param index="0" name="delta_seconds" type="Variant" />
+			<description>
+				Executes step on SplineTweener.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tween_resource" type="SplineTweenResource" setter="set_tween_resource" getter="get_tween_resource">
+			Configures tween resource for this SplineTweener.
+		</member>
+		<member name="target_root_path" type="NodePath" setter="set_target_root_path" getter="get_target_root_path">
+			Configures target root path for this SplineTweener.
+		</member>
+		<member name="process_mode_type" type="int" setter="set_process_mode_type" getter="get_process_mode_type">
+			Configures process mode type for this SplineTweener (Idle:0,Physics:1,Manual:2).
+		</member>
+		<member name="playing" type="bool" setter="set_playing" getter="is_playing">
+			Configures playing for this SplineTweener.
+		</member>
+		<member name="autoplay" type="bool" setter="set_autoplay" getter="get_autoplay">
+			Configures autoplay for this SplineTweener.
+		</member>
+		<member name="speed_scale" type="float" setter="set_speed_scale" getter="get_speed_scale">
+			Configures speed scale for this SplineTweener.
+		</member>
+		<member name="current_percent" type="float" setter="set_current_percent" getter="get_current_percent">
+			Configures current percent for this SplineTweener.
+		</member>
+	</members>
+	<signals>
+		<signal name="tween_stepped">
+			<param index="0" name="percent" type="float" />
+			<description>
+				Emitted when tween stepped occurs on this SplineTweener.
+			</description>
+		</signal>
+		<signal name="tween_finished">
+			<description>
+				Emitted when tween finished occurs on this SplineTweener.
+			</description>
+		</signal>
+	</signals>
+</class>

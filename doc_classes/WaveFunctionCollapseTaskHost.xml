@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WaveFunctionCollapseTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Wave Function Collapse Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Wave Function Collapse Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="step_wfc_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes step wfc pipeline on WaveFunctionCollapseTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="domain_resource" type="DataOrientedWaveFunctionCollapse" setter="set_domain_resource" getter="get_domain_resource">
+			Configures domain resource for this WaveFunctionCollapseTaskHost.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this WaveFunctionCollapseTaskHost.
+		</member>
+		<member name="auto_stage_on_ready" type="bool" setter="set_auto_stage_on_ready" getter="get_auto_stage_on_ready">
+			Configures auto stage on ready for this WaveFunctionCollapseTaskHost.
+		</member>
+	</members>
+</class>

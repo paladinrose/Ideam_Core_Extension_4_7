@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferLinkagePanel" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Linkage Panel class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Linkage Panel (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<param index="1" name="manager" type="Variant" />
+			<description>
+				Executes setup on MemoryBufferLinkagePanel.
+			</description>
+		</method>
+		<method name="refresh">
+			<return type="Variant" />
+			<description>
+				Executes refresh on MemoryBufferLinkagePanel.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="buffer_resource" type="MemoryBufferResource" setter="set_buffer_resource" getter="get_buffer_resource">
+			Configures buffer resource for this MemoryBufferLinkagePanel.
+		</member>
+		<member name="manager_resource" type="MemoryManagerResource" setter="set_manager_resource" getter="get_manager_resource">
+			Configures manager resource for this MemoryBufferLinkagePanel.
+		</member>
+		<member name="folded" type="bool" setter="set_folded" getter="is_folded">
+			Configures folded for this MemoryBufferLinkagePanel.
+		</member>
+	</members>
+</class>

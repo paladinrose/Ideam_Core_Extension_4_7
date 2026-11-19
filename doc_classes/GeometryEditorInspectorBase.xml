@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryEditorInspectorBase" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Shared EditorInspectorPlugin base class for Geometry, Spline, and Tile resources.
+	</brief_description>
+	<description>
+		Injects a compact 'Open in GeometryComposer' launcher bar into the Inspector so heavy 2D canvases stay in the Tier 2 workspace by default. Set [member embed_full_control_in_inspector] to [code]true[/code] if you explicitly want inline Inspector embedding.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="editor_root" type="Control" setter="set_editor_root" getter="get_editor_root">
+			Optional root control used when hosting inspector-launched windows.
+		</member>
+		<member name="hide_managed_geometry_properties" type="bool" setter="set_hide_managed_geometry_properties" getter="get_hide_managed_geometry_properties" default="false">
+			When [code]true[/code], hides raw vertex/site/grid arrays managed by custom geometry controls.
+		</member>
+		<member name="embed_full_control_in_inspector" type="bool" setter="set_embed_full_control_in_inspector" getter="get_embed_full_control_in_inspector" default="false">
+			When [code]false[/code] (default), shows only the thin GeometryComposer launcher bar in the Inspector instead of embedding a full 2D canvas inline.
+		</member>
+	</members>
+</class>

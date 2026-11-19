@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline1DEqualizerCanvas" inherits="SplineCanvasBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Graphic-equalizer style 1D visual curve and section-weight editor built on `SplineCanvasBase`.
+	</brief_description>
+	<description>
+		Graphic-equalizer style 1D visual curve and section-weight editor built on `SplineCanvasBase`. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_view_range_y">
+			<return type="Variant" />
+			<param index="0" name="min_y" type="Variant" />
+			<param index="1" name="max_y" type="Variant" />
+			<description>
+				Executes set view range y on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="get_view_min_y">
+			<return type="Variant" />
+			<description>
+				Executes get view min y on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="get_view_max_y">
+			<return type="Variant" />
+			<description>
+				Executes get view max y on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="set_show_threshold_solver">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show threshold solver on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="get_show_threshold_solver">
+			<return type="Variant" />
+			<description>
+				Executes get show threshold solver on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="set_threshold_value">
+			<return type="Variant" />
+			<param index="0" name="value" type="Variant" />
+			<description>
+				Executes set threshold value on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="get_threshold_value">
+			<return type="Variant" />
+			<description>
+				Executes get threshold value on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="set_redistribute_weights">
+			<return type="Variant" />
+			<param index="0" name="redistribute" type="Variant" />
+			<description>
+				Executes set redistribute weights on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+		<method name="get_redistribute_weights">
+			<return type="Variant" />
+			<description>
+				Executes get redistribute weights on Spline1DEqualizerCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline1DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this Spline1DEqualizerCanvas.
+		</member>
+	</members>
+	<signals>
+		<signal name="threshold_value_changed">
+			<param index="0" name="threshold_value" type="float" />
+			<description>
+				Emitted when threshold value changed occurs on this Spline1DEqualizerCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

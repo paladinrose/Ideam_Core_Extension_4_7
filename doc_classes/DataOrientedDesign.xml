@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedDesign" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Design class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Design (Resource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_dod_buffers">
+			<return type="Variant" />
+			<description>
+				Executes initialize dod buffers on DataOrientedDesign.
+			</description>
+		</method>
+		<method name="stage_active_sources_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes stage active sources to dod on DataOrientedDesign.
+			</description>
+		</method>
+		<method name="read_structure_nodes_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read structure nodes as dicts on DataOrientedDesign.
+			</description>
+		</method>
+		<method name="read_sockets_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read sockets as dicts on DataOrientedDesign.
+			</description>
+		</method>
+		<method name="read_aperture_cutouts_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read aperture cutouts as dicts on DataOrientedDesign.
+			</description>
+		</method>
+		<method name="read_node_status_masks">
+			<return type="Variant" />
+			<description>
+				Executes read node status masks on DataOrientedDesign.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager_resource" type="MemoryManagerResource" setter="set_memory_manager_resource" getter="get_memory_manager_resource">
+			Configures memory manager resource for this DataOrientedDesign.
+		</member>
+		<member name="task_graph_resource" type="TaskGraphResource" setter="set_task_graph_resource" getter="get_task_graph_resource">
+			Configures task graph resource for this DataOrientedDesign.
+		</member>
+		<member name="active_theme_3d" type="Theme3DResource" setter="set_active_theme_3d" getter="get_active_theme_3d">
+			Configures active theme 3d for this DataOrientedDesign.
+		</member>
+		<member name="active_recipe" type="ParametricAssemblyRecipeResource" setter="set_active_recipe" getter="get_active_recipe">
+			Configures active recipe for this DataOrientedDesign.
+		</member>
+		<member name="active_blueprint" type="BlueprintResource" setter="set_active_blueprint" getter="get_active_blueprint">
+			Configures active blueprint for this DataOrientedDesign.
+		</member>
+		<member name="max_structure_nodes" type="int" setter="set_max_structure_nodes" getter="get_max_structure_nodes">
+			Configures max structure nodes for this DataOrientedDesign.
+		</member>
+		<member name="dream_morph_factor" type="float" setter="set_dream_morph_factor" getter="get_dream_morph_factor">
+			Configures dream morph factor for this DataOrientedDesign.
+		</member>
+	</members>
+</class>

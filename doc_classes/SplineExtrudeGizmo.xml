@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineExtrudeGizmo" inherits="EditorNode3DGizmoPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineExtrudeGizmo (`godot::EditorNode3DGizmoPlugin`) 3D Viewport Gizmo for `SplineExtrudeMesh3D` rendering swept cross-section rings, anchor handles, and interactive profile...
+	</brief_description>
+	<description>
+		SplineExtrudeGizmo (`godot::EditorNode3DGizmoPlugin`) 3D Viewport Gizmo for `SplineExtrudeMesh3D` rendering swept cross-section rings, anchor handles, and interactive profile radius / twist grips. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="LithologyStratumResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Lithology Stratum Resource class in IdeamGeomorphology.
+	</brief_description>
+	<description>
+		Lithology Stratum Resource (Resource subclass) belonging to IdeamGeomorphology (tectonics, fluvial erosion, karst, and stratigraphy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="lithology_id" type="int" setter="set_lithology_id" getter="get_lithology_id">
+			Configures lithology id for this LithologyStratumResource.
+		</member>
+		<member name="genesis_class" type="int" setter="set_genesis_class" getter="get_genesis_class">
+			Configures genesis class for this LithologyStratumResource (IgneousPlutonic,IgneousVolcanic,SedimentaryClastic,SedimentaryCarbonate,MetamorphicFoliated,MetamorphicNonFoliated,UnconsolidatedRegolith,PedogenicSoil).
+		</member>
+		<member name="archetype_name" type="String" setter="set_archetype_name" getter="get_archetype_name">
+			Configures archetype name for this LithologyStratumResource.
+		</member>
+		<member name="density_kg_m3" type="float" setter="set_density_kg_m3" getter="get_density_kg_m3">
+			Configures density kg m3 for this LithologyStratumResource.
+		</member>
+		<member name="hardness_mohs" type="float" setter="set_hardness_mohs" getter="get_hardness_mohs">
+			Configures hardness mohs for this LithologyStratumResource.
+		</member>
+		<member name="fluvial_erodibility_k" type="float" setter="set_fluvial_erodibility_k" getter="get_fluvial_erodibility_k">
+			Configures fluvial erodibility k for this LithologyStratumResource.
+		</member>
+		<member name="talus_angle_of_repose_rad" type="float" setter="set_talus_angle_of_repose_rad" getter="get_talus_angle_of_repose_rad">
+			Configures talus angle of repose rad for this LithologyStratumResource.
+		</member>
+		<member name="thermal_weathering_rate" type="float" setter="set_thermal_weathering_rate" getter="get_thermal_weathering_rate">
+			Configures thermal weathering rate for this LithologyStratumResource.
+		</member>
+		<member name="porosity" type="float" setter="set_porosity" getter="get_porosity">
+			Configures porosity for this LithologyStratumResource.
+		</member>
+		<member name="hydraulic_conductivity" type="float" setter="set_hydraulic_conductivity" getter="get_hydraulic_conductivity">
+			Configures hydraulic conductivity for this LithologyStratumResource.
+		</member>
+		<member name="carbonate_solubility" type="float" setter="set_carbonate_solubility" getter="get_carbonate_solubility">
+			Configures carbonate solubility for this LithologyStratumResource.
+		</member>
+		<member name="compressive_strength_mpa" type="float" setter="set_compressive_strength_mpa" getter="get_compressive_strength_mpa">
+			Configures compressive strength mpa for this LithologyStratumResource.
+		</member>
+		<member name="sediment_grain_diameter_mm" type="float" setter="set_sediment_grain_diameter_mm" getter="get_sediment_grain_diameter_mm">
+			Configures sediment grain diameter mm for this LithologyStratumResource.
+		</member>
+		<member name="pedogenesis_humus_retention" type="float" setter="set_pedogenesis_humus_retention" getter="get_pedogenesis_humus_retention">
+			Configures pedogenesis humus retention for this LithologyStratumResource.
+		</member>
+	</members>
+</class>

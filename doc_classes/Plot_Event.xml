@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Plot_Event" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Plot Event class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Plot Event (Resource subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+	<constants>
+		<constant name="INCIDENT_REQ_HAS_NOT_HAPPENED" value="0">
+			Incident req has not happened constant.
+		</constant>
+		<constant name="INCIDENT_REQ_HAS_HAPPENED" value="0">
+			Incident req has happened constant.
+		</constant>
+		<constant name="INCIDENT_REQ_CANNOT_HAPPEN" value="0">
+			Incident req cannot happen constant.
+		</constant>
+		<constant name="INCIDENT_REQ_INSTANT_SUCCESS" value="0">
+			Incident req instant success constant.
+		</constant>
+		<constant name="INCIDENT_REQ_INSTANT_FAILURE" value="0">
+			Incident req instant failure constant.
+		</constant>
+	</constants>
+</class>

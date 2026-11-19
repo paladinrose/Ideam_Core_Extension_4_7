@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayResource serves as the foundational utility base for all gameplay configuration resources (GameplayStyle, GameplayRule, GameplayMode, GameplayPerspective,...
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayResource serves as the foundational utility base for all gameplay configuration resources (GameplayStyle, GameplayRule, GameplayMode, GameplayPerspective, GameplayDifficulty, GameplayControlMap, GameplayAccessibilityOption, and future Graphics/Audio/Network option resources). While inheriting from godot::Resource provides native Inspector authoring and .tres/.res serialization (AoS), GameplayResource bridges the gap toward our Data-Oriented Design (DOD) pipeline in three ways: 1. O(1) Interned Identity &amp; Tag Matching: Uses godot::StringName (`resource_id`, `category`, `option_tags`, `required_tags`, `excluded_tags`) so compatibility and intersection queries compare interned pointer/hash values instead of heap-allocated String characters. 2. Declarative Rule Synthesis (`collect_rules()`): Allows any option resource to emit `GameplayRule` instances that compile into `GameplayStyle` cascades targeting the `GameEntity` and `GameProperty` hierarchy. 3. Unified ConfigFile &amp; Dictionary I/O: Replaces ad-hoc GDScript settings boilerplate (like the TPS demo's `settings.gd` and `menu.gd`) with polymorphic `save_resource()` / `load_resource()` and `ConfigFile` serialization. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HyperbolicPoincareTilingResource" inherits="TilingResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Hyperbolic Poincare Tiling Resource class in IdeamTiles.
+	</brief_description>
+	<description>
+		Hyperbolic Poincare Tiling Resource (TilingResource subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_valid_hyperbolic_symbol">
+			<return type="Variant" />
+			<description>
+				Executes is valid hyperbolic symbol on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_central_polygon_euclidean_radius">
+			<return type="Variant" />
+			<description>
+				Executes get central polygon euclidean radius on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="rebuild">
+			<return type="Variant" />
+			<description>
+				Executes rebuild on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_schlafli_symbol">
+			<return type="Variant" />
+			<param index="0" name="p" type="Variant" />
+			<param index="1" name="q" type="Variant" />
+			<description>
+				Executes commit set schlafli symbol on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_generation_rings">
+			<return type="Variant" />
+			<param index="0" name="rings" type="Variant" />
+			<description>
+				Executes commit set generation rings on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_mobius_focus">
+			<return type="Variant" />
+			<param index="0" name="focus" type="Variant" />
+			<description>
+				Executes commit set mobius focus on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get cell count on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_count">
+			<return type="Variant" />
+			<description>
+				Executes get edge count on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_polygon">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell polygon on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_center">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell center on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_generation">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell generation on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_colour">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell colour on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_neighbors">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell neighbors on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+		<method name="contains_point">
+			<return type="Variant" />
+			<param index="0" name="disk_point" type="Variant" />
+			<description>
+				Executes contains point on HyperbolicPoincareTilingResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="schlafli_preset" type="int" setter="set_schlafli_preset" getter="get_schlafli_preset">
+			Configures schlafli preset for this HyperbolicPoincareTilingResource (Custom {p,q},{7,3} Heptagonal,{5,4} Pentagonal,{4,5} Square,{3,7} Triangular,{6,4} Hexagonal,{8,3} Octagonal).
+		</member>
+		<member name="schlafli_p" type="int" setter="set_schlafli_p" getter="get_schlafli_p">
+			Configures schlafli p for this HyperbolicPoincareTilingResource.
+		</member>
+		<member name="schlafli_q" type="int" setter="set_schlafli_q" getter="get_schlafli_q">
+			Configures schlafli q for this HyperbolicPoincareTilingResource.
+		</member>
+		<member name="generation_rings" type="int" setter="set_generation_rings" getter="get_generation_rings">
+			Configures generation rings for this HyperbolicPoincareTilingResource.
+		</member>
+		<member name="arc_subdivisions" type="int" setter="set_arc_subdivisions" getter="get_arc_subdivisions">
+			Configures arc subdivisions for this HyperbolicPoincareTilingResource.
+		</member>
+		<member name="mobius_focus" type="Vector2" setter="set_mobius_focus" getter="get_mobius_focus">
+			Configures mobius focus for this HyperbolicPoincareTilingResource.
+		</member>
+	</members>
+	<constants>
+		<constant name="HYPERBOLIC_PRESET_CUSTOM" value="0">
+			Hyperbolic preset custom constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_HEPTAGON_7_3" value="0">
+			Hyperbolic preset heptagon 7 3 constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_PENTAGON_5_4" value="0">
+			Hyperbolic preset pentagon 5 4 constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_SQUARE_4_5" value="0">
+			Hyperbolic preset square 4 5 constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_TRIANGLE_3_7" value="0">
+			Hyperbolic preset triangle 3 7 constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_HEXAGON_6_4" value="0">
+			Hyperbolic preset hexagon 6 4 constant.
+		</constant>
+		<constant name="HYPERBOLIC_PRESET_OCTAGON_8_3" value="0">
+			Hyperbolic preset octagon 8 3 constant.
+		</constant>
+	</constants>
+</class>

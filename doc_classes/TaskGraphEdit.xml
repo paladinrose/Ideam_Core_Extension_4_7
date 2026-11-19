@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TaskGraphEdit" inherits="MemoryGraphEdit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Task Graph Edit class in IdeamTasks.
+	</brief_description>
+	<description>
+		Task Graph Edit (MemoryGraphEdit subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="menu_hierarchy_mode" type="int" setter="set_menu_hierarchy_mode" getter="get_menu_hierarchy_mode">
+			Configures menu hierarchy mode for this TaskGraphEdit (Axis First,Domain First,Hybrid Auto).
+		</member>
+	</members>
+	<constants>
+		<constant name="MENU_AXIS_FIRST" value="0">
+			Menu axis first constant.
+		</constant>
+		<constant name="MENU_DOMAIN_FIRST" value="0">
+			Menu domain first constant.
+		</constant>
+		<constant name="MENU_HYBRID_AUTO" value="0">
+			Menu hybrid auto constant.
+		</constant>
+	</constants>
+</class>

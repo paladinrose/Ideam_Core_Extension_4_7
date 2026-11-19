@@ -1111,7 +1111,7 @@ void MemoryProfiler::_on_managed_buffer_item_selected(int p_index) {
         if (profile.is_valid()) {
             managed_buffer_view->open_resource(profile);
             
-            String p_name = profile->get_consumer_name();
+            String p_name = profile->get_effective_buffer_name();
             inspector_title->set_text(String("Inspecting: ") + (p_name.is_empty() ? "Unnamed Profile" : p_name));
         }
     }
@@ -1277,7 +1277,7 @@ void MemoryProfiler::_populate_ui() {
     for (int i = 0; i < profiles.size(); ++i) {
         Ref<ManagedBufferResource> profile = profiles[i];
         if (profile.is_valid()) {
-            String p_name = profile->get_consumer_name();
+            String p_name = profile->get_effective_buffer_name();
             managed_buffer_list->add_item(p_name.is_empty() ? "Unnamed Profile" : p_name);
         } else {
             managed_buffer_list->add_item("Invalid Profile");

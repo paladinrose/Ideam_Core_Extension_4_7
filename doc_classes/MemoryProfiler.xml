@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryProfiler" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Profiler class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Profiler (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<signals>
+		<signal name="runtime_delete_requested">
+			<param index="0" name="buffer_ids" type="PackedInt32Array" />
+			<description>
+				Emitted when runtime delete requested occurs on this MemoryProfiler.
+			</description>
+		</signal>
+		<signal name="runtime_save_requested">
+			<param index="0" name="resource" type="Object" />
+			<description>
+				Emitted when runtime save requested occurs on this MemoryProfiler.
+			</description>
+		</signal>
+	</signals>
+</class>

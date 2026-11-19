@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamLinguisticsPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Linguistics Plugin class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Ideam Linguistics Plugin (IdeamEditorPlugin subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_plugin_domain_name">
+			<return type="Variant" />
+			<description>
+				Executes get plugin domain name on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_communications_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is communications handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_minds_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is minds handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_narratives_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is narratives handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_procedural_generation_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is procedural generation handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_wfc_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is wfc handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_quantum_darwinism_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is quantum darwinism handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_design_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is design handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_characters_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is characters handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_games_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is games handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="is_tasks_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is tasks handshake available on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="get_default_language_asset">
+			<return type="Variant" />
+			<description>
+				Executes get default language asset on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="get_default_prompt_parser">
+			<return type="Variant" />
+			<description>
+				Executes get default prompt parser on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="get_metadata_manager">
+			<return type="Variant" />
+			<description>
+				Executes get metadata manager on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="get_object_profiler">
+			<return type="Variant" />
+			<description>
+				Executes get object profiler on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="undo_redo" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes undo redo on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+		<method name="create_undo_redo_wrapper" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes create undo redo wrapper on IdeamLinguisticsPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

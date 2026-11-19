@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GrammarRuleResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Grammar Rule Resource class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Grammar Rule Resource (Resource subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_specificity">
+			<return type="Variant" />
+			<description>
+				Executes get specificity on GrammarRuleResource.
+			</description>
+		</method>
+		<method name="outweighs">
+			<return type="Variant" />
+			<param index="0" name="other" type="Variant" />
+			<description>
+				Executes outweighs on GrammarRuleResource.
+			</description>
+		</method>
+		<method name="apply_to_surface_word">
+			<return type="Variant" />
+			<param index="0" name="word" type="Variant" />
+			<description>
+				Executes apply to surface word on GrammarRuleResource.
+			</description>
+		</method>
+		<method name="collect_cascaded_rules">
+			<return type="Variant" />
+			<description>
+				Executes collect cascaded rules on GrammarRuleResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on GrammarRuleResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on GrammarRuleResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this GrammarRuleResource.
+		</member>
+		<member name="rule_name" type="String" setter="set_rule_name" getter="get_rule_name">
+			Configures rule name for this GrammarRuleResource.
+		</member>
+		<member name="priority" type="int" setter="set_priority" getter="get_priority">
+			Configures priority for this GrammarRuleResource.
+		</member>
+		<member name="is_important" type="bool" setter="set_is_important" getter="get_is_important">
+			Configures is important for this GrammarRuleResource.
+		</member>
+		<member name="cascade_layer" type="int" setter="set_cascade_layer" getter="get_cascade_layer">
+			Configures cascade layer for this GrammarRuleResource (Base Syntax:0,Morphology:1,Dialect Lect:2,Register Formality:3,SLM Constraint:4,Speaker Idiolect:5).
+		</member>
+		<member name="operation" type="int" setter="set_operation" getter="get_operation">
+			Configures operation for this GrammarRuleResource (Affix Prefix:0,Affix Suffix:1,Substitute Stem:2,Constrain SLM Next Category:3,Shift Register Formality:4,Inject Peripheral Seme:5,Emit GBNF Production:6).
+		</member>
+		<member name="target_lexical_category" type="int" setter="set_target_lexical_category" getter="get_target_lexical_category">
+			Configures target lexical category for this GrammarRuleResource (Any/X:0,NOUN:1,VERB:2,ADJ:3,ADV:4,ADP:5,PRON:6,DET:7,CCONJ:8,PART:9,PROPN:10,NUM:11,AUX:12,SCONJ:13,INTJ:14,SYM:15,PUNCT:16).
+		</member>
+		<member name="target_lect_id" type="int" setter="set_target_lect_id" getter="get_target_lect_id">
+			Configures target lect id for this GrammarRuleResource.
+		</member>
+		<member name="required_seme_tag" type="StringName" setter="set_required_seme_tag" getter="get_required_seme_tag">
+			Configures required seme tag for this GrammarRuleResource.
+		</member>
+		<member name="forbidden_seme_tag" type="StringName" setter="set_forbidden_seme_tag" getter="get_forbidden_seme_tag">
+			Configures forbidden seme tag for this GrammarRuleResource.
+		</member>
+		<member name="match_stem_pattern" type="String" setter="set_match_stem_pattern" getter="get_match_stem_pattern">
+			Configures match stem pattern for this GrammarRuleResource.
+		</member>
+		<member name="affix_or_replacement" type="String" setter="set_affix_or_replacement" getter="get_affix_or_replacement">
+			Configures affix or replacement for this GrammarRuleResource.
+		</member>
+		<member name="gbnf_production_pattern" type="String" setter="set_gbnf_production_pattern" getter="get_gbnf_production_pattern">
+			Configures gbnf production pattern for this GrammarRuleResource.
+		</member>
+		<member name="slm_allowed_category_mask" type="int" setter="set_slm_allowed_category_mask" getter="get_slm_allowed_category_mask">
+			Configures slm allowed category mask for this GrammarRuleResource.
+		</member>
+		<member name="formality_delta" type="int" setter="set_formality_delta" getter="get_formality_delta">
+			Configures formality delta for this GrammarRuleResource.
+		</member>
+		<member name="child_rules" type="Array" setter="set_child_rules" getter="get_child_rules">
+			Configures child rules for this GrammarRuleResource.
+		</member>
+	</members>
+	<constants>
+		<constant name="GRAMMAR_LAYER_BASE_SYNTAX" value="0">
+			Grammar layer base syntax constant.
+		</constant>
+		<constant name="GRAMMAR_LAYER_MORPHOLOGY" value="0">
+			Grammar layer morphology constant.
+		</constant>
+		<constant name="GRAMMAR_LAYER_DIALECT_LECT" value="0">
+			Grammar layer dialect lect constant.
+		</constant>
+		<constant name="GRAMMAR_LAYER_REGISTER_FORMALITY" value="0">
+			Grammar layer register formality constant.
+		</constant>
+		<constant name="GRAMMAR_LAYER_SLM_CONSTRAINT" value="0">
+			Grammar layer slm constraint constant.
+		</constant>
+		<constant name="GRAMMAR_LAYER_SPEAKER_IDIOLECT" value="0">
+			Grammar layer speaker idiolect constant.
+		</constant>
+		<constant name="GRAMMAR_OP_AFFIX_PREFIX" value="0">
+			Grammar op affix prefix constant.
+		</constant>
+		<constant name="GRAMMAR_OP_AFFIX_SUFFIX" value="0">
+			Grammar op affix suffix constant.
+		</constant>
+		<constant name="GRAMMAR_OP_SUBSTITUTE_STEM" value="0">
+			Grammar op substitute stem constant.
+		</constant>
+		<constant name="GRAMMAR_OP_CONSTRAIN_SLM_NEXT_CATEGORY" value="0">
+			Grammar op constrain slm next category constant.
+		</constant>
+		<constant name="GRAMMAR_OP_SHIFT_REGISTER_FORMALITY" value="0">
+			Grammar op shift register formality constant.
+		</constant>
+		<constant name="GRAMMAR_OP_INJECT_PERIPHERAL_SEME" value="0">
+			Grammar op inject peripheral seme constant.
+		</constant>
+		<constant name="GRAMMAR_OP_EMIT_GBNF_PRODUCTION" value="0">
+			Grammar op emit gbnf production constant.
+		</constant>
+	</constants>
+</class>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SSMLParser" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SSMLParser (`RefCounted`) C++26 replacement for `old_gdscript_plugins/ideam_dialogue/scripts/ssml_parser.gd`.
+	</brief_description>
+	<description>
+		SSMLParser (`RefCounted`) C++26 replacement for `old_gdscript_plugins/ideam_dialogue/scripts/ssml_parser.gd`. Part of IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="parse_ssml_to_utterance" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="ssml" type="Variant" />
+			<description>
+				Executes parse ssml to utterance on SSMLParser.
+			</description>
+		</method>
+		<method name="export_utterance_to_ssml" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="utterance" type="Variant" />
+			<description>
+				Executes export utterance to ssml on SSMLParser.
+			</description>
+		</method>
+		<method name="extract_phoneme_masks_from_ssml" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="ssml" type="Variant" />
+			<description>
+				Executes extract phoneme masks from ssml on SSMLParser.
+			</description>
+		</method>
+	</methods>
+</class>

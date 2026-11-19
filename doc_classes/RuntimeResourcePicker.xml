@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RuntimeResourcePicker" inherits="ConfirmationDialog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Runtime Resource Picker class in IdeamControls.
+	</brief_description>
+	<description>
+		Runtime Resource Picker (ConfirmationDialog subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_target_property">
+			<return type="Variant" />
+			<param index="0" name="prop_name" type="Variant" />
+			<param index="1" name="hint_string" type="Variant" />
+			<description>
+				Executes set target property on RuntimeResourcePicker.
+			</description>
+		</method>
+		<method name="open_picker">
+			<return type="Variant" />
+			<description>
+				Executes open picker on RuntimeResourcePicker.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="resource_selected">
+			<param index="0" name="path" type="String" />
+			<param index="1" name="property_name" type="StringName" />
+			<description>
+				Emitted when resource selected occurs on this RuntimeResourcePicker.
+			</description>
+		</signal>
+	</signals>
+</class>

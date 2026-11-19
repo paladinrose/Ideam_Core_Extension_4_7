@@ -10,19 +10,21 @@
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/vector3.hpp>
 
-namespace ideam::godot_ext {
+#include "game_player_manager.h"
+#include "game_player_profile.h"
+#include "game.h"
+#include "game_entities/game_board.h"
+#include "game_entities/game_agent.h"
+#include "gameplay/xr_eye_effect_resource.h"
 
-// Forward Declarations
-class GamePlayerProfile;
-class SceneTransition;
-class GameAgent;
-class NodeRetargeter;
-class SignalConnector;
-class Game;
-class GameMenu;
-class GameBoard;
-class GamePlayerManager;
-class XREyeFXNode3D;
+#include "ui/game_menu.h"
+
+#include "scene_transition.h"
+
+#include "../utilities/node_retargeter.h"
+#include "../utilities/signal_connector.h"
+
+namespace ideam::godot_ext {
 
 class GamePlayer : public godot::Node {
     GDCLASS(GamePlayer, godot::Node)
@@ -42,8 +44,8 @@ private:
     SceneTransition* board_transition = nullptr;
     GameAgent* default_agent = nullptr;
     
-    NodeRetargeter* agent_node_assignments = nullptr;
-    SignalConnector* agent_signal_assignments = nullptr;
+    godot::Ref<NodeRetargeter> agent_node_assignments;
+    godot::Ref<SignalConnector> agent_signal_assignments;
 
     // --- Section 2.4 XR_Player Merger: Optional 6DoF XR Rig & Per-Limb Retargeters ---
     godot::XROrigin3D* xr_origin = nullptr;
@@ -53,11 +55,11 @@ private:
     godot::XRController3D* xr_left_hand = nullptr;
     godot::XRController3D* xr_right_hand = nullptr;
 
-    NodeRetargeter* head_assignments = nullptr;
-    NodeRetargeter* eye_assignments = nullptr;
-    NodeRetargeter* ear_assignments = nullptr;
-    NodeRetargeter* left_hand_assignments = nullptr;
-    NodeRetargeter* right_hand_assignments = nullptr;
+    godot::Ref<NodeRetargeter> head_assignments;
+    godot::Ref<NodeRetargeter> eye_assignments;
+    godot::Ref<NodeRetargeter> ear_assignments;
+    godot::Ref<NodeRetargeter> left_hand_assignments;
+    godot::Ref<NodeRetargeter> right_hand_assignments;
 
     float player_height = 1.7f;
     float current_height = 1.7f;
@@ -106,11 +108,11 @@ public:
     void set_default_agent(GameAgent* p_agent);
     GameAgent* get_default_agent() const;
 
-    void set_agent_node_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_agent_node_assignments() const;
+    void set_agent_node_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_agent_node_assignments() const;
 
-    void set_agent_signal_assignments(SignalConnector* p_assignments);
-    SignalConnector* get_agent_signal_assignments() const;
+    void set_agent_signal_assignments(const godot::Ref<SignalConnector>& p_assignments);
+    godot::Ref<SignalConnector> get_agent_signal_assignments() const;
 
     // --- Section 2.4 XR Embodiment Setters / Getters & Helpers ---
     void set_xr_origin(godot::XROrigin3D* p_origin);
@@ -131,20 +133,20 @@ public:
     void set_xr_right_hand(godot::XRController3D* p_hand);
     godot::XRController3D* get_xr_right_hand() const;
 
-    void set_head_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_head_assignments() const;
+    void set_head_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_head_assignments() const;
 
-    void set_eye_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_eye_assignments() const;
+    void set_eye_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_eye_assignments() const;
 
-    void set_ear_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_ear_assignments() const;
+    void set_ear_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_ear_assignments() const;
 
-    void set_left_hand_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_left_hand_assignments() const;
+    void set_left_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_left_hand_assignments() const;
 
-    void set_right_hand_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_right_hand_assignments() const;
+    void set_right_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_right_hand_assignments() const;
 
     void set_player_height(float p_height);
     float get_player_height() const;

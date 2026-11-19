@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Voronoi2DCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Voronoi2 DCanvas class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Voronoi2 DCanvas (GeometryCanvas2DBase subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_color_mode">
+			<return type="Variant" />
+			<param index="0" name="mode" type="Variant" />
+			<description>
+				Executes set color mode on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_color_mode">
+			<return type="Variant" />
+			<description>
+				Executes get color mode on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_voronoi_cells">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show voronoi cells on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_voronoi_cells">
+			<return type="Variant" />
+			<description>
+				Executes get show voronoi cells on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_delaunay">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show delaunay on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_delaunay">
+			<return type="Variant" />
+			<description>
+				Executes get show delaunay on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_csr_dual_graph">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show csr dual graph on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_csr_dual_graph">
+			<return type="Variant" />
+			<description>
+				Executes get show csr dual graph on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_centroids">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show centroids on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_centroids">
+			<return type="Variant" />
+			<description>
+				Executes get show centroids on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_clip_boundary">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show clip boundary on Voronoi2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_clip_boundary">
+			<return type="Variant" />
+			<description>
+				Executes get show clip boundary on Voronoi2DCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="voronoi_resource" type="VoronoiDiagram2DResource" setter="set_voronoi_resource" getter="get_voronoi_resource">
+			Configures voronoi resource for this Voronoi2DCanvas.
+		</member>
+	</members>
+	<constants>
+		<constant name="VORONOI_COLOR_INDEX_PALETTE" value="0">
+			Voronoi color index palette constant.
+		</constant>
+		<constant name="VORONOI_COLOR_AREA_HEATMAP" value="0">
+			Voronoi color area heatmap constant.
+		</constant>
+		<constant name="VORONOI_COLOR_NEIGHBOR_VALENCE" value="0">
+			Voronoi color neighbor valence constant.
+		</constant>
+		<constant name="VORONOI_COLOR_BOUNDARY_PROXIMITY" value="0">
+			Voronoi color boundary proximity constant.
+		</constant>
+	</constants>
+</class>

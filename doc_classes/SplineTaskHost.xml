@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Spline Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_spline_host">
+			<return type="Variant" />
+			<description>
+				Executes setup spline host on SplineTaskHost.
+			</description>
+		</method>
+		<method name="execute_spline_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute spline step on SplineTaskHost.
+			</description>
+		</method>
+		<method name="bind_geometry_task_host">
+			<return type="Variant" />
+			<param index="0" name="geometry_host" type="Variant" />
+			<description>
+				Executes bind geometry task host on SplineTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="splines_resource" type="DataOrientedSplines" setter="set_splines_resource" getter="get_splines_resource">
+			Configures splines resource for this SplineTaskHost.
+		</member>
+		<member name="geometry_host_node_path" type="NodePath" setter="set_geometry_host_node_path" getter="get_geometry_host_node_path">
+			Configures geometry host node path for this SplineTaskHost.
+		</member>
+		<member name="auto_setup_on_ready" type="bool" setter="set_auto_setup_on_ready" getter="get_auto_setup_on_ready">
+			Configures auto setup on ready for this SplineTaskHost.
+		</member>
+		<member name="auto_execute_in_process" type="bool" setter="set_auto_execute_in_process" getter="get_auto_execute_in_process">
+			Configures auto execute in process for this SplineTaskHost.
+		</member>
+		<member name="share_geometry_memory" type="bool" setter="set_share_geometry_memory" getter="get_share_geometry_memory">
+			Configures share geometry memory for this SplineTaskHost.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TilingRegionPreviewCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tiling Region Preview Canvas class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tiling Region Preview Canvas (GeometryCanvas2DBase subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_selected_cell_id">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes set selected cell id on TilingRegionPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_selected_cell_id">
+			<return type="Variant" />
+			<description>
+				Executes get selected cell id on TilingRegionPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_path_endpoints">
+			<return type="Variant" />
+			<param index="0" name="start_cell" type="Variant" />
+			<param index="1" name="goal_cell" type="Variant" />
+			<description>
+				Executes set path endpoints on TilingRegionPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_path_start_cell_id">
+			<return type="Variant" />
+			<description>
+				Executes get path start cell id on TilingRegionPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_path_goal_cell_id">
+			<return type="Variant" />
+			<description>
+				Executes get path goal cell id on TilingRegionPreviewCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="composite_tiling" type="CompositeTilingResource" setter="set_composite_tiling" getter="get_composite_tiling">
+			Configures composite tiling for this TilingRegionPreviewCanvas.
+		</member>
+		<member name="color_mode" type="int" setter="set_color_mode" getter="get_color_mode">
+			Configures color mode for this TilingRegionPreviewCanvas (Three Coloring:0,Layer Group:1,Generation Ring:2,Cell Flags:3).
+		</member>
+		<member name="interaction_mode" type="int" setter="set_interaction_mode" getter="get_interaction_mode">
+			Configures interaction mode for this TilingRegionPreviewCanvas (Inspect Cell:0,Carve/Remove Cell:1,A* Pathfinding Sandbox:2,Cycle Edge Port:3).
+		</member>
+		<member name="show_hex_super_cells" type="bool" setter="set_show_hex_super_cells" getter="get_show_hex_super_cells">
+			Configures show hex super cells for this TilingRegionPreviewCanvas.
+		</member>
+		<member name="show_border_outlines" type="bool" setter="set_show_border_outlines" getter="get_show_border_outlines">
+			Configures show border outlines for this TilingRegionPreviewCanvas.
+		</member>
+		<member name="show_flow_field" type="bool" setter="set_show_flow_field" getter="get_show_flow_field">
+			Configures show flow field for this TilingRegionPreviewCanvas.
+		</member>
+		<member name="use_manhattan_path" type="bool" setter="set_use_manhattan_path" getter="get_use_manhattan_path">
+			Configures use manhattan path for this TilingRegionPreviewCanvas.
+		</member>
+	</members>
+	<signals>
+		<signal name="cell_selected">
+			<param index="0" name="cell_id" type="int" />
+			<description>
+				Emitted when cell selected occurs on this TilingRegionPreviewCanvas.
+			</description>
+		</signal>
+		<signal name="path_updated">
+			<param index="0" name="start_cell_id" type="int" />
+			<param index="1" name="goal_cell_id" type="int" />
+			<param index="2" name="path_length" type="int" />
+			<description>
+				Emitted when path updated occurs on this TilingRegionPreviewCanvas.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="PREVIEW_COLOR_THREE_COLORING" value="0">
+			Preview color three coloring constant.
+		</constant>
+		<constant name="PREVIEW_COLOR_LAYER_GROUP" value="0">
+			Preview color layer group constant.
+		</constant>
+		<constant name="PREVIEW_COLOR_GENERATION_RING" value="0">
+			Preview color generation ring constant.
+		</constant>
+		<constant name="PREVIEW_COLOR_CELL_FLAGS" value="0">
+			Preview color cell flags constant.
+		</constant>
+		<constant name="REGION_INTERACT_INSPECT" value="0">
+			Region interact inspect constant.
+		</constant>
+		<constant name="REGION_INTERACT_CARVE_CELL" value="0">
+			Region interact carve cell constant.
+		</constant>
+		<constant name="REGION_INTERACT_PATHFIND_SANDBOX" value="0">
+			Region interact pathfind sandbox constant.
+		</constant>
+		<constant name="REGION_INTERACT_CYCLE_EDGE_PORT" value="0">
+			Region interact cycle edge port constant.
+		</constant>
+	</constants>
+</class>

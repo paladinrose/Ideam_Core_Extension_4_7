@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineHitboxButton" inherits="BaseButton" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineHitboxButton (`godot::BaseButton`) Interactive button whose clickable area and visual shape are defined by a closed `Spline2DResource`.
+	</brief_description>
+	<description>
+		SplineHitboxButton (`godot::BaseButton`) Interactive button whose clickable area and visual shape are defined by a closed `Spline2DResource`. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="hitbox_spline_2d" type="Spline2DResource" setter="set_hitbox_spline_2d" getter="get_hitbox_spline_2d">
+			Configures hitbox spline 2d for this SplineHitboxButton.
+		</member>
+		<member name="state_gradient_4d" type="Spline4DResource" setter="set_state_gradient_4d" getter="get_state_gradient_4d">
+			Configures state gradient 4d for this SplineHitboxButton.
+		</member>
+		<member name="curve_subdivisions" type="int" setter="set_curve_subdivisions" getter="get_curve_subdivisions">
+			Configures curve subdivisions for this SplineHitboxButton.
+		</member>
+		<member name="fit_spline_to_control" type="bool" setter="set_fit_spline_to_control" getter="get_fit_spline_to_control">
+			Configures fit spline to control for this SplineHitboxButton.
+		</member>
+		<member name="border_width" type="float" setter="set_border_width" getter="get_border_width">
+			Configures border width for this SplineHitboxButton.
+		</member>
+		<member name="label_text" type="String" setter="set_label_text" getter="get_label_text">
+			Configures label text for this SplineHitboxButton.
+		</member>
+		<member name="normal_color" type="Color" setter="set_normal_color" getter="get_normal_color">
+			Configures normal color for this SplineHitboxButton.
+		</member>
+		<member name="hover_color" type="Color" setter="set_hover_color" getter="get_hover_color">
+			Configures hover color for this SplineHitboxButton.
+		</member>
+		<member name="pressed_color" type="Color" setter="set_pressed_color" getter="get_pressed_color">
+			Configures pressed color for this SplineHitboxButton.
+		</member>
+		<member name="disabled_color" type="Color" setter="set_disabled_color" getter="get_disabled_color">
+			Configures disabled color for this SplineHitboxButton.
+		</member>
+		<member name="border_color" type="Color" setter="set_border_color" getter="get_border_color">
+			Configures border color for this SplineHitboxButton.
+		</member>
+	</members>
+</class>

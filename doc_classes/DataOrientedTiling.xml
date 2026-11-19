@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedTiling" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Tiling class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Tiling (GeometryResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bind_data_oriented_geometry">
+			<return type="Variant" />
+			<param index="0" name="geometry" type="Variant" />
+			<description>
+				Executes bind data oriented geometry on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="bind_data_oriented_splines">
+			<return type="Variant" />
+			<param index="0" name="splines" type="Variant" />
+			<description>
+				Executes bind data oriented splines on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="setup_dod_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes setup dod pipeline on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="bake_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes bake to dod on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="rebuild_dod_task_graph">
+			<return type="Variant" />
+			<description>
+				Executes rebuild dod task graph on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="execute_dod_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute dod step on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_navigation_path_cells">
+			<return type="Variant" />
+			<param index="0" name="request_index" type="Variant" />
+			<description>
+				Executes get navigation path cells on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_flow_field_costs">
+			<return type="Variant" />
+			<description>
+				Executes get flow field costs on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_flow_field_vectors">
+			<return type="Variant" />
+			<description>
+				Executes get flow field vectors on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_active_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get active cell count on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_active_edge_count">
+			<return type="Variant" />
+			<description>
+				Executes get active edge count on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_active_hex_super_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get active hex super cell count on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_cell_transforms_2d">
+			<return type="Variant" />
+			<description>
+				Executes get cell transforms 2d on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_cell_centers_2d">
+			<return type="Variant" />
+			<description>
+				Executes get cell centers 2d on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_hex_super_cell_centers_2d">
+			<return type="Variant" />
+			<description>
+				Executes get hex super cell centers 2d on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_tiling_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="tiling" type="Variant" />
+			<description>
+				Executes get tiling dod slot on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="semantic_name" type="Variant" />
+			<description>
+				Executes get buffer id on DataOrientedTiling.
+			</description>
+		</method>
+		<method name="get_buffer_manifest_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes get buffer manifest dictionary on DataOrientedTiling.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tilings" type="Array" setter="set_tilings" getter="get_tilings">
+			Configures tilings for this DataOrientedTiling.
+		</member>
+		<member name="linked_geometry_resource" type="DataOrientedGeometry" setter="set_linked_geometry_resource" getter="get_linked_geometry_resource">
+			Configures linked geometry resource for this DataOrientedTiling.
+		</member>
+		<member name="linked_splines_resource" type="DataOrientedSplines" setter="set_linked_splines_resource" getter="get_linked_splines_resource">
+			Configures linked splines resource for this DataOrientedTiling.
+		</member>
+		<member name="dod_execution_mode" type="int" setter="set_dod_execution_mode" getter="get_dod_execution_mode">
+			Configures dod execution mode for this DataOrientedTiling (Disabled:0,Composable Stages:1,Custom TaskGraphResource:2,Manual Graph:3).
+		</member>
+		<member name="pipeline_stage_mask" type="int" setter="set_pipeline_stage_mask" getter="get_pipeline_stage_mask">
+			Configures pipeline stage mask for this DataOrientedTiling (Generation &amp; Hex Partition (T_M1):1,Lattice &amp; Spline Mask Query (T_Q1):2,Instance &amp; Seam Transform (T_T1+T_T2):4,Hexize &amp; Border Extract (T_T3):8,Navigation &amp; Flow-Field (T_T4):16).
+		</member>
+		<member name="auto_connect_pipeline_stages" type="bool" setter="set_auto_connect_pipeline_stages" getter="get_auto_connect_pipeline_stages">
+			Configures auto connect pipeline stages for this DataOrientedTiling.
+		</member>
+		<member name="default_edge_subdivisions" type="int" setter="set_default_edge_subdivisions" getter="get_default_edge_subdivisions">
+			Configures default edge subdivisions for this DataOrientedTiling.
+		</member>
+		<member name="custom_task_graph_resource" type="TaskGraphResource" setter="set_custom_task_graph_resource" getter="get_custom_task_graph_resource">
+			Configures custom task graph resource for this DataOrientedTiling.
+		</member>
+		<member name="max_dod_prototiles" type="int" setter="set_max_dod_prototiles" getter="get_max_dod_prototiles">
+			Configures max dod prototiles for this DataOrientedTiling.
+		</member>
+		<member name="max_dod_cells" type="int" setter="set_max_dod_cells" getter="get_max_dod_cells">
+			Configures max dod cells for this DataOrientedTiling.
+		</member>
+		<member name="max_dod_edges" type="int" setter="set_max_dod_edges" getter="get_max_dod_edges">
+			Configures max dod edges for this DataOrientedTiling.
+		</member>
+		<member name="max_dod_hex_super_cells" type="int" setter="set_max_dod_hex_super_cells" getter="get_max_dod_hex_super_cells">
+			Configures max dod hex super cells for this DataOrientedTiling.
+		</member>
+		<member name="max_dod_nav_requests" type="int" setter="set_max_dod_nav_requests" getter="get_max_dod_nav_requests">
+			Configures max dod nav requests for this DataOrientedTiling.
+		</member>
+	</members>
+	<constants>
+		<constant name="TILES_DOD_EXEC_DISABLED" value="0">
+			Tiles dod exec disabled constant.
+		</constant>
+		<constant name="TILES_DOD_EXEC_COMPOSABLE_STAGES" value="0">
+			Tiles dod exec composable stages constant.
+		</constant>
+		<constant name="TILES_DOD_EXEC_CUSTOM_GRAPH_RESOURCE" value="0">
+			Tiles dod exec custom graph resource constant.
+		</constant>
+		<constant name="TILES_DOD_EXEC_MANUAL_GRAPH" value="0">
+			Tiles dod exec manual graph constant.
+		</constant>
+	</constants>
+</class>

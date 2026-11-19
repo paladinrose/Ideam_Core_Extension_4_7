@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamNarrativesPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Narratives Plugin class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Ideam Narratives Plugin (IdeamEditorPlugin subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

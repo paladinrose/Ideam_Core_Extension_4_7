@@ -2,15 +2,17 @@
 
 /**
  * characters_inspector.h
- * EditorInspectorPlugin for `IdeamCharacters` (`CharacterBlueprintResource`,
+ * Thin EditorInspectorPlugin launcher for `IdeamCharacters` (`CharacterBlueprintResource`,
  * `CharacterApparelResource`, `ParametricCharacterNode3D`, and `DataOrientedCharacters`)
- * in `src/godot/characters/editor/`.
+ * -> opens the full workspace in Tier 2 `CharacterModeler`.
  */
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
 #include "../character_blueprint_resource.h"
 #include "../ui/character_morph_slider_panel.h"
 #include "../../tasks/domains/characters/data_oriented_characters.h"
+
+#include <godot_cpp/classes/resource.hpp>
 
 namespace ideam::godot_ext {
 
@@ -23,6 +25,8 @@ protected:
 public:
     CharactersInspector() = default;
     ~CharactersInspector() override = default;
+
+    void _on_open_in_character_modeler(const godot::Ref<godot::Resource> &p_resource);
 
 #ifdef TOOLS_ENABLED
     godot::EditorUndoRedoManager *get_undo_redo() const override;

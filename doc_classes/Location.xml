@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Location" inherits="Narreme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Location class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Location (Narreme subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

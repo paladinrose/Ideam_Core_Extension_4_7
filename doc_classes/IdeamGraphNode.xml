@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphNode" inherits="GraphNode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graph Node class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graph Node (GraphNode subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize">
+			<return type="Variant" />
+			<param index="0" name="node_res" type="Variant" />
+			<description>
+				Executes initialize on IdeamGraphNode.
+			</description>
+		</method>
+		<method name="get_node_resource">
+			<return type="Variant" />
+			<description>
+				Executes get node resource on IdeamGraphNode.
+			</description>
+		</method>
+		<method name="get_blueprint_id">
+			<return type="Variant" />
+			<description>
+				Executes get blueprint id on IdeamGraphNode.
+			</description>
+		</method>
+		<method name="receive_connection_info">
+			<return type="Variant" />
+			<param index="0" name="info" type="Variant" />
+			<description>
+				Executes receive connection info on IdeamGraphNode.
+			</description>
+		</method>
+		<method name="request_connections">
+			<return type="Variant" />
+			<description>
+				Executes request connections on IdeamGraphNode.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="locked" type="bool" setter="set_locked" getter="get_locked">
+			Configures locked for this IdeamGraphNode.
+		</member>
+		<member name="error_state" type="bool" setter="set_error_state" getter="get_error_state">
+			Configures error state for this IdeamGraphNode.
+		</member>
+		<member name="context_hover" type="bool" setter="set_context_hover" getter="get_context_hover">
+			Configures context hover for this IdeamGraphNode.
+		</member>
+	</members>
+	<signals>
+		<signal name="context_clicked">
+			<param index="0" name="node" type="Object" />
+			<param index="1" name="at" type="Vector2" />
+			<description>
+				Emitted when context clicked occurs on this IdeamGraphNode.
+			</description>
+		</signal>
+		<signal name="property_changed">
+			<param index="0" name="blueprint_id" type="StringName" />
+			<param index="1" name="property_name" type="StringName" />
+			<param index="2" name="new_value" type="Variant" />
+			<description>
+				Emitted when property changed occurs on this IdeamGraphNode.
+			</description>
+		</signal>
+		<signal name="delete_requested">
+			<param index="0" name="node_name" type="StringName" />
+			<description>
+				Emitted when delete requested occurs on this IdeamGraphNode.
+			</description>
+		</signal>
+		<signal name="duplicate_requested">
+			<param index="0" name="node_name" type="StringName" />
+			<description>
+				Emitted when duplicate requested occurs on this IdeamGraphNode.
+			</description>
+		</signal>
+		<signal name="connections_requested">
+			<param index="0" name="node" type="Object" />
+			<description>
+				Emitted when connections requested occurs on this IdeamGraphNode.
+			</description>
+		</signal>
+	</signals>
+</class>

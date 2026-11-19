@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TensorField2DCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tensor Field2 DCanvas class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Tensor Field2 DCanvas (GeometryCanvas2DBase subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="draw_cross_field" type="bool" setter="set_draw_cross_field" getter="get_draw_cross_field">
+			Configures draw cross field for this TensorField2DCanvas.
+		</member>
+		<member name="draw_major_streamlines" type="bool" setter="set_draw_major_streamlines" getter="get_draw_major_streamlines">
+			Configures draw major streamlines for this TensorField2DCanvas.
+		</member>
+		<member name="draw_minor_streamlines" type="bool" setter="set_draw_minor_streamlines" getter="get_draw_minor_streamlines">
+			Configures draw minor streamlines for this TensorField2DCanvas.
+		</member>
+		<member name="draw_singularities" type="bool" setter="set_draw_singularities" getter="get_draw_singularities">
+			Configures draw singularities for this TensorField2DCanvas.
+		</member>
+		<member name="draw_closed_parcels" type="bool" setter="set_draw_closed_parcels" getter="get_draw_closed_parcels">
+			Configures draw closed parcels for this TensorField2DCanvas.
+		</member>
+		<member name="cross_field_stride" type="int" setter="set_cross_field_stride" getter="get_cross_field_stride">
+			Configures cross field stride for this TensorField2DCanvas.
+		</member>
+	</members>
+</class>

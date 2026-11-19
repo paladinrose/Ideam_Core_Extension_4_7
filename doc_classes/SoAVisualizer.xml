@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SoAVisualizer" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		So AVisualizer class in IdeamMemory.
+	</brief_description>
+	<description>
+		So AVisualizer (Control subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on SoAVisualizer.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="needs_compaction" type="bool" setter="set_needs_compaction" getter="get_needs_compaction">
+			Configures needs compaction for this SoAVisualizer.
+		</member>
+		<member name="active_element_count" type="int" setter="set_active_element_count" getter="get_active_element_count">
+			Configures active element count for this SoAVisualizer.
+		</member>
+		<member name="dead_element_count" type="int" setter="set_dead_element_count" getter="get_dead_element_count">
+			Configures dead element count for this SoAVisualizer.
+		</member>
+		<member name="tombstone_indices" type="PackedInt32Array" setter="set_tombstone_indices" getter="get_tombstone_indices">
+			Configures tombstone indices for this SoAVisualizer.
+		</member>
+	</members>
+</class>

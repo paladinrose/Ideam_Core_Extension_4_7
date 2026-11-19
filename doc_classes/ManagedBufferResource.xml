@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ManagedBufferResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Managed Buffer Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Managed Buffer Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_live">
+			<return type="Variant" />
+			<description>
+				Executes is live on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="has_schema">
+			<return type="Variant" />
+			<description>
+				Executes has schema on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="resolve_buffer_id">
+			<return type="Variant" />
+			<description>
+				Executes resolve buffer id on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_effective_buffer_name">
+			<return type="Variant" />
+			<description>
+				Executes get effective buffer name on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_effective_layout_type">
+			<return type="Variant" />
+			<description>
+				Executes get effective layout type on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_effective_schema">
+			<return type="Variant" />
+			<description>
+				Executes get effective schema on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_element_count">
+			<return type="Variant" />
+			<description>
+				Executes get element count on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_max_elements">
+			<return type="Variant" />
+			<description>
+				Executes get max elements on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_capacity_bytes">
+			<return type="Variant" />
+			<description>
+				Executes get capacity bytes on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_used_bytes">
+			<return type="Variant" />
+			<description>
+				Executes get used bytes on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_slack_bytes">
+			<return type="Variant" />
+			<description>
+				Executes get slack bytes on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_fragmentation_percentage">
+			<return type="Variant" />
+			<description>
+				Executes get fragmentation percentage on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_lifecycle_state">
+			<return type="Variant" />
+			<description>
+				Executes get lifecycle state on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_lifecycle_state_string">
+			<return type="Variant" />
+			<description>
+				Executes get lifecycle state string on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_active_writer_count">
+			<return type="Variant" />
+			<description>
+				Executes get active writer count on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="get_active_reader_count">
+			<return type="Variant" />
+			<description>
+				Executes get active reader count on ManagedBufferResource.
+			</description>
+		</method>
+		<method name="is_vram_dirty">
+			<return type="Variant" />
+			<description>
+				Executes is vram dirty on ManagedBufferResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="consumer_name" type="StringName" setter="set_consumer_name" getter="get_consumer_name">
+			Configures consumer name for this ManagedBufferResource.
+		</member>
+		<member name="purpose" type="StringName" setter="set_purpose" getter="get_purpose">
+			Configures purpose for this ManagedBufferResource.
+		</member>
+		<member name="schema_reference" type="MemoryBufferResource" setter="set_schema_reference" getter="get_schema_reference">
+			Configures schema reference for this ManagedBufferResource.
+		</member>
+		<member name="live_buffer_id" type="int" setter="set_live_buffer_id" getter="get_live_buffer_id">
+			Configures live buffer id for this ManagedBufferResource.
+		</member>
+		<member name="manager_resource" type="MemoryManagerResource" setter="set_manager_resource" getter="get_manager_resource">
+			Configures manager resource for this ManagedBufferResource.
+		</member>
+		<member name="layout_type" type="int" setter="set_layout_type" getter="get_layout_type">
+			Configures layout type for this ManagedBufferResource.
+		</member>
+		<member name="byte_footprint" type="int" setter="set_byte_footprint" getter="get_byte_footprint">
+			Configures byte footprint for this ManagedBufferResource.
+		</member>
+		<member name="alignment" type="int" setter="set_alignment" getter="get_alignment">
+			Configures alignment for this ManagedBufferResource.
+		</member>
+	</members>
+</class>

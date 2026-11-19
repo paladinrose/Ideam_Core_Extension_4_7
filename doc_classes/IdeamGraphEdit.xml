@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphEdit" inherits="GraphEdit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graph Edit class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graph Edit (GraphEdit subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="node_context_clicked">
+			<return type="Variant" />
+			<param index="0" name="node" type="Variant" />
+			<description>
+				Executes node context clicked on IdeamGraphEdit.
+			</description>
+		</method>
+		<method name="set_blueprint">
+			<return type="Variant" />
+			<param index="0" name="blueprint" type="Variant" />
+			<description>
+				Executes set blueprint on IdeamGraphEdit.
+			</description>
+		</method>
+		<method name="get_blueprint">
+			<return type="Variant" />
+			<description>
+				Executes get blueprint on IdeamGraphEdit.
+			</description>
+		</method>
+	</methods>
+</class>

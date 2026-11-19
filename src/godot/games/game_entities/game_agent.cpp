@@ -108,7 +108,7 @@ void GameAgent::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_head_assignments", "assignments"), &GameAgent::set_head_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_head_assignments"), &GameAgent::get_head_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_head_assignments", "get_head_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_head_assignments", "get_head_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_head_control_anchor", "anchor"), &GameAgent::set_head_control_anchor);
     godot::ClassDB::bind_method(godot::D_METHOD("get_head_control_anchor"), &GameAgent::get_head_control_anchor);
@@ -120,7 +120,7 @@ void GameAgent::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_left_hand_assignments", "assignments"), &GameAgent::set_left_hand_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_left_hand_assignments"), &GameAgent::get_left_hand_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_left_hand_assignments", "get_left_hand_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_left_hand_assignments", "get_left_hand_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_left_hand_control_anchor", "anchor"), &GameAgent::set_left_hand_control_anchor);
     godot::ClassDB::bind_method(godot::D_METHOD("get_left_hand_control_anchor"), &GameAgent::get_left_hand_control_anchor);
@@ -128,7 +128,7 @@ void GameAgent::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_right_hand_assignments", "assignments"), &GameAgent::set_right_hand_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_right_hand_assignments"), &GameAgent::get_right_hand_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_right_hand_assignments", "get_right_hand_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_right_hand_assignments", "get_right_hand_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_right_hand_control_anchor", "anchor"), &GameAgent::set_right_hand_control_anchor);
     godot::ClassDB::bind_method(godot::D_METHOD("get_right_hand_control_anchor"), &GameAgent::get_right_hand_control_anchor);
@@ -245,8 +245,8 @@ void GameAgent::set_player_height_change_time(float p_time) {
 }
 float GameAgent::get_player_height_change_time() const { return player_height_change_time; }
 
-void GameAgent::set_head_assignments(NodeRetargeter* p_assignments) { head_assignments = p_assignments; }
-NodeRetargeter* GameAgent::get_head_assignments() const { return head_assignments; }
+void GameAgent::set_head_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { head_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GameAgent::get_head_assignments() const { return head_assignments; }
 
 void GameAgent::set_head_control_anchor(godot::Node3D* p_anchor) { head_control_anchor = p_anchor; }
 godot::Node3D* GameAgent::get_head_control_anchor() const { return head_control_anchor; }
@@ -254,14 +254,14 @@ godot::Node3D* GameAgent::get_head_control_anchor() const { return head_control_
 void GameAgent::set_eye_effects(const godot::TypedArray<XREyeEffectResource>& p_effects) { eye_effects = p_effects; }
 godot::TypedArray<XREyeEffectResource> GameAgent::get_eye_effects() const { return eye_effects; }
 
-void GameAgent::set_left_hand_assignments(NodeRetargeter* p_assignments) { left_hand_assignments = p_assignments; }
-NodeRetargeter* GameAgent::get_left_hand_assignments() const { return left_hand_assignments; }
+void GameAgent::set_left_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { left_hand_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GameAgent::get_left_hand_assignments() const { return left_hand_assignments; }
 
 void GameAgent::set_left_hand_control_anchor(godot::Node3D* p_anchor) { left_hand_control_anchor = p_anchor; }
 godot::Node3D* GameAgent::get_left_hand_control_anchor() const { return left_hand_control_anchor; }
 
-void GameAgent::set_right_hand_assignments(NodeRetargeter* p_assignments) { right_hand_assignments = p_assignments; }
-NodeRetargeter* GameAgent::get_right_hand_assignments() const { return right_hand_assignments; }
+void GameAgent::set_right_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { right_hand_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GameAgent::get_right_hand_assignments() const { return right_hand_assignments; }
 
 void GameAgent::set_right_hand_control_anchor(godot::Node3D* p_anchor) { right_hand_control_anchor = p_anchor; }
 godot::Node3D* GameAgent::get_right_hand_control_anchor() const { return right_hand_control_anchor; }
@@ -278,17 +278,17 @@ void GameAgent::set_game_pieces(const godot::TypedArray<GamePiece>& p_pieces) {
 }
 godot::TypedArray<GamePiece> GameAgent::get_game_pieces() const { return game_pieces; }
 
-void GameAgent::set_player_node_assignments(NodeRetargeter* p_assignments) { 
+void GameAgent::set_player_node_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { 
     if (p_assignments == player_node_assignments) return;
     player_node_assignments = p_assignments; 
 }
-NodeRetargeter* GameAgent::get_player_node_assignments() const { return player_node_assignments; }
+godot::Ref<NodeRetargeter> GameAgent::get_player_node_assignments() const { return player_node_assignments; }
 
-void GameAgent::set_player_signal_assignments(SignalConnector* p_assignments) { 
+void GameAgent::set_player_signal_assignments(const godot::Ref<SignalConnector>& p_assignments) { 
     if (p_assignments == player_signal_assignments) return;
     player_signal_assignments = p_assignments; 
 }
-SignalConnector* GameAgent::get_player_signal_assignments() const { return player_signal_assignments; }
+godot::Ref<SignalConnector> GameAgent::get_player_signal_assignments() const { return player_signal_assignments; }
 
 
 // Player Functions
@@ -341,11 +341,11 @@ void GameAgent::control(GamePlayer* new_player) {
     if (_player == new_player) return;
     _player = new_player;
 
-    if (player_node_assignments) player_node_assignments->retarget(this, _player);
-    if (player_signal_assignments) player_signal_assignments->connect_signals(this, _player);
+    if (player_node_assignments.is_valid()) player_node_assignments->retarget(this, _player);
+    if (player_signal_assignments.is_valid()) player_signal_assignments->connect_signals(this, _player);
 
     if (_player) {
-        if (head_assignments && _player->get_xr_head()) {
+        if (head_assignments.is_valid() && _player->get_xr_head()) {
             head_assignments->retarget(this, _player->get_xr_head());
             emit_signal("head_controlled", _player->get_xr_head());
         }
@@ -358,11 +358,11 @@ void GameAgent::control(GamePlayer* new_player) {
             }
             emit_signal("eyes_controlled", _player->get_xr_eyes());
         }
-        if (left_hand_assignments && _player->get_xr_left_hand()) {
+        if (left_hand_assignments.is_valid() && _player->get_xr_left_hand()) {
             left_hand_assignments->retarget(this, _player->get_xr_left_hand());
             emit_signal("left_hand_controlled", _player->get_xr_left_hand());
         }
-        if (right_hand_assignments && _player->get_xr_right_hand()) {
+        if (right_hand_assignments.is_valid() && _player->get_xr_right_hand()) {
             right_hand_assignments->retarget(this, _player->get_xr_right_hand());
             emit_signal("right_hand_controlled", _player->get_xr_right_hand());
         }
@@ -387,11 +387,11 @@ void GameAgent::start_release() {
 void GameAgent::control_end() {
     GamePlayer* rel = _player;
     
-    if (player_node_assignments) player_node_assignments->clear_set_targets(this, _player);
-    if (player_signal_assignments) player_signal_assignments->disconnect_signals(this, _player);
+    if (player_node_assignments.is_valid()) player_node_assignments->clear_set_targets(this, _player);
+    if (player_signal_assignments.is_valid()) player_signal_assignments->disconnect_signals(this, _player);
 
     if (rel) {
-        if (head_assignments && rel->get_xr_head()) {
+        if (head_assignments.is_valid() && rel->get_xr_head()) {
             head_assignments->clear_set_targets(this, rel->get_xr_head());
         }
         if (rel->get_xr_eyes()) {
@@ -402,10 +402,10 @@ void GameAgent::control_end() {
                 }
             }
         }
-        if (left_hand_assignments && rel->get_xr_left_hand()) {
+        if (left_hand_assignments.is_valid() && rel->get_xr_left_hand()) {
             left_hand_assignments->clear_set_targets(this, rel->get_xr_left_hand());
         }
-        if (right_hand_assignments && rel->get_xr_right_hand()) {
+        if (right_hand_assignments.is_valid() && rel->get_xr_right_hand()) {
             right_hand_assignments->clear_set_targets(this, rel->get_xr_right_hand());
         }
     }

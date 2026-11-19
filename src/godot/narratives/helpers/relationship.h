@@ -2,15 +2,15 @@
 
 #include "../narreme.h"
 
-#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/variant/string.hpp>
 
 namespace ideam::godot_ext {
 
 
 
-class Relationship : public godot::RefCounted {
-    GDCLASS(Relationship, godot::RefCounted)
+class Relationship : public godot::Resource {
+    GDCLASS(Relationship, godot::Resource)
 
 private:
     // DOD NOTE: While RefCounted is better than Node, instantiating an object 

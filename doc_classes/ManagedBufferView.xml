@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ManagedBufferView" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Managed Buffer View class in IdeamMemory.
+	</brief_description>
+	<description>
+		Managed Buffer View (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="poll_telemetry">
+			<return type="Variant" />
+			<description>
+				Executes poll telemetry on ManagedBufferView.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active_resource" type="ManagedBufferResource" setter="open_resource" getter="get_resource">
+			Configures active resource for this ManagedBufferView.
+		</member>
+	</members>
+</class>

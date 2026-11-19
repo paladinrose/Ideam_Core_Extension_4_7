@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineCanvasBase" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Canvas Base class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Canvas Base (GeometryCanvas2DBase subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="spline_resource" type="SplineResource" setter="set_spline_resource" getter="get_spline_resource">
+			Configures spline resource for this SplineCanvasBase.
+		</member>
+	</members>
+	<constants>
+		<constant name="DRAG_AXIS_FREE_2D" value="0">
+			Drag axis free 2 d constant.
+		</constant>
+		<constant name="DRAG_AXIS_X_ONLY" value="0">
+			Drag axis x only constant.
+		</constant>
+		<constant name="DRAG_AXIS_Y_ONLY" value="0">
+			Drag axis y only constant.
+		</constant>
+		<constant name="POINT_STYLE_CIRCLE" value="0">
+			Point style circle constant.
+		</constant>
+		<constant name="POINT_STYLE_SQUARE" value="0">
+			Point style square constant.
+		</constant>
+		<constant name="POINT_STYLE_FADER_CAP" value="0">
+			Point style fader cap constant.
+		</constant>
+	</constants>
+</class>

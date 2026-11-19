@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamClimatologyPlugin" inherits="EditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Climatology Plugin class in IdeamClimatology.
+	</brief_description>
+	<description>
+		Ideam Climatology Plugin (EditorPlugin subclass) belonging to IdeamClimatology (synoptic atmosphere, winds, and severe weather).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_tasks_handshake_available" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes is tasks handshake available on IdeamClimatologyPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

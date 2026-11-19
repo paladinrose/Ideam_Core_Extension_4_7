@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PlanetarySystemsModeler" inherits="IdeamToolWorkspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 2 studio workspace unifying Geomorphology, Climatology, and Ecology.
+	</brief_description>
+	<description>
+		Orchestrates geological terrain, synoptic atmosphere, and biosphere Tier 1 controls under [b]Geomorphology[/b], [b]Climatology[/b], and [b]Ecology[/b] sidebar tabs. Defaults to [constant IdeamToolContext.UPDATE_EXPLICIT_TRIGGER] with a causal pipeline strip (Terrain -&gt; Atmosphere -&gt; Biosphere) and a Step Active Simulation command bar trigger.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_planetary_resource" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="resource" type="Resource" />
+			<param index="1" name="owner" type="Control" default="null" />
+			<description>
+				Opens or focuses the shared [PlanetarySystemsModeler] window and loads [param resource].
+			</description>
+		</method>
+	</methods>
+</class>

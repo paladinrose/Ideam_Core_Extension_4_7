@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedGeomorphology" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Geomorphology class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Geomorphology (RefCounted subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bind_terrain_resource">
+			<return type="Variant" />
+			<param index="0" name="terrain" type="Variant" />
+			<description>
+				Executes bind terrain resource on DataOrientedGeomorphology.
+			</description>
+		</method>
+		<method name="get_bound_terrain_resource">
+			<return type="Variant" />
+			<description>
+				Executes get bound terrain resource on DataOrientedGeomorphology.
+			</description>
+		</method>
+		<method name="initialize_from_seed">
+			<return type="Variant" />
+			<description>
+				Executes initialize from seed on DataOrientedGeomorphology.
+			</description>
+		</method>
+		<method name="execute_pipeline_step">
+			<return type="Variant" />
+			<param index="0" name="dt_geological_myr" type="Variant" />
+			<param index="1" name="dt_hydrological_sec" type="Variant" />
+			<param index="2" name="precipitation_rate" type="Variant" />
+			<description>
+				Executes execute pipeline step on DataOrientedGeomorphology.
+			</description>
+		</method>
+		<method name="get_pipeline_telemetry">
+			<return type="Variant" />
+			<description>
+				Executes get pipeline telemetry on DataOrientedGeomorphology.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="stage_mask" type="int" setter="set_stage_mask" getter="get_stage_mask">
+			Configures stage mask for this DataOrientedGeomorphology.
+		</member>
+	</members>
+</class>

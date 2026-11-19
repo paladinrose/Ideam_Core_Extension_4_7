@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedNarrative" inherits="Narrative" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Narrative class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Narrative (Narrative subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_dod_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes setup dod pipeline on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="bake_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes bake to dod on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="rebuild_dod_task_graph">
+			<return type="Variant" />
+			<description>
+				Executes rebuild dod task graph on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="execute_dod_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute dod step on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="sync_oop_resources_from_dod">
+			<return type="Variant" />
+			<description>
+				Executes sync oop resources from dod on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="dispatch_dod_signals_to_oop">
+			<return type="Variant" />
+			<description>
+				Executes dispatch dod signals to oop on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="semantic_name" type="Variant" />
+			<description>
+				Executes get buffer id on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_buffer_manifest_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes get buffer manifest dictionary on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_narreme_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="narreme" type="Variant" />
+			<description>
+				Executes get narreme dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_symbolic_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="symbolic" type="Variant" />
+			<description>
+				Executes get symbolic dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_condition_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="condition" type="Variant" />
+			<description>
+				Executes get condition dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_incident_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="incident" type="Variant" />
+			<description>
+				Executes get incident dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_plot_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="plot" type="Variant" />
+			<description>
+				Executes get plot dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_narreme_for_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="slot" type="Variant" />
+			<description>
+				Executes get narreme for dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_symbolic_for_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="slot" type="Variant" />
+			<description>
+				Executes get symbolic for dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_condition_for_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="slot" type="Variant" />
+			<description>
+				Executes get condition for dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_incident_for_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="slot" type="Variant" />
+			<description>
+				Executes get incident for dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+		<method name="get_plot_for_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="slot" type="Variant" />
+			<description>
+				Executes get plot for dod slot on DataOrientedNarrative.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="dod_pipeline_ready">
+			<description>
+				Emitted when dod pipeline ready occurs on this DataOrientedNarrative.
+			</description>
+		</signal>
+		<signal name="dod_step_completed">
+			<param index="0" name="delta" type="float" />
+			<description>
+				Emitted when dod step completed occurs on this DataOrientedNarrative.
+			</description>
+		</signal>
+		<signal name="dod_story_signal_emitted">
+			<param index="0" name="signal_type" type="int" />
+			<param index="1" name="source_slot" type="int" />
+			<param index="2" name="related_slot" type="int" />
+			<param index="3" name="status_payload" type="int" />
+			<description>
+				Emitted when dod story signal emitted occurs on this DataOrientedNarrative.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="NARRATIVE_DOD_EXEC_DISABLED" value="0">
+			Narrative dod exec disabled constant.
+		</constant>
+		<constant name="NARRATIVE_DOD_EXEC_COMPOSABLE_STAGES" value="0">
+			Narrative dod exec composable stages constant.
+		</constant>
+		<constant name="NARRATIVE_DOD_EXEC_CUSTOM_GRAPH_RESOURCE" value="0">
+			Narrative dod exec custom graph resource constant.
+		</constant>
+		<constant name="NARRATIVE_DOD_EXEC_MANUAL_GRAPH" value="0">
+			Narrative dod exec manual graph constant.
+		</constant>
+	</constants>
+</class>

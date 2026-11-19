@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Narrative" inherits="Narreme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Narrative class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Narrative (Narreme subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+	<constants>
+		<constant name="FIT_BASIC" value="0">
+			Fit basic constant.
+		</constant>
+		<constant name="FIT_SYMBOLIC" value="0">
+			Fit symbolic constant.
+		</constant>
+		<constant name="FIT_LITERAL" value="0">
+			Fit literal constant.
+		</constant>
+		<constant name="FIT_THOROUGH" value="0">
+			Fit thorough constant.
+		</constant>
+		<constant name="REPLACE_SYMBOLIC" value="0">
+			Replace symbolic constant.
+		</constant>
+		<constant name="REPLACE_LITERAL" value="0">
+			Replace literal constant.
+		</constant>
+		<constant name="REPLACE_THOROUGH" value="0">
+			Replace thorough constant.
+		</constant>
+	</constants>
+</class>

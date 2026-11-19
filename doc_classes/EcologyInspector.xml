@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologyInspector" inherits="EditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Thin Inspector launcher for EcologyBiosphereResource and EcologyBiosphereNode3D.
+	</brief_description>
+	<description>
+		Adds an 'Open in PlanetarySystemsModeler' launcher bar to the Inspector so Whittaker biome maps and trophic quadrat controls open in [PlanetarySystemsModeler].
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

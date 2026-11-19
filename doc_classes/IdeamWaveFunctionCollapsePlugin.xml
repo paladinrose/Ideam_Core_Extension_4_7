@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamWaveFunctionCollapsePlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Wave Function Collapse Plugin class in IdeamWaveFunctionCollapse.
+	</brief_description>
+	<description>
+		Ideam Wave Function Collapse Plugin (IdeamEditorPlugin subclass) belonging to IdeamWaveFunctionCollapse (WFC rule tensors, scene analyzers, and constraint solvers).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

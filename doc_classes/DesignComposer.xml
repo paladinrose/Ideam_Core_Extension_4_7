@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DesignComposer" inherits="IdeamToolWorkspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 2 studio workspace for architectural blueprints, assembly recipes, and 3D themes.
+	</brief_description>
+	<description>
+		Organizes [BlueprintResource] assets under [b]Blueprints[/b] (hosting [BlueprintEditorControl]), [ParametricAssemblyRecipeResource] assets under [b]Recipes[/b], and [Theme3DResource] / [Style3DResource] assets under [b]Themes &amp; Styles[/b].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_design_resource" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="resource" type="Resource" />
+			<param index="1" name="owner" type="Control" default="null" />
+			<description>
+				Opens or focuses the shared [DesignComposer] window and loads [param resource].
+			</description>
+		</method>
+	</methods>
+</class>

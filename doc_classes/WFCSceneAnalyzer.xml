@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WFCSceneAnalyzer" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`WFCSceneAnalyzer` (Section 1.4 &amp; Section 8.3): Inspects `PackedScene::get_state()` (`SceneState`), live Godot `Object` / `Node` / `Resource` trees, or `ProceduralPattern`...
+	</brief_description>
+	<description>
+		`WFCSceneAnalyzer` (Section 1.4 &amp; Section 8.3): Inspects `PackedScene::get_state()` (`SceneState`), live Godot `Object` / `Node` / `Resource` trees, or `ProceduralPattern` resources to compile a `WFCRuleTensorResource`. Part of IdeamWaveFunctionCollapse (WFC rule tensors, scene analyzers, and constraint solvers).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

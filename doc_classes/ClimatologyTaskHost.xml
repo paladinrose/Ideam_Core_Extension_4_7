@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ClimatologyTaskHost" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Climatology Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Climatology Task Host (Node subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_dod_climatology">
+			<return type="Variant" />
+			<description>
+				Executes get dod climatology on ClimatologyTaskHost.
+			</description>
+		</method>
+		<method name="step_once">
+			<return type="Variant" />
+			<description>
+				Executes step once on ClimatologyTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="atmosphere_resource" type="ClimatologyAtmosphereResource" setter="set_atmosphere_resource" getter="get_atmosphere_resource">
+			Configures atmosphere resource for this ClimatologyTaskHost.
+		</member>
+		<member name="auto_step_in_process" type="bool" setter="set_auto_step_in_process" getter="get_auto_step_in_process">
+			Configures auto step in process for this ClimatologyTaskHost.
+		</member>
+		<member name="synoptic_dt_per_step_sec" type="float" setter="set_synoptic_dt_per_step_sec" getter="get_synoptic_dt_per_step_sec">
+			Configures synoptic dt per step sec for this ClimatologyTaskHost.
+		</member>
+		<member name="vortex_dt_per_step_sec" type="float" setter="set_vortex_dt_per_step_sec" getter="get_vortex_dt_per_step_sec">
+			Configures vortex dt per step sec for this ClimatologyTaskHost.
+		</member>
+	</members>
+</class>

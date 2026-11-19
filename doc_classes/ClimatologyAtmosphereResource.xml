@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ClimatologyAtmosphereResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Climatology Atmosphere Resource class in IdeamClimatology.
+	</brief_description>
+	<description>
+		Climatology Atmosphere Resource (Resource subclass) belonging to IdeamClimatology (synoptic atmosphere, winds, and severe weather).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_simulation_step_counter">
+			<return type="Variant" />
+			<description>
+				Executes get simulation step counter on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="set_terrain_elevation_grid">
+			<return type="Variant" />
+			<param index="0" name="elevations_m" type="Variant" />
+			<description>
+				Executes set terrain elevation grid on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="generate_initial_climate">
+			<return type="Variant" />
+			<description>
+				Executes generate initial climate on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="step_simulation">
+			<return type="Variant" />
+			<param index="0" name="steps" type="Variant" />
+			<param index="1" name="dt_synoptic_sec" type="Variant" />
+			<param index="2" name="dt_vortex_sec" type="Variant" />
+			<description>
+				Executes step simulation on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="spawn_tornado_at_cell">
+			<return type="Variant" />
+			<param index="0" name="x" type="Variant" />
+			<param index="1" name="y" type="Variant" />
+			<param index="2" name="max_wind_mps" type="Variant" />
+			<param index="3" name="core_radius_m" type="Variant" />
+			<description>
+				Executes spawn tornado at cell on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="inspect_cell_sounding">
+			<return type="Variant" />
+			<param index="0" name="x" type="Variant" />
+			<param index="1" name="y" type="Variant" />
+			<description>
+				Executes inspect cell sounding on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="render_map_layer_image">
+			<return type="Variant" />
+			<param index="0" name="layer" type="Variant" />
+			<description>
+				Executes render map layer image on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+		<method name="get_domain_telemetry">
+			<return type="Variant" />
+			<description>
+				Executes get domain telemetry on ClimatologyAtmosphereResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="seed_profile" type="ClimatologySeedProfileResource" setter="set_seed_profile" getter="get_seed_profile">
+			Configures seed profile for this ClimatologyAtmosphereResource.
+		</member>
+		<member name="default_tornado_profile" type="TornadoVortexProfileResource" setter="set_default_tornado_profile" getter="get_default_tornado_profile">
+			Configures default tornado profile for this ClimatologyAtmosphereResource.
+		</member>
+		<member name="default_synoptic_dt_sec" type="float" setter="set_default_synoptic_dt_sec" getter="get_default_synoptic_dt_sec">
+			Configures default synoptic dt sec for this ClimatologyAtmosphereResource.
+		</member>
+		<member name="default_vortex_dt_sec" type="float" setter="set_default_vortex_dt_sec" getter="get_default_vortex_dt_sec">
+			Configures default vortex dt sec for this ClimatologyAtmosphereResource.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this ClimatologyAtmosphereResource.
+		</member>
+	</members>
+</class>

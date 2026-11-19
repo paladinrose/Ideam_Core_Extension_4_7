@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineNode" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Node class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Node (Node subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_current_value">
+			<return type="Variant" />
+			<description>
+				Executes get current value on SplineNode.
+			</description>
+		</method>
+		<method name="get_current_derivative">
+			<return type="Variant" />
+			<description>
+				Executes get current derivative on SplineNode.
+			</description>
+		</method>
+		<method name="get_current_section_index">
+			<return type="Variant" />
+			<description>
+				Executes get current section index on SplineNode.
+			</description>
+		</method>
+		<method name="play">
+			<return type="Variant" />
+			<param index="0" name="from_start" type="Variant" />
+			<description>
+				Executes play on SplineNode.
+			</description>
+		</method>
+		<method name="pause">
+			<return type="Variant" />
+			<description>
+				Executes pause on SplineNode.
+			</description>
+		</method>
+		<method name="stop">
+			<return type="Variant" />
+			<param index="0" name="reset_to_start" type="Variant" />
+			<description>
+				Executes stop on SplineNode.
+			</description>
+		</method>
+		<method name="step">
+			<return type="Variant" />
+			<param index="0" name="delta_seconds" type="Variant" />
+			<description>
+				Executes step on SplineNode.
+			</description>
+		</method>
+		<method name="sample_at_percent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<description>
+				Executes sample at percent on SplineNode.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline1DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this SplineNode.
+		</member>
+		<member name="process_mode_type" type="int" setter="set_process_mode_type" getter="get_process_mode_type">
+			Configures process mode type for this SplineNode (Idle:0,Physics:1,Manual:2).
+		</member>
+		<member name="loop_mode" type="int" setter="set_loop_mode" getter="get_loop_mode">
+			Configures loop mode for this SplineNode (Once:0,Wrap:1,Ping-Pong:2).
+		</member>
+		<member name="playing" type="bool" setter="set_playing" getter="is_playing">
+			Configures playing for this SplineNode.
+		</member>
+		<member name="autoplay" type="bool" setter="set_autoplay" getter="get_autoplay">
+			Configures autoplay for this SplineNode.
+		</member>
+		<member name="use_weighted_sampling" type="bool" setter="set_use_weighted_sampling" getter="get_use_weighted_sampling">
+			Configures use weighted sampling for this SplineNode.
+		</member>
+		<member name="duration" type="float" setter="set_duration" getter="get_duration">
+			Configures duration for this SplineNode.
+		</member>
+		<member name="speed_scale" type="float" setter="set_speed_scale" getter="get_speed_scale">
+			Configures speed scale for this SplineNode.
+		</member>
+		<member name="current_percent" type="float" setter="set_current_percent" getter="get_current_percent">
+			Configures current percent for this SplineNode.
+		</member>
+		<member name="output_scale" type="float" setter="set_output_scale" getter="get_output_scale">
+			Configures output scale for this SplineNode.
+		</member>
+		<member name="output_offset" type="float" setter="set_output_offset" getter="get_output_offset">
+			Configures output offset for this SplineNode.
+		</member>
+		<member name="target_node_path" type="NodePath" setter="set_target_node_path" getter="get_target_node_path">
+			Configures target node path for this SplineNode.
+		</member>
+		<member name="target_property" type="StringName" setter="set_target_property" getter="get_target_property">
+			Configures target property for this SplineNode.
+		</member>
+		<member name="node_retargeter" type="NodeRetargeter" setter="set_node_retargeter" getter="get_node_retargeter">
+			Configures node retargeter for this SplineNode.
+		</member>
+		<member name="signal_connector" type="SignalConnector" setter="set_signal_connector" getter="get_signal_connector">
+			Configures signal connector for this SplineNode.
+		</member>
+	</members>
+	<signals>
+		<signal name="value_evaluated">
+			<param index="0" name="percent" type="float" />
+			<param index="1" name="value" type="float" />
+			<param index="2" name="derivative" type="float" />
+			<description>
+				Emitted when value evaluated occurs on this SplineNode.
+			</description>
+		</signal>
+		<signal name="section_crossed">
+			<param index="0" name="previous_section" type="int" />
+			<param index="1" name="current_section" type="int" />
+			<description>
+				Emitted when section crossed occurs on this SplineNode.
+			</description>
+		</signal>
+		<signal name="playback_finished">
+			<description>
+				Emitted when playback finished occurs on this SplineNode.
+			</description>
+		</signal>
+		<signal name="playback_looped">
+			<description>
+				Emitted when playback looped occurs on this SplineNode.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="SPLINE_PROCESS_IDLE" value="0">
+			Spline process idle constant.
+		</constant>
+		<constant name="SPLINE_PROCESS_PHYSICS" value="0">
+			Spline process physics constant.
+		</constant>
+		<constant name="SPLINE_PROCESS_MANUAL" value="0">
+			Spline process manual constant.
+		</constant>
+		<constant name="SPLINE_LOOP_ONCE" value="0">
+			Spline loop once constant.
+		</constant>
+		<constant name="SPLINE_LOOP_WRAP" value="0">
+			Spline loop wrap constant.
+		</constant>
+		<constant name="SPLINE_LOOP_PING_PONG" value="0">
+			Spline loop ping pong constant.
+		</constant>
+	</constants>
+</class>

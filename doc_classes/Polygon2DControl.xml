@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Polygon2DControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Polygon2 DControl class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Polygon2 DControl (VBoxContainer subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_polygon_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get polygon canvas on Polygon2DControl.
+			</description>
+		</method>
+		<method name="get_csg_bridge_control">
+			<return type="Variant" />
+			<description>
+				Executes get csg bridge control on Polygon2DControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on Polygon2DControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="polygon_resource" type="Polygon2DResource" setter="set_polygon_resource" getter="get_polygon_resource">
+			Configures polygon resource for this Polygon2DControl.
+		</member>
+	</members>
+	<constants>
+		<constant name="POLY_PRESET_RECTANGLE" value="0">
+			Poly preset rectangle constant.
+		</constant>
+		<constant name="POLY_PRESET_REGULAR" value="0">
+			Poly preset regular constant.
+		</constant>
+		<constant name="POLY_PRESET_STAR" value="0">
+			Poly preset star constant.
+		</constant>
+	</constants>
+</class>

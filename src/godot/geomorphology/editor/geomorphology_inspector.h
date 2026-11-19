@@ -2,18 +2,13 @@
 
 /**
  * @file geomorphology_inspector.h
- * @brief Custom EditorInspectorPlugin for GeomorphologyTerrainResource and GeomorphologyTerrainNode3D.
- *
- * Embeds:
- * - Interactive Map Layer selector (9 diagnostic geological/hydrological layers)
- * - GeomorphologyMapLayerPreviewCanvas with click-to-inspect borehole selection
- * - StratigraphicColumnInspectorControl vertical bore-hole log
- * - World Generation & Simulation Stepping toolbar (Regenerate from Seed, +1 Step, +10 Steps)
- *   with IdeamUndoRedo snapshot integration.
+ * @brief Thin EditorInspectorPlugin launcher for GeomorphologyTerrainResource and
+ * GeomorphologyTerrainNode3D -> opens the full studio in Tier 2 `PlanetarySystemsModeler`.
  */
 
 #include <godot_cpp/classes/editor_inspector_plugin.hpp>
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/resource.hpp>
 
 #include "godot/geomorphology/geomorphology_terrain_resource.h"
 
@@ -28,6 +23,8 @@ protected:
 public:
     GeomorphologyInspector() = default;
     ~GeomorphologyInspector() override = default;
+
+    void _on_open_in_planetary_modeler(const godot::Ref<godot::Resource> &p_resource);
 
     bool _can_handle(godot::Object* p_object) const override;
     void _parse_begin(godot::Object* p_object) override;

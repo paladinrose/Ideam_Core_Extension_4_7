@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WallpaperTilingResource" inherits="TilingResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Wallpaper Tiling Resource class in IdeamTiles.
+	</brief_description>
+	<description>
+		Wallpaper Tiling Resource (TilingResource subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_lattice_family">
+			<return type="Variant" />
+			<description>
+				Executes get lattice family on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_iucr_symbol">
+			<return type="Variant" />
+			<description>
+				Executes get iucr symbol on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_orbifold_symbol">
+			<return type="Variant" />
+			<description>
+				Executes get orbifold symbol on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_rotational_order">
+			<return type="Variant" />
+			<description>
+				Executes get rotational order on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="has_reflection">
+			<return type="Variant" />
+			<description>
+				Executes has reflection on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="has_glide_reflection">
+			<return type="Variant" />
+			<description>
+				Executes has glide reflection on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_parameter_count">
+			<return type="Variant" />
+			<description>
+				Executes get parameter count on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="set_tactile_parameter">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes set tactile parameter on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_tactile_parameter">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get tactile parameter on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="set_edge_spline">
+			<return type="Variant" />
+			<param index="0" name="edge_shape_id" type="Variant" />
+			<param index="1" name="spline" type="Variant" />
+			<description>
+				Executes set edge spline on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_spline">
+			<return type="Variant" />
+			<param index="0" name="edge_shape_id" type="Variant" />
+			<description>
+				Executes get edge spline on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_shape_constraint">
+			<return type="Variant" />
+			<param index="0" name="edge_shape_id" type="Variant" />
+			<description>
+				Executes get edge shape constraint on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="clear_edge_splines">
+			<return type="Variant" />
+			<description>
+				Executes clear edge splines on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_translation_vector_t1">
+			<return type="Variant" />
+			<description>
+				Executes get translation vector t1 on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_translation_vector_t2">
+			<return type="Variant" />
+			<description>
+				Executes get translation vector t2 on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_wallpaper_group">
+			<return type="Variant" />
+			<param index="0" name="group" type="Variant" />
+			<description>
+				Executes commit set wallpaper group on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_tactile_ih_type">
+			<return type="Variant" />
+			<param index="0" name="ih_type" type="Variant" />
+			<description>
+				Executes commit set tactile ih type on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_shape_preset">
+			<return type="Variant" />
+			<param index="0" name="preset" type="Variant" />
+			<description>
+				Executes commit set shape preset on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_tactile_parameter">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes commit set tactile parameter on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_lattice_scale">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes commit set lattice scale on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_lattice_rotation_radians">
+			<return type="Variant" />
+			<param index="0" name="rotation_rad" type="Variant" />
+			<description>
+				Executes commit set lattice rotation radians on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_lattice_origin">
+			<return type="Variant" />
+			<param index="0" name="origin" type="Variant" />
+			<description>
+				Executes commit set lattice origin on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_edge_spline">
+			<return type="Variant" />
+			<param index="0" name="edge_shape_id" type="Variant" />
+			<param index="1" name="spline" type="Variant" />
+			<description>
+				Executes commit set edge spline on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_base_prototile_vertices">
+			<return type="Variant" />
+			<description>
+				Executes get base prototile vertices on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_transform_2d">
+			<return type="Variant" />
+			<param index="0" name="t1" type="Variant" />
+			<param index="1" name="t2" type="Variant" />
+			<param index="2" name="aspect" type="Variant" />
+			<description>
+				Executes get cell transform 2d on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_colour">
+			<return type="Variant" />
+			<param index="0" name="t1" type="Variant" />
+			<param index="1" name="t2" type="Variant" />
+			<param index="2" name="aspect" type="Variant" />
+			<description>
+				Executes get cell colour on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="locate_cell_at_world_point">
+			<return type="Variant" />
+			<param index="0" name="world_point" type="Variant" />
+			<description>
+				Executes locate cell at world point on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="step_to_neighbor">
+			<return type="Variant" />
+			<param index="0" name="t1" type="Variant" />
+			<param index="1" name="t2" type="Variant" />
+			<param index="2" name="aspect" type="Variant" />
+			<param index="3" name="edge_slot" type="Variant" />
+			<description>
+				Executes step to neighbor on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_all_valid_ih_types" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes get all valid ih types on WallpaperTilingResource.
+			</description>
+		</method>
+		<method name="get_ih_types_for_group" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="group" type="Variant" />
+			<description>
+				Executes get ih types for group on WallpaperTilingResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="authoring_mode" type="int" setter="set_authoring_mode" getter="get_authoring_mode">
+			Configures authoring mode for this WallpaperTilingResource (Wallpaper Group (17):0,Isohedral Tactile (81):1).
+		</member>
+		<member name="wallpaper_group" type="int" setter="set_wallpaper_group" getter="get_wallpaper_group">
+			Configures wallpaper group for this WallpaperTilingResource (P1 (o):0,P2 (2222):1,PM (**):2,PG (xx):3,CM (*x):4,PMM (*2222):5,PMG (22*):6,PGG (22x):7,CMM (2*22):8,).
+		</member>
+		<member name="tactile_ih_type" type="int" setter="set_tactile_ih_type" getter="get_tactile_ih_type">
+			Configures tactile ih type for this WallpaperTilingResource.
+		</member>
+		<member name="shape_preset" type="int" setter="set_shape_preset" getter="get_shape_preset">
+			Configures shape preset for this WallpaperTilingResource (Tactile Default:0,Quad:1,Brick Hex:2,Right Triangle:3,Equilateral Triangle:4,Flat Triangle:5,Tall Triangle:6,Rhombus 60:7).
+		</member>
+		<member name="tactile_parameters" type="PackedFloat32Array" setter="set_tactile_parameters" getter="get_tactile_parameters">
+			Configures tactile parameters for this WallpaperTilingResource.
+		</member>
+		<member name="edge_splines" type="Array" setter="set_edge_splines" getter="get_edge_splines">
+			Configures edge splines for this WallpaperTilingResource.
+		</member>
+		<member name="lattice_scale" type="Vector2" setter="set_lattice_scale" getter="get_lattice_scale">
+			Configures lattice scale for this WallpaperTilingResource.
+		</member>
+		<member name="lattice_rotation_radians" type="float" setter="set_lattice_rotation_radians" getter="get_lattice_rotation_radians">
+			Configures lattice rotation radians for this WallpaperTilingResource.
+		</member>
+		<member name="lattice_origin" type="Vector2" setter="set_lattice_origin" getter="get_lattice_origin">
+			Configures lattice origin for this WallpaperTilingResource.
+		</member>
+		<member name="axes_of_symmetry" type="PackedVector2Array" setter="set_axes_of_symmetry" getter="get_axes_of_symmetry">
+			Configures axes of symmetry for this WallpaperTilingResource.
+		</member>
+		<member name="points_of_rotation" type="PackedVector2Array" setter="set_points_of_rotation" getter="get_points_of_rotation">
+			Configures points of rotation for this WallpaperTilingResource.
+		</member>
+		<member name="glides" type="PackedVector2Array" setter="set_glides" getter="get_glides">
+			Configures glides for this WallpaperTilingResource.
+		</member>
+	</members>
+</class>

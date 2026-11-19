@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryRibbon" inherits="BoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Ribbon class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Ribbon (BoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="sync_with_resource">
+			<return type="Variant" />
+			<param index="0" name="manager" type="Variant" />
+			<description>
+				Executes sync with resource on MemoryRibbon.
+			</description>
+		</method>
+		<method name="highlight_grant_buffers">
+			<return type="Variant" />
+			<param index="0" name="active_buffer_ids" type="Variant" />
+			<description>
+				Executes highlight grant buffers on MemoryRibbon.
+			</description>
+		</method>
+		<method name="clear_dimming">
+			<return type="Variant" />
+			<description>
+				Executes clear dimming on MemoryRibbon.
+			</description>
+		</method>
+		<method name="set_selected_buffers">
+			<return type="Variant" />
+			<param index="0" name="indices" type="Variant" />
+			<description>
+				Executes set selected buffers on MemoryRibbon.
+			</description>
+		</method>
+		<method name="clear_selection">
+			<return type="Variant" />
+			<description>
+				Executes clear selection on MemoryRibbon.
+			</description>
+		</method>
+		<method name="set_cut_buffers">
+			<return type="Variant" />
+			<param index="0" name="indices" type="Variant" />
+			<description>
+				Executes set cut buffers on MemoryRibbon.
+			</description>
+		</method>
+		<method name="clear_cut_buffers">
+			<return type="Variant" />
+			<description>
+				Executes clear cut buffers on MemoryRibbon.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="is_vertical" type="bool" setter="set_is_vertical" getter="get_is_vertical">
+			Configures is vertical for this MemoryRibbon.
+		</member>
+	</members>
+	<signals>
+		<signal name="select_all_requested">
+			<description>
+				Emitted when select all requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="invert_selection_requested">
+			<description>
+				Emitted when invert selection requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="copy_requested">
+			<description>
+				Emitted when copy requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="cut_requested">
+			<description>
+				Emitted when cut requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="paste_requested">
+			<description>
+				Emitted when paste requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="cancel_requested">
+			<description>
+				Emitted when cancel requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="drag_initiated">
+			<param index="0" name="buffer_id" type="int" />
+			<description>
+				Emitted when drag initiated occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="drop_paste_requested">
+			<param index="0" name="target_index" type="int" />
+			<description>
+				Emitted when drop paste requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="delete_requested">
+			<param index="0" name="bypass_confirm" type="bool" />
+			<description>
+				Emitted when delete requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="grant_selected">
+			<param index="0" name="grant_index" type="int" />
+			<description>
+				Emitted when grant selected occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="inspection_requested">
+			<param index="0" name="block_type" type="int" />
+			<param index="1" name="index" type="int" />
+			<param index="2" name="shift_pressed" type="bool" />
+			<param index="3" name="ctrl_pressed" type="bool" />
+			<description>
+				Emitted when inspection requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+		<signal name="buffer_context_menu_requested">
+			<param index="0" name="global_position" type="Vector2" />
+			<param index="1" name="buffer_id" type="int" />
+			<description>
+				Emitted when buffer context menu requested occurs on this MemoryRibbon.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,5 +1,12 @@
 #include "ideam_geometry_plugin.h"
 
+#include "../controls/ideam_tier1_control_registry.h"
+#include "ui/geometry_composer.h"
+#include "ui/polygon_2d_control.h"
+#include "ui/sdf_grid_2d_canvas.h"
+#include "ui/tensor_field_2d_canvas.h"
+#include "ui/voronoi_2d_canvas.h"
+
 #include "../../core/tasks/domains/geometry/registration/geometry_task_domain_pack.h"
 #include "../../core/tasks/registration/ideam_task_registry.h"
 
@@ -65,9 +72,79 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     sdf_grid_2d_inspector.instantiate();
     add_inspector_plugin(sdf_grid_2d_inspector);
+
+    tensor_field_2d_inspector.instantiate();
+    add_inspector_plugin(tensor_field_2d_inspector);
+
+    // 3. Register Geometry Tier 1 Controls with GeometryComposer ("General" tab)
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
+
+    reg.register_control({
+        ws_id, "Polygon2DResource", "General", "2D Polygon", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<Polygon2DResource> poly = p_asset;
+            if (poly.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) poly->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(Polygon2DControl);
+            ctrl->set_polygon_resource(poly);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "VoronoiDiagram2DResource", "General", "Voronoi 2D", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<VoronoiDiagram2DResource> vor = p_asset;
+            if (vor.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) vor->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(Voronoi2DControl);
+            ctrl->set_voronoi_resource(vor);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "SDFGrid2DResource", "General", "SDF Grid 2D", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<SDFGrid2DResource> sdf = p_asset;
+            if (sdf.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) sdf->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(SDFGrid2DControl);
+            ctrl->set_sdf_grid_resource(sdf);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "TensorField2DResource", "General", "Tensor Field 2D", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<TensorField2DResource> tf = p_asset;
+            if (tf.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) tf->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(TensorField2DControl);
+            ctrl->set_custom_minimum_size(godot::Vector2(0.0f, 360.0f));
+            ctrl->set_geometry_resource(tf);
+            return ctrl;
+        },
+        nullptr
+    });
 }
 
 void IdeamGeometryPlugin::_exit_tree() {
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "Polygon2DResource");
+    reg.unregister_class(ws_id, "VoronoiDiagram2DResource");
+    reg.unregister_class(ws_id, "SDFGrid2DResource");
+    reg.unregister_class(ws_id, "TensorField2DResource");
+    if (tensor_field_2d_inspector.is_valid()) {
+        remove_inspector_plugin(tensor_field_2d_inspector);
+        tensor_field_2d_inspector.unref();
+    }
     if (sdf_grid_2d_inspector.is_valid()) {
         remove_inspector_plugin(sdf_grid_2d_inspector);
         sdf_grid_2d_inspector.unref();

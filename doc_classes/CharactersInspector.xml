@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharactersInspector" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Thin Inspector launcher for CharacterBlueprintResource, CharacterApparelResource, and ParametricCharacterNode3D.
+	</brief_description>
+	<description>
+		Adds an 'Open in CharacterModeler' launcher bar to the Inspector so full anatomical morph slider panels open in [CharacterModeler].
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

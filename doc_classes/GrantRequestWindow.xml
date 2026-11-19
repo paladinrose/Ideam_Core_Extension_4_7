@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GrantRequestWindow" inherits="AcceptDialog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Grant Request Window class in IdeamMemory.
+	</brief_description>
+	<description>
+		Grant Request Window (AcceptDialog subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_and_popup">
+			<return type="Variant" />
+			<param index="0" name="node_name" type="Variant" />
+			<param index="1" name="buffer_names" type="Variant" />
+			<description>
+				Executes clear and popup on GrantRequestWindow.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="grant_payload_submitted">
+			<param index="0" name="node_name" type="StringName" />
+			<param index="1" name="selected_buffer_ids" type="PackedInt32Array" />
+			<description>
+				Emitted when grant payload submitted occurs on this GrantRequestWindow.
+			</description>
+		</signal>
+	</signals>
+</class>

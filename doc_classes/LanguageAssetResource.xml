@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="LanguageAssetResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Language Asset Resource class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Language Asset Resource (Resource subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_lexicon">
+			<return type="Variant" />
+			<param index="0" name="lexicon" type="Variant" />
+			<description>
+				Executes add lexicon on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="add_grammar_rule">
+			<return type="Variant" />
+			<param index="0" name="rule" type="Variant" />
+			<description>
+				Executes add grammar rule on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="tokenize_bpe_subwords">
+			<return type="Variant" />
+			<param index="0" name="text" type="Variant" />
+			<description>
+				Executes tokenize bpe subwords on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="tokenize_bpe_pieces">
+			<return type="Variant" />
+			<param index="0" name="text" type="Variant" />
+			<description>
+				Executes tokenize bpe pieces on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="decode_bpe_tokens">
+			<return type="Variant" />
+			<param index="0" name="token_ids" type="Variant" />
+			<description>
+				Executes decode bpe tokens on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="decompose_word_morphology">
+			<return type="Variant" />
+			<param index="0" name="word" type="Variant" />
+			<description>
+				Executes decompose word morphology on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on LanguageAssetResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on LanguageAssetResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this LanguageAssetResource.
+		</member>
+		<member name="language_name" type="String" setter="set_language_name" getter="get_language_name">
+			Configures language name for this LanguageAssetResource.
+		</member>
+		<member name="language_code" type="String" setter="set_language_code" getter="get_language_code">
+			Configures language code for this LanguageAssetResource.
+		</member>
+		<member name="default_lect_id" type="int" setter="set_default_lect_id" getter="get_default_lect_id">
+			Configures default lect id for this LanguageAssetResource.
+		</member>
+		<member name="lexicons" type="Array" setter="set_lexicons" getter="get_lexicons">
+			Configures lexicons for this LanguageAssetResource.
+		</member>
+		<member name="grammar_rules" type="Array" setter="set_grammar_rules" getter="get_grammar_rules">
+			Configures grammar rules for this LanguageAssetResource.
+		</member>
+	</members>
+</class>

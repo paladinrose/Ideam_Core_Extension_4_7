@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralComposer" inherits="IdeamToolWorkspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 2 studio workspace unifying Procedural Generation, Wave Function Collapse, and Quantum Darwinism.
+	</brief_description>
+	<description>
+		Organizes generator/pattern/rule resources under [b]Generators[/b], [WFCRuleTensorResource] under [b]WFC[/b], and [QuantumDarwinismStabilizerResource] under [b]Quantum Darwinism[/b]. Defaults to [constant IdeamToolContext.UPDATE_EXPLICIT_TRIGGER] and provides an Execute Generator command bar button.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_procedural_resource" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="resource" type="Resource" />
+			<param index="1" name="owner" type="Control" default="null" />
+			<description>
+				Opens or focuses the shared [ProceduralComposer] window and loads [param resource].
+			</description>
+		</method>
+	</methods>
+</class>

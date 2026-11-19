@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ClimatologySeedProfileResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Climatology Seed Profile Resource class in IdeamClimatology.
+	</brief_description>
+	<description>
+		Climatology Seed Profile Resource (Resource subclass) belonging to IdeamClimatology (synoptic atmosphere, winds, and severe weather).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_solar_insolation_seed">
+			<return type="Variant" />
+			<description>
+				Executes get solar insolation seed on ClimatologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_baroclinic_wave_seed">
+			<return type="Variant" />
+			<description>
+				Executes get baroclinic wave seed on ClimatologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_convective_storm_seed">
+			<return type="Variant" />
+			<description>
+				Executes get convective storm seed on ClimatologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_tornado_vortex_seed">
+			<return type="Variant" />
+			<description>
+				Executes get tornado vortex seed on ClimatologySeedProfileResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="master_seed" type="int" setter="set_master_seed" getter="get_master_seed">
+			Configures master seed for this ClimatologySeedProfileResource.
+		</member>
+		<member name="grid_width" type="int" setter="set_grid_width" getter="get_grid_width">
+			Configures grid width for this ClimatologySeedProfileResource.
+		</member>
+		<member name="grid_height" type="int" setter="set_grid_height" getter="get_grid_height">
+			Configures grid height for this ClimatologySeedProfileResource.
+		</member>
+		<member name="max_vortices" type="int" setter="set_max_vortices" getter="get_max_vortices">
+			Configures max vortices for this ClimatologySeedProfileResource.
+		</member>
+		<member name="cell_size_meters" type="float" setter="set_cell_size_meters" getter="get_cell_size_meters">
+			Configures cell size meters for this ClimatologySeedProfileResource.
+		</member>
+		<member name="planet_latitude_deg" type="float" setter="set_planet_latitude_deg" getter="get_planet_latitude_deg">
+			Configures planet latitude deg for this ClimatologySeedProfileResource.
+		</member>
+		<member name="seasonal_solar_decl_deg" type="float" setter="set_seasonal_solar_decl_deg" getter="get_seasonal_solar_decl_deg">
+			Configures seasonal solar decl deg for this ClimatologySeedProfileResource.
+		</member>
+		<member name="diurnal_hour_0_24" type="float" setter="set_diurnal_hour_0_24" getter="get_diurnal_hour_0_24">
+			Configures diurnal hour 0 24 for this ClimatologySeedProfileResource.
+		</member>
+		<member name="solar_constant_w_m2" type="float" setter="set_solar_constant_w_m2" getter="get_solar_constant_w_m2">
+			Configures solar constant w m2 for this ClimatologySeedProfileResource.
+		</member>
+		<member name="coriolis_parameter_f0" type="float" setter="set_coriolis_parameter_f0" getter="get_coriolis_parameter_f0">
+			Configures coriolis parameter f0 for this ClimatologySeedProfileResource.
+		</member>
+		<member name="sea_level_pressure_hpa" type="float" setter="set_sea_level_pressure_hpa" getter="get_sea_level_pressure_hpa">
+			Configures sea level pressure hpa for this ClimatologySeedProfileResource.
+		</member>
+		<member name="sea_level_temp_k" type="float" setter="set_sea_level_temp_k" getter="get_sea_level_temp_k">
+			Configures sea level temp k for this ClimatologySeedProfileResource.
+		</member>
+		<member name="prevailing_zonal_wind_mps" type="float" setter="set_prevailing_zonal_wind_mps" getter="get_prevailing_zonal_wind_mps">
+			Configures prevailing zonal wind mps for this ClimatologySeedProfileResource.
+		</member>
+		<member name="prevailing_merid_wind_mps" type="float" setter="set_prevailing_merid_wind_mps" getter="get_prevailing_merid_wind_mps">
+			Configures prevailing merid wind mps for this ClimatologySeedProfileResource.
+		</member>
+		<member name="synoptic_wave_amplitude_hpa" type="float" setter="set_synoptic_wave_amplitude_hpa" getter="get_synoptic_wave_amplitude_hpa">
+			Configures synoptic wave amplitude hpa for this ClimatologySeedProfileResource.
+		</member>
+		<member name="orographic_lift_scale" type="float" setter="set_orographic_lift_scale" getter="get_orographic_lift_scale">
+			Configures orographic lift scale for this ClimatologySeedProfileResource.
+		</member>
+		<member name="tornado_spawn_ehi_threshold" type="float" setter="set_tornado_spawn_ehi_threshold" getter="get_tornado_spawn_ehi_threshold">
+			Configures tornado spawn ehi threshold for this ClimatologySeedProfileResource.
+		</member>
+	</members>
+</class>

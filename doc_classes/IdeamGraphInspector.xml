@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphInspector" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graph Inspector class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graph Inspector (IdeamEditorInspectorPlugin subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

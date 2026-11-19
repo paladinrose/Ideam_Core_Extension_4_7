@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="VoronoiDiagram2DResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Voronoi Diagram2 DResource class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Voronoi Diagram2 DResource (GeometryResource subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_site_count">
+			<return type="Variant" />
+			<description>
+				Executes get site count on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="add_site">
+			<return type="Variant" />
+			<param index="0" name="site" type="Variant" />
+			<description>
+				Executes add site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="set_site">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="site" type="Variant" />
+			<description>
+				Executes set site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_site">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="remove_site">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="clear">
+			<return type="Variant" />
+			<description>
+				Executes clear on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_delaunay_triangles">
+			<return type="Variant" />
+			<description>
+				Executes get delaunay triangles on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_cell_polygon">
+			<return type="Variant" />
+			<param index="0" name="site_index" type="Variant" />
+			<description>
+				Executes get cell polygon on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_cell_centroid">
+			<return type="Variant" />
+			<param index="0" name="site_index" type="Variant" />
+			<description>
+				Executes get cell centroid on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_cell_area">
+			<return type="Variant" />
+			<param index="0" name="site_index" type="Variant" />
+			<description>
+				Executes get cell area on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="find_containing_cell">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes find containing cell on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_site_neighbors">
+			<return type="Variant" />
+			<param index="0" name="site_index" type="Variant" />
+			<description>
+				Executes get site neighbors on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_csr_row_offsets">
+			<return type="Variant" />
+			<description>
+				Executes get csr row offsets on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="get_csr_col_neighbors">
+			<return type="Variant" />
+			<description>
+				Executes get csr col neighbors on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_set_clip_bounds">
+			<return type="Variant" />
+			<param index="0" name="bounds" type="Variant" />
+			<description>
+				Executes commit set clip bounds on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_set_clip_polygon">
+			<return type="Variant" />
+			<param index="0" name="polygon" type="Variant" />
+			<description>
+				Executes commit set clip polygon on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_clear">
+			<return type="Variant" />
+			<description>
+				Executes commit clear on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_add_site">
+			<return type="Variant" />
+			<param index="0" name="site" type="Variant" />
+			<description>
+				Executes commit add site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_set_site">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="site" type="Variant" />
+			<description>
+				Executes commit set site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+		<method name="commit_remove_site">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes commit remove site on VoronoiDiagram2DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="clip_bounds" type="Rect2" setter="set_clip_bounds" getter="get_clip_bounds">
+			Configures clip bounds for this VoronoiDiagram2DResource.
+		</member>
+		<member name="clip_polygon" type="Polygon2DResource" setter="set_clip_polygon" getter="get_clip_polygon">
+			Configures clip polygon for this VoronoiDiagram2DResource.
+		</member>
+		<member name="sites" type="PackedVector2Array" setter="set_sites" getter="get_sites">
+			Configures sites for this VoronoiDiagram2DResource.
+		</member>
+	</members>
+</class>

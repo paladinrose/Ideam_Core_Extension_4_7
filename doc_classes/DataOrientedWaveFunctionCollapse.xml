@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedWaveFunctionCollapse" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Wave Function Collapse class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Wave Function Collapse (Resource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_dod_buffers">
+			<return type="Variant" />
+			<description>
+				Executes initialize dod buffers on DataOrientedWaveFunctionCollapse.
+			</description>
+		</method>
+		<method name="stage_environment_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes stage environment to dod on DataOrientedWaveFunctionCollapse.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager_resource" type="MemoryManagerResource" setter="set_memory_manager_resource" getter="get_memory_manager_resource">
+			Configures memory manager resource for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="task_graph_resource" type="TaskGraphResource" setter="set_task_graph_resource" getter="get_task_graph_resource">
+			Configures task graph resource for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="rule_tensor_resource" type="WFCRuleTensorResource" setter="set_rule_tensor_resource" getter="get_rule_tensor_resource">
+			Configures rule tensor resource for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="active_pattern" type="ProceduralPattern" setter="set_active_pattern" getter="get_active_pattern">
+			Configures active pattern for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="slot_count" type="int" setter="set_slot_count" getter="get_slot_count">
+			Configures slot count for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="max_collapse_steps" type="int" setter="set_max_collapse_steps" getter="get_max_collapse_steps">
+			Configures max collapse steps for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="pointer_redundancy_threshold" type="float" setter="set_pointer_redundancy_threshold" getter="get_pointer_redundancy_threshold">
+			Configures pointer redundancy threshold for this DataOrientedWaveFunctionCollapse.
+		</member>
+		<member name="horizon_radius" type="int" setter="set_horizon_radius" getter="get_horizon_radius">
+			Configures horizon radius for this DataOrientedWaveFunctionCollapse.
+		</member>
+	</members>
+</class>

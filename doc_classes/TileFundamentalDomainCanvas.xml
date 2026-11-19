@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TileFundamentalDomainCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tile Fundamental Domain Canvas class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tile Fundamental Domain Canvas (GeometryCanvas2DBase subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_selected_edge_shape_id">
+			<return type="Variant" />
+			<param index="0" name="edge_shape_id" type="Variant" />
+			<description>
+				Executes set selected edge shape id on TileFundamentalDomainCanvas.
+			</description>
+		</method>
+		<method name="get_selected_edge_shape_id">
+			<return type="Variant" />
+			<description>
+				Executes get selected edge shape id on TileFundamentalDomainCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="wallpaper_tiling" type="WallpaperTilingResource" setter="set_wallpaper_tiling" getter="get_wallpaper_tiling">
+			Configures wallpaper tiling for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_lattice_neighborhood" type="bool" setter="set_show_lattice_neighborhood" getter="get_show_lattice_neighborhood">
+			Configures show lattice neighborhood for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_three_coloring" type="bool" setter="set_show_three_coloring" getter="get_show_three_coloring">
+			Configures show three coloring for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_lattice_vectors" type="bool" setter="set_show_lattice_vectors" getter="get_show_lattice_vectors">
+			Configures show lattice vectors for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_symmetry_elements" type="bool" setter="set_show_symmetry_elements" getter="get_show_symmetry_elements">
+			Configures show symmetry elements for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_edge_constraints" type="bool" setter="set_show_edge_constraints" getter="get_show_edge_constraints">
+			Configures show edge constraints for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="show_triangulation" type="bool" setter="set_show_triangulation" getter="get_show_triangulation">
+			Configures show triangulation for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="neighborhood_radius" type="int" setter="set_neighborhood_radius" getter="get_neighborhood_radius">
+			Configures neighborhood radius for this TileFundamentalDomainCanvas.
+		</member>
+		<member name="edge_subdivisions" type="int" setter="set_edge_subdivisions" getter="get_edge_subdivisions">
+			Configures edge subdivisions for this TileFundamentalDomainCanvas.
+		</member>
+	</members>
+	<signals>
+		<signal name="edge_shape_selected">
+			<param index="0" name="edge_shape_id" type="int" />
+			<description>
+				Emitted when edge shape selected occurs on this TileFundamentalDomainCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

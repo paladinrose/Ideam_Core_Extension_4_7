@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineSectionField" inherits="PanelContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Section Field class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Section Field (PanelContainer subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_section_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set section index on SplineSectionField.
+			</description>
+		</method>
+		<method name="get_section_index">
+			<return type="Variant" />
+			<description>
+				Executes get section index on SplineSectionField.
+			</description>
+		</method>
+		<method name="set_selected">
+			<return type="Variant" />
+			<param index="0" name="selected" type="Variant" />
+			<description>
+				Executes set selected on SplineSectionField.
+			</description>
+		</method>
+		<method name="is_selected">
+			<return type="Variant" />
+			<description>
+				Executes is selected on SplineSectionField.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="section_selected">
+			<param index="0" name="section_index" type="int" />
+			<description>
+				Emitted when section selected occurs on this SplineSectionField.
+			</description>
+		</signal>
+		<signal name="curve_type_changed">
+			<param index="0" name="section_index" type="int" />
+			<param index="1" name="curve_type" type="int" />
+			<description>
+				Emitted when curve type changed occurs on this SplineSectionField.
+			</description>
+		</signal>
+		<signal name="weight_changed">
+			<param index="0" name="section_index" type="int" />
+			<param index="1" name="weight" type="float" />
+			<description>
+				Emitted when weight changed occurs on this SplineSectionField.
+			</description>
+		</signal>
+		<signal name="split_section_requested">
+			<param index="0" name="section_index" type="int" />
+			<description>
+				Emitted when split section requested occurs on this SplineSectionField.
+			</description>
+		</signal>
+	</signals>
+</class>

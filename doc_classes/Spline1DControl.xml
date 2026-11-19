@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline1DControl" inherits="SplineControlBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Full Editor &amp; Runtime composite UI control for `Spline1DResource`.
+	</brief_description>
+	<description>
+		Full Editor &amp; Runtime composite UI control for `Spline1DResource`. Combines 1D presets, `Spline1DEqualizerCanvas`, and the alternating Point/Section chain. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_spline_1d">
+			<return type="Variant" />
+			<param index="0" name="spline" type="Variant" />
+			<description>
+				Executes set spline 1d on Spline1DControl.
+			</description>
+		</method>
+		<method name="get_spline_1d">
+			<return type="Variant" />
+			<description>
+				Executes get spline 1d on Spline1DControl.
+			</description>
+		</method>
+		<method name="get_equalizer_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get equalizer canvas on Spline1DControl.
+			</description>
+		</method>
+	</methods>
+</class>

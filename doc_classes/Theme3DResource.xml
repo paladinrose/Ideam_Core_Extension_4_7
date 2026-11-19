@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Theme3DResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Theme3 DResource class in IdeamDesign.
+	</brief_description>
+	<description>
+		Theme3 DResource (Resource subclass) belonging to IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_style_rule">
+			<return type="Variant" />
+			<param index="0" name="style" type="Variant" />
+			<description>
+				Executes add style rule on Theme3DResource.
+			</description>
+		</method>
+		<method name="clear_style_rules">
+			<return type="Variant" />
+			<description>
+				Executes clear style rules on Theme3DResource.
+			</description>
+		</method>
+		<method name="set_style_for_role">
+			<return type="Variant" />
+			<param index="0" name="semantic_role_id" type="Variant" />
+			<param index="1" name="style" type="Variant" />
+			<description>
+				Executes set style for role on Theme3DResource.
+			</description>
+		</method>
+		<method name="get_style_for_role">
+			<return type="Variant" />
+			<param index="0" name="semantic_role_id" type="Variant" />
+			<description>
+				Executes get style for role on Theme3DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="default_layer" type="int" setter="set_default_layer" getter="get_default_layer">
+			Configures default layer for this Theme3DResource (ArchetypeDefault:0,BlueprintRoom:1,ThemeEra:2,DamageOrWear:3,DreamSurrealism:4,UserCustomization:5).
+		</member>
+		<member name="cascade_rules" type="Array" setter="set_cascade_rules" getter="get_cascade_rules">
+			Configures cascade rules for this Theme3DResource.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedCommunications" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Communications class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Communications (Resource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_dod_buffers">
+			<return type="Variant" />
+			<description>
+				Executes initialize dod buffers on DataOrientedCommunications.
+			</description>
+		</method>
+		<method name="stage_resources_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes stage resources to dod on DataOrientedCommunications.
+			</description>
+		</method>
+		<method name="read_epistemic_handoffs_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read epistemic handoffs as dicts on DataOrientedCommunications.
+			</description>
+		</method>
+		<method name="read_signal_packets_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read signal packets as dicts on DataOrientedCommunications.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager_resource" type="MemoryManagerResource" setter="set_memory_manager_resource" getter="get_memory_manager_resource">
+			Configures memory manager resource for this DataOrientedCommunications.
+		</member>
+		<member name="task_graph_resource" type="TaskGraphResource" setter="set_task_graph_resource" getter="get_task_graph_resource">
+			Configures task graph resource for this DataOrientedCommunications.
+		</member>
+		<member name="default_medium" type="CommunicationMediumResource" setter="set_default_medium" getter="get_default_medium">
+			Configures default medium for this DataOrientedCommunications.
+		</member>
+		<member name="active_discourse" type="DiscourseResource" setter="set_active_discourse" getter="get_active_discourse">
+			Configures active discourse for this DataOrientedCommunications.
+		</member>
+		<member name="language_asset" type="LanguageAssetResource" setter="set_language_asset" getter="get_language_asset">
+			Configures language asset for this DataOrientedCommunications.
+		</member>
+		<member name="max_signal_packets" type="int" setter="set_max_signal_packets" getter="get_max_signal_packets">
+			Configures max signal packets for this DataOrientedCommunications.
+		</member>
+		<member name="max_phoneme_stream_len" type="int" setter="set_max_phoneme_stream_len" getter="get_max_phoneme_stream_len">
+			Configures max phoneme stream len for this DataOrientedCommunications.
+		</member>
+		<member name="min_audible_snr_db" type="float" setter="set_min_audible_snr_db" getter="get_min_audible_snr_db">
+			Configures min audible snr db for this DataOrientedCommunications.
+		</member>
+		<member name="unintelligible_ceiling" type="float" setter="set_unintelligible_ceiling" getter="get_unintelligible_ceiling">
+			Configures unintelligible ceiling for this DataOrientedCommunications.
+		</member>
+	</members>
+</class>

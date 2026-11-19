@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologySeedProfileResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ecology Seed Profile Resource class in IdeamEcology.
+	</brief_description>
+	<description>
+		Ecology Seed Profile Resource (Resource subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_whittaker_niche_seed">
+			<return type="Variant" />
+			<description>
+				Executes get whittaker niche seed on EcologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_succession_dispersal_seed">
+			<return type="Variant" />
+			<description>
+				Executes get succession dispersal seed on EcologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_trophic_lotka_volterra_seed">
+			<return type="Variant" />
+			<description>
+				Executes get trophic lotka volterra seed on EcologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_rothermel_wildfire_seed">
+			<return type="Variant" />
+			<description>
+				Executes get rothermel wildfire seed on EcologySeedProfileResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="master_seed" type="int" setter="set_master_seed" getter="get_master_seed">
+			Configures master seed for this EcologySeedProfileResource.
+		</member>
+		<member name="grid_width" type="int" setter="set_grid_width" getter="get_grid_width">
+			Configures grid width for this EcologySeedProfileResource.
+		</member>
+		<member name="grid_height" type="int" setter="set_grid_height" getter="get_grid_height">
+			Configures grid height for this EcologySeedProfileResource.
+		</member>
+		<member name="active_guild_count" type="int" setter="set_active_guild_count" getter="get_active_guild_count">
+			Configures active guild count for this EcologySeedProfileResource.
+		</member>
+		<member name="cell_size_meters" type="float" setter="set_cell_size_meters" getter="get_cell_size_meters">
+			Configures cell size meters for this EcologySeedProfileResource.
+		</member>
+		<member name="ambient_co2_ppm" type="float" setter="set_ambient_co2_ppm" getter="get_ambient_co2_ppm">
+			Configures ambient co2 ppm for this EcologySeedProfileResource.
+		</member>
+		<member name="beer_lambert_extinction_k" type="float" setter="set_beer_lambert_extinction_k" getter="get_beer_lambert_extinction_k">
+			Configures beer lambert extinction k for this EcologySeedProfileResource.
+		</member>
+		<member name="base_npp_efficiency" type="float" setter="set_base_npp_efficiency" getter="get_base_npp_efficiency">
+			Configures base npp efficiency for this EcologySeedProfileResource.
+		</member>
+		<member name="q10_decomposition_factor" type="float" setter="set_q10_decomposition_factor" getter="get_q10_decomposition_factor">
+			Configures q10 decomposition factor for this EcologySeedProfileResource.
+		</member>
+		<member name="nitrogen_fixation_scale" type="float" setter="set_nitrogen_fixation_scale" getter="get_nitrogen_fixation_scale">
+			Configures nitrogen fixation scale for this EcologySeedProfileResource.
+		</member>
+		<member name="rothermel_wind_spread_scale" type="float" setter="set_rothermel_wind_spread_scale" getter="get_rothermel_wind_spread_scale">
+			Configures rothermel wind spread scale for this EcologySeedProfileResource.
+		</member>
+		<member name="herbivore_grazing_rate" type="float" setter="set_herbivore_grazing_rate" getter="get_herbivore_grazing_rate">
+			Configures herbivore grazing rate for this EcologySeedProfileResource.
+		</member>
+		<member name="predator_attack_rate" type="float" setter="set_predator_attack_rate" getter="get_predator_attack_rate">
+			Configures predator attack rate for this EcologySeedProfileResource.
+		</member>
+		<member name="predator_conversion_eff" type="float" setter="set_predator_conversion_eff" getter="get_predator_conversion_eff">
+			Configures predator conversion eff for this EcologySeedProfileResource.
+		</member>
+		<member name="alchemical_leyline_resonance" type="float" setter="set_alchemical_leyline_resonance" getter="get_alchemical_leyline_resonance">
+			Configures alchemical leyline resonance for this EcologySeedProfileResource.
+		</member>
+	</members>
+</class>

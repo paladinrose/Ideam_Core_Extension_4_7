@@ -2,7 +2,7 @@
 
 #include "../narremes/incident.h"
 
-#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/variant/string.hpp>
 
 namespace ideam::godot_ext {
@@ -16,8 +16,8 @@ enum IncidentRequirement : int8_t {
     INCIDENT_REQ_INSTANT_FAILURE = 4
 };
 
-class Plot_Event : public godot::RefCounted {
-    GDCLASS(Plot_Event, godot::RefCounted)
+class Plot_Event : public godot::Resource {
+    GDCLASS(Plot_Event, godot::Resource)
 
 private:
     // DOD NOTE: In the Authoring layer, this holds a heavy Ref to the Incident.

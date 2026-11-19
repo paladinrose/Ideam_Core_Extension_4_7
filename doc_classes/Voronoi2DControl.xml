@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Voronoi2DControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Voronoi2DControl (Tier 3 UI Tool) Composite Editor &amp; Runtime Control wrapping `Voronoi2DCanvas` with site generators, Lloyd relaxation controls, `Polygon2DResource` clipping...
+	</brief_description>
+	<description>
+		Voronoi2DControl (Tier 3 UI Tool) Composite Editor &amp; Runtime Control wrapping `Voronoi2DCanvas` with site generators, Lloyd relaxation controls, `Polygon2DResource` clipping boundary presets, and CSR telemetry. Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_voronoi_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get voronoi canvas on Voronoi2DControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on Voronoi2DControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="voronoi_resource" type="VoronoiDiagram2DResource" setter="set_voronoi_resource" getter="get_voronoi_resource">
+			Configures voronoi resource for this Voronoi2DControl.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RadialContainer3D" inherits="Container3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`RadialContainer3D`: Arranges children around a circle or helix of `radius_` (e.g., 3..6 chair legs, chandelier arms, or spiral staircase treads).
+	</brief_description>
+	<description>
+		`RadialContainer3D`: Arranges children around a circle or helix of `radius_` (e.g., 3..6 chair legs, chandelier arms, or spiral staircase treads). Part of IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="radius" type="float" setter="set_radius" getter="get_radius">
+			Configures radius for this RadialContainer3D.
+		</member>
+		<member name="arc_angle_degrees" type="float" setter="set_arc_angle_degrees" getter="get_arc_angle_degrees">
+			Configures arc angle degrees for this RadialContainer3D.
+		</member>
+		<member name="helix_height_step" type="float" setter="set_helix_height_step" getter="get_helix_height_step">
+			Configures helix height step for this RadialContainer3D.
+		</member>
+	</members>
+</class>

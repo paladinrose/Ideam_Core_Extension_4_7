@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Resource class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Resource (GeometryResource subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_dimension">
+			<return type="Variant" />
+			<description>
+				Executes get dimension on SplineResource.
+			</description>
+		</method>
+		<method name="get_point_count">
+			<return type="Variant" />
+			<description>
+				Executes get point count on SplineResource.
+			</description>
+		</method>
+		<method name="get_length">
+			<return type="Variant" />
+			<description>
+				Executes get length on SplineResource.
+			</description>
+		</method>
+		<method name="get_section_count">
+			<return type="Variant" />
+			<description>
+				Executes get section count on SplineResource.
+			</description>
+		</method>
+		<method name="get_total_weight">
+			<return type="Variant" />
+			<description>
+				Executes get total weight on SplineResource.
+			</description>
+		</method>
+		<method name="remove_point">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove point on SplineResource.
+			</description>
+		</method>
+		<method name="clear">
+			<return type="Variant" />
+			<description>
+				Executes clear on SplineResource.
+			</description>
+		</method>
+		<method name="set_point_use_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="enable" type="Variant" />
+			<description>
+				Executes set point use back handle on SplineResource.
+			</description>
+		</method>
+		<method name="get_point_use_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point use back handle on SplineResource.
+			</description>
+		</method>
+		<method name="set_point_use_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="enable" type="Variant" />
+			<description>
+				Executes set point use fore handle on SplineResource.
+			</description>
+		</method>
+		<method name="get_point_use_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point use fore handle on SplineResource.
+			</description>
+		</method>
+		<method name="set_point_handle_flags">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="flags" type="Variant" />
+			<description>
+				Executes set point handle flags on SplineResource.
+			</description>
+		</method>
+		<method name="get_point_handle_flags">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point handle flags on SplineResource.
+			</description>
+		</method>
+		<method name="set_section_curve_type">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="type" type="Variant" />
+			<description>
+				Executes set section curve type on SplineResource.
+			</description>
+		</method>
+		<method name="get_section_curve_type">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<description>
+				Executes get section curve type on SplineResource.
+			</description>
+		</method>
+		<method name="set_section_weight">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<description>
+				Executes set section weight on SplineResource.
+			</description>
+		</method>
+		<method name="get_section_weight">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<description>
+				Executes get section weight on SplineResource.
+			</description>
+		</method>
+		<method name="get_section_length">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<description>
+				Executes get section length on SplineResource.
+			</description>
+		</method>
+		<method name="get_point_variant">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get point variant on SplineResource.
+			</description>
+		</method>
+		<method name="get_derivative_variant">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get derivative variant on SplineResource.
+			</description>
+		</method>
+		<method name="get_tangent_variant">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get tangent variant on SplineResource.
+			</description>
+		</method>
+		<method name="commit_set_wrap">
+			<return type="Variant" />
+			<param index="0" name="wrap" type="Variant" />
+			<description>
+				Executes commit set wrap on SplineResource.
+			</description>
+		</method>
+		<method name="commit_set_section_curve_type">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="type" type="Variant" />
+			<description>
+				Executes commit set section curve type on SplineResource.
+			</description>
+		</method>
+		<method name="commit_set_section_weight">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<description>
+				Executes commit set section weight on SplineResource.
+			</description>
+		</method>
+		<method name="commit_set_point_use_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="enable" type="Variant" />
+			<description>
+				Executes commit set point use back handle on SplineResource.
+			</description>
+		</method>
+		<method name="commit_set_point_use_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="enable" type="Variant" />
+			<description>
+				Executes commit set point use fore handle on SplineResource.
+			</description>
+		</method>
+		<method name="commit_remove_point">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes commit remove point on SplineResource.
+			</description>
+		</method>
+		<method name="commit_clear">
+			<return type="Variant" />
+			<description>
+				Executes commit clear on SplineResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="wrap" type="bool" setter="set_wrap" getter="get_wrap">
+			Configures wrap for this SplineResource.
+		</member>
+		<member name="default_curve_type" type="int" setter="set_default_curve_type" getter="get_default_curve_type">
+			Configures default curve type for this SplineResource (Linear:0,Catmull-Rom:1,Cubic Bezier:2,Step:3).
+		</member>
+		<member name="default_weight" type="float" setter="set_default_weight" getter="get_default_weight">
+			Configures default weight for this SplineResource.
+		</member>
+		<member name="handle_flags" type="PackedByteArray" setter="set_handle_flags_array" getter="get_handle_flags_array">
+			Configures handle flags for this SplineResource.
+		</member>
+		<member name="section_types" type="PackedByteArray" setter="set_section_types_array" getter="get_section_types_array">
+			Configures section types for this SplineResource.
+		</member>
+		<member name="section_weights" type="PackedFloat32Array" setter="set_section_weights_array" getter="get_section_weights_array">
+			Configures section weights for this SplineResource.
+		</member>
+	</members>
+	<signals>
+		<signal name="structure_changed">
+			<description>
+				Emitted when structure changed occurs on this SplineResource.
+			</description>
+		</signal>
+		<signal name="section_weights_changed">
+			<description>
+				Emitted when section weights changed occurs on this SplineResource.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="CURVE_LINEAR" value="0">
+			Curve linear constant.
+		</constant>
+		<constant name="CURVE_CATMULL_ROM" value="0">
+			Curve catmull rom constant.
+		</constant>
+		<constant name="CURVE_CUBIC_BEZIER" value="0">
+			Curve cubic bezier constant.
+		</constant>
+		<constant name="CURVE_STEP" value="0">
+			Curve step constant.
+		</constant>
+		<constant name="CURVE_NONE" value="0">
+			Curve none constant.
+		</constant>
+		<constant name="HANDLE_NONE" value="0">
+			Handle none constant.
+		</constant>
+		<constant name="HANDLE_USE_BACK" value="0">
+			Handle use back constant.
+		</constant>
+		<constant name="HANDLE_USE_FORE" value="0">
+			Handle use fore constant.
+		</constant>
+		<constant name="HANDLE_USE_BOTH" value="0">
+			Handle use both constant.
+		</constant>
+	</constants>
+</class>

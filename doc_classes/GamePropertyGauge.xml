@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GamePropertyGauge" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GamePropertyGauge (which also serves as GamePropertyBar when `display_mode == GAUGE_DISPLAY_LINEAR_BAR`) binds declaratively to a `GameEntity` by `ObjectID` and a...
+	</brief_description>
+	<description>
+		DOD NOTE: GamePropertyGauge (which also serves as GamePropertyBar when `display_mode == GAUGE_DISPLAY_LINEAR_BAR`) binds declaratively to a `GameEntity` by `ObjectID` and a `StringName` property title (e.g., `&amp;"Health"`, `&amp;"Stamina"`, `&amp;"Shield"`), or ingests flat `Dictionary` telemetry snapshots directly. It visualizes three layers simultaneously: 1. Authoritative Base Value (`_value` / cached rule base value). 2. Effective Modded Value (`get_modded_value()`), highlighting positive buffs vs. negative debuffs from `GameplayRule` or `GamePropertyModifier`. 3. Active timed modifiers (`ModifierType::TIMED` / `TIMED_DIMINISHING`) via `CircularGauge` concentric rings and/or linear countdown bars. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

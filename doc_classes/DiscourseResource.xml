@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DiscourseResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Discourse Resource class in IdeamCommunications.
+	</brief_description>
+	<description>
+		Discourse Resource (Resource subclass) belonging to IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_last_applied_rule">
+			<return type="Variant" />
+			<description>
+				Executes get last applied rule on DiscourseResource.
+			</description>
+		</method>
+		<method name="is_discourse_active">
+			<return type="Variant" />
+			<description>
+				Executes is discourse active on DiscourseResource.
+			</description>
+		</method>
+		<method name="begin_discourse">
+			<return type="Variant" />
+			<param index="0" name="initial_speaker_id" type="Variant" />
+			<description>
+				Executes begin discourse on DiscourseResource.
+			</description>
+		</method>
+		<method name="conclude_discourse">
+			<return type="Variant" />
+			<description>
+				Executes conclude discourse on DiscourseResource.
+			</description>
+		</method>
+		<method name="dismiss_participant">
+			<return type="Variant" />
+			<param index="0" name="participant_id" type="Variant" />
+			<description>
+				Executes dismiss participant on DiscourseResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on DiscourseResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on DiscourseResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="medium" type="CommunicationMediumResource" setter="set_medium" getter="get_medium">
+			Configures medium for this DiscourseResource.
+		</member>
+		<member name="utterances" type="Array" setter="set_utterances" getter="get_utterances">
+			Configures utterances for this DiscourseResource.
+		</member>
+		<member name="participants" type="Array" setter="set_participants" getter="get_participants">
+			Configures participants for this DiscourseResource.
+		</member>
+		<member name="current_turn" type="int" setter="set_current_turn" getter="get_current_turn">
+			Configures current turn for this DiscourseResource.
+		</member>
+		<member name="current_speaker_id" type="int" setter="set_current_speaker_id" getter="get_current_speaker_id">
+			Configures current speaker id for this DiscourseResource.
+		</member>
+		<member name="next_selected_speaker_id" type="int" setter="set_next_selected_speaker_id" getter="get_next_selected_speaker_id">
+			Configures next selected speaker id for this DiscourseResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this DiscourseResource.
+		</member>
+	</members>
+	<signals>
+		<signal name="discourse_begun">
+			<param index="0" name="initial_speaker_id" type="int" />
+			<description>
+				Emitted when discourse begun occurs on this DiscourseResource.
+			</description>
+		</signal>
+		<signal name="discourse_concluded">
+			<description>
+				Emitted when discourse concluded occurs on this DiscourseResource.
+			</description>
+		</signal>
+		<signal name="participant_joined">
+			<param index="0" name="participant_id" type="int" />
+			<description>
+				Emitted when participant joined occurs on this DiscourseResource.
+			</description>
+		</signal>
+		<signal name="participant_left">
+			<param index="0" name="participant_id" type="int" />
+			<description>
+				Emitted when participant left occurs on this DiscourseResource.
+			</description>
+		</signal>
+		<signal name="turn_allocated">
+			<param index="0" name="turn_index" type="int" />
+			<param index="1" name="speaker_id" type="int" />
+			<param index="2" name="rule_id" type="int" />
+			<description>
+				Emitted when turn allocated occurs on this DiscourseResource.
+			</description>
+		</signal>
+	</signals>
+</class>

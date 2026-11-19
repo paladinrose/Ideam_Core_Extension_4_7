@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationSpeechBubble3D" inherits="Label3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		CommunicationSpeechBubble3D (`Label3D`) Runtime 3D speech-bubble presenter replacing `old_gdscript_plugins/ideam_dialogue/scripts/expandedlabel3d.gd`.
+	</brief_description>
+	<description>
+		CommunicationSpeechBubble3D (`Label3D`) Runtime 3D speech-bubble presenter replacing `old_gdscript_plugins/ideam_dialogue/scripts/expandedlabel3d.gd`. Part of IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="update_visible_ratio">
+			<return type="Variant" />
+			<description>
+				Executes update visible ratio on CommunicationSpeechBubble3D.
+			</description>
+		</method>
+		<method name="fast_track_dialogue">
+			<return type="Variant" />
+			<description>
+				Executes fast track dialogue on CommunicationSpeechBubble3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="speaker_name" type="String" setter="set_speaker_name" getter="get_speaker_name">
+			Configures speaker name for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="full_text" type="String" setter="set_full_text" getter="get_full_text">
+			Configures full text for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="visible_ratio" type="float" setter="set_visible_ratio" getter="get_visible_ratio">
+			Configures visible ratio for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="reveal_rate_cps" type="float" setter="set_reveal_rate_cps" getter="get_reveal_rate_cps">
+			Configures reveal rate cps for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="reveal_curve" type="Spline1DResource" setter="set_reveal_curve" getter="get_reveal_curve">
+			Configures reveal curve for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="active_prosody_spline" type="Spline2DResource" setter="set_active_prosody_spline" getter="get_active_prosody_spline">
+			Configures active prosody spline for this CommunicationSpeechBubble3D.
+		</member>
+		<member name="accessibility_option" type="GameplayAccessibilityOption" setter="set_accessibility_option" getter="get_accessibility_option">
+			Configures accessibility option for this CommunicationSpeechBubble3D.
+		</member>
+	</members>
+	<signals>
+		<signal name="bubble_opened">
+			<description>
+				Emitted when bubble opened occurs on this CommunicationSpeechBubble3D.
+			</description>
+		</signal>
+		<signal name="bubble_closed">
+			<description>
+				Emitted when bubble closed occurs on this CommunicationSpeechBubble3D.
+			</description>
+		</signal>
+		<signal name="dialogue_started">
+			<param index="0" name="interlocutor_id" type="int" />
+			<description>
+				Emitted when dialogue started occurs on this CommunicationSpeechBubble3D.
+			</description>
+		</signal>
+		<signal name="dialogue_updated">
+			<param index="0" name="interlocutor_id" type="int" />
+			<param index="1" name="visible_ratio" type="float" />
+			<description>
+				Emitted when dialogue updated occurs on this CommunicationSpeechBubble3D.
+			</description>
+		</signal>
+		<signal name="dialogue_completed">
+			<param index="0" name="interlocutor_id" type="int" />
+			<description>
+				Emitted when dialogue completed occurs on this CommunicationSpeechBubble3D.
+			</description>
+		</signal>
+	</signals>
+</class>

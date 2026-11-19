@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SphericalGoldbergResourceInspector" inherits="TilingEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spherical Goldberg Resource Inspector class in IdeamTiles.
+	</brief_description>
+	<description>
+		Spherical Goldberg Resource Inspector (TilingEditorInspectorBase subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

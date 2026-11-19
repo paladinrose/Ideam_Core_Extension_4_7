@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="NarrativeTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Narrative Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Narrative Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_narrative_host">
+			<return type="Variant" />
+			<description>
+				Executes setup narrative host on NarrativeTaskHost.
+			</description>
+		</method>
+		<method name="execute_narrative_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute narrative step on NarrativeTaskHost.
+			</description>
+		</method>
+		<method name="bind_data_oriented_game">
+			<return type="Variant" />
+			<param index="0" name="game" type="Variant" />
+			<description>
+				Executes bind data oriented game on NarrativeTaskHost.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="narrative_host_ready">
+			<description>
+				Emitted when narrative host ready occurs on this NarrativeTaskHost.
+			</description>
+		</signal>
+		<signal name="narrative_step_completed">
+			<param index="0" name="delta" type="float" />
+			<description>
+				Emitted when narrative step completed occurs on this NarrativeTaskHost.
+			</description>
+		</signal>
+	</signals>
+</class>

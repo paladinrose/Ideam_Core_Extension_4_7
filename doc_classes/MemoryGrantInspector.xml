@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGrantInspector" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		MemoryGrantInspector A lightweight, thread-safe, read-only snapshot of an active MemoryGrantPOD.
+	</brief_description>
+	<description>
+		MemoryGrantInspector A lightweight, thread-safe, read-only snapshot of an active MemoryGrantPOD. Provides the Editor UI with non-blocking access to telemetry and execution states. Part of IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

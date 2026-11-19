@@ -62,8 +62,8 @@ public:
     void _update_sequence(godot::String action_name, godot::Array new_sequence);
     void _new_sequence_step();
     void _new_piece_step(int step_id, godot::Container* step_container);
-    void _select_piece(int step_id, int piece_step_id, int piece_id);
-    void _select_piece_action(int step_id, int piece_step_id, int action_id, int new_selection);
+    void _select_piece(int piece_id, int step_id, int piece_step_id);
+    void _select_piece_action(int new_selection, int step_id, int piece_step_id, int action_id);
     void _new_action(int step_id, int piece_step_id);
 
     // Getters/Setters

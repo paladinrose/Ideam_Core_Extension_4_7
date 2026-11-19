@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TilingSurfaceNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tiling Surface Node3 D class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tiling Surface Node3 D (Node3D subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_generated_mesh">
+			<return type="Variant" />
+			<description>
+				Executes get generated mesh on TilingSurfaceNode3D.
+			</description>
+		</method>
+		<method name="rebuild_mesh">
+			<return type="Variant" />
+			<description>
+				Executes rebuild mesh on TilingSurfaceNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tiling" type="TilingResource" setter="set_tiling" getter="get_tiling">
+			Configures tiling for this TilingSurfaceNode3D.
+		</member>
+		<member name="boundary_spline_2d" type="Spline2DResource" setter="set_boundary_spline_2d" getter="get_boundary_spline_2d">
+			Configures boundary spline 2d for this TilingSurfaceNode3D.
+		</member>
+		<member name="path_spline_3d" type="Spline3DResource" setter="set_path_spline_3d" getter="get_path_spline_3d">
+			Configures path spline 3d for this TilingSurfaceNode3D.
+		</member>
+		<member name="fallback_region_rect" type="Rect2" setter="set_fallback_region_rect" getter="get_fallback_region_rect">
+			Configures fallback region rect for this TilingSurfaceNode3D.
+		</member>
+		<member name="projection_mode" type="int" setter="set_projection_mode" getter="get_projection_mode">
+			Configures projection mode for this TilingSurfaceNode3D (XZ Ground Plane:0,XY Wall Plane:1,YZ Side Plane:2,3D Spline Ribbon:3).
+		</member>
+		<member name="extrude_depth" type="float" setter="set_extrude_depth" getter="get_extrude_depth">
+			Configures extrude depth for this TilingSurfaceNode3D.
+		</member>
+		<member name="edge_subdivisions" type="int" setter="set_edge_subdivisions" getter="get_edge_subdivisions">
+			Configures edge subdivisions for this TilingSurfaceNode3D.
+		</member>
+		<member name="color_0" type="Color" setter="set_color_0" getter="get_color_0">
+			Configures color 0 for this TilingSurfaceNode3D.
+		</member>
+		<member name="color_1" type="Color" setter="set_color_1" getter="get_color_1">
+			Configures color 1 for this TilingSurfaceNode3D.
+		</member>
+		<member name="color_2" type="Color" setter="set_color_2" getter="get_color_2">
+			Configures color 2 for this TilingSurfaceNode3D.
+		</member>
+		<member name="bridge_quad_color" type="Color" setter="set_bridge_quad_color" getter="get_bridge_quad_color">
+			Configures bridge quad color for this TilingSurfaceNode3D.
+		</member>
+		<member name="material_override" type="Material" setter="set_material_override" getter="get_material_override">
+			Configures material override for this TilingSurfaceNode3D.
+		</member>
+	</members>
+	<constants>
+		<constant name="PROJECTION_XZ_GROUND" value="0" enum="Tiling3DProjectionMode">
+			Projection xz ground constant.
+		</constant>
+		<constant name="PROJECTION_XY_WALL" value="1" enum="Tiling3DProjectionMode">
+			Projection xy wall constant.
+		</constant>
+		<constant name="PROJECTION_YZ_SIDE" value="2" enum="Tiling3DProjectionMode">
+			Projection yz side constant.
+		</constant>
+		<constant name="PROJECTION_SPLINE_3D_RIBBON" value="3" enum="Tiling3DProjectionMode">
+			Projection spline 3 d ribbon constant.
+		</constant>
+	</constants>
+</class>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GamePauseMenu" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GamePauseMenu coordinates the runtime pause lifecycle across `Game`, the active `GameBoard`, and the player's possessed `GameAgent`.
+	</brief_description>
+	<description>
+		DOD NOTE: GamePauseMenu coordinates the runtime pause lifecycle across `Game`, the active `GameBoard`, and the player's possessed `GameAgent`. Following the slot-injection pattern established by `GameMenu`, UI artists can bind custom buttons, quick-switch dropdowns, and telemetry labels via `@export` properties, or allow `validate_pause_menu()` to construct a clean fallback layout automatically. Quick-switch controls operate directly on the active entity's `GameplayMode` and `GameplayStyle` cascade while respecting mid-game lock rules (`allow_mid_game_change`). Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CompositeTilingResource" inherits="TilingResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Composite Tiling Resource class in IdeamTiles.
+	</brief_description>
+	<description>
+		Composite Tiling Resource (TilingResource subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="rebuild">
+			<return type="Variant" />
+			<description>
+				Executes rebuild on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get cell count on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_count">
+			<return type="Variant" />
+			<description>
+				Executes get edge count on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_hex_super_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get hex super cell count on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_bridge_quad_count">
+			<return type="Variant" />
+			<description>
+				Executes get bridge quad count on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_shared_vertices">
+			<return type="Variant" />
+			<description>
+				Executes get shared vertices on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_triangle_indices">
+			<return type="Variant" />
+			<description>
+				Executes get triangle indices on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_extents_rect">
+			<return type="Variant" />
+			<description>
+				Executes get extents rect on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_polygon">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell polygon on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_center">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell center on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_transform_2d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell transform 2d on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_colour">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell colour on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_generation">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell generation on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_flags">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell flags on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_group_slot">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell group slot on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_cell_neighbors">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell neighbors on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_border_cell_ids">
+			<return type="Variant" />
+			<description>
+				Executes get border cell ids on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_border_edge_ids">
+			<return type="Variant" />
+			<description>
+				Executes get border edge ids on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_border_vertex_ids">
+			<return type="Variant" />
+			<description>
+				Executes get border vertex ids on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_border_outline_splines">
+			<return type="Variant" />
+			<description>
+				Executes get border outline splines on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="build_hex_super_cells">
+			<return type="Variant" />
+			<description>
+				Executes build hex super cells on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_hex_center_points">
+			<return type="Variant" />
+			<description>
+				Executes get hex center points on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_hex_perimeter_polygon">
+			<return type="Variant" />
+			<param index="0" name="hex_id" type="Variant" />
+			<description>
+				Executes get hex perimeter polygon on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_hex_child_cells">
+			<return type="Variant" />
+			<param index="0" name="hex_id" type="Variant" />
+			<description>
+				Executes get hex child cells on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_hex_neighbors">
+			<return type="Variant" />
+			<param index="0" name="hex_id" type="Variant" />
+			<description>
+				Executes get hex neighbors on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="remove_cells">
+			<return type="Variant" />
+			<param index="0" name="cell_ids" type="Variant" />
+			<description>
+				Executes remove cells on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="commit_remove_cells">
+			<return type="Variant" />
+			<param index="0" name="cell_ids" type="Variant" />
+			<description>
+				Executes commit remove cells on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="set_edge_port_direction">
+			<return type="Variant" />
+			<param index="0" name="edge_id" type="Variant" />
+			<param index="1" name="direction" type="Variant" />
+			<description>
+				Executes set edge port direction on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="commit_set_edge_port_direction">
+			<return type="Variant" />
+			<param index="0" name="edge_id" type="Variant" />
+			<param index="1" name="direction" type="Variant" />
+			<description>
+				Executes commit set edge port direction on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_port_direction">
+			<return type="Variant" />
+			<param index="0" name="edge_id" type="Variant" />
+			<description>
+				Executes get edge port direction on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="set_edge_cross_distance">
+			<return type="Variant" />
+			<param index="0" name="edge_id" type="Variant" />
+			<param index="1" name="cost" type="Variant" />
+			<description>
+				Executes set edge cross distance on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="get_edge_cross_distance">
+			<return type="Variant" />
+			<param index="0" name="edge_id" type="Variant" />
+			<description>
+				Executes get edge cross distance on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="contains_point">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes contains point on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="hex_contains_point">
+			<return type="Variant" />
+			<param index="0" name="point" type="Variant" />
+			<description>
+				Executes hex contains point on CompositeTilingResource.
+			</description>
+		</method>
+		<method name="compute_flow_field_vectors">
+			<return type="Variant" />
+			<param index="0" name="goal_cells" type="Variant" />
+			<description>
+				Executes compute flow field vectors on CompositeTilingResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tiling_layers" type="Array" setter="set_tiling_layers" getter="get_tiling_layers">
+			Configures tiling layers for this CompositeTilingResource.
+		</member>
+		<member name="region_splines" type="Array" setter="set_region_splines" getter="get_region_splines">
+			Configures region splines for this CompositeTilingResource.
+		</member>
+		<member name="layer_priorities" type="PackedInt32Array" setter="set_layer_priorities" getter="get_layer_priorities">
+			Configures layer priorities for this CompositeTilingResource.
+		</member>
+		<member name="layer_seed_points" type="PackedVector2Array" setter="set_layer_seed_points" getter="get_layer_seed_points">
+			Configures layer seed points for this CompositeTilingResource.
+		</member>
+		<member name="coverage_mode" type="int" setter="set_coverage_mode" getter="get_coverage_mode">
+			Configures coverage mode for this CompositeTilingResource (Strict Interior:0,Centroid Inside:1,Include Straddling:2,Clip Exact to Spline:3).
+		</member>
+		<member name="stitch_mode" type="int" setter="set_stitch_mode" getter="get_stitch_mode">
+			Configures stitch mode for this CompositeTilingResource (Quad Bridge:0,Topological Seam Weld:1,Curvilinear Metric Morph:2).
+		</member>
+		<member name="max_bridge_span" type="float" setter="set_max_bridge_span" getter="get_max_bridge_span">
+			Configures max bridge span for this CompositeTilingResource.
+		</member>
+		<member name="fallback_aabb" type="Rect2" setter="set_fallback_aabb" getter="get_fallback_aabb">
+			Configures fallback aabb for this CompositeTilingResource.
+		</member>
+		<member name="auto_hexize" type="bool" setter="set_auto_hexize" getter="get_auto_hexize">
+			Configures auto hexize for this CompositeTilingResource.
+		</member>
+		<member name="edge_subdivisions" type="int" setter="set_edge_subdivisions" getter="get_edge_subdivisions">
+			Configures edge subdivisions for this CompositeTilingResource.
+		</member>
+		<member name="auto_rebuild" type="bool" setter="set_auto_rebuild" getter="get_auto_rebuild">
+			Configures auto rebuild for this CompositeTilingResource.
+		</member>
+	</members>
+</class>

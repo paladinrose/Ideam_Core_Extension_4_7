@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlueprintPreviewSurface" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Interactive 2D floorplan drawing surface used inside BlueprintEditorControl.
+	</brief_description>
+	<description>
+		Renders the spaces, walls, and feature symbols of a [BlueprintResource] on a metric grid with pan and zoom support.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

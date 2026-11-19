@@ -6,6 +6,8 @@
 #include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/typed_array.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
+#include "../../utilities/node_retargeter.h"
+#include "../../utilities/signal_connector.h"
 
 namespace ideam::godot_ext {
 
@@ -13,8 +15,6 @@ namespace ideam::godot_ext {
 class GamePlayer;
 class GameAgentAction;
 class GamePiece;
-class NodeRetargeter;
-class SignalConnector;
 class GameInteraction;
 class Game;
 class XREyeEffectResource;
@@ -62,14 +62,14 @@ private:
     AgentMatching match_height = AgentMatching::PLAYER_TO_AGENT;
     float player_height_change_time = 0.1f;
 
-    NodeRetargeter* head_assignments = nullptr;
+    godot::Ref<NodeRetargeter> head_assignments;
     godot::Node3D* head_control_anchor = nullptr;
     godot::TypedArray<XREyeEffectResource> eye_effects;
 
-    NodeRetargeter* left_hand_assignments = nullptr;
+    godot::Ref<NodeRetargeter> left_hand_assignments;
     godot::Node3D* left_hand_control_anchor = nullptr;
 
-    NodeRetargeter* right_hand_assignments = nullptr;
+    godot::Ref<NodeRetargeter> right_hand_assignments;
     godot::Node3D* right_hand_control_anchor = nullptr;
 
     // DOD NOTE: `TypedArray` encapsulates Godot Variants, causing double-indirection 
@@ -79,8 +79,8 @@ private:
     godot::TypedArray<GameAgentAction> actions;
     godot::TypedArray<GamePiece> game_pieces;
 
-    NodeRetargeter* player_node_assignments = nullptr;
-    SignalConnector* player_signal_assignments = nullptr;
+    godot::Ref<NodeRetargeter> player_node_assignments;
+    godot::Ref<SignalConnector> player_signal_assignments;
 
     godot::TypedArray<GameInteraction> interactions;
     godot::TypedArray<GameEntity> current_action_targets;
@@ -135,8 +135,8 @@ public:
     void set_player_height_change_time(float p_time);
     float get_player_height_change_time() const;
 
-    void set_head_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_head_assignments() const;
+    void set_head_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_head_assignments() const;
 
     void set_head_control_anchor(godot::Node3D* p_anchor);
     godot::Node3D* get_head_control_anchor() const;
@@ -144,14 +144,14 @@ public:
     void set_eye_effects(const godot::TypedArray<XREyeEffectResource>& p_effects);
     godot::TypedArray<XREyeEffectResource> get_eye_effects() const;
 
-    void set_left_hand_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_left_hand_assignments() const;
+    void set_left_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_left_hand_assignments() const;
 
     void set_left_hand_control_anchor(godot::Node3D* p_anchor);
     godot::Node3D* get_left_hand_control_anchor() const;
 
-    void set_right_hand_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_right_hand_assignments() const;
+    void set_right_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_right_hand_assignments() const;
 
     void set_right_hand_control_anchor(godot::Node3D* p_anchor);
     godot::Node3D* get_right_hand_control_anchor() const;
@@ -162,11 +162,11 @@ public:
     void set_game_pieces(const godot::TypedArray<GamePiece>& p_pieces);
     godot::TypedArray<GamePiece> get_game_pieces() const;
 
-    void set_player_node_assignments(NodeRetargeter* p_assignments);
-    NodeRetargeter* get_player_node_assignments() const;
+    void set_player_node_assignments(const godot::Ref<NodeRetargeter>& p_assignments);
+    godot::Ref<NodeRetargeter> get_player_node_assignments() const;
 
-    void set_player_signal_assignments(SignalConnector* p_assignments);
-    SignalConnector* get_player_signal_assignments() const;
+    void set_player_signal_assignments(const godot::Ref<SignalConnector>& p_assignments);
+    godot::Ref<SignalConnector> get_player_signal_assignments() const;
 
     // Player Functions
     void find_and_possess_agent(godot::Variant on);

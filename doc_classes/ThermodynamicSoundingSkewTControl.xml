@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ThermodynamicSoundingSkewTControl" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Thermodynamic Sounding Skew TControl class in IdeamClimatology.
+	</brief_description>
+	<description>
+		Thermodynamic Sounding Skew TControl (Control subclass) belonging to IdeamClimatology (synoptic atmosphere, winds, and severe weather).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_atmosphere_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set atmosphere resource on ThermodynamicSoundingSkewTControl.
+			</description>
+		</method>
+		<method name="get_atmosphere_resource">
+			<return type="Variant" />
+			<description>
+				Executes get atmosphere resource on ThermodynamicSoundingSkewTControl.
+			</description>
+		</method>
+		<method name="set_inspected_cell">
+			<return type="Variant" />
+			<param index="0" name="cell" type="Variant" />
+			<description>
+				Executes set inspected cell on ThermodynamicSoundingSkewTControl.
+			</description>
+		</method>
+		<method name="get_inspected_cell">
+			<return type="Variant" />
+			<description>
+				Executes get inspected cell on ThermodynamicSoundingSkewTControl.
+			</description>
+		</method>
+		<method name="refresh_sounding_view">
+			<return type="Variant" />
+			<description>
+				Executes refresh sounding view on ThermodynamicSoundingSkewTControl.
+			</description>
+		</method>
+	</methods>
+</class>

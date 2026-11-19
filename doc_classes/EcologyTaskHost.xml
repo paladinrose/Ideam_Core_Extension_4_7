@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologyTaskHost" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ecology Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Ecology Task Host (Node subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_dod_ecology">
+			<return type="Variant" />
+			<description>
+				Executes get dod ecology on EcologyTaskHost.
+			</description>
+		</method>
+		<method name="step_once">
+			<return type="Variant" />
+			<description>
+				Executes step once on EcologyTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="biosphere_resource" type="EcologyBiosphereResource" setter="set_biosphere_resource" getter="get_biosphere_resource">
+			Configures biosphere resource for this EcologyTaskHost.
+		</member>
+		<member name="auto_step_in_process" type="bool" setter="set_auto_step_in_process" getter="get_auto_step_in_process">
+			Configures auto step in process for this EcologyTaskHost.
+		</member>
+		<member name="dt_years_per_step" type="float" setter="set_dt_years_per_step" getter="get_dt_years_per_step">
+			Configures dt years per step for this EcologyTaskHost.
+		</member>
+	</members>
+</class>

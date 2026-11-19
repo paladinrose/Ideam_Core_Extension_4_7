@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BoxContainer3D" inherits="Container3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`BoxContainer3D`: Stacks child `Node3D` / `SemanticStructure3D` nodes along a primary axis (`0 = X, 1 = Y, 2 = Z`), honoring each child's `rest_obb_extents`, `margin_extents`,...
+	</brief_description>
+	<description>
+		`BoxContainer3D`: Stacks child `Node3D` / `SemanticStructure3D` nodes along a primary axis (`0 = X, 1 = Y, 2 = Z`), honoring each child's `rest_obb_extents`, `margin_extents`, and `size_flags`. Part of IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="primary_axis" type="int" setter="set_primary_axis" getter="get_primary_axis">
+			Configures primary axis for this BoxContainer3D (X Axis:0,Y Axis (Vertical):1,Z Axis:2).
+		</member>
+		<member name="center_align" type="bool" setter="set_center_align" getter="get_center_align">
+			Configures center align for this BoxContainer3D.
+		</member>
+	</members>
+</class>

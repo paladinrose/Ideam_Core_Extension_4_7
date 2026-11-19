@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline2DCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 1 interactive 2D spline curve canvas with Godot Y-down orientation.
+	</brief_description>
+	<description>
+		Displays and edits [Spline2DResource] anchors, tangents, and curve segments with [member GeometryCanvas2DBase.y_down] enabled by default so curves match Godot's 2D scene viewport orientation.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplinePolygon2D" inherits="Node2D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Polygon2 D class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Polygon2 D (Node2D subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_cached_polygon">
+			<return type="Variant" />
+			<description>
+				Executes get cached polygon on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_cached_triangles">
+			<return type="Variant" />
+			<description>
+				Executes get cached triangles on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_bounding_rect">
+			<return type="Variant" />
+			<description>
+				Executes get bounding rect on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_signed_area">
+			<return type="Variant" />
+			<description>
+				Executes get signed area on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_abs_area">
+			<return type="Variant" />
+			<description>
+				Executes get abs area on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_perimeter">
+			<return type="Variant" />
+			<description>
+				Executes get perimeter on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="get_centroid">
+			<return type="Variant" />
+			<description>
+				Executes get centroid on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="contains_local_point">
+			<return type="Variant" />
+			<param index="0" name="local_pt" type="Variant" />
+			<description>
+				Executes contains local point on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="contains_global_point">
+			<return type="Variant" />
+			<param index="0" name="global_pt" type="Variant" />
+			<description>
+				Executes contains global point on SplinePolygon2D.
+			</description>
+		</method>
+		<method name="clip_convex_polygon">
+			<return type="Variant" />
+			<param index="0" name="convex_clip" type="Variant" />
+			<description>
+				Executes clip convex polygon on SplinePolygon2D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline2DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this SplinePolygon2D.
+		</member>
+		<member name="tiling_resource" type="Resource" setter="set_tiling_resource" getter="get_tiling_resource">
+			Configures tiling resource for this SplinePolygon2D.
+		</member>
+		<member name="subdivisions" type="int" setter="set_subdivisions" getter="get_subdivisions">
+			Configures subdivisions for this SplinePolygon2D.
+		</member>
+		<member name="polygon_offset" type="float" setter="set_polygon_offset" getter="get_polygon_offset">
+			Configures polygon offset for this SplinePolygon2D.
+		</member>
+		<member name="join_style" type="int" setter="set_join_style" getter="get_join_style">
+			Configures join style for this SplinePolygon2D (Miter:0,Bevel:1,Round:2).
+		</member>
+		<member name="miter_limit" type="float" setter="set_miter_limit" getter="get_miter_limit">
+			Configures miter limit for this SplinePolygon2D.
+		</member>
+		<member name="draw_fill" type="bool" setter="set_draw_fill" getter="get_draw_fill">
+			Configures draw fill for this SplinePolygon2D.
+		</member>
+		<member name="fill_color" type="Color" setter="set_fill_color" getter="get_fill_color">
+			Configures fill color for this SplinePolygon2D.
+		</member>
+		<member name="texture" type="Texture2D" setter="set_texture" getter="get_texture">
+			Configures texture for this SplinePolygon2D.
+		</member>
+		<member name="uv_scale" type="Vector2" setter="set_uv_scale" getter="get_uv_scale">
+			Configures uv scale for this SplinePolygon2D.
+		</member>
+		<member name="uv_offset" type="Vector2" setter="set_uv_offset" getter="get_uv_offset">
+			Configures uv offset for this SplinePolygon2D.
+		</member>
+		<member name="uv_rotation_radians" type="float" setter="set_uv_rotation_radians" getter="get_uv_rotation_radians">
+			Configures uv rotation radians for this SplinePolygon2D.
+		</member>
+		<member name="draw_border" type="bool" setter="set_draw_border" getter="get_draw_border">
+			Configures draw border for this SplinePolygon2D.
+		</member>
+		<member name="border_width" type="float" setter="set_border_width" getter="get_border_width">
+			Configures border width for this SplinePolygon2D.
+		</member>
+		<member name="border_color" type="Color" setter="set_border_color" getter="get_border_color">
+			Configures border color for this SplinePolygon2D.
+		</member>
+		<member name="auto_sync_collision" type="bool" setter="set_auto_sync_collision" getter="get_auto_sync_collision">
+			Configures auto sync collision for this SplinePolygon2D.
+		</member>
+		<member name="collision_polygon_path" type="NodePath" setter="set_collision_polygon_path" getter="get_collision_polygon_path">
+			Configures collision polygon path for this SplinePolygon2D.
+		</member>
+	</members>
+	<signals>
+		<signal name="polygon_rebuilt">
+			<param index="0" name="vertex_count" type="int" />
+			<param index="1" name="area" type="float" />
+			<description>
+				Emitted when polygon rebuilt occurs on this SplinePolygon2D.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="POLYGON_JOIN_MITER" value="0">
+			Polygon join miter constant.
+		</constant>
+		<constant name="POLYGON_JOIN_BEVEL" value="0">
+			Polygon join bevel constant.
+		</constant>
+		<constant name="POLYGON_JOIN_ROUND" value="0">
+			Polygon join round constant.
+		</constant>
+	</constants>
+</class>

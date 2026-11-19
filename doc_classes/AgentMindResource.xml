@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AgentMindResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Agent Mind Resource class in IdeamMinds.
+	</brief_description>
+	<description>
+		Agent Mind Resource (Resource subclass) belonging to IdeamMinds (cognitive models, beliefs, goals, emotions, and decision making).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="agent_id" type="int" setter="set_agent_id" getter="get_agent_id">
+			Configures agent id for this AgentMindResource.
+		</member>
+		<member name="primary_tome_id" type="int" setter="set_primary_tome_id" getter="get_primary_tome_id">
+			Configures primary tome id for this AgentMindResource.
+		</member>
+		<member name="fear_weight" type="float" setter="set_fear_weight" getter="get_fear_weight">
+			Configures fear weight for this AgentMindResource.
+		</member>
+		<member name="curiosity_weight" type="float" setter="set_curiosity_weight" getter="get_curiosity_weight">
+			Configures curiosity weight for this AgentMindResource.
+		</member>
+		<member name="guilt_weight" type="float" setter="set_guilt_weight" getter="get_guilt_weight">
+			Configures guilt weight for this AgentMindResource.
+		</member>
+		<member name="loyalty_weight" type="float" setter="set_loyalty_weight" getter="get_loyalty_weight">
+			Configures loyalty weight for this AgentMindResource.
+		</member>
+		<member name="self_preservation_weight" type="float" setter="set_self_preservation_weight" getter="get_self_preservation_weight">
+			Configures self preservation weight for this AgentMindResource.
+		</member>
+		<member name="trust_in_listener" type="float" setter="set_trust_in_listener" getter="get_trust_in_listener">
+			Configures trust in listener for this AgentMindResource.
+		</member>
+		<member name="attention_threshold" type="float" setter="set_attention_threshold" getter="get_attention_threshold">
+			Configures attention threshold for this AgentMindResource.
+		</member>
+		<member name="knowledge_threshold" type="float" setter="set_knowledge_threshold" getter="get_knowledge_threshold">
+			Configures knowledge threshold for this AgentMindResource.
+		</member>
+		<member name="excitation_level" type="float" setter="set_excitation_level" getter="get_excitation_level">
+			Configures excitation level for this AgentMindResource.
+		</member>
+		<member name="active_emotion_mask" type="int" setter="set_active_emotion_mask" getter="get_active_emotion_mask">
+			Configures active emotion mask for this AgentMindResource.
+		</member>
+	</members>
+</class>

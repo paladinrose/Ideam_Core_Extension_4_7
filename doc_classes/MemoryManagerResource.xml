@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryManagerResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Manager Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Manager Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_backend">
+			<return type="Variant" />
+			<description>
+				Executes initialize backend on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="is_initialized">
+			<return type="Variant" />
+			<description>
+				Executes is initialized on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="get_buffer_names">
+			<return type="Variant" />
+			<description>
+				Executes get buffer names on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="move_buffer">
+			<return type="Variant" />
+			<param index="0" name="from_index" type="Variant" />
+			<param index="1" name="to_index" type="Variant" />
+			<description>
+				Executes move buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="insert_buffer">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="buffer" type="Variant" />
+			<description>
+				Executes insert buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="create_new_buffer">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes create new buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="duplicate_buffer">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes duplicate buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="remove_buffer">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes remove buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="move_buffers_bulk">
+			<return type="Variant" />
+			<param index="0" name="buffer_ids" type="Variant" />
+			<param index="1" name="target_index" type="Variant" />
+			<description>
+				Executes move buffers bulk on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="duplicate_buffers_bulk">
+			<return type="Variant" />
+			<param index="0" name="buffer_ids" type="Variant" />
+			<param index="1" name="target_index" type="Variant" />
+			<description>
+				Executes duplicate buffers bulk on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="remove_buffers_bulk">
+			<return type="Variant" />
+			<param index="0" name="buffer_ids" type="Variant" />
+			<description>
+				Executes remove buffers bulk on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="register_consumer_buffers">
+			<return type="Variant" />
+			<param index="0" name="consumer" type="Variant" />
+			<param index="1" name="consumer_buffers" type="Variant" />
+			<description>
+				Executes register consumer buffers on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="clear_consumer_buffers">
+			<return type="Variant" />
+			<param index="0" name="consumer" type="Variant" />
+			<description>
+				Executes clear consumer buffers on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="move_managed_buffer">
+			<return type="Variant" />
+			<param index="0" name="from_index" type="Variant" />
+			<param index="1" name="to_index" type="Variant" />
+			<description>
+				Executes move managed buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="request_managed_buffer">
+			<return type="Variant" />
+			<param index="0" name="consumer" type="Variant" />
+			<param index="1" name="purpose" type="Variant" />
+			<param index="2" name="layout_type" type="Variant" />
+			<param index="3" name="byte_footprint" type="Variant" />
+			<param index="4" name="alignment" type="Variant" />
+			<description>
+				Executes request managed buffer on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="get_total_projected_footprint_bytes">
+			<return type="Variant" />
+			<description>
+				Executes get total projected footprint bytes on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="get_projected_footprint_string">
+			<return type="Variant" />
+			<description>
+				Executes get projected footprint string on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="buffer_contains_id">
+			<return type="Variant" />
+			<param index="0" name="buffer_id" type="Variant" />
+			<param index="1" name="entity_id" type="Variant" />
+			<description>
+				Executes buffer contains id on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="get_dense_index">
+			<return type="Variant" />
+			<param index="0" name="buffer_id" type="Variant" />
+			<param index="1" name="entity_id" type="Variant" />
+			<description>
+				Executes get dense index on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="request_emulated_grant">
+			<return type="Variant" />
+			<param index="0" name="buffer_ids" type="Variant" />
+			<description>
+				Executes request emulated grant on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="release_emulated_grant">
+			<return type="Variant" />
+			<param index="0" name="grant" type="Variant" />
+			<description>
+				Executes release emulated grant on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="clear_all_emulated_grants">
+			<return type="Variant" />
+			<description>
+				Executes clear all emulated grants on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="recalculate_emulated_grants">
+			<return type="Variant" />
+			<description>
+				Executes recalculate emulated grants on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="serialize_subresources_to_disk">
+			<return type="Variant" />
+			<description>
+				Executes serialize subresources to disk on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="to_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes to dictionary on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="from_dictionary">
+			<return type="Variant" />
+			<param index="0" name="dict" type="Variant" />
+			<description>
+				Executes from dictionary on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="save_to_json_file">
+			<return type="Variant" />
+			<param index="0" name="path" type="Variant" />
+			<description>
+				Executes save to json file on MemoryManagerResource.
+			</description>
+		</method>
+		<method name="load_from_json_file">
+			<return type="Variant" />
+			<param index="0" name="path" type="Variant" />
+			<description>
+				Executes load from json file on MemoryManagerResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="buffer_schemas" type="Array" setter="set_buffer_schemas" getter="get_buffer_schemas">
+			Configures buffer schemas for this MemoryManagerResource.
+		</member>
+		<member name="scaling_strategy" type="int" setter="set_scaling_strategy" getter="get_scaling_strategy">
+			Configures scaling strategy for this MemoryManagerResource (Fixed,Scale By RAM).
+		</member>
+		<member name="transient_capacity_mb" type="int" setter="set_transient_capacity_mb" getter="get_transient_capacity_mb">
+			Configures transient capacity mb for this MemoryManagerResource.
+		</member>
+		<member name="managed_buffer_schemas" type="Array" setter="set_managed_buffers" getter="get_managed_buffers">
+			Configures managed buffer schemas for this MemoryManagerResource.
+		</member>
+		<member name="active_emulated_grants" type="Array" setter="set_active_emulated_grants" getter="get_active_emulated_grants">
+			Configures active emulated grants for this MemoryManagerResource.
+		</member>
+	</members>
+</class>

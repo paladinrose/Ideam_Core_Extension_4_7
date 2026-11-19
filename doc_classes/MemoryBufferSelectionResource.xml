@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferSelectionResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Selection Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Selection Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="mode" type="int" setter="set_mode" getter="get_mode">
+			Configures mode for this MemoryBufferSelectionResource (Sparse,Dense,Range).
+		</member>
+		<member name="element_count" type="int" setter="set_element_count" getter="get_element_count">
+			Configures element count for this MemoryBufferSelectionResource.
+		</member>
+		<member name="start_index" type="int" setter="set_start_index" getter="get_start_index">
+			Configures start index for this MemoryBufferSelectionResource.
+		</member>
+		<member name="sparse_indices" type="PackedInt64Array" setter="set_sparse_indices" getter="get_sparse_indices">
+			Configures sparse indices for this MemoryBufferSelectionResource.
+		</member>
+		<member name="dense_bitmask" type="PackedInt64Array" setter="set_dense_bitmask" getter="get_dense_bitmask">
+			Configures dense bitmask for this MemoryBufferSelectionResource.
+		</member>
+	</members>
+</class>

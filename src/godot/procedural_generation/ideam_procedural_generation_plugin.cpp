@@ -1,5 +1,10 @@
 #include "ideam_procedural_generation_plugin.h"
+#include "../controls/ideam_tier1_control_registry.h"
+#include "ui/procedural_composer.h"
 #include "../../core/tasks/registration/ideam_task_registry.h"
+
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -50,11 +55,44 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
     if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
         reg->set_domain_active(godot::StringName("IdeamProceduralGeneration"), true);
     }
+
+    inspector_plugin_.instantiate();
+    add_inspector_plugin(inspector_plugin_);
+
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
+
+    auto make_procgen_panel = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        using namespace godot;
+        (void)p_ctx;
+        if (p_asset.is_null()) return nullptr;
+        auto *vbox = memnew(VBoxContainer);
+        vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+        auto *hdr = memnew(Label);
+        hdr->set_text("Procedural Asset (" + p_asset->get_class() + ") — Adjust seed, rules, and constraints in the Inspector on the right, then click Execute Generator.");
+        hdr->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+        vbox->add_child(hdr);
+        return vbox;
+    };
+
+    reg.register_control({ws_id, "ProceduralGeneratorResource", "Generators", "Procedural Generator", UPDATE_EXPLICIT_TRIGGER, make_procgen_panel, nullptr});
+    reg.register_control({ws_id, "ProceduralPattern", "Generators", "Procedural Pattern", UPDATE_EXPLICIT_TRIGGER, make_procgen_panel, nullptr});
+    reg.register_control({ws_id, "GenerationRule", "Generators", "Generation Rule", UPDATE_EXPLICIT_TRIGGER, make_procgen_panel, nullptr});
 }
 
 void IdeamProceduralGenerationPlugin::_exit_tree() {
-    if (core::IdeamTaskRegistry *reg = core::IdeamTaskRegistry::get_singleton()) {
-        reg->set_domain_active(godot::StringName("IdeamProceduralGeneration"), false);
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "ProceduralGeneratorResource");
+    reg.unregister_class(ws_id, "ProceduralPattern");
+    reg.unregister_class(ws_id, "GenerationRule");
+
+    if (inspector_plugin_.is_valid()) {
+        remove_inspector_plugin(inspector_plugin_);
+        inspector_plugin_.unref();
+    }
+    if (core::IdeamTaskRegistry *task_reg = core::IdeamTaskRegistry::get_singleton()) {
+        task_reg->set_domain_active(godot::StringName("IdeamProceduralGeneration"), false);
     }
     set_plugin_active("IdeamProceduralGeneration", false);
 }

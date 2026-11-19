@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline4DWChannelCanvas" inherits="SplineCanvasBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Visualizes and edits a selected channel (`W` by default, or `X`/`Y`/`Z`) of a `Spline4DResource` over normalized cumulative section weights, with a live RGBA/HSVA color...
+	</brief_description>
+	<description>
+		Visualizes and edits a selected channel (`W` by default, or `X`/`Y`/`Z`) of a `Spline4DResource` over normalized cumulative section weights, with a live RGBA/HSVA color gradient strip at the bottom. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_active_channel">
+			<return type="Variant" />
+			<param index="0" name="channel" type="Variant" />
+			<description>
+				Executes set active channel on Spline4DWChannelCanvas.
+			</description>
+		</method>
+		<method name="get_active_channel">
+			<return type="Variant" />
+			<description>
+				Executes get active channel on Spline4DWChannelCanvas.
+			</description>
+		</method>
+		<method name="set_show_color_gradient">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show color gradient on Spline4DWChannelCanvas.
+			</description>
+		</method>
+		<method name="get_show_color_gradient">
+			<return type="Variant" />
+			<description>
+				Executes get show color gradient on Spline4DWChannelCanvas.
+			</description>
+		</method>
+		<method name="set_hsva_gradient_preview">
+			<return type="Variant" />
+			<param index="0" name="hsva" type="Variant" />
+			<description>
+				Executes set hsva gradient preview on Spline4DWChannelCanvas.
+			</description>
+		</method>
+		<method name="get_hsva_gradient_preview">
+			<return type="Variant" />
+			<description>
+				Executes get hsva gradient preview on Spline4DWChannelCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline4DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this Spline4DWChannelCanvas.
+		</member>
+	</members>
+</class>

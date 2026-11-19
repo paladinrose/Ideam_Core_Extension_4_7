@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Polygon2DResourceInspector" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Polygon2DResourceInspector Concrete Inspector Plugin mounting a `Polygon2DControl` (`Polygon2DCanvas` + shape/offset/winding tools) whenever a `Polygon2DResource` is inspected...
+	</brief_description>
+	<description>
+		Polygon2DResourceInspector Concrete Inspector Plugin mounting a `Polygon2DControl` (`Polygon2DCanvas` + shape/offset/winding tools) whenever a `Polygon2DResource` is inspected in the Godot Editor. Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

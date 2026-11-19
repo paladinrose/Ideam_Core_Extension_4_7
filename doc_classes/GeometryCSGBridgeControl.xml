@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryCSGBridgeControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GeometryCSGBridgeControl (Tier 3/4 Cross-Plugin Geometry Workbench) Provides interactive CSG clipping, Wave-2 boundary classification, seam welding, and 1-click bridging...
+	</brief_description>
+	<description>
+		GeometryCSGBridgeControl (Tier 3/4 Cross-Plugin Geometry Workbench) Provides interactive CSG clipping, Wave-2 boundary classification, seam welding, and 1-click bridging between `Polygon2DResource`, `VoronoiDiagram2DResource`, and `SDFGrid2DResource`. Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_csg_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get csg canvas on GeometryCSGBridgeControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on GeometryCSGBridgeControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="subject_polygon" type="Polygon2DResource" setter="set_subject_polygon" getter="get_subject_polygon">
+			Configures subject polygon for this GeometryCSGBridgeControl.
+		</member>
+		<member name="boundary_polygon" type="Polygon2DResource" setter="set_boundary_polygon" getter="get_boundary_polygon">
+			Configures boundary polygon for this GeometryCSGBridgeControl.
+		</member>
+		<member name="target_voronoi" type="VoronoiDiagram2DResource" setter="set_target_voronoi" getter="get_target_voronoi">
+			Configures target voronoi for this GeometryCSGBridgeControl.
+		</member>
+		<member name="target_sdf_grid" type="SDFGrid2DResource" setter="set_target_sdf_grid" getter="get_target_sdf_grid">
+			Configures target sdf grid for this GeometryCSGBridgeControl.
+		</member>
+	</members>
+</class>

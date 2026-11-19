@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DesignInspector" inherits="IdeamEditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Thin Inspector launcher for IdeamDesign resources and nodes.
+	</brief_description>
+	<description>
+		Adds an 'Open in DesignComposer' launcher bar to the Inspector for [BlueprintResource], [ParametricAssemblyRecipeResource], [Theme3DResource], and [Style3DResource] assets.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

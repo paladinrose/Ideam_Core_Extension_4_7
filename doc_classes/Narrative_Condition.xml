@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Narrative_Condition" inherits="Incident_Condition" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Narrative Condition class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Narrative Condition (Incident_Condition subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

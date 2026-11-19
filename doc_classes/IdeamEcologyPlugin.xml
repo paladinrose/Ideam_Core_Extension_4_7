@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamEcologyPlugin" inherits="EditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Ecology Plugin class in IdeamEcology.
+	</brief_description>
+	<description>
+		Ideam Ecology Plugin (EditorPlugin subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_tasks_handshake_available" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes is tasks handshake available on IdeamEcologyPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

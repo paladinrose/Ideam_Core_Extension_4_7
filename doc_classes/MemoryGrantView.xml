@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGrantView" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Grant View class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Grant View (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="populate_from_inspector">
+			<return type="Variant" />
+			<param index="0" name="inspector" type="Variant" />
+			<description>
+				Executes populate from inspector on MemoryGrantView.
+			</description>
+		</method>
+		<method name="clear">
+			<return type="Variant" />
+			<description>
+				Executes clear on MemoryGrantView.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="part_selection_inspection_requested">
+			<param index="0" name="part_index" type="int" />
+			<description>
+				Emitted when part selection inspection requested occurs on this MemoryGrantView.
+			</description>
+		</signal>
+	</signals>
+</class>

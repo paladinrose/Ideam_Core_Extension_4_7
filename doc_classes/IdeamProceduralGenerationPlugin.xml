@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamProceduralGenerationPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Procedural Generation Plugin class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Ideam Procedural Generation Plugin (IdeamEditorPlugin subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

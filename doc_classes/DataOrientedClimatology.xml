@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedClimatology" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Climatology class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Climatology (RefCounted subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bind_atmosphere_resource">
+			<return type="Variant" />
+			<param index="0" name="atmosphere" type="Variant" />
+			<description>
+				Executes bind atmosphere resource on DataOrientedClimatology.
+			</description>
+		</method>
+		<method name="get_bound_atmosphere_resource">
+			<return type="Variant" />
+			<description>
+				Executes get bound atmosphere resource on DataOrientedClimatology.
+			</description>
+		</method>
+		<method name="initialize_from_seed">
+			<return type="Variant" />
+			<description>
+				Executes initialize from seed on DataOrientedClimatology.
+			</description>
+		</method>
+		<method name="execute_pipeline_step">
+			<return type="Variant" />
+			<param index="0" name="dt_synoptic_sec" type="Variant" />
+			<param index="1" name="dt_vortex_sec" type="Variant" />
+			<description>
+				Executes execute pipeline step on DataOrientedClimatology.
+			</description>
+		</method>
+		<method name="get_pipeline_telemetry">
+			<return type="Variant" />
+			<description>
+				Executes get pipeline telemetry on DataOrientedClimatology.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="stage_mask" type="int" setter="set_stage_mask" getter="get_stage_mask">
+			Configures stage mask for this DataOrientedClimatology.
+		</member>
+	</members>
+</class>

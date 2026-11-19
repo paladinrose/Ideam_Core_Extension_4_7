@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FlatVisualizer" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Flat Visualizer class in IdeamMemory.
+	</brief_description>
+	<description>
+		Flat Visualizer (Control subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on FlatVisualizer.
+			</description>
+		</method>
+	</methods>
+</class>

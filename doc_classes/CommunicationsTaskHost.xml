@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationsTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Communications Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Communications Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="step_communications_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes step communications pipeline on CommunicationsTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="domain_resource" type="DataOrientedCommunications" setter="set_domain_resource" getter="get_domain_resource">
+			Configures domain resource for this CommunicationsTaskHost.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this CommunicationsTaskHost (Wave1_DiscourseTurn:1,Wave2_ChannelSNR:2,Wave3_PhonemeDegrade:4,Wave4_ReceiverMindHandoff:8).
+		</member>
+		<member name="auto_stage_on_ready" type="bool" setter="set_auto_stage_on_ready" getter="get_auto_stage_on_ready">
+			Configures auto stage on ready for this CommunicationsTaskHost.
+		</member>
+	</members>
+	<signals>
+		<signal name="communications_pipeline_executed">
+			<param index="0" name="epistemic_handoffs" type="Array" />
+			<description>
+				Emitted when communications pipeline executed occurs on this CommunicationsTaskHost.
+			</description>
+		</signal>
+	</signals>
+</class>

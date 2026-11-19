@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamDesignPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Design Plugin class in IdeamDesign.
+	</brief_description>
+	<description>
+		Ideam Design Plugin (IdeamEditorPlugin subclass) belonging to IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_plugin_domain_name">
+			<return type="Variant" />
+			<description>
+				Executes get plugin domain name on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="is_geometry_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is geometry handshake available on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="is_splines_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is splines handshake available on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="is_tiles_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is tiles handshake available on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="is_linguistics_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is linguistics handshake available on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="is_tasks_handshake_available">
+			<return type="Variant" />
+			<description>
+				Executes is tasks handshake available on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="undo_redo" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes undo redo on IdeamDesignPlugin.
+			</description>
+		</method>
+		<method name="create_undo_redo_wrapper" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes create undo redo wrapper on IdeamDesignPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

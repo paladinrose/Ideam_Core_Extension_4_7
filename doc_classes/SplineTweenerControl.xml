@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineTweenerControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineTweenerControl (`godot::VBoxContainer`, Tier 3 UI Tool) Interactive Multi-Track Spline Tween &amp; BlendShape Editor mounting a master `[0.0 ..
+	</brief_description>
+	<description>
+		SplineTweenerControl (`godot::VBoxContainer`, Tier 3 UI Tool) Interactive Multi-Track Spline Tween &amp; BlendShape Editor mounting a master `[0.0 .. 1.0]` scrubber, track generator buttons, and a stack of per-track `Spline1DControl` editors. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on SplineTweenerControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tween_resource" type="SplineTweenResource" setter="set_tween_resource" getter="get_tween_resource">
+			Configures tween resource for this SplineTweenerControl.
+		</member>
+	</members>
+</class>

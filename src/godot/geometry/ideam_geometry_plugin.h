@@ -42,6 +42,7 @@ private:
     godot::Ref<Polygon2DResourceInspector> polygon_2d_inspector;
     godot::Ref<VoronoiDiagram2DResourceInspector> voronoi_2d_inspector;
     godot::Ref<SDFGrid2DResourceInspector> sdf_grid_2d_inspector;
+    godot::Ref<TensorField2DResourceInspector> tensor_field_2d_inspector;
 
 public:
     IdeamGeometryPlugin();

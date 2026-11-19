@@ -850,8 +850,8 @@ void GeodesicPlanetNode3D::rebuild_mesh() {
 
         for (int k = 1; k + 1 < v_count; ++k) {
             indices.push_back(base_v_idx);
-            indices.push_back(base_v_idx + k);
             indices.push_back(base_v_idx + k + 1);
+            indices.push_back(base_v_idx + k);
         }
 
         // Extruded prism side skirts
@@ -874,7 +874,7 @@ void GeodesicPlanetNode3D::rebuild_mesh() {
                 const Vector3 b0 = d0 * bottom_r;
                 const Vector3 b1 = d1 * bottom_r;
 
-                const Vector3 side_n = (t1 - t0).cross(b0 - t0).normalized();
+                const Vector3 side_n = (b0 - t0).cross(t1 - t0).normalized();
                 const int32_t s_idx  = static_cast<int32_t>(vertices.size());
 
                 vertices.push_back(t0);
@@ -886,11 +886,11 @@ void GeodesicPlanetNode3D::rebuild_mesh() {
                     colors.push_back(side_skirt_color_);
                 }
                 indices.push_back(s_idx + 0);
-                indices.push_back(s_idx + 2);
                 indices.push_back(s_idx + 1);
-                indices.push_back(s_idx + 0);
-                indices.push_back(s_idx + 3);
                 indices.push_back(s_idx + 2);
+                indices.push_back(s_idx + 0);
+                indices.push_back(s_idx + 2);
+                indices.push_back(s_idx + 3);
             }
         }
     }

@@ -295,11 +295,11 @@ void Spline2DProjector3D::_rebuild_projected_geometry() {
             const int32_t v2 = (i + 1) * 2;
             const int32_t v3 = (i + 1) * 2 + 1;
             indices.push_back(v0);
-            indices.push_back(v1);
-            indices.push_back(v2);
             indices.push_back(v2);
             indices.push_back(v1);
+            indices.push_back(v2);
             indices.push_back(v3);
+            indices.push_back(v1);
         }
     }
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FloraGuildArchetypeResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Flora Guild Archetype Resource class in IdeamEcology.
+	</brief_description>
+	<description>
+		Flora Guild Archetype Resource (Resource subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="guild_id" type="int" setter="set_guild_id" getter="get_guild_id">
+			Configures guild id for this FloraGuildArchetypeResource.
+		</member>
+		<member name="trophic_role" type="int" setter="set_trophic_role" getter="get_trophic_role">
+			Configures trophic role for this FloraGuildArchetypeResource (PrimaryProducerCanopy,PrimaryProducerUnderstory,NitrogenFixingPioneer,MycorrhizalDecomposer,GrazingMegaherbivore,BrowsingMesoherbivore,PollinatorSeedDisperser,ApexPredatorCarnivore).
+		</member>
+		<member name="preferred_seral_stage" type="int" setter="set_preferred_seral_stage" getter="get_preferred_seral_stage">
+			Configures preferred seral stage for this FloraGuildArchetypeResource.
+		</member>
+		<member name="guild_name" type="String" setter="set_guild_name" getter="get_guild_name">
+			Configures guild name for this FloraGuildArchetypeResource.
+		</member>
+		<member name="optimal_temp_c" type="float" setter="set_optimal_temp_c" getter="get_optimal_temp_c">
+			Configures optimal temp c for this FloraGuildArchetypeResource.
+		</member>
+		<member name="temp_tolerance_sigma_c" type="float" setter="set_temp_tolerance_sigma_c" getter="get_temp_tolerance_sigma_c">
+			Configures temp tolerance sigma c for this FloraGuildArchetypeResource.
+		</member>
+		<member name="optimal_precip_mm" type="float" setter="set_optimal_precip_mm" getter="get_optimal_precip_mm">
+			Configures optimal precip mm for this FloraGuildArchetypeResource.
+		</member>
+		<member name="precip_tolerance_sigma_mm" type="float" setter="set_precip_tolerance_sigma_mm" getter="get_precip_tolerance_sigma_mm">
+			Configures precip tolerance sigma mm for this FloraGuildArchetypeResource.
+		</member>
+		<member name="drought_wilting_point_01" type="float" setter="set_drought_wilting_point_01" getter="get_drought_wilting_point_01">
+			Configures drought wilting point 01 for this FloraGuildArchetypeResource.
+		</member>
+		<member name="shade_tolerance_01" type="float" setter="set_shade_tolerance_01" getter="get_shade_tolerance_01">
+			Configures shade tolerance 01 for this FloraGuildArchetypeResource.
+		</member>
+		<member name="fire_resistance_bark_01" type="float" setter="set_fire_resistance_bark_01" getter="get_fire_resistance_bark_01">
+			Configures fire resistance bark 01 for this FloraGuildArchetypeResource.
+		</member>
+		<member name="serotinous_reseed_boost_01" type="float" setter="set_serotinous_reseed_boost_01" getter="get_serotinous_reseed_boost_01">
+			Configures serotinous reseed boost 01 for this FloraGuildArchetypeResource.
+		</member>
+		<member name="intrinsic_growth_rate_r" type="float" setter="set_intrinsic_growth_rate_r" getter="get_intrinsic_growth_rate_r">
+			Configures intrinsic growth rate r for this FloraGuildArchetypeResource.
+		</member>
+		<member name="max_carrying_biomass_kg_m2" type="float" setter="set_max_carrying_biomass_kg_m2" getter="get_max_carrying_biomass_kg_m2">
+			Configures max carrying biomass kg m2 for this FloraGuildArchetypeResource.
+		</member>
+		<member name="nitrogen_fixation_g_m2_yr" type="float" setter="set_nitrogen_fixation_g_m2_yr" getter="get_nitrogen_fixation_g_m2_yr">
+			Configures nitrogen fixation g m2 yr for this FloraGuildArchetypeResource.
+		</member>
+		<member name="litter_lignin_recalcitrance" type="float" setter="set_litter_lignin_recalcitrance" getter="get_litter_lignin_recalcitrance">
+			Configures litter lignin recalcitrance for this FloraGuildArchetypeResource.
+		</member>
+		<member name="alchemical_reagent_affinity" type="float" setter="set_alchemical_reagent_affinity" getter="get_alchemical_reagent_affinity">
+			Configures alchemical reagent affinity for this FloraGuildArchetypeResource.
+		</member>
+		<member name="specific_leaf_area_m2_kg" type="float" setter="set_specific_leaf_area_m2_kg" getter="get_specific_leaf_area_m2_kg">
+			Configures specific leaf area m2 kg for this FloraGuildArchetypeResource.
+		</member>
+	</members>
+</class>

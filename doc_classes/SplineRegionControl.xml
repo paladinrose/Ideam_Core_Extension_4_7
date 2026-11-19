@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineRegionControl" inherits="SplineHitboxButton" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineRegionControl Lightweight alias/subclass of `SplineHitboxButton` for interactive 2D map territories, board spaces, and narrative location zones.
+	</brief_description>
+	<description>
+		SplineRegionControl Lightweight alias/subclass of `SplineHitboxButton` for interactive 2D map territories, board spaces, and narrative location zones. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="region_id" type="int" setter="set_region_id" getter="get_region_id">
+			Configures region id for this SplineRegionControl.
+		</member>
+	</members>
+</class>

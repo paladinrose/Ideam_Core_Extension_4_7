@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WFCSolverNode" inherits="ProceduralGenerationHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`WFCSolverNode`: SceneTree WFC solver node extending `ProceduralGenerationHost` , solving whole-game configurations, scene hierarchies (`CastleGrounds -&gt; CastleTower -&gt;...
+	</brief_description>
+	<description>
+		`WFCSolverNode`: SceneTree WFC solver node extending `ProceduralGenerationHost` , solving whole-game configurations, scene hierarchies (`CastleGrounds -&gt; CastleTower -&gt; children`), and 2D/3D/hypergraph slot topologies. Part of IdeamWaveFunctionCollapse (WFC rule tensors, scene analyzers, and constraint solvers).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="pin_landmark_state">
+			<return type="Variant" />
+			<param index="0" name="slot_id" type="Variant" />
+			<param index="1" name="state_id" type="Variant" />
+			<description>
+				Executes pin landmark state on WFCSolverNode.
+			</description>
+		</method>
+		<method name="pin_landmark_by_name">
+			<return type="Variant" />
+			<param index="0" name="slot_id" type="Variant" />
+			<param index="1" name="token_name" type="Variant" />
+			<description>
+				Executes pin landmark by name on WFCSolverNode.
+			</description>
+		</method>
+		<method name="clear_pinned_landmarks">
+			<return type="Variant" />
+			<description>
+				Executes clear pinned landmarks on WFCSolverNode.
+			</description>
+		</method>
+		<method name="run_wfc_collapse">
+			<return type="Variant" />
+			<description>
+				Executes run wfc collapse on WFCSolverNode.
+			</description>
+		</method>
+		<method name="step_wfc_collapse">
+			<return type="Variant" />
+			<description>
+				Executes step wfc collapse on WFCSolverNode.
+			</description>
+		</method>
+		<method name="get_solver_status">
+			<return type="Variant" />
+			<description>
+				Executes get solver status on WFCSolverNode.
+			</description>
+		</method>
+		<method name="get_collapsed_token_name">
+			<return type="Variant" />
+			<param index="0" name="slot_id" type="Variant" />
+			<description>
+				Executes get collapsed token name on WFCSolverNode.
+			</description>
+		</method>
+		<method name="get_slot_entropy">
+			<return type="Variant" />
+			<param index="0" name="slot_id" type="Variant" />
+			<description>
+				Executes get slot entropy on WFCSolverNode.
+			</description>
+		</method>
+		<method name="get_contradiction_slots">
+			<return type="Variant" />
+			<description>
+				Executes get contradiction slots on WFCSolverNode.
+			</description>
+		</method>
+		<method name="get_contradiction_reports_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes get contradiction reports as dicts on WFCSolverNode.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="slot_count" type="int" setter="set_slot_count" getter="get_slot_count">
+			Configures slot count for this WFCSolverNode.
+		</member>
+		<member name="procedural_pattern" type="ProceduralPattern" setter="set_procedural_pattern" getter="get_procedural_pattern">
+			Configures procedural pattern for this WFCSolverNode.
+		</member>
+	</members>
+</class>

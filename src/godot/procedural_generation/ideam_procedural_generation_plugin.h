@@ -4,13 +4,11 @@
  * ideam_procedural_generation_plugin.h
  * Editor plugin entry point for the `IdeamProceduralGeneration` module
  * (`src/godot/procedural_generation/`).
- *
- * Serves as the foundational procedural generation plugin that `IdeamWaveFunctionCollapse`
- * leans on (paralleling how `IdeamSplines` and `IdeamTiles` lean on `IdeamGeometry`).
  */
 
 #include "../editor/ideam_editor_plugin.h"
 #include "../utilities/ideam_undo_redo.h"
+#include "editor/procedural_generator_inspector_base.h"
 
 #ifdef TOOLS_ENABLED
 #include <godot_cpp/classes/editor_undo_redo_manager.hpp>
@@ -32,6 +30,8 @@ private:
 
     static constexpr std::string_view PROCGEN_SETTINGS_PATH =
         "res://addons/ideam_procedural_generation/resources/project_procedural_generation_settings.res";
+
+    godot::Ref<ProceduralGeneratorInspectorBase> inspector_plugin_;
 
 public:
     IdeamProceduralGenerationPlugin();

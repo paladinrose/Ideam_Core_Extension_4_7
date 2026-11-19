@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SDFGrid2DControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SDFGrid2DControl (Tier 3 UI Tool) Composite Editor &amp; Runtime Control wrapping `SDFGrid2DCanvas` AND an optional collapsible `HeatmapGrid` companion view, with CSG brush...
+	</brief_description>
+	<description>
+		SDFGrid2DControl (Tier 3 UI Tool) Composite Editor &amp; Runtime Control wrapping `SDFGrid2DCanvas` AND an optional collapsible `HeatmapGrid` companion view, with CSG brush controls, Marching Squares iso-contour scrubbing, and a Chladni standing-wave modal synthesizer (`IdeamCymatics` bridge). Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_sdf_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get sdf canvas on SDFGrid2DControl.
+			</description>
+		</method>
+		<method name="get_heatmap_grid">
+			<return type="Variant" />
+			<description>
+				Executes get heatmap grid on SDFGrid2DControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on SDFGrid2DControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="sdf_grid_resource" type="SDFGrid2DResource" setter="set_sdf_grid_resource" getter="get_sdf_grid_resource">
+			Configures sdf grid resource for this SDFGrid2DControl.
+		</member>
+	</members>
+</class>

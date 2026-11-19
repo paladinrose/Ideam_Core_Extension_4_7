@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline1DResource" inherits="SplineResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline1 DResource class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline1 DResource (SplineResource subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes set point position on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point position on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_point_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point back handle on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_point_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point fore handle on Spline1DResource.
+			</description>
+		</method>
+		<method name="commit_set_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="value" type="Variant" />
+			<description>
+				Executes commit set point position on Spline1DResource.
+			</description>
+		</method>
+		<method name="sample">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_point">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get point on Spline1DResource.
+			</description>
+		</method>
+		<method name="sample_section">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section on Spline1DResource.
+			</description>
+		</method>
+		<method name="sample_derivative">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample derivative on Spline1DResource.
+			</description>
+		</method>
+		<method name="sample_section_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section derivative on Spline1DResource.
+			</description>
+		</method>
+		<method name="sample_section_second_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section second derivative on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_min_value">
+			<return type="Variant" />
+			<param index="0" name="use_smoothed" type="Variant" />
+			<description>
+				Executes get min value on Spline1DResource.
+			</description>
+		</method>
+		<method name="get_max_value">
+			<return type="Variant" />
+			<param index="0" name="use_smoothed" type="Variant" />
+			<description>
+				Executes get max value on Spline1DResource.
+			</description>
+		</method>
+		<method name="setup_zero_to_one">
+			<return type="Variant" />
+			<description>
+				Executes setup zero to one on Spline1DResource.
+			</description>
+		</method>
+		<method name="setup_one_to_zero">
+			<return type="Variant" />
+			<description>
+				Executes setup one to zero on Spline1DResource.
+			</description>
+		</method>
+		<method name="create_zero_to_one" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes create zero to one on Spline1DResource.
+			</description>
+		</method>
+		<method name="create_one_to_zero" qualifiers="static">
+			<return type="Variant" />
+			<description>
+				Executes create one to zero on Spline1DResource.
+			</description>
+		</method>
+		<method name="create_equidistant" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="count" type="Variant" />
+			<param index="1" name="type" type="Variant" />
+			<description>
+				Executes create equidistant on Spline1DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="points" type="PackedFloat32Array" setter="set_points_array" getter="get_points_array">
+			Configures points for this Spline1DResource.
+		</member>
+		<member name="back_handles" type="PackedFloat32Array" setter="set_back_handles_array" getter="get_back_handles_array">
+			Configures back handles for this Spline1DResource.
+		</member>
+		<member name="fore_handles" type="PackedFloat32Array" setter="set_fore_handles_array" getter="get_fore_handles_array">
+			Configures fore handles for this Spline1DResource.
+		</member>
+	</members>
+</class>

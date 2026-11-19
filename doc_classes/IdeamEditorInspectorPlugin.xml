@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamEditorInspectorPlugin" inherits="EditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Editor Inspector Plugin class in IdeamEditor.
+	</brief_description>
+	<description>
+		Ideam Editor Inspector Plugin (EditorInspectorPlugin subclass) belonging to IdeamEditor (shared editor plugin and inspector infrastructure).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_undo_redo">
+			<return type="Variant" />
+			<description>
+				Executes get undo redo on IdeamEditorInspectorPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

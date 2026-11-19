@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayStyleCascadeDock" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayStyleCascadeDock provides a Browser DevTools-style ("CSS Inspector") bottom panel in the Godot Editor for inspecting the `GameplayStyle` and `GameplayRule`...
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayStyleCascadeDock provides a Browser DevTools-style ("CSS Inspector") bottom panel in the Godot Editor for inspecting the `GameplayStyle` and `GameplayRule` cascade on any `Game` or `GameEntity` (`GameBoard`, `GameAgent`, `GamePiece`, `GameAgentAction`, `GameInteraction`) in the active Scene Tree. When a developer selects a node in the Scene Tree (or picks one from the dock's entity dropdown), GameplayStyleCascadeDock: 1. Simulates `GameplayStyle::merge_with_child()` from the scene root down through all ancestor `Game` / `GameEntity` nodes to produce a non-destructive simulated `_resolved_gameplay_style`. 2. Left Pane (Computed Properties): Lists direct reflected properties (`time_scale`, `priority`, `maximum_interactions`, etc.) and child `GameProperty` nodes (`Health`, `HearingRange`, `ChargeTime`, etc.), displaying `Authoritative Base Value -&gt; Final Computed Value` and a clickable link to inspect the winning `GameplayRule`. 3. Right Pane (Cascade Rule Waterfall): Lists every matching `GameplayRule` in precedence order (`!important`, `RuleCascadeLayer`, `priority`, `get_specificity()`). Rules shadowed or overridden by a higher-precedence `RuleOp::SET` rule are rendered with a `[SUPERSEDED]` badge and strikethrough-style formatting. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

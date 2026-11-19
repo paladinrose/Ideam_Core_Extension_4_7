@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamEditorPlugin" inherits="EditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Editor Plugin class in IdeamEditor.
+	</brief_description>
+	<description>
+		Ideam Editor Plugin (EditorPlugin subclass) belonging to IdeamEditor (shared editor plugin and inspector infrastructure).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="validate_script_templates">
+			<return type="Variant" />
+			<description>
+				Executes validate script templates on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="set_plugin_active">
+			<return type="Variant" />
+			<param index="0" name="plugin_name" type="Variant" />
+			<param index="1" name="active" type="Variant" />
+			<description>
+				Executes set plugin active on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="is_plugin_active">
+			<return type="Variant" />
+			<param index="0" name="plugin_name" type="Variant" />
+			<description>
+				Executes is plugin active on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="register_to_ecosystem">
+			<return type="Variant" />
+			<param index="0" name="section" type="Variant" />
+			<param index="1" name="key" type="Variant" />
+			<param index="2" name="value" type="Variant" />
+			<description>
+				Executes register to ecosystem on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="get_from_ecosystem">
+			<return type="Variant" />
+			<param index="0" name="section" type="Variant" />
+			<param index="1" name="key" type="Variant" />
+			<param index="2" name="default_value" type="Variant" />
+			<description>
+				Executes get from ecosystem on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="get_ecosystem_keys">
+			<return type="Variant" />
+			<param index="0" name="section" type="Variant" />
+			<description>
+				Executes get ecosystem keys on IdeamEditorPlugin.
+			</description>
+		</method>
+		<method name="get_ecosystem_section">
+			<return type="Variant" />
+			<param index="0" name="section" type="Variant" />
+			<description>
+				Executes get ecosystem section on IdeamEditorPlugin.
+			</description>
+		</method>
+	</methods>
+</class>

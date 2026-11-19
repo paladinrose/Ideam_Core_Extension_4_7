@@ -16,6 +16,7 @@
 #include <godot_cpp/variant/color.hpp>
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_vector2_array.hpp>
+#include <godot_cpp/variant/typed_array.hpp>
 
 namespace ideam::godot_ext {
 
@@ -41,7 +42,12 @@ public:
 
 private:
     float section_cut_height_meters_ = 1.2192f;
+    godot::TypedArray<godot::Dictionary> serialized_spaces_;
+    godot::TypedArray<godot::Dictionary> serialized_features_;
     core::ArchitecturalBlueprintCore core_blueprint_;
+
+    void _sync_core_from_serialized();
+    void _sync_serialized_from_core();
 
 protected:
     static void _bind_methods();
@@ -52,6 +58,12 @@ public:
 
     void set_section_cut_height_meters(float p_height);
     [[nodiscard]] float get_section_cut_height_meters() const noexcept { return section_cut_height_meters_; }
+
+    void set_spaces(const godot::TypedArray<godot::Dictionary> &p_spaces);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_spaces() const { return serialized_spaces_; }
+
+    void set_features(const godot::TypedArray<godot::Dictionary> &p_features);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_features() const { return serialized_features_; }
 
     void commit_set_section_cut_height_meters(
         float p_new_height,
@@ -76,6 +88,8 @@ public:
         const godot::String &p_map_key_label = ""
     );
 
+    void populate_sample_room();
+    void clear_blueprint();
     void rebuild_reactive_layers();
 
     [[nodiscard]] int get_space_count() const noexcept;

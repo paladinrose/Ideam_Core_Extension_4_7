@@ -5,19 +5,7 @@
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/classes/engine.hpp>
 
-#include "game_player_manager.h"
-#include "game_player_profile.h"
-#include "game.h"
-#include "game_entities/game_board.h"
-#include "game_entities/game_agent.h"
-#include "gameplay/xr_eye_effect_resource.h"
 
-#include "ui/game_menu.h"
-
-#include "scene_transition.h"
-
-#include "../utilities/node_retargeter.h"
-#include "../utilities/signal_connector.h"
 
 namespace ideam::godot_ext {
 
@@ -79,11 +67,11 @@ void GamePlayer::_bind_methods() {
     
     godot::ClassDB::bind_method(godot::D_METHOD("set_agent_node_assignments", "assignments"), &GamePlayer::set_agent_node_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_agent_node_assignments"), &GamePlayer::get_agent_node_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "agent_node_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_agent_node_assignments", "get_agent_node_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "agent_node_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_agent_node_assignments", "get_agent_node_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_agent_signal_assignments", "assignments"), &GamePlayer::set_agent_signal_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_agent_signal_assignments"), &GamePlayer::get_agent_signal_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "agent_signal_assignments", godot::PROPERTY_HINT_NODE_TYPE, "SignalConnector"), "set_agent_signal_assignments", "get_agent_signal_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "agent_signal_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "SignalConnector"), "set_agent_signal_assignments", "get_agent_signal_assignments");
 
     // --- Section 2.4 XR Embodiment Properties ---
     ADD_GROUP("XR Embodiment & Tracked Rig", "xr_");
@@ -114,23 +102,23 @@ void GamePlayer::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_head_assignments", "assignments"), &GamePlayer::set_head_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_head_assignments"), &GamePlayer::get_head_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_head_assignments", "get_head_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "head_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_head_assignments", "get_head_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_eye_assignments", "assignments"), &GamePlayer::set_eye_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_eye_assignments"), &GamePlayer::get_eye_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "eye_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_eye_assignments", "get_eye_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "eye_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_eye_assignments", "get_eye_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_ear_assignments", "assignments"), &GamePlayer::set_ear_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_ear_assignments"), &GamePlayer::get_ear_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "ear_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_ear_assignments", "get_ear_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "ear_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_ear_assignments", "get_ear_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_left_hand_assignments", "assignments"), &GamePlayer::set_left_hand_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_left_hand_assignments"), &GamePlayer::get_left_hand_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_left_hand_assignments", "get_left_hand_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "left_hand_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_left_hand_assignments", "get_left_hand_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_right_hand_assignments", "assignments"), &GamePlayer::set_right_hand_assignments);
     godot::ClassDB::bind_method(godot::D_METHOD("get_right_hand_assignments"), &GamePlayer::get_right_hand_assignments);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_assignments", godot::PROPERTY_HINT_NODE_TYPE, "NodeRetargeter"), "set_right_hand_assignments", "get_right_hand_assignments");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "right_hand_assignments", godot::PROPERTY_HINT_RESOURCE_TYPE, "NodeRetargeter"), "set_right_hand_assignments", "get_right_hand_assignments");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_player_height", "height"), &GamePlayer::set_player_height);
     godot::ClassDB::bind_method(godot::D_METHOD("get_player_height"), &GamePlayer::get_player_height);
@@ -249,17 +237,17 @@ void GamePlayer::set_default_agent(GameAgent* p_agent) {
 }
 GameAgent* GamePlayer::get_default_agent() const { return default_agent; }
 
-void GamePlayer::set_agent_node_assignments(NodeRetargeter* p_assignments) { 
+void GamePlayer::set_agent_node_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { 
     if (agent_node_assignments == p_assignments) return;
     agent_node_assignments = p_assignments; 
 }
-NodeRetargeter* GamePlayer::get_agent_node_assignments() const { return agent_node_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_agent_node_assignments() const { return agent_node_assignments; }
 
-void GamePlayer::set_agent_signal_assignments(SignalConnector* p_assignments) { 
+void GamePlayer::set_agent_signal_assignments(const godot::Ref<SignalConnector>& p_assignments) { 
     if (agent_signal_assignments == p_assignments) return;
     agent_signal_assignments = p_assignments; 
 }
-SignalConnector* GamePlayer::get_agent_signal_assignments() const { return agent_signal_assignments; }
+godot::Ref<SignalConnector> GamePlayer::get_agent_signal_assignments() const { return agent_signal_assignments; }
 
 // --- Section 2.4 XR Embodiment Setters / Getters & Helpers ---
 
@@ -281,20 +269,20 @@ godot::XRController3D* GamePlayer::get_xr_left_hand() const { return xr_left_han
 void GamePlayer::set_xr_right_hand(godot::XRController3D* p_hand) { xr_right_hand = p_hand; }
 godot::XRController3D* GamePlayer::get_xr_right_hand() const { return xr_right_hand; }
 
-void GamePlayer::set_head_assignments(NodeRetargeter* p_assignments) { head_assignments = p_assignments; }
-NodeRetargeter* GamePlayer::get_head_assignments() const { return head_assignments; }
+void GamePlayer::set_head_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { head_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_head_assignments() const { return head_assignments; }
 
-void GamePlayer::set_eye_assignments(NodeRetargeter* p_assignments) { eye_assignments = p_assignments; }
-NodeRetargeter* GamePlayer::get_eye_assignments() const { return eye_assignments; }
+void GamePlayer::set_eye_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { eye_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_eye_assignments() const { return eye_assignments; }
 
-void GamePlayer::set_ear_assignments(NodeRetargeter* p_assignments) { ear_assignments = p_assignments; }
-NodeRetargeter* GamePlayer::get_ear_assignments() const { return ear_assignments; }
+void GamePlayer::set_ear_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { ear_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_ear_assignments() const { return ear_assignments; }
 
-void GamePlayer::set_left_hand_assignments(NodeRetargeter* p_assignments) { left_hand_assignments = p_assignments; }
-NodeRetargeter* GamePlayer::get_left_hand_assignments() const { return left_hand_assignments; }
+void GamePlayer::set_left_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { left_hand_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_left_hand_assignments() const { return left_hand_assignments; }
 
-void GamePlayer::set_right_hand_assignments(NodeRetargeter* p_assignments) { right_hand_assignments = p_assignments; }
-NodeRetargeter* GamePlayer::get_right_hand_assignments() const { return right_hand_assignments; }
+void GamePlayer::set_right_hand_assignments(const godot::Ref<NodeRetargeter>& p_assignments) { right_hand_assignments = p_assignments; }
+godot::Ref<NodeRetargeter> GamePlayer::get_right_hand_assignments() const { return right_hand_assignments; }
 
 void GamePlayer::set_player_height(float p_height) {
     float clamped = godot::Math::clamp(p_height, 0.2f, 4.0f);
@@ -626,26 +614,26 @@ void GamePlayer::_connect_to_agent(GameAgent* agent) {
         reparent_to_agent(agent);
     }
     
-    if (agent_node_assignments) {
+    if (agent_node_assignments.is_valid()) {
         agent_node_assignments->retarget(this, agent);
     }
-    if (head_assignments && xr_head) {
+    if (head_assignments.is_valid() && xr_head) {
         head_assignments->retarget(xr_head, agent);
     }
-    if (eye_assignments && xr_eyes) {
+    if (eye_assignments.is_valid() && xr_eyes) {
         eye_assignments->retarget(xr_eyes, agent);
     }
-    if (ear_assignments && xr_ears) {
+    if (ear_assignments.is_valid() && xr_ears) {
         ear_assignments->retarget(xr_ears, agent);
     }
-    if (left_hand_assignments && xr_left_hand) {
+    if (left_hand_assignments.is_valid() && xr_left_hand) {
         left_hand_assignments->retarget(xr_left_hand, agent);
     }
-    if (right_hand_assignments && xr_right_hand) {
+    if (right_hand_assignments.is_valid() && xr_right_hand) {
         right_hand_assignments->retarget(xr_right_hand, agent);
     }
     
-    if (agent_signal_assignments) {
+    if (agent_signal_assignments.is_valid()) {
         agent_signal_assignments->connect_signals(this, agent);
     }
 
@@ -665,26 +653,26 @@ void GamePlayer::_connect_to_agent(GameAgent* agent) {
 void GamePlayer::_disconnect_from_agent(GameAgent* agent) {
     if (!agent) return;
 
-    if (agent_node_assignments) {
+    if (agent_node_assignments.is_valid()) {
         agent_node_assignments->clear_set_targets(this, agent);
     }
-    if (head_assignments && xr_head) {
+    if (head_assignments.is_valid() && xr_head) {
         head_assignments->clear_set_targets(xr_head, agent);
     }
-    if (eye_assignments && xr_eyes) {
+    if (eye_assignments.is_valid() && xr_eyes) {
         eye_assignments->clear_set_targets(xr_eyes, agent);
     }
-    if (ear_assignments && xr_ears) {
+    if (ear_assignments.is_valid() && xr_ears) {
         ear_assignments->clear_set_targets(xr_ears, agent);
     }
-    if (left_hand_assignments && xr_left_hand) {
+    if (left_hand_assignments.is_valid() && xr_left_hand) {
         left_hand_assignments->clear_set_targets(xr_left_hand, agent);
     }
-    if (right_hand_assignments && xr_right_hand) {
+    if (right_hand_assignments.is_valid() && xr_right_hand) {
         right_hand_assignments->clear_set_targets(xr_right_hand, agent);
     }
     
-    if (agent_signal_assignments) {
+    if (agent_signal_assignments.is_valid()) {
         agent_signal_assignments->disconnect_signals(this, agent);
     }
 

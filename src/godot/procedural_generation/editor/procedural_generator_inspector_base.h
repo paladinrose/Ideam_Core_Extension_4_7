@@ -2,12 +2,15 @@
 
 /**
  * procedural_generator_inspector_base.h
- * Shared base `EditorInspectorPlugin` for `IdeamProceduralGeneration` and `IdeamWaveFunctionCollapse`
+ * Shared base `EditorInspectorPlugin` for `IdeamProceduralGeneration`,
+ * `IdeamWaveFunctionCollapse`, and `IdeamQuantumDarwinism`
  * (`src/godot/procedural_generation/editor/`).
  */
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
 #include "../procedural_patterner.h"
+
+#include <godot_cpp/classes/resource.hpp>
 
 namespace ideam::godot_ext {
 
@@ -20,6 +23,8 @@ protected:
 public:
     ProceduralGeneratorInspectorBase() = default;
     ~ProceduralGeneratorInspectorBase() override = default;
+
+    void _on_open_in_procedural_composer(const godot::Ref<godot::Resource> &p_resource);
 
 #ifdef TOOLS_ENABLED
     godot::EditorUndoRedoManager *get_undo_redo() const override;

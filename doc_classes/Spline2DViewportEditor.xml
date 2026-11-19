@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline2DViewportEditor" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Direct 2D Scene Viewport editor for SplineNode2D and SplinePolygon2D.
+	</brief_description>
+	<description>
+		Integrates into Godot's 2D CanvasItem editor via [IdeamSplinesPlugin] to let you select, drag, add, delete, and adjust Bezier tangent handles directly on [SplineNode2D] and [SplinePolygon2D] nodes in the 2D scene space. Uses [constant IdeamToolContext.UPDATE_ON_COMMIT] by default (with an optional Live toggle in the 2D toolbar) so each drag produces a single undo/redo step.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ColorSplineWheelCanvas" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Color Spline Wheel Canvas class in IdeamSplines.
+	</brief_description>
+	<description>
+		Color Spline Wheel Canvas (Control subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_selected_stop_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set selected stop index on ColorSplineWheelCanvas.
+			</description>
+		</method>
+		<method name="get_selected_stop_index">
+			<return type="Variant" />
+			<description>
+				Executes get selected stop index on ColorSplineWheelCanvas.
+			</description>
+		</method>
+		<method name="set_hsva_mode">
+			<return type="Variant" />
+			<param index="0" name="hsva" type="Variant" />
+			<description>
+				Executes set hsva mode on ColorSplineWheelCanvas.
+			</description>
+		</method>
+		<method name="get_hsva_mode">
+			<return type="Variant" />
+			<description>
+				Executes get hsva mode on ColorSplineWheelCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline4DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this ColorSplineWheelCanvas.
+		</member>
+	</members>
+	<signals>
+		<signal name="stop_selected">
+			<param index="0" name="stop_index" type="int" />
+			<description>
+				Emitted when stop selected occurs on this ColorSplineWheelCanvas.
+			</description>
+		</signal>
+		<signal name="stops_modified">
+			<description>
+				Emitted when stops modified occurs on this ColorSplineWheelCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GridContainer3D" inherits="Container3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		`GridContainer3D`: Arranges child `Node3D` / `SemanticStructure3D` nodes in a 3D `(columns_x, rows_y, layers_z)` lattice.
+	</brief_description>
+	<description>
+		`GridContainer3D`: Arranges child `Node3D` / `SemanticStructure3D` nodes in a 3D `(columns_x, rows_y, layers_z)` lattice. Part of IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="columns_x" type="int" setter="set_columns_x" getter="get_columns_x">
+			Configures columns x for this GridContainer3D.
+		</member>
+		<member name="rows_y" type="int" setter="set_rows_y" getter="get_rows_y">
+			Configures rows y for this GridContainer3D.
+		</member>
+	</members>
+</class>

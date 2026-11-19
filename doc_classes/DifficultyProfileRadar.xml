@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DifficultyProfileRadar" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: DifficultyProfileRadar renders a multi-axis spider/radar polygon chart visualizing `GameplayDifficulty` across its core domains (Combat/Action, Riddle/Puzzle,...
+	</brief_description>
+	<description>
+		DOD NOTE: DifficultyProfileRadar renders a multi-axis spider/radar polygon chart visualizing `GameplayDifficulty` across its core domains (Combat/Action, Riddle/Puzzle, Stealth/Perception, Survival/Economy, plus any entries in `custom_aspect_levels`). When a `GameplayAccessibilityOption` resource is also bound, the radar overlays a secondary `!important` effective polygon illustrating how motor/cognitive assists (such as `enemy_time_scale` or `player_damage_taken_multiplier`) temper the raw difficulty profile inside the `GameplayStyle` cascade. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

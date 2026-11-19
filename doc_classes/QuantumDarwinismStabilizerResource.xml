@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismStabilizerResource" inherits="ProceduralGeneratorResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Quantum Darwinism Stabilizer Resource class in IdeamQuantumDarwinism.
+	</brief_description>
+	<description>
+		Quantum Darwinism Stabilizer Resource (ProceduralGeneratorResource subclass) belonging to IdeamQuantumDarwinism (pointer-state stabilization and observer redundancy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="max_horizon_radius" type="int" setter="set_max_horizon_radius" getter="get_max_horizon_radius">
+			Configures max horizon radius for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="max_horizon_slots" type="int" setter="set_max_horizon_slots" getter="get_max_horizon_slots">
+			Configures max horizon slots for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="pointer_redundancy_threshold" type="float" setter="set_pointer_redundancy_threshold" getter="get_pointer_redundancy_threshold">
+			Configures pointer redundancy threshold for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="fragile_redundancy_threshold" type="float" setter="set_fragile_redundancy_threshold" getter="get_fragile_redundancy_threshold">
+			Configures fragile redundancy threshold for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="min_locked_layer" type="int" setter="set_min_locked_layer" getter="get_min_locked_layer">
+			Configures min locked layer for this QuantumDarwinismStabilizerResource (Domain:0,HierarchyParent:1,SiblingDependency:2,ChildCardinality:3,SpatialSocket:4,VariantDetail:5,PinnedOverride:6).
+		</member>
+		<member name="allow_sibling_rebalancing" type="bool" setter="set_allow_sibling_rebalancing" getter="get_allow_sibling_rebalancing">
+			Configures allow sibling rebalancing for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="lock_nuclear_semes" type="bool" setter="set_lock_nuclear_semes" getter="get_lock_nuclear_semes">
+			Configures lock nuclear semes for this QuantumDarwinismStabilizerResource.
+		</member>
+		<member name="pattern" type="ProceduralPattern" setter="set_pattern" getter="get_pattern">
+			Configures pattern for this QuantumDarwinismStabilizerResource.
+		</member>
+	</members>
+</class>

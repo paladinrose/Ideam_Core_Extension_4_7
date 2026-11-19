@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SparseSetVisualizer" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Sparse Set Visualizer class in IdeamMemory.
+	</brief_description>
+	<description>
+		Sparse Set Visualizer (Control subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on SparseSetVisualizer.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="simulated_dense_count" type="int" setter="set_simulated_dense_count" getter="get_simulated_dense_count">
+			Configures simulated dense count for this SparseSetVisualizer.
+		</member>
+		<member name="dense_to_entity_map" type="PackedInt64Array" setter="set_dense_to_entity_map" getter="get_dense_to_entity_map">
+			Configures dense to entity map for this SparseSetVisualizer.
+		</member>
+	</members>
+</class>

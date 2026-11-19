@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryPageGrid" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Page Grid class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Page Grid (Control subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on MemoryPageGrid.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="page_size" type="int" setter="set_page_size" getter="get_page_size">
+			Configures page size for this MemoryPageGrid.
+		</member>
+		<member name="target_columns" type="int" setter="set_target_columns" getter="get_target_columns">
+			Configures target columns for this MemoryPageGrid.
+		</member>
+		<member name="enforce_square_cells" type="bool" setter="set_enforce_square_cells" getter="get_enforce_square_cells">
+			Configures enforce square cells for this MemoryPageGrid.
+		</member>
+		<member name="access_strategy" type="int" setter="set_access_strategy" getter="get_access_strategy">
+			Configures access strategy for this MemoryPageGrid (Linear Scan:0,Random Scatter:1).
+		</member>
+		<member name="virtual_headroom_pages" type="int" setter="set_virtual_headroom_pages" getter="get_virtual_headroom_pages">
+			Configures virtual headroom pages for this MemoryPageGrid.
+		</member>
+	</members>
+</class>

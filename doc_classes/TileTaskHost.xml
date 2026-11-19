@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TileTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tile Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Tile Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_tile_host">
+			<return type="Variant" />
+			<description>
+				Executes setup tile host on TileTaskHost.
+			</description>
+		</method>
+		<method name="execute_tile_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute tile step on TileTaskHost.
+			</description>
+		</method>
+		<method name="bind_geometry_task_host">
+			<return type="Variant" />
+			<param index="0" name="geometry_host" type="Variant" />
+			<description>
+				Executes bind geometry task host on TileTaskHost.
+			</description>
+		</method>
+		<method name="bind_spline_task_host">
+			<return type="Variant" />
+			<param index="0" name="spline_host" type="Variant" />
+			<description>
+				Executes bind spline task host on TileTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tiling_resource" type="DataOrientedTiling" setter="set_tiling_resource" getter="get_tiling_resource">
+			Configures tiling resource for this TileTaskHost.
+		</member>
+		<member name="geometry_host_node_path" type="NodePath" setter="set_geometry_host_node_path" getter="get_geometry_host_node_path">
+			Configures geometry host node path for this TileTaskHost.
+		</member>
+		<member name="spline_host_node_path" type="NodePath" setter="set_spline_host_node_path" getter="get_spline_host_node_path">
+			Configures spline host node path for this TileTaskHost.
+		</member>
+		<member name="auto_setup_on_ready" type="bool" setter="set_auto_setup_on_ready" getter="get_auto_setup_on_ready">
+			Configures auto setup on ready for this TileTaskHost.
+		</member>
+		<member name="auto_execute_in_process" type="bool" setter="set_auto_execute_in_process" getter="get_auto_execute_in_process">
+			Configures auto execute in process for this TileTaskHost.
+		</member>
+		<member name="share_geometry_memory" type="bool" setter="set_share_geometry_memory" getter="get_share_geometry_memory">
+			Configures share geometry memory for this TileTaskHost.
+		</member>
+	</members>
+</class>

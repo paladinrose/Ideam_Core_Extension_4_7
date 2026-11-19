@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferTooltip" inherits="PanelContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Tooltip class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Tooltip (PanelContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="configure">
+			<return type="Variant" />
+			<param index="0" name="data" type="Variant" />
+			<description>
+				Executes configure on MemoryBufferTooltip.
+			</description>
+		</method>
+	</methods>
+</class>

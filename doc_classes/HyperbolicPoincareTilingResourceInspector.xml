@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HyperbolicPoincareTilingResourceInspector" inherits="TilingEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Godot EditorInspectorPlugin for `HyperbolicPoincareTilingResource`.
+	</brief_description>
+	<description>
+		Godot EditorInspectorPlugin for `HyperbolicPoincareTilingResource`. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

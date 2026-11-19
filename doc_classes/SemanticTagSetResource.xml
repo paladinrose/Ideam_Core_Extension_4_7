@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SemanticTagSetResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Semantic Tag Set Resource class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Semantic Tag Set Resource (Resource subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_sememe">
+			<return type="Variant" />
+			<param index="0" name="sememe" type="Variant" />
+			<description>
+				Executes add sememe on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="remove_sememe">
+			<return type="Variant" />
+			<param index="0" name="sememe" type="Variant" />
+			<description>
+				Executes remove sememe on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="clear_sememes">
+			<return type="Variant" />
+			<description>
+				Executes clear sememes on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="add_nuclear_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes add nuclear tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="add_peripheral_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes add peripheral tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="add_excluded_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes add excluded tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="has_nuclear_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has nuclear tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="has_peripheral_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has peripheral tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="has_any_tag">
+			<return type="Variant" />
+			<param index="0" name="tag" type="Variant" />
+			<description>
+				Executes has any tag on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_all_nuclear_tags">
+			<return type="Variant" />
+			<description>
+				Executes get all nuclear tags on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_all_peripheral_tags">
+			<return type="Variant" />
+			<description>
+				Executes get all peripheral tags on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="merge_from">
+			<return type="Variant" />
+			<param index="0" name="other" type="Variant" />
+			<description>
+				Executes merge from on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_nuclear_bitmask_words">
+			<return type="Variant" />
+			<description>
+				Executes get nuclear bitmask words on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_peripheral_bitmask_words">
+			<return type="Variant" />
+			<description>
+				Executes get peripheral bitmask words on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_nuclear_popcount">
+			<return type="Variant" />
+			<description>
+				Executes get nuclear popcount on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_peripheral_popcount">
+			<return type="Variant" />
+			<description>
+				Executes get peripheral popcount on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_coherence_trait_mask32">
+			<return type="Variant" />
+			<description>
+				Executes get coherence trait mask32 on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on SemanticTagSetResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on SemanticTagSetResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this SemanticTagSetResource.
+		</member>
+		<member name="sememes" type="Array" setter="set_sememes" getter="get_sememes">
+			Configures sememes for this SemanticTagSetResource.
+		</member>
+		<member name="explicit_nuclear_tags" type="PackedStringArray" setter="set_explicit_nuclear_tags" getter="get_explicit_nuclear_tags">
+			Configures explicit nuclear tags for this SemanticTagSetResource.
+		</member>
+		<member name="explicit_peripheral_tags" type="PackedStringArray" setter="set_explicit_peripheral_tags" getter="get_explicit_peripheral_tags">
+			Configures explicit peripheral tags for this SemanticTagSetResource.
+		</member>
+		<member name="excluded_seme_tags" type="PackedStringArray" setter="set_excluded_seme_tags" getter="get_excluded_seme_tags">
+			Configures excluded seme tags for this SemanticTagSetResource.
+		</member>
+		<member name="mrl_float_embedding" type="PackedFloat32Array" setter="set_mrl_float_embedding" getter="get_mrl_float_embedding">
+			Configures mrl float embedding for this SemanticTagSetResource.
+		</member>
+		<member name="source_prompt" type="String" setter="set_source_prompt" getter="get_source_prompt">
+			Configures source prompt for this SemanticTagSetResource.
+		</member>
+		<member name="aggregate_valence" type="float" setter="set_aggregate_valence" getter="get_aggregate_valence">
+			Configures aggregate valence for this SemanticTagSetResource.
+		</member>
+	</members>
+</class>

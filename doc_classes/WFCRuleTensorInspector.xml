@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WFCRuleTensorInspector" inherits="ProceduralGeneratorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		EditorInspectorPlugin for `WFCRuleTensorResource` and `WFCSolverNode`, inheriting from `ProceduralGeneratorInspectorBase` .
+	</brief_description>
+	<description>
+		EditorInspectorPlugin for `WFCRuleTensorResource` and `WFCSolverNode`, inheriting from `ProceduralGeneratorInspectorBase` . Part of IdeamWaveFunctionCollapse (WFC rule tensors, scene analyzers, and constraint solvers).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

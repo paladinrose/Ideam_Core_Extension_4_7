@@ -1,19 +1,27 @@
 #include "godot/geomorphology/editor/geomorphology_inspector.h"
-
-#include "godot/geomorphology/ui/geomorphology_map_layer_preview_canvas.h"
-#include "godot/geomorphology/ui/stratigraphic_column_inspector_control.h"
+#include "godot/geomorphology/ui/planetary_systems_modeler.h"
 
 #include <godot_cpp/classes/button.hpp>
-#include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/classes/h_box_container.hpp>
 #include <godot_cpp/classes/label.hpp>
-#include <godot_cpp/classes/option_button.hpp>
-#include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/callable.hpp>
 
 namespace ideam::godot_ext {
 
-void GeomorphologyInspector::_bind_methods() {}
+void GeomorphologyInspector::_bind_methods() {
+    using namespace godot;
+    ClassDB::bind_method(
+        D_METHOD("_on_open_in_planetary_modeler", "resource"),
+        &GeomorphologyInspector::_on_open_in_planetary_modeler
+    );
+}
+
+void GeomorphologyInspector::_on_open_in_planetary_modeler(const godot::Ref<godot::Resource> &p_resource) {
+    if (p_resource.is_valid()) {
+        PlanetarySystemsModeler::open_planetary_resource(p_resource);
+    }
+}
 
 bool GeomorphologyInspector::_can_handle(godot::Object* p_object) const {
     if (!p_object) {
@@ -37,63 +45,21 @@ void GeomorphologyInspector::_parse_begin(godot::Object* p_object) {
         return;
     }
 
-    auto* root_vbox = memnew(VBoxContainer);
-    root_vbox->set_name("GeomorphologyInspectorRoot");
+    auto *bar = memnew(HBoxContainer);
+    bar->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 
-    auto* title_label = memnew(Label);
-    title_label->set_text("IdeamGeomorphology Studio (Tectonics, Pipe Hydrology & Karst)");
-    root_vbox->add_child(title_label);
+    auto *lbl = memnew(Label);
+    lbl->set_text("IdeamGeomorphology Terrain");
+    lbl->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+    bar->add_child(lbl);
 
-    auto* layer_select = memnew(OptionButton);
-    layer_select->add_item("1. Elevation & Shaded Relief", 0);
-    layer_select->add_item("2. Tectonic Plates & Boundary Stress", 1);
-    layer_select->add_item("3. Top Exposed Lithology", 2);
-    layer_select->add_item("4. Surface Water Depth & Discharge", 3);
-    layer_select->add_item("5. Stream Power Fluvial Erosion", 4);
-    layer_select->add_item("6. Strahler Order & Drainage Basins", 5);
-    layer_select->add_item("7. Carbonate Karst Cavity Potential", 6);
-    layer_select->add_item("8. Pedogenic Soil Humus Fertility", 7);
-    layer_select->add_item("9. Hydrothermal & Placer Mineral Veins", 8);
-    root_vbox->add_child(layer_select);
+    auto *open_btn = memnew(Button);
+    open_btn->set_text("Open in PlanetarySystemsModeler");
+    open_btn->set_tooltip_text("Inspect geological map layers, boreholes, and erosion steps in PlanetarySystemsModeler.");
+    open_btn->connect("pressed", Callable(this, "_on_open_in_planetary_modeler").bind(terrain_res));
+    bar->add_child(open_btn);
 
-    auto* preview_canvas = memnew(GeomorphologyMapLayerPreviewCanvas);
-    preview_canvas->set_terrain_resource(terrain_res);
-    root_vbox->add_child(preview_canvas);
-
-    auto* column_inspector = memnew(StratigraphicColumnInspectorControl);
-    column_inspector->set_terrain_resource(terrain_res);
-    root_vbox->add_child(column_inspector);
-
-    auto* toolbar = memnew(HBoxContainer);
-    auto* btn_regen = memnew(Button);
-    btn_regen->set_text("Regenerate Seed");
-    toolbar->add_child(btn_regen);
-
-    auto* btn_step1 = memnew(Button);
-    btn_step1->set_text("+1 Erosion Step");
-    toolbar->add_child(btn_step1);
-
-    auto* btn_step10 = memnew(Button);
-    btn_step10->set_text("+10 Erosion Steps");
-    toolbar->add_child(btn_step10);
-    root_vbox->add_child(toolbar);
-
-    layer_select->connect("item_selected", Callable(preview_canvas, "set_active_map_layer"));
-    preview_canvas->connect("cell_selected", Callable(column_inspector, "set_inspected_cell"));
-
-    btn_regen->connect("pressed", callable_mp(terrain_res.ptr(), &GeomorphologyTerrainResource::generate_initial_world));
-    btn_regen->connect("pressed", Callable(preview_canvas, "rebuild_preview_texture"));
-    btn_regen->connect("pressed", Callable(column_inspector, "refresh_column_view"));
-
-    btn_step1->connect("pressed", callable_mp(terrain_res.ptr(), &GeomorphologyTerrainResource::step_simulation).bind(1, -1.0f, -1.0f));
-    btn_step1->connect("pressed", Callable(preview_canvas, "rebuild_preview_texture"));
-    btn_step1->connect("pressed", Callable(column_inspector, "refresh_column_view"));
-
-    btn_step10->connect("pressed", callable_mp(terrain_res.ptr(), &GeomorphologyTerrainResource::step_simulation).bind(10, -1.0f, -1.0f));
-    btn_step10->connect("pressed", Callable(preview_canvas, "rebuild_preview_texture"));
-    btn_step10->connect("pressed", Callable(column_inspector, "refresh_column_view"));
-
-    add_custom_control(root_vbox);
+    add_custom_control(bar);
 }
 
 } // namespace ideam::godot_ext

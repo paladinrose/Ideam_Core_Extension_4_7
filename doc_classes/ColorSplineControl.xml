@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ColorSplineControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Color Spline Control class in IdeamSplines.
+	</brief_description>
+	<description>
+		Color Spline Control (VBoxContainer subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="spline_4d" type="Spline4DResource" setter="set_spline_4d" getter="get_spline_4d">
+			Configures spline 4d for this ColorSplineControl.
+		</member>
+	</members>
+</class>

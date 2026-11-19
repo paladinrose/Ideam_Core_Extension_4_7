@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineTweenResourceInspector" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineTweenResourceInspector (`GeometryEditorInspectorBase`) Mounts `SplineTweenerControl` in the Godot Inspector whenever a `SplineTweenResource` or `SplineTweener` node is...
+	</brief_description>
+	<description>
+		SplineTweenResourceInspector (`GeometryEditorInspectorBase`) Mounts `SplineTweenerControl` in the Godot Inspector whenever a `SplineTweenResource` or `SplineTweener` node is inspected. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

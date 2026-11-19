@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MindTaskHost" inherits="TaskGraphHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Mind Task Host class in IdeamTasks.
+	</brief_description>
+	<description>
+		Mind Task Host (TaskGraphHost subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_mind_host">
+			<return type="Variant" />
+			<description>
+				Executes setup mind host on MindTaskHost.
+			</description>
+		</method>
+		<method name="execute_mind_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute mind step on MindTaskHost.
+			</description>
+		</method>
+		<method name="bind_shared_task_host">
+			<return type="Variant" />
+			<param index="0" name="other_host" type="Variant" />
+			<description>
+				Executes bind shared task host on MindTaskHost.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="mind_resource" type="DataOrientedMind" setter="set_mind_resource" getter="get_mind_resource">
+			Configures mind resource for this MindTaskHost.
+		</member>
+		<member name="shared_host_node_path" type="NodePath" setter="set_shared_host_node_path" getter="get_shared_host_node_path">
+			Configures shared host node path for this MindTaskHost.
+		</member>
+		<member name="auto_setup_on_ready" type="bool" setter="set_auto_setup_on_ready" getter="get_auto_setup_on_ready">
+			Configures auto setup on ready for this MindTaskHost.
+		</member>
+		<member name="auto_execute_in_process" type="bool" setter="set_auto_execute_in_process" getter="get_auto_execute_in_process">
+			Configures auto execute in process for this MindTaskHost.
+		</member>
+		<member name="share_host_memory" type="bool" setter="set_share_host_memory" getter="get_share_host_memory">
+			Configures share host memory for this MindTaskHost.
+		</member>
+	</members>
+</class>

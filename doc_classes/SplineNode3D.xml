@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Node3 D class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Node3 D (Node3D subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_current_position">
+			<return type="Variant" />
+			<description>
+				Executes get current position on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_current_derivative">
+			<return type="Variant" />
+			<description>
+				Executes get current derivative on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_current_tangent">
+			<return type="Variant" />
+			<description>
+				Executes get current tangent on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_current_basis">
+			<return type="Variant" />
+			<description>
+				Executes get current basis on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_current_transform_on_spline">
+			<return type="Variant" />
+			<description>
+				Executes get current transform on spline on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_current_section_index">
+			<return type="Variant" />
+			<description>
+				Executes get current section index on SplineNode3D.
+			</description>
+		</method>
+		<method name="set_selected_gizmo_point_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set selected gizmo point index on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_selected_gizmo_point_index">
+			<return type="Variant" />
+			<description>
+				Executes get selected gizmo point index on SplineNode3D.
+			</description>
+		</method>
+		<method name="set_selected_gizmo_section_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set selected gizmo section index on SplineNode3D.
+			</description>
+		</method>
+		<method name="get_selected_gizmo_section_index">
+			<return type="Variant" />
+			<description>
+				Executes get selected gizmo section index on SplineNode3D.
+			</description>
+		</method>
+		<method name="play">
+			<return type="Variant" />
+			<param index="0" name="from_start" type="Variant" />
+			<description>
+				Executes play on SplineNode3D.
+			</description>
+		</method>
+		<method name="pause">
+			<return type="Variant" />
+			<description>
+				Executes pause on SplineNode3D.
+			</description>
+		</method>
+		<method name="stop">
+			<return type="Variant" />
+			<param index="0" name="reset_to_start" type="Variant" />
+			<description>
+				Executes stop on SplineNode3D.
+			</description>
+		</method>
+		<method name="step">
+			<return type="Variant" />
+			<param index="0" name="delta_seconds" type="Variant" />
+			<description>
+				Executes step on SplineNode3D.
+			</description>
+		</method>
+		<method name="sample_at_percent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<description>
+				Executes sample at percent on SplineNode3D.
+			</description>
+		</method>
+		<method name="sample_transform_at_percent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<description>
+				Executes sample transform at percent on SplineNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline" type="Spline3DResource" setter="set_spline" getter="get_spline">
+			Configures spline for this SplineNode3D.
+		</member>
+		<member name="process_mode_type" type="int" setter="set_process_mode_type" getter="get_process_mode_type">
+			Configures process mode type for this SplineNode3D (Idle:0,Physics:1,Manual:2).
+		</member>
+		<member name="loop_mode" type="int" setter="set_loop_mode" getter="get_loop_mode">
+			Configures loop mode for this SplineNode3D (Once:0,Wrap:1,Ping-Pong:2).
+		</member>
+		<member name="playing" type="bool" setter="set_playing" getter="is_playing">
+			Configures playing for this SplineNode3D.
+		</member>
+		<member name="autoplay" type="bool" setter="set_autoplay" getter="get_autoplay">
+			Configures autoplay for this SplineNode3D.
+		</member>
+		<member name="use_weighted_sampling" type="bool" setter="set_use_weighted_sampling" getter="get_use_weighted_sampling">
+			Configures use weighted sampling for this SplineNode3D.
+		</member>
+		<member name="duration" type="float" setter="set_duration" getter="get_duration">
+			Configures duration for this SplineNode3D.
+		</member>
+		<member name="speed_scale" type="float" setter="set_speed_scale" getter="get_speed_scale">
+			Configures speed scale for this SplineNode3D.
+		</member>
+		<member name="current_percent" type="float" setter="set_current_percent" getter="get_current_percent">
+			Configures current percent for this SplineNode3D.
+		</member>
+		<member name="output_scale" type="Vector3" setter="set_output_scale" getter="get_output_scale">
+			Configures output scale for this SplineNode3D.
+		</member>
+		<member name="output_offset" type="Vector3" setter="set_output_offset" getter="get_output_offset">
+			Configures output offset for this SplineNode3D.
+		</member>
+		<member name="rotation_mode" type="int" setter="set_rotation_mode" getter="get_rotation_mode">
+			Configures rotation mode for this SplineNode3D (None:0,Up Vector:1,Bishop Parallel Transport:2).
+		</member>
+		<member name="up_vector" type="Vector3" setter="set_up_vector" getter="get_up_vector">
+			Configures up vector for this SplineNode3D.
+		</member>
+		<member name="roll_offset_radians" type="float" setter="set_roll_offset_radians" getter="get_roll_offset_radians">
+			Configures roll offset radians for this SplineNode3D.
+		</member>
+		<member name="show_gizmo_frames" type="bool" setter="set_show_gizmo_frames" getter="get_show_gizmo_frames">
+			Configures show gizmo frames for this SplineNode3D.
+		</member>
+		<member name="gizmo_subdivisions" type="int" setter="set_gizmo_subdivisions" getter="get_gizmo_subdivisions">
+			Configures gizmo subdivisions for this SplineNode3D.
+		</member>
+		<member name="target_node_path" type="NodePath" setter="set_target_node_path" getter="get_target_node_path">
+			Configures target node path for this SplineNode3D.
+		</member>
+		<member name="target_property" type="StringName" setter="set_target_property" getter="get_target_property">
+			Configures target property for this SplineNode3D.
+		</member>
+		<member name="node_retargeter" type="NodeRetargeter" setter="set_node_retargeter" getter="get_node_retargeter">
+			Configures node retargeter for this SplineNode3D.
+		</member>
+		<member name="signal_connector" type="SignalConnector" setter="set_signal_connector" getter="get_signal_connector">
+			Configures signal connector for this SplineNode3D.
+		</member>
+	</members>
+	<signals>
+		<signal name="transform_evaluated">
+			<param index="0" name="percent" type="float" />
+			<param index="1" name="position" type="Vector3" />
+			<param index="2" name="derivative" type="Vector3" />
+			<param index="3" name="basis" type="Basis" />
+			<description>
+				Emitted when transform evaluated occurs on this SplineNode3D.
+			</description>
+		</signal>
+		<signal name="section_crossed">
+			<param index="0" name="previous_section" type="int" />
+			<param index="1" name="current_section" type="int" />
+			<description>
+				Emitted when section crossed occurs on this SplineNode3D.
+			</description>
+		</signal>
+		<signal name="playback_finished">
+			<description>
+				Emitted when playback finished occurs on this SplineNode3D.
+			</description>
+		</signal>
+		<signal name="playback_looped">
+			<description>
+				Emitted when playback looped occurs on this SplineNode3D.
+			</description>
+		</signal>
+		<signal name="gizmo_point_selected">
+			<param index="0" name="point_index" type="int" />
+			<description>
+				Emitted when gizmo point selected occurs on this SplineNode3D.
+			</description>
+		</signal>
+		<signal name="gizmo_section_selected">
+			<param index="0" name="section_index" type="int" />
+			<description>
+				Emitted when gizmo section selected occurs on this SplineNode3D.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="SPLINE_3D_ROTATION_NONE" value="0">
+			Spline 3 d rotation none constant.
+		</constant>
+		<constant name="SPLINE_3D_ROTATION_UP_VECTOR" value="0">
+			Spline 3 d rotation up vector constant.
+		</constant>
+		<constant name="SPLINE_3D_ROTATION_BISHOP_TRANSPORT" value="0">
+			Spline 3 d rotation bishop transport constant.
+		</constant>
+	</constants>
+</class>

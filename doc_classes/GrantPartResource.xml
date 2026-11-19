@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GrantPartResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Grant Part Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Grant Part Resource (Resource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="buffer_id" type="int" setter="set_buffer_id" getter="get_buffer_id">
+			Configures buffer id for this GrantPartResource.
+		</member>
+		<member name="element_stride" type="int" setter="set_element_stride" getter="get_element_stride">
+			Configures element stride for this GrantPartResource.
+		</member>
+		<member name="column_id" type="int" setter="set_column_id" getter="get_column_id">
+			Configures column id for this GrantPartResource.
+		</member>
+		<member name="buffer_type" type="int" setter="set_buffer_type" getter="get_buffer_type">
+			Configures buffer type for this GrantPartResource.
+		</member>
+		<member name="target_buffer_name" type="StringName" setter="set_target_buffer_name" getter="get_target_buffer_name">
+			Configures target buffer name for this GrantPartResource.
+		</member>
+		<member name="target_column_name" type="StringName" setter="set_target_column_name" getter="get_target_column_name">
+			Configures target column name for this GrantPartResource.
+		</member>
+		<member name="access_mode" type="int" setter="set_access_mode" getter="get_access_mode">
+			Configures access mode for this GrantPartResource (Read,Write).
+		</member>
+		<member name="is_contiguous" type="bool" setter="set_is_contiguous" getter="get_is_contiguous">
+			Configures is contiguous for this GrantPartResource.
+		</member>
+		<member name="selection" type="MemoryBufferSelectionResource" setter="set_selection" getter="get_selection">
+			Configures selection for this GrantPartResource.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayAudioOption" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayAudioOption manages standard and advanced audio settings across Godot's `AudioServer` buses (`Master`, `Music`, `SFX`, `Voice`, `Ambient`, `UI`, plus...
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayAudioOption manages standard and advanced audio settings across Godot's `AudioServer` buses (`Master`, `Music`, `SFX`, `Voice`, `Ambient`, `UI`, plus arbitrary custom buses), dynamic range compression, dialogue voice ducking, and spatial/cymatic acoustic propagation parameters (`CymaticMap`). It also integrates with the `GameplayStyle` cascade via `collect_rules()`, emitting `GameplayRule` modifiers that scale AI acoustic perception (`HearingRange`) on `GameAgent` entities such as the TPS Demo's Red Robots. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterModeler" inherits="IdeamToolWorkspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 2 studio workspace for character blueprints and apparel.
+	</brief_description>
+	<description>
+		Organizes [CharacterBlueprintResource] assets under the [b]Blueprints[/b] tab (hosting [CharacterMorphSliderPanel]) and [CharacterApparelResource] assets under the [b]Apparel[/b] tab, paired with a live [RuntimeInspector] dock.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_character_resource" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="resource" type="Resource" />
+			<param index="1" name="owner" type="Control" default="null" />
+			<description>
+				Opens or focuses the shared [CharacterModeler] window and loads [param resource].
+			</description>
+		</method>
+	</methods>
+</class>

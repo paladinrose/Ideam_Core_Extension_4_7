@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TaskGraphResource" inherits="MemoryGraphResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Task Graph Resource class in IdeamTasks.
+	</brief_description>
+	<description>
+		Task Graph Resource (MemoryGraphResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="command_arena_capacity_bytes" type="int" setter="set_command_arena_capacity_bytes" getter="get_command_arena_capacity_bytes">
+			Configures command arena capacity bytes for this TaskGraphResource.
+		</member>
+		<member name="selection_queue_capacity_elements" type="int" setter="set_selection_queue_capacity_elements" getter="get_selection_queue_capacity_elements">
+			Configures selection queue capacity elements for this TaskGraphResource.
+		</member>
+		<member name="exec_buffer" type="ManagedBufferResource" setter="set_exec_buffer" getter="get_exec_buffer">
+			Configures exec buffer for this TaskGraphResource.
+		</member>
+		<member name="cmd_arena_buffer" type="ManagedBufferResource" setter="set_cmd_arena_buffer" getter="get_cmd_arena_buffer">
+			Configures cmd arena buffer for this TaskGraphResource.
+		</member>
+		<member name="sel_arena_buffer" type="ManagedBufferResource" setter="set_sel_arena_buffer" getter="get_sel_arena_buffer">
+			Configures sel arena buffer for this TaskGraphResource.
+		</member>
+	</members>
+</class>

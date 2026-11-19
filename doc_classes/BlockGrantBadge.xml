@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlockGrantBadge" inherits="Button" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Block Grant Badge class in IdeamMemory.
+	</brief_description>
+	<description>
+		Block Grant Badge (Button subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="configure">
+			<return type="Variant" />
+			<param index="0" name="grant_index" type="Variant" />
+			<param index="1" name="grant_name" type="Variant" />
+			<param index="2" name="access_mode" type="Variant" />
+			<param index="3" name="has_error" type="Variant" />
+			<param index="4" name="tooltip_text" type="Variant" />
+			<description>
+				Executes configure on BlockGrantBadge.
+			</description>
+		</method>
+		<method name="get_grant_index">
+			<return type="Variant" />
+			<description>
+				Executes get grant index on BlockGrantBadge.
+			</description>
+		</method>
+		<method name="get_access_mode">
+			<return type="Variant" />
+			<description>
+				Executes get access mode on BlockGrantBadge.
+			</description>
+		</method>
+		<method name="get_has_error">
+			<return type="Variant" />
+			<description>
+				Executes get has error on BlockGrantBadge.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="grant_badge_pressed">
+			<param index="0" name="grant_index" type="int" />
+			<description>
+				Emitted when grant badge pressed occurs on this BlockGrantBadge.
+			</description>
+		</signal>
+		<signal name="grant_badge_mouse_entered">
+			<param index="0" name="grant_index" type="int" />
+			<description>
+				Emitted when grant badge mouse entered occurs on this BlockGrantBadge.
+			</description>
+		</signal>
+		<signal name="grant_badge_mouse_exited">
+			<param index="0" name="grant_index" type="int" />
+			<description>
+				Emitted when grant badge mouse exited occurs on this BlockGrantBadge.
+			</description>
+		</signal>
+	</signals>
+</class>

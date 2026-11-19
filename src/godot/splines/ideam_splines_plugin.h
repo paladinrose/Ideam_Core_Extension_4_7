@@ -22,6 +22,7 @@
 #include "editor/spline_2d_resource_inspector.h"
 #include "editor/spline_3d_resource_inspector.h"
 #include "editor/spline_4d_resource_inspector.h"
+#include "editor/spline_2d_viewport_editor.h"
 #include "spline_3d/spline_3d_gizmo.h"
 #include "spline_3d/spline_extrude_mesh_3d.h"
 #include "spline_3d/spline_multi_mesh_3d.h"
@@ -64,6 +65,9 @@ private:
     godot::Ref<SplineScatterGizmo> spline_scatter_gizmo;
     godot::Ref<SplineCorridorGizmo> spline_corridor_gizmo;
 
+    // 2D Scene-Space Viewport Editor & Canvas Toolbar (SplineNode2D & SplinePolygon2D)
+    Spline2DViewportEditor *spline_2d_viewport_editor = nullptr;
+
 public:
     IdeamSplinesPlugin();
     ~IdeamSplinesPlugin() override;
@@ -73,6 +77,13 @@ public:
     // --- EditorPlugin Lifecycle ---
     void _enter_tree() override;
     void _exit_tree() override;
+
+    // --- 2D Scene-Space Viewport Editing Hooks ---
+    bool _handles(godot::Object *p_object) const override;
+    void _edit(godot::Object *p_object) override;
+    void _make_visible(bool p_visible) override;
+    bool _forward_canvas_gui_input(const godot::Ref<godot::InputEvent> &p_event) override;
+    void _forward_canvas_draw_over_viewport(godot::Control *p_viewport_control) override;
 
     // --- Cross-Plugin Ecosystem & TaskDomainPack Handshake ---
     [[nodiscard]] godot::StringName get_plugin_domain_name() const { return godot::StringName("IdeamSplines"); }

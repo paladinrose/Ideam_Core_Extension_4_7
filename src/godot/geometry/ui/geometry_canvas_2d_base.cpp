@@ -36,6 +36,10 @@ void GeometryCanvas2DBase::_bind_methods() {
         PropertyInfo(Variant::VECTOR2, "view_min"),
         PropertyInfo(Variant::VECTOR2, "view_max")
     ));
+    ADD_SIGNAL(MethodInfo(
+        "commit_completed",
+        PropertyInfo(Variant::STRING, "action_name")
+    ));
 
     ClassDB::bind_method(D_METHOD("set_geometry_resource", "resource"), &GeometryCanvas2DBase::set_geometry_resource);
     ClassDB::bind_method(D_METHOD("get_geometry_resource"), &GeometryCanvas2DBase::get_geometry_resource);
@@ -74,6 +78,18 @@ void GeometryCanvas2DBase::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_show_point_labels", "show"), &GeometryCanvas2DBase::set_show_point_labels);
     ClassDB::bind_method(D_METHOD("get_show_point_labels"), &GeometryCanvas2DBase::get_show_point_labels);
+
+    ClassDB::bind_method(D_METHOD("set_y_down", "y_down"), &GeometryCanvas2DBase::set_y_down);
+    ClassDB::bind_method(D_METHOD("get_y_down"), &GeometryCanvas2DBase::get_y_down);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "y_down"), "set_y_down", "get_y_down");
+
+    ClassDB::bind_method(D_METHOD("set_update_commit_policy", "policy"), &GeometryCanvas2DBase::set_update_commit_policy);
+    ClassDB::bind_method(D_METHOD("get_update_commit_policy"), &GeometryCanvas2DBase::get_update_commit_policy);
+    ADD_PROPERTY(
+        PropertyInfo(Variant::INT, "update_commit_policy", PROPERTY_HINT_ENUM, "Immediate:0,On Commit:1,Explicit Trigger:2"),
+        "set_update_commit_policy",
+        "get_update_commit_policy"
+    );
 
     ClassDB::bind_method(D_METHOD("set_selected_point_index", "index"), &GeometryCanvas2DBase::set_selected_point_index);
     ClassDB::bind_method(D_METHOD("get_selected_point_index"), &GeometryCanvas2DBase::get_selected_point_index);
@@ -148,13 +164,14 @@ godot::Vector2 GeometryCanvas2DBase::world_to_screen(
 ) const {
     const float span_x = std::max(1e-5f, view_max.x - view_min.x);
     const float span_y = std::max(1e-5f, view_max.y - view_min.y);
+    const float y_sign = y_down ? 1.0f : -1.0f;
 
     if (!lock_aspect_ratio) {
         const float nx = (p_world.x - view_min.x) / span_x;
         const float ny = (p_world.y - view_min.y) / span_y;
         return godot::Vector2(
             p_plot.position.x + nx * p_plot.size.x,
-            p_plot.position.y + (1.0f - ny) * p_plot.size.y
+            p_plot.position.y + (y_down ? ny : (1.0f - ny)) * p_plot.size.y
         );
     }
 
@@ -166,7 +183,7 @@ godot::Vector2 GeometryCanvas2DBase::world_to_screen(
 
     return godot::Vector2(
         plot_center.x + (p_world.x - world_center.x) * uniform_scale,
-        plot_center.y - (p_world.y - world_center.y) * uniform_scale
+        plot_center.y + y_sign * (p_world.y - world_center.y) * uniform_scale
     );
 }
 
@@ -176,10 +193,12 @@ godot::Vector2 GeometryCanvas2DBase::screen_to_world(
 ) const {
     const float span_x = std::max(1e-5f, view_max.x - view_min.x);
     const float span_y = std::max(1e-5f, view_max.y - view_min.y);
+    const float y_sign = y_down ? 1.0f : -1.0f;
 
     if (!lock_aspect_ratio) {
-        const float nx = (p_screen.x - p_plot.position.x) / std::max(1.0f, p_plot.size.x);
-        const float ny = 1.0f - ((p_screen.y - p_plot.position.y) / std::max(1.0f, p_plot.size.y));
+        const float nx     = (p_screen.x - p_plot.position.x) / std::max(1.0f, p_plot.size.x);
+        const float raw_ny = (p_screen.y - p_plot.position.y) / std::max(1.0f, p_plot.size.y);
+        const float ny     = y_down ? raw_ny : (1.0f - raw_ny);
         return godot::Vector2(
             view_min.x + nx * span_x,
             view_min.y + ny * span_y
@@ -194,7 +213,7 @@ godot::Vector2 GeometryCanvas2DBase::screen_to_world(
 
     return godot::Vector2(
         world_center.x + (p_screen.x - plot_center.x) / uniform_scale,
-        world_center.y - (p_screen.y - plot_center.y) / uniform_scale
+        world_center.y + y_sign * (p_screen.y - plot_center.y) / uniform_scale
     );
 }
 
@@ -316,6 +335,16 @@ void GeometryCanvas2DBase::set_show_point_labels(bool p_show) {
     queue_redraw();
 }
 
+void GeometryCanvas2DBase::set_y_down(bool p_y_down) {
+    if (y_down == p_y_down) return;
+    y_down = p_y_down;
+    queue_redraw();
+}
+
+void GeometryCanvas2DBase::set_update_commit_policy(IdeamUpdateCommitPolicy p_policy) {
+    update_commit_policy = p_policy;
+}
+
 void GeometryCanvas2DBase::set_selected_point_index(int p_index) {
     if (selected_point_index == p_index && selected_section_index == -1) return;
     selected_point_index   = p_index;
@@ -361,6 +390,19 @@ void GeometryCanvas2DBase::_begin_snapshot_drag(
     drag_start_mouse        = p_mouse_pos;
     active_drag_action_name = p_action_name;
     drag_modified           = false;
+    drag_preview_plot       = get_plot_rect();
+    drag_preview_active     = (update_commit_policy != UPDATE_IMMEDIATE) &&
+                              (p_state == BASE_DRAG_POINT ||
+                               p_state == BASE_DRAG_BACK_HANDLE ||
+                               p_state == BASE_DRAG_FORE_HANDLE);
+
+    if (p_state == BASE_DRAG_POINT && p_target_index >= 0) {
+        drag_preview_world_pos = _get_point_world_pos(p_target_index);
+    } else if (p_state == BASE_DRAG_BACK_HANDLE && p_target_index >= 0) {
+        drag_preview_screen_pos = _get_back_handle_screen_pos(p_target_index, drag_preview_plot);
+    } else if (p_state == BASE_DRAG_FORE_HANDLE && p_target_index >= 0) {
+        drag_preview_screen_pos = _get_fore_handle_screen_pos(p_target_index, drag_preview_plot);
+    }
 
     if (geometry_resource.is_valid()) {
         drag_before_snapshot = geometry_resource->get_snapshot_state();
@@ -370,21 +412,36 @@ void GeometryCanvas2DBase::_begin_snapshot_drag(
 }
 
 void GeometryCanvas2DBase::_end_snapshot_drag() {
-    if (base_drag_state != BASE_DRAG_NONE &&
+    const bool should_commit =
+        base_drag_state != BASE_DRAG_NONE &&
         base_drag_state != BASE_DRAG_PAN_VIEW &&
-        drag_modified &&
-        geometry_resource.is_valid()) {
+        drag_modified;
+
+    if (should_commit && drag_preview_active && drag_target_index >= 0) {
+        if (base_drag_state == BASE_DRAG_POINT) {
+            _set_point_world_pos(drag_target_index, drag_preview_world_pos);
+        } else if (base_drag_state == BASE_DRAG_BACK_HANDLE) {
+            _set_back_handle_from_screen_pos(drag_target_index, drag_preview_screen_pos, drag_preview_plot);
+        } else if (base_drag_state == BASE_DRAG_FORE_HANDLE) {
+            _set_fore_handle_from_screen_pos(drag_target_index, drag_preview_screen_pos, drag_preview_plot);
+        }
+    }
+
+    if (should_commit && geometry_resource.is_valid()) {
         const godot::Dictionary after_state = geometry_resource->get_snapshot_state();
         geometry_resource->commit_snapshot_action(
             active_drag_action_name,
             drag_before_snapshot,
             after_state
         );
+        emit_signal("commit_completed", active_drag_action_name);
     }
+
     base_drag_state     = BASE_DRAG_NONE;
     drag_target_index   = -1;
     custom_drag_submode = 0;
     drag_modified       = false;
+    drag_preview_active = false;
     queue_redraw();
 }
 
@@ -568,8 +625,39 @@ void GeometryCanvas2DBase::_draw_handles_and_points(const godot::Rect2 &p_plot) 
         }
     };
 
+    // Render live preview segments/tether during UPDATE_ON_COMMIT drags without mutating data
+    if (drag_preview_active && drag_modified && drag_target_index >= 0 && drag_target_index < pt_count) {
+        const Color preview_col(1.0f, 0.78f, 0.24f, 0.92f);
+        const Color tether_col(1.0f, 0.78f, 0.24f, 0.45f);
+        const Vector2 orig_scr = world_to_screen(_get_point_world_pos(drag_target_index), p_plot);
+
+        if (base_drag_state == BASE_DRAG_POINT) {
+            const Vector2 prev_scr = world_to_screen(drag_preview_world_pos, p_plot);
+            draw_dashed_line(orig_scr, prev_scr, tether_col, 1.5f, 5.0f);
+            if (pt_count >= 2) {
+                const bool wrapped = _is_canvas_wrapped();
+                const int prev_i = (drag_target_index > 0) ? (drag_target_index - 1) : (wrapped ? pt_count - 1 : -1);
+                const int next_i = (drag_target_index + 1 < pt_count) ? (drag_target_index + 1) : (wrapped ? 0 : -1);
+                if (prev_i >= 0) {
+                    draw_line(world_to_screen(_get_point_world_pos(prev_i), p_plot), prev_scr, preview_col, 2.0f, true);
+                }
+                if (next_i >= 0) {
+                    draw_line(prev_scr, world_to_screen(_get_point_world_pos(next_i), p_plot), preview_col, 2.0f, true);
+                }
+            }
+        } else if (base_drag_state == BASE_DRAG_BACK_HANDLE || base_drag_state == BASE_DRAG_FORE_HANDLE) {
+            draw_line(orig_scr, drag_preview_screen_pos, preview_col, 2.0f, true);
+            draw_circle(drag_preview_screen_pos, 5.5f, preview_col);
+        }
+    }
+
     for (int i = 0; i < pt_count; ++i) {
-        render_point_visual(i, _get_point_world_pos(i), false);
+        if (drag_preview_active && drag_modified && base_drag_state == BASE_DRAG_POINT && i == drag_target_index) {
+            render_point_visual(i, _get_point_world_pos(i), true);
+            render_point_visual(i, drag_preview_world_pos, false);
+        } else {
+            render_point_visual(i, _get_point_world_pos(i), false);
+        }
     }
 
     Vector2 ghost_pos;
@@ -726,8 +814,14 @@ void GeometryCanvas2DBase::_gui_input(const godot::Ref<godot::InputEvent> &p_eve
                         _begin_snapshot_drag(BASE_DRAG_POINT, i, mpos, "Adjust Fader");
                         Vector2 w_pos = _get_point_world_pos(i);
                         w_pos.y       = screen_to_world(mpos, plot).y;
-                        _set_point_world_pos(i, w_pos);
-                        drag_modified = true;
+                        if (drag_preview_active) {
+                            drag_preview_world_pos = w_pos;
+                            drag_modified = true;
+                            queue_redraw();
+                        } else {
+                            _set_point_world_pos(i, w_pos);
+                            drag_modified = true;
+                        }
                         set_selected_point_index(i);
                         emit_signal("point_selected", i);
                         accept_event();
@@ -794,22 +888,42 @@ void GeometryCanvas2DBase::_gui_input(const godot::Ref<godot::InputEvent> &p_eve
                 target_w.x = cur_w.x;
             }
 
-            _set_point_world_pos(drag_target_index, target_w);
-            drag_modified = true;
+            if (drag_preview_active) {
+                drag_preview_world_pos = target_w;
+                drag_modified = true;
+                queue_redraw();
+            } else {
+                _set_point_world_pos(drag_target_index, target_w);
+                drag_modified = true;
+            }
             accept_event();
             return;
         }
 
         if (base_drag_state == BASE_DRAG_BACK_HANDLE && drag_target_index >= 0 && drag_target_index < pt_count) {
-            _set_back_handle_from_screen_pos(drag_target_index, mpos, plot);
-            drag_modified = true;
+            if (drag_preview_active) {
+                drag_preview_screen_pos = mpos;
+                drag_preview_plot       = plot;
+                drag_modified           = true;
+                queue_redraw();
+            } else {
+                _set_back_handle_from_screen_pos(drag_target_index, mpos, plot);
+                drag_modified = true;
+            }
             accept_event();
             return;
         }
 
         if (base_drag_state == BASE_DRAG_FORE_HANDLE && drag_target_index >= 0 && drag_target_index < pt_count) {
-            _set_fore_handle_from_screen_pos(drag_target_index, mpos, plot);
-            drag_modified = true;
+            if (drag_preview_active) {
+                drag_preview_screen_pos = mpos;
+                drag_preview_plot       = plot;
+                drag_modified           = true;
+                queue_redraw();
+            } else {
+                _set_fore_handle_from_screen_pos(drag_target_index, mpos, plot);
+                drag_modified = true;
+            }
             accept_event();
             return;
         }

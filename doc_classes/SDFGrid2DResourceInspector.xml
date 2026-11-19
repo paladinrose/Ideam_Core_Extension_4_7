@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SDFGrid2DResourceInspector" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SDFGrid2DResourceInspector (`Section 3.2`) Concrete Inspector Plugin mounting an `SDFGrid2DControl` (`SDFGrid2DCanvas` + `HeatmapGrid` companion view, Marching Squares...
+	</brief_description>
+	<description>
+		SDFGrid2DResourceInspector (`Section 3.2`) Concrete Inspector Plugin mounting an `SDFGrid2DControl` (`SDFGrid2DCanvas` + `HeatmapGrid` companion view, Marching Squares iso-contour scrubber, interactive CSG brushes, and Chladni standing-wave evaluator) whenever an `SDFGrid2DResource` is inspected in the Godot Editor. Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

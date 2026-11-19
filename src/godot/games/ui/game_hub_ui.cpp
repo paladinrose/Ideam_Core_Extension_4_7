@@ -23,7 +23,7 @@ void GameHubUI::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_game_hub", "game_hub"), &GameHubUI::set_game_hub);
     godot::ClassDB::bind_method(godot::D_METHOD("get_game_hub"), &GameHubUI::get_game_hub);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "game_hub", godot::PROPERTY_HINT_RESOURCE_TYPE, "GameHub"), "set_game_hub", "get_game_hub");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "game_hub", godot::PROPERTY_HINT_NODE_TYPE, "GameHub"), "set_game_hub", "get_game_hub");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_games_list", "games_list"), &GameHubUI::set_games_list);
     godot::ClassDB::bind_method(godot::D_METHOD("get_games_list"), &GameHubUI::get_games_list);

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SignalConnector" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Signal Connector class in IdeamUtilities.
+	</brief_description>
+	<description>
+		Signal Connector (Resource subclass) belonging to IdeamUtilities (undo/redo wrappers, theme registries, and shared helpers).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

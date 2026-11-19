@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SemanticPromptParser" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Semantic Prompt Parser class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Semantic Prompt Parser (RefCounted subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="split_compound_identifier" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="identifier" type="Variant" />
+			<description>
+				Executes split compound identifier on SemanticPromptParser.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="language_asset" type="LanguageAssetResource" setter="set_language_asset" getter="get_language_asset">
+			Configures language asset for this SemanticPromptParser.
+		</member>
+		<member name="treat_modifiers_as_peripheral" type="bool" setter="set_treat_modifiers_as_peripheral" getter="get_treat_modifiers_as_peripheral">
+			Configures treat modifiers as peripheral for this SemanticPromptParser.
+		</member>
+	</members>
+</class>

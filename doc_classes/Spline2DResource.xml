@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline2DResource" inherits="SplineResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline2 DResource class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline2 DResource (SplineResource subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="position" type="Variant" />
+			<description>
+				Executes set point position on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point position on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_point_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point back handle on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_point_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point fore handle on Spline2DResource.
+			</description>
+		</method>
+		<method name="sample">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_point">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get point on Spline2DResource.
+			</description>
+		</method>
+		<method name="sample_section">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section on Spline2DResource.
+			</description>
+		</method>
+		<method name="sample_derivative">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample derivative on Spline2DResource.
+			</description>
+		</method>
+		<method name="sample_section_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section derivative on Spline2DResource.
+			</description>
+		</method>
+		<method name="sample_section_second_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section second derivative on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_tangent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get tangent on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_normal">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get normal on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_area">
+			<return type="Variant" />
+			<param index="0" name="subdivisions" type="Variant" />
+			<description>
+				Executes get area on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_abs_area">
+			<return type="Variant" />
+			<param index="0" name="subdivisions" type="Variant" />
+			<description>
+				Executes get abs area on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_perimeter">
+			<return type="Variant" />
+			<param index="0" name="subdivisions" type="Variant" />
+			<description>
+				Executes get perimeter on Spline2DResource.
+			</description>
+		</method>
+		<method name="get_centroid">
+			<return type="Variant" />
+			<param index="0" name="subdivisions" type="Variant" />
+			<description>
+				Executes get centroid on Spline2DResource.
+			</description>
+		</method>
+		<method name="triangulate">
+			<return type="Variant" />
+			<param index="0" name="subdivisions" type="Variant" />
+			<description>
+				Executes triangulate on Spline2DResource.
+			</description>
+		</method>
+		<method name="rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="angle_rad" type="Variant" />
+			<description>
+				Executes rotate spline on Spline2DResource.
+			</description>
+		</method>
+		<method name="scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes scale spline on Spline2DResource.
+			</description>
+		</method>
+		<method name="commit_rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="angle_rad" type="Variant" />
+			<description>
+				Executes commit rotate spline on Spline2DResource.
+			</description>
+		</method>
+		<method name="commit_scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes commit scale spline on Spline2DResource.
+			</description>
+		</method>
+		<method name="create_rectangle" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="center" type="Variant" />
+			<param index="1" name="size" type="Variant" />
+			<description>
+				Executes create rectangle on Spline2DResource.
+			</description>
+		</method>
+		<method name="create_regular_polygon" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="sides" type="Variant" />
+			<param index="1" name="radius" type="Variant" />
+			<param index="2" name="angle_offset" type="Variant" />
+			<description>
+				Executes create regular polygon on Spline2DResource.
+			</description>
+		</method>
+		<method name="create_star" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="sides" type="Variant" />
+			<param index="1" name="outer_radius" type="Variant" />
+			<param index="2" name="inner_radius" type="Variant" />
+			<param index="3" name="angle_offset" type="Variant" />
+			<description>
+				Executes create star on Spline2DResource.
+			</description>
+		</method>
+		<method name="create_circle" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<param index="1" name="points" type="Variant" />
+			<description>
+				Executes create circle on Spline2DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="points" type="PackedVector2Array" setter="set_points_array" getter="get_points_array">
+			Configures points for this Spline2DResource.
+		</member>
+		<member name="back_handles" type="PackedVector2Array" setter="set_back_handles_array" getter="get_back_handles_array">
+			Configures back handles for this Spline2DResource.
+		</member>
+		<member name="fore_handles" type="PackedVector2Array" setter="set_fore_handles_array" getter="get_fore_handles_array">
+			Configures fore handles for this Spline2DResource.
+		</member>
+	</members>
+</class>

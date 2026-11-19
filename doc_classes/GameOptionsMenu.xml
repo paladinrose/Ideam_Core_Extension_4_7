@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameOptionsMenu" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameOptionsMenu acts as a headless-capable, slot-injected View-Binder and transactional staging controller over the `GameplayStyle` / `GameplayMode` cascade.
+	</brief_description>
+	<description>
+		DOD NOTE: GameOptionsMenu acts as a headless-capable, slot-injected View-Binder and transactional staging controller over the `GameplayStyle` / `GameplayMode` cascade. Rather than hardcoding a monolithic UI tree or mutating live resources directly on every slider tick, GameOptionsMenu: 1. Resolves its target context (`target_entity` such as a `GameBoard` or `GameAgent`, or the root `Game`, or an explicit `GameplayStyle` / `GameplayMode`). 2. Snapshots a baseline backup and creates a deep staging clone (`_staged_mode`) when opened, enabling optional real-time previewing (`live_preview_enabled`) while preserving zero-side-effect rollback on `cancel_options()`. 3. Supports both bespoke designer-injected UI hierarchies (via `@export` container and button slots) and automatic fallback UI generation (`auto_build_fallback_ui`) across all six gameplay domains: Graphics, Audio, Control Maps, Difficulty, Perspective, and Accessibility. 4. Enforces a 15-second display confirmation watchdog when resolution scale or window mode changes are applied, automatically reverting if unconfirmed. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

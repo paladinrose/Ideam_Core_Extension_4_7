@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SDFGrid2DCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SDFGrid2 DCanvas class in IdeamGeometry.
+	</brief_description>
+	<description>
+		SDFGrid2 DCanvas (GeometryCanvas2DBase subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_brush_tool">
+			<return type="Variant" />
+			<param index="0" name="tool" type="Variant" />
+			<description>
+				Executes set brush tool on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_brush_tool">
+			<return type="Variant" />
+			<description>
+				Executes get brush tool on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_combine_mode">
+			<return type="Variant" />
+			<param index="0" name="mode" type="Variant" />
+			<description>
+				Executes set combine mode on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_combine_mode">
+			<return type="Variant" />
+			<description>
+				Executes get combine mode on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_brush_radius">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<description>
+				Executes set brush radius on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_brush_radius">
+			<return type="Variant" />
+			<description>
+				Executes get brush radius on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_brush_smooth_k">
+			<return type="Variant" />
+			<param index="0" name="smooth_k" type="Variant" />
+			<description>
+				Executes set brush smooth k on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_brush_smooth_k">
+			<return type="Variant" />
+			<description>
+				Executes get brush smooth k on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_distance_field">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show distance field on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_distance_field">
+			<return type="Variant" />
+			<description>
+				Executes get show distance field on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_distance_rings">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show distance rings on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_distance_rings">
+			<return type="Variant" />
+			<description>
+				Executes get show distance rings on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_iso_contours">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show iso contours on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_iso_contours">
+			<return type="Variant" />
+			<description>
+				Executes get show iso contours on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_gradients">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show gradients on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_gradients">
+			<return type="Variant" />
+			<description>
+				Executes get show gradients on SDFGrid2DCanvas.
+			</description>
+		</method>
+		<method name="get_probe_world_pos">
+			<return type="Variant" />
+			<description>
+				Executes get probe world pos on SDFGrid2DCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="sdf_grid_resource" type="SDFGrid2DResource" setter="set_sdf_grid_resource" getter="get_sdf_grid_resource">
+			Configures sdf grid resource for this SDFGrid2DCanvas.
+		</member>
+	</members>
+	<signals>
+		<signal name="field_probed">
+			<param index="0" name="world_pos" type="Vector2" />
+			<param index="1" name="distance" type="float" />
+			<param index="2" name="gradient" type="Vector2" />
+			<description>
+				Emitted when field probed occurs on this SDFGrid2DCanvas.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="SDF_TOOL_PROBE_INSPECT" value="0">
+			Sdf tool probe inspect constant.
+		</constant>
+		<constant name="SDF_TOOL_STAMP_CIRCLE" value="0">
+			Sdf tool stamp circle constant.
+		</constant>
+		<constant name="SDF_TOOL_STAMP_BOX" value="0">
+			Sdf tool stamp box constant.
+		</constant>
+		<constant name="SDF_TOOL_STAMP_SEGMENT" value="0">
+			Sdf tool stamp segment constant.
+		</constant>
+		<constant name="SDF_TOOL_CARVE_ERASE" value="0">
+			Sdf tool carve erase constant.
+		</constant>
+	</constants>
+</class>

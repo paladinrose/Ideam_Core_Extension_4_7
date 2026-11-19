@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphGroupResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graph Group Resource class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graph Group Resource (Resource subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="group_name" type="StringName" setter="set_group_name" getter="get_group_name">
+			Configures group name for this IdeamGraphGroupResource.
+		</member>
+		<member name="title" type="String" setter="set_title" getter="get_title">
+			Configures title for this IdeamGraphGroupResource.
+		</member>
+		<member name="position" type="Vector2" setter="set_position" getter="get_position">
+			Configures position for this IdeamGraphGroupResource.
+		</member>
+		<member name="size" type="Vector2" setter="set_size" getter="get_size">
+			Configures size for this IdeamGraphGroupResource.
+		</member>
+		<member name="nodes" type="Array" setter="set_nodes" getter="get_nodes">
+			Configures nodes for this IdeamGraphGroupResource.
+		</member>
+	</members>
+</class>

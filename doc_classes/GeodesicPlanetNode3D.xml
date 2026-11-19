@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeodesicPlanetNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		3D Scene Node rendering a `SphericalGoldbergPolyhedronResource` as a hex/pentagon planetary mesh with radial tile extrusion, bevel insets, spline-driven elevation/biome...
+	</brief_description>
+	<description>
+		3D Scene Node rendering a `SphericalGoldbergPolyhedronResource` as a hex/pentagon planetary mesh with radial tile extrusion, bevel insets, spline-driven elevation/biome coloring, 3D raycast tile picking, and 3D spherical A* path visualization. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_highlighted_cell_id">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes set highlighted cell id on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="get_highlighted_cell_id">
+			<return type="Variant" />
+			<description>
+				Executes get highlighted cell id on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="set_path_endpoints">
+			<return type="Variant" />
+			<param index="0" name="start_cell" type="Variant" />
+			<param index="1" name="goal_cell" type="Variant" />
+			<description>
+				Executes set path endpoints on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="get_path_start_cell">
+			<return type="Variant" />
+			<description>
+				Executes get path start cell on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="get_path_goal_cell">
+			<return type="Variant" />
+			<description>
+				Executes get path goal cell on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="get_generated_mesh">
+			<return type="Variant" />
+			<description>
+				Executes get generated mesh on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="compute_effective_cell_radius">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes compute effective cell radius on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="raycast_pick_cell_3d">
+			<return type="Variant" />
+			<param index="0" name="world_ray_origin" type="Variant" />
+			<param index="1" name="world_ray_dir" type="Variant" />
+			<description>
+				Executes raycast pick cell 3d on GeodesicPlanetNode3D.
+			</description>
+		</method>
+		<method name="rebuild_mesh">
+			<return type="Variant" />
+			<description>
+				Executes rebuild mesh on GeodesicPlanetNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="goldberg_resource" type="SphericalGoldbergPolyhedronResource" setter="set_goldberg_resource" getter="get_goldberg_resource">
+			Configures goldberg resource for this GeodesicPlanetNode3D.
+		</member>
+		<member name="latitude_elevation_spline" type="Spline1DResource" setter="set_latitude_elevation_spline" getter="get_latitude_elevation_spline">
+			Configures latitude elevation spline for this GeodesicPlanetNode3D.
+		</member>
+		<member name="biome_color_spline" type="Spline4DResource" setter="set_biome_color_spline" getter="get_biome_color_spline">
+			Configures biome color spline for this GeodesicPlanetNode3D.
+		</member>
+		<member name="tile_inset_ratio" type="float" setter="set_tile_inset_ratio" getter="get_tile_inset_ratio">
+			Configures tile inset ratio for this GeodesicPlanetNode3D.
+		</member>
+		<member name="base_tile_extrusion" type="float" setter="set_base_tile_extrusion" getter="get_base_tile_extrusion">
+			Configures base tile extrusion for this GeodesicPlanetNode3D.
+		</member>
+		<member name="latitude_elevation_scale" type="float" setter="set_latitude_elevation_scale" getter="get_latitude_elevation_scale">
+			Configures latitude elevation scale for this GeodesicPlanetNode3D.
+		</member>
+		<member name="pentagon_color" type="Color" setter="set_pentagon_color" getter="get_pentagon_color">
+			Configures pentagon color for this GeodesicPlanetNode3D.
+		</member>
+		<member name="hexagon_color_a" type="Color" setter="set_hexagon_color_a" getter="get_hexagon_color_a">
+			Configures hexagon color a for this GeodesicPlanetNode3D.
+		</member>
+		<member name="hexagon_color_b" type="Color" setter="set_hexagon_color_b" getter="get_hexagon_color_b">
+			Configures hexagon color b for this GeodesicPlanetNode3D.
+		</member>
+		<member name="side_skirt_color" type="Color" setter="set_side_skirt_color" getter="get_side_skirt_color">
+			Configures side skirt color for this GeodesicPlanetNode3D.
+		</member>
+		<member name="material_override" type="Material" setter="set_material_override" getter="get_material_override">
+			Configures material override for this GeodesicPlanetNode3D.
+		</member>
+	</members>
+</class>

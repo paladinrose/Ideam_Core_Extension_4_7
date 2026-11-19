@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlueprintResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Serializable 2D architectural floorplan resource backing 3D extrusion and reactive walls.
+	</brief_description>
+	<description>
+		Wraps [code]ArchitecturalBlueprintCore[/code] with full Godot resource serialization for [member spaces] and [member features]. Automatically generates exterior/interior wall segments, map-key annotations, and 3D structure layout summaries.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_space_polygon">
+			<return type="int" />
+			<param index="0" name="room_name" type="String" />
+			<param index="1" name="vertices_2d" type="PackedVector2Array" />
+			<param index="2" name="semantic_role_id" type="int" default="0" />
+			<param index="3" name="nuclear_seme_mask" type="int" default="0" />
+			<param index="4" name="floor_elevation" type="float" default="0.0" />
+			<param index="5" name="ceiling_height" type="float" default="3.0" />
+			<description>
+				Adds a closed 2D room polygon in meters and synchronizes serialized space data.
+			</description>
+		</method>
+		<method name="add_feature_symbol">
+			<return type="int" />
+			<param index="0" name="symbol_type" type="int" />
+			<param index="1" name="position_2d" type="Vector2" />
+			<param index="2" name="width_meters" type="float" default="0.9" />
+			<param index="3" name="height_meters" type="float" default="2.1" />
+			<param index="4" name="sill_elevation" type="float" default="0.0" />
+			<param index="5" name="map_key_label" type="String" default="&quot;&quot;" />
+			<description>
+				Adds a door, window, archway, stair, or fixture symbol and synchronizes serialized feature data.
+			</description>
+		</method>
+		<method name="populate_sample_room">
+			<return type="void" />
+			<description>
+				Appends a 5m x 4m sample room polygon and rebuilds reactive wall layers.
+			</description>
+		</method>
+		<method name="clear_blueprint">
+			<return type="void" />
+			<description>
+				Clears all spaces, walls, features, and serialized arrays.
+			</description>
+		</method>
+		<method name="rebuild_reactive_layers">
+			<return type="void" />
+			<description>
+				Recomputes exterior/interior wall segments, apertures, and measurement annotations from the current spaces and features.
+			</description>
+		</method>
+		<method name="get_space_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of authored space polygons.
+			</description>
+		</method>
+		<method name="get_wall_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of generated wall segments.
+			</description>
+		</method>
+		<method name="get_feature_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of authored feature symbols.
+			</description>
+		</method>
+		<method name="get_annotation_count" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the number of measurement annotations.
+			</description>
+		</method>
+		<method name="extrude_to_3d_layout_summary" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+				Extrudes the 2D blueprint into a 3D layout solver and returns node, socket, and cutout counts.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="section_cut_height_meters" type="float" setter="set_section_cut_height_meters" getter="get_section_cut_height_meters" default="1.2192">
+			Horizontal architectural section cut plane elevation in meters (defaults to standard 4-foot / 1.2192m cut).
+		</member>
+		<member name="spaces" type="Dictionary[]" setter="set_spaces" getter="get_spaces" default="[]">
+			Serialized array of room space dictionaries persisted with the resource.
+		</member>
+		<member name="features" type="Dictionary[]" setter="set_features" getter="get_features" default="[]">
+			Serialized array of door, window, and fixture feature dictionaries persisted with the resource.
+		</member>
+	</members>
+	<constants>
+		<constant name="LAYER_SPACES" value="0" enum="LayerIndex">
+			Room floor space polygons layer.
+		</constant>
+		<constant name="LAYER_WALLS" value="1" enum="LayerIndex">
+			Generated exterior and shared interior wall segments layer.
+		</constant>
+		<constant name="LAYER_FEATURES_AND_APERTURES" value="2" enum="LayerIndex">
+			Doors, windows, archways, stairs, and fixtures layer.
+		</constant>
+		<constant name="LAYER_LABELS_AND_MEASUREMENTS" value="3" enum="LayerIndex">
+			Room labels and dimension annotations layer.
+		</constant>
+		<constant name="SYMBOL_DOOR_SINGLE" value="0" enum="FeatureSymbolType">
+			Single swing door symbol.
+		</constant>
+		<constant name="SYMBOL_DOOR_DOUBLE" value="1" enum="FeatureSymbolType">
+			Double swing door symbol.
+		</constant>
+		<constant name="SYMBOL_WINDOW_SASH" value="2" enum="FeatureSymbolType">
+			Window sash symbol.
+		</constant>
+		<constant name="SYMBOL_ARCHWAY" value="3" enum="FeatureSymbolType">
+			Open archway symbol.
+		</constant>
+		<constant name="SYMBOL_STAIR_RUN" value="4" enum="FeatureSymbolType">
+			Staircase run symbol.
+		</constant>
+		<constant name="SYMBOL_FIXTURE_PROP" value="5" enum="FeatureSymbolType">
+			General architectural fixture or prop symbol.
+		</constant>
+	</constants>
+</class>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismInspector" inherits="ProceduralGeneratorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Quantum Darwinism Inspector class in IdeamQuantumDarwinism.
+	</brief_description>
+	<description>
+		Quantum Darwinism Inspector (ProceduralGeneratorInspectorBase subclass) belonging to IdeamQuantumDarwinism (pointer-state stabilization and observer redundancy).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

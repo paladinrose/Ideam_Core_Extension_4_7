@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeomorphologyMapLayerPreviewCanvas" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geomorphology Map Layer Preview Canvas class in IdeamGeomorphology.
+	</brief_description>
+	<description>
+		Geomorphology Map Layer Preview Canvas (Control subclass) belonging to IdeamGeomorphology (tectonics, fluvial erosion, karst, and stratigraphy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_terrain_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set terrain resource on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_terrain_resource">
+			<return type="Variant" />
+			<description>
+				Executes get terrain resource on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_active_map_layer">
+			<return type="Variant" />
+			<param index="0" name="layer" type="Variant" />
+			<description>
+				Executes set active map layer on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_active_map_layer">
+			<return type="Variant" />
+			<description>
+				Executes get active map layer on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_selected_cell">
+			<return type="Variant" />
+			<param index="0" name="cell" type="Variant" />
+			<description>
+				Executes set selected cell on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_selected_cell">
+			<return type="Variant" />
+			<description>
+				Executes get selected cell on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+		<method name="rebuild_preview_texture">
+			<return type="Variant" />
+			<description>
+				Executes rebuild preview texture on GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="cell_selected">
+			<param index="0" name="grid_cell" type="Vector2i" />
+			<description>
+				Emitted when cell selected occurs on this GeomorphologyMapLayerPreviewCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

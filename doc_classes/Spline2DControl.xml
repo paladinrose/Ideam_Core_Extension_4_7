@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline2DControl" inherits="SplineControlBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Full Editor &amp; Runtime composite UI control for `Spline2DResource`.
+	</brief_description>
+	<description>
+		Full Editor &amp; Runtime composite UI control for `Spline2DResource`. Combines 2D shape presets, `Spline2DCanvas`, and the alternating 2D Point/Section chain. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_spline_2d">
+			<return type="Variant" />
+			<param index="0" name="spline" type="Variant" />
+			<description>
+				Executes set spline 2d on Spline2DControl.
+			</description>
+		</method>
+		<method name="get_spline_2d">
+			<return type="Variant" />
+			<description>
+				Executes get spline 2d on Spline2DControl.
+			</description>
+		</method>
+		<method name="get_canvas_2d">
+			<return type="Variant" />
+			<description>
+				Executes get canvas 2d on Spline2DControl.
+			</description>
+		</method>
+	</methods>
+</class>

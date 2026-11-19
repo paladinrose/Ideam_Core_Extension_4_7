@@ -6,6 +6,8 @@
 #include "../blueprint_resource.h"
 #include "../container_3d.h"
 
+#include <godot_cpp/classes/resource.hpp>
+
 namespace ideam::godot_ext {
 
 class DesignInspector : public IdeamEditorInspectorPlugin {
@@ -17,6 +19,8 @@ protected:
 public:
     DesignInspector() = default;
     ~DesignInspector() override = default;
+
+    void _on_open_in_design_composer(const godot::Ref<godot::Resource> &p_resource);
 
     bool _can_handle(godot::Object *p_object) const override;
     void _parse_begin(godot::Object *p_object) override;

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WFCRuleTensorResource" inherits="ProceduralGeneratorResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Concrete WFC rule tensor &amp; environment-shape resource inheriting from `ProceduralGeneratorResource` .
+	</brief_description>
+	<description>
+		Concrete WFC rule tensor &amp; environment-shape resource inheriting from `ProceduralGeneratorResource` . Part of IdeamWaveFunctionCollapse (WFC rule tensors, scene analyzers, and constraint solvers).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_observed_rules">
+			<return type="Variant" />
+			<description>
+				Executes clear observed rules on WFCRuleTensorResource.
+			</description>
+		</method>
+		<method name="get_observed_rule_count">
+			<return type="Variant" />
+			<description>
+				Executes get observed rule count on WFCRuleTensorResource.
+			</description>
+		</method>
+		<method name="get_observed_rules_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes get observed rules as dicts on WFCRuleTensorResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="state_count" type="int" setter="set_state_count" getter="get_state_count">
+			Configures state count for this WFCRuleTensorResource.
+		</member>
+		<member name="entropy_heuristic" type="int" setter="set_entropy_heuristic" getter="get_entropy_heuristic">
+			Configures entropy heuristic for this WFCRuleTensorResource (ShannonWeighted:0,PopcountMRV:1,HierarchyTopDownShannon:2,CascadeLayerPriority:3).
+		</member>
+		<member name="enable_hierarchy_and_cardinality_rules" type="bool" setter="set_enable_hierarchy_and_cardinality_rules" getter="get_enable_hierarchy_and_cardinality_rules">
+			Configures enable hierarchy and cardinality rules for this WFCRuleTensorResource.
+		</member>
+		<member name="contradiction_horizon_radius" type="int" setter="set_contradiction_horizon_radius" getter="get_contradiction_horizon_radius">
+			Configures contradiction horizon radius for this WFCRuleTensorResource.
+		</member>
+		<member name="token_names" type="PackedStringArray" setter="set_token_names" getter="get_token_names">
+			Configures token names for this WFCRuleTensorResource.
+		</member>
+		<member name="token_weights" type="PackedFloat32Array" setter="set_token_weights" getter="get_token_weights">
+			Configures token weights for this WFCRuleTensorResource.
+		</member>
+		<member name="source_pattern" type="ProceduralPattern" setter="set_source_pattern" getter="get_source_pattern">
+			Configures source pattern for this WFCRuleTensorResource.
+		</member>
+	</members>
+</class>

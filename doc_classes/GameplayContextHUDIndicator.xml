@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayContextHUDIndicator" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayContextHUDIndicator subscribes to `GameplayControlMap::device_family_changed`, `action_triggered`, `action_released`, `vr_gesture_detected`, and `GameAgent`...
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayContextHUDIndicator subscribes to `GameplayControlMap::device_family_changed`, `action_triggered`, `action_released`, `vr_gesture_detected`, and `GameAgent` possession / `GameplayStyle` / `GameplayMode` transitions. It provides three synchronized HUD layers: 1. Device Family &amp; Context Pill + Dynamic Action Prompt Bar (automatically swapping prompt glyphs between Keyboard/Mouse, Gamepad, Custom USB/Arduino, VR/OpenXR, and Touch). 2. Transition Toast Notification Banner when a `GameBoard` or `GameAgent` switches `GameplayMode`, `GameplayStyle`, or possession target. 3. VR / Motion Comfort Vignette (`vr_comfort_vignette_on_move`) rendered around the viewport perimeter when moving/turning in VR or during rapid context transitions. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

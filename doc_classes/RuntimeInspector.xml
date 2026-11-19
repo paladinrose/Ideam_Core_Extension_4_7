@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RuntimeInspector" inherits="ScrollContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Runtime Inspector class in IdeamControls.
+	</brief_description>
+	<description>
+		Runtime Inspector (ScrollContainer subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<signals>
+		<signal name="property_changed">
+			<param index="0" name="property_name" type="StringName" />
+			<param index="1" name="new_value" type="Variant" />
+			<description>
+				Emitted when property changed occurs on this RuntimeInspector.
+			</description>
+		</signal>
+	</signals>
+</class>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferColumnPanel" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Column Panel class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Column Panel (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on MemoryBufferColumnPanel.
+			</description>
+		</method>
+	</methods>
+</class>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="StratigraphicColumnInspectorControl" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Stratigraphic Column Inspector Control class in IdeamGeomorphology.
+	</brief_description>
+	<description>
+		Stratigraphic Column Inspector Control (Control subclass) belonging to IdeamGeomorphology (tectonics, fluvial erosion, karst, and stratigraphy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_terrain_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set terrain resource on StratigraphicColumnInspectorControl.
+			</description>
+		</method>
+		<method name="get_terrain_resource">
+			<return type="Variant" />
+			<description>
+				Executes get terrain resource on StratigraphicColumnInspectorControl.
+			</description>
+		</method>
+		<method name="set_inspected_cell">
+			<return type="Variant" />
+			<param index="0" name="cell" type="Variant" />
+			<description>
+				Executes set inspected cell on StratigraphicColumnInspectorControl.
+			</description>
+		</method>
+		<method name="get_inspected_cell">
+			<return type="Variant" />
+			<description>
+				Executes get inspected cell on StratigraphicColumnInspectorControl.
+			</description>
+		</method>
+		<method name="refresh_column_view">
+			<return type="Variant" />
+			<description>
+				Executes refresh column view on StratigraphicColumnInspectorControl.
+			</description>
+		</method>
+	</methods>
+</class>

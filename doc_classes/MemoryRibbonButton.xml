@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryRibbonButton" inherits="Button" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Ribbon Button class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Ribbon Button (Button subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="block_type" type="int" setter="set_block_type" getter="get_block_type">
+			Configures block type for this MemoryRibbonButton.
+		</member>
+		<member name="index" type="int" setter="set_index" getter="get_index">
+			Configures index for this MemoryRibbonButton.
+		</member>
+		<member name="selected" type="bool" setter="set_selected" getter="get_selected">
+			Configures selected for this MemoryRibbonButton.
+		</member>
+		<member name="dimmed" type="bool" setter="set_dimmed" getter="get_dimmed">
+			Configures dimmed for this MemoryRibbonButton.
+		</member>
+	</members>
+	<signals>
+		<signal name="block_selected">
+			<param index="0" name="block_type" type="int" />
+			<param index="1" name="index" type="int" />
+			<param index="2" name="shift_pressed" type="bool" />
+			<param index="3" name="ctrl_pressed" type="bool" />
+			<description>
+				Emitted when block selected occurs on this MemoryRibbonButton.
+			</description>
+		</signal>
+		<signal name="block_context_menu_requested">
+			<param index="0" name="global_position" type="Vector2" />
+			<param index="1" name="block_type" type="int" />
+			<param index="2" name="index" type="int" />
+			<description>
+				Emitted when block context menu requested occurs on this MemoryRibbonButton.
+			</description>
+		</signal>
+		<signal name="tooltip_requested">
+			<param index="0" name="block_type" type="int" />
+			<param index="1" name="index" type="int" />
+			<param index="2" name="out_data" type="Dictionary" />
+			<description>
+				Emitted when tooltip requested occurs on this MemoryRibbonButton.
+			</description>
+		</signal>
+	</signals>
+</class>

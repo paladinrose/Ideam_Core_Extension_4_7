@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGraphResource" inherits="IdeamGraphResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Graph Resource class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Graph Resource (IdeamGraphResource subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="meta_buffer" type="ManagedBufferResource" setter="set_meta_buffer" getter="get_meta_buffer">
+			Configures meta buffer for this MemoryGraphResource.
+		</member>
+		<member name="registry_buffer" type="ManagedBufferResource" setter="set_registry_buffer" getter="get_registry_buffer">
+			Configures registry buffer for this MemoryGraphResource.
+		</member>
+		<member name="volatile_requirement_capacity" type="int" setter="set_volatile_requirement_capacity" getter="get_volatile_requirement_capacity">
+			Configures volatile requirement capacity for this MemoryGraphResource.
+		</member>
+	</members>
+</class>

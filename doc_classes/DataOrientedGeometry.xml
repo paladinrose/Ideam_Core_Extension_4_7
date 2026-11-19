@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedGeometry" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Geometry class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Geometry (GeometryResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_dod_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes setup dod pipeline on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="bake_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes bake to dod on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="rebuild_dod_task_graph">
+			<return type="Variant" />
+			<description>
+				Executes rebuild dod task graph on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="execute_dod_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute dod step on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="sync_oop_resources_from_dod">
+			<return type="Variant" />
+			<description>
+				Executes sync oop resources from dod on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="semantic_name" type="Variant" />
+			<description>
+				Executes get buffer id on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="get_buffer_manifest_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes get buffer manifest dictionary on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="get_polygon_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="polygon" type="Variant" />
+			<description>
+				Executes get polygon dod slot on DataOrientedGeometry.
+			</description>
+		</method>
+		<method name="get_extracted_marching_squares_segments">
+			<return type="Variant" />
+			<description>
+				Executes get extracted marching squares segments on DataOrientedGeometry.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="polygons" type="Array" setter="set_polygons" getter="get_polygons">
+			Configures polygons for this DataOrientedGeometry.
+		</member>
+		<member name="voronoi_diagram" type="VoronoiDiagram2DResource" setter="set_voronoi_diagram" getter="get_voronoi_diagram">
+			Configures voronoi diagram for this DataOrientedGeometry.
+		</member>
+		<member name="sdf_grids" type="Array" setter="set_sdf_grids" getter="get_sdf_grids">
+			Configures sdf grids for this DataOrientedGeometry.
+		</member>
+		<member name="dod_execution_mode" type="int" setter="set_dod_execution_mode" getter="get_dod_execution_mode">
+			Configures dod execution mode for this DataOrientedGeometry (Disabled:0,Composable Stages:1,Custom TaskGraphResource:2,Manual Graph:3).
+		</member>
+		<member name="pipeline_stage_mask" type="int" setter="set_pipeline_stage_mask" getter="get_pipeline_stage_mask">
+			Configures pipeline stage mask for this DataOrientedGeometry.
+		</member>
+		<member name="auto_connect_pipeline_stages" type="bool" setter="set_auto_connect_pipeline_stages" getter="get_auto_connect_pipeline_stages">
+			Configures auto connect pipeline stages for this DataOrientedGeometry.
+		</member>
+		<member name="auto_sync_resources_from_dod" type="bool" setter="set_auto_sync_resources_from_dod" getter="get_auto_sync_resources_from_dod">
+			Configures auto sync resources from dod for this DataOrientedGeometry.
+		</member>
+		<member name="custom_task_graph_resource" type="TaskGraphResource" setter="set_custom_task_graph_resource" getter="get_custom_task_graph_resource">
+			Configures custom task graph resource for this DataOrientedGeometry.
+		</member>
+		<member name="max_dod_polylines" type="int" setter="set_max_dod_polylines" getter="get_max_dod_polylines">
+			Configures max dod polylines for this DataOrientedGeometry.
+		</member>
+		<member name="max_dod_polyline_vertices" type="int" setter="set_max_dod_polyline_vertices" getter="get_max_dod_polyline_vertices">
+			Configures max dod polyline vertices for this DataOrientedGeometry.
+		</member>
+		<member name="max_dod_voronoi_sites" type="int" setter="set_max_dod_voronoi_sites" getter="get_max_dod_voronoi_sites">
+			Configures max dod voronoi sites for this DataOrientedGeometry.
+		</member>
+		<member name="max_dod_sdf_cells" type="int" setter="set_max_dod_sdf_cells" getter="get_max_dod_sdf_cells">
+			Configures max dod sdf cells for this DataOrientedGeometry.
+		</member>
+	</members>
+	<constants>
+		<constant name="GEOMETRY_DOD_EXEC_DISABLED" value="0">
+			Geometry dod exec disabled constant.
+		</constant>
+		<constant name="GEOMETRY_DOD_EXEC_COMPOSABLE_STAGES" value="0">
+			Geometry dod exec composable stages constant.
+		</constant>
+		<constant name="GEOMETRY_DOD_EXEC_CUSTOM_GRAPH_RESOURCE" value="0">
+			Geometry dod exec custom graph resource constant.
+		</constant>
+		<constant name="GEOMETRY_DOD_EXEC_MANUAL_GRAPH" value="0">
+			Geometry dod exec manual graph constant.
+		</constant>
+	</constants>
+</class>

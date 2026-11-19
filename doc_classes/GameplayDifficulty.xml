@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayDifficulty" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayDifficulty manages how challenging the game is, supporting both a single unified scale for the entire game (`SCALE_MODE_UNIFIED`) and independent per-aspect scales...
+	</brief_description>
+	<description>
+		GameplayDifficulty manages how challenging the game is, supporting both a single unified scale for the entire game (`SCALE_MODE_UNIFIED`) and independent per-aspect scales (`SCALE_MODE_SPLIT_ASPECTS`) inspired by the Silent Hill series (e.g., separate Action/Combat Level, Riddle/Puzzle Level, Stealth/Perception Level, and Survival/Resource Level, plus arbitrary project-specific aspect scales). Beyond storing preset tiers and fine-grained multipliers, GameplayDifficulty integrates directly with the `GameplayStyle` cascade by overriding `collect_rules()`. When enabled, it synthesizes baseline `GameplayRule` instances (priority 30) targeting enemy agents, weapons, player health, and puzzle/interaction entities—which can in turn be overridden by higher-priority or `!important` rules from `GameplayAccessibilityOption`. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

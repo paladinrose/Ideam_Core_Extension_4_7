@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologyBiomeMapPreviewCanvas" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ecology Biome Map Preview Canvas class in IdeamEcology.
+	</brief_description>
+	<description>
+		Ecology Biome Map Preview Canvas (Control subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_biosphere_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set biosphere resource on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_biosphere_resource">
+			<return type="Variant" />
+			<description>
+				Executes get biosphere resource on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_active_map_layer">
+			<return type="Variant" />
+			<param index="0" name="layer" type="Variant" />
+			<description>
+				Executes set active map layer on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_active_map_layer">
+			<return type="Variant" />
+			<description>
+				Executes get active map layer on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_selected_cell">
+			<return type="Variant" />
+			<param index="0" name="cell" type="Variant" />
+			<description>
+				Executes set selected cell on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_selected_cell">
+			<return type="Variant" />
+			<description>
+				Executes get selected cell on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+		<method name="rebuild_preview_texture">
+			<return type="Variant" />
+			<description>
+				Executes rebuild preview texture on EcologyBiomeMapPreviewCanvas.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="cell_selected">
+			<param index="0" name="grid_cell" type="Vector2i" />
+			<description>
+				Emitted when cell selected occurs on this EcologyBiomeMapPreviewCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

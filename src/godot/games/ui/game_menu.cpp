@@ -25,7 +25,7 @@ void GameMenu::_bind_methods() {
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_game", "game"), &GameMenu::set_game);
     godot::ClassDB::bind_method(godot::D_METHOD("get_game"), &GameMenu::get_game);
-    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "game", godot::PROPERTY_HINT_RESOURCE_TYPE, "Game"), "set_game", "get_game");
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "game", godot::PROPERTY_HINT_NODE_TYPE, "Game"), "set_game", "get_game");
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_game_title", "game_title"), &GameMenu::set_game_title);
     godot::ClassDB::bind_method(godot::D_METHOD("get_game_title"), &GameMenu::get_game_title);

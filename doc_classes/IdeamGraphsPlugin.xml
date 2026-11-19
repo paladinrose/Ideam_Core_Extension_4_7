@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphsPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graphs Plugin class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graphs Plugin (IdeamEditorPlugin subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

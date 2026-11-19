@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeomorphologyInspector" inherits="EditorInspectorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Thin Inspector launcher for GeomorphologyTerrainResource and GeomorphologyTerrainNode3D.
+	</brief_description>
+	<description>
+		Adds an 'Open in PlanetarySystemsModeler' launcher bar to the Inspector so full 9-layer geological previews and stratigraphic borehole logs open in [PlanetarySystemsModeler].
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

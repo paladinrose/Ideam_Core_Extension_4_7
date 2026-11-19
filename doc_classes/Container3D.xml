@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Container3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Container3 D class in IdeamDesign.
+	</brief_description>
+	<description>
+		Container3 D (Node3D subclass) belonging to IdeamDesign (3D CSS themes, layouts, parametric assemblies, and architectural blueprints).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="refit_children_3d">
+			<return type="Variant" />
+			<description>
+				Executes refit children 3d on Container3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cell_spacing" type="Vector3" setter="set_cell_spacing" getter="get_cell_spacing">
+			Configures cell spacing for this Container3D.
+		</member>
+		<member name="auto_refit_children" type="bool" setter="set_auto_refit_children" getter="get_auto_refit_children">
+			Configures auto refit children for this Container3D.
+		</member>
+	</members>
+</class>

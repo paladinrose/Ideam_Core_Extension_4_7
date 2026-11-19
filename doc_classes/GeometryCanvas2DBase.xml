@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryCanvas2DBase" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Shared interactive 2D viewport base class for Tier 1 geometry and spline controls.
+	</brief_description>
+	<description>
+		Provides pan, zoom, grid rendering, anchor/handle hit-testing, Y-axis orientation ([member y_down]), and deferred drag preview commits ([member update_commit_policy]). In [constant IdeamToolContext.UPDATE_ON_COMMIT] mode, dragged anchors preview visually at 60+ FPS and commit a single atomic undo/redo action upon pointer release.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_view_bounds">
+			<return type="void" />
+			<param index="0" name="min" type="Vector2" />
+			<param index="1" name="max" type="Vector2" />
+			<description>
+				Sets the visible world-space bounding box of the 2D canvas.
+			</description>
+		</method>
+		<method name="get_view_min" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+				Returns the minimum visible world-space corner.
+			</description>
+		</method>
+		<method name="get_view_max" qualifiers="const">
+			<return type="Vector2" />
+			<description>
+				Returns the maximum visible world-space corner.
+			</description>
+		</method>
+		<method name="set_show_grid">
+			<return type="void" />
+			<param index="0" name="show" type="bool" />
+			<description>
+				Toggles the background coordinate grid.
+			</description>
+		</method>
+		<method name="get_show_grid" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the background coordinate grid is visible.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="y_down" type="bool" setter="set_y_down" getter="get_y_down" default="false">
+			When [code]true[/code], +Y points downward to match Godot's native 2D canvas coordinate system. When [code]false[/code], +Y points upward (mathematical Cartesian convention).
+		</member>
+		<member name="update_commit_policy" type="int" setter="set_update_commit_policy" getter="get_update_commit_policy" default="1">
+			Determines whether point/handle drags commit immediately ([constant IdeamToolContext.UPDATE_IMMEDIATE]) or preview visually and commit once on release ([constant IdeamToolContext.UPDATE_ON_COMMIT]).
+		</member>
+	</members>
+	<signals>
+		<signal name="point_selected">
+			<param index="0" name="index" type="int" />
+			<description>
+				Emitted when the user selects a control point.
+			</description>
+		</signal>
+		<signal name="section_selected">
+			<param index="0" name="index" type="int" />
+			<description>
+				Emitted when the user selects a curve/edge section.
+			</description>
+		</signal>
+		<signal name="commit_completed">
+			<param index="0" name="action_name" type="String" />
+			<description>
+				Emitted after an interactive edit commits an undo/redo action.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="GEOM_DRAG_AXIS_FREE_2D" value="0" enum="DragAxisConstraint">
+			Allows dragging anchors freely along both X and Y.
+		</constant>
+		<constant name="GEOM_DRAG_AXIS_X_ONLY" value="1" enum="DragAxisConstraint">
+			Constrains anchor dragging to the horizontal X axis.
+		</constant>
+		<constant name="GEOM_DRAG_AXIS_Y_ONLY" value="2" enum="DragAxisConstraint">
+			Constrains anchor dragging to the vertical Y axis.
+		</constant>
+		<constant name="GEOM_POINT_STYLE_CIRCLE" value="0" enum="PointDrawStyle">
+			Draws control points as filled circles.
+		</constant>
+		<constant name="GEOM_POINT_STYLE_SQUARE" value="1" enum="PointDrawStyle">
+			Draws control points as squares.
+		</constant>
+		<constant name="GEOM_POINT_STYLE_FADER_CAP" value="2" enum="PointDrawStyle">
+			Draws control points as fader caps.
+		</constant>
+	</constants>
+</class>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologyBiosphereResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ecology Biosphere Resource class in IdeamEcology.
+	</brief_description>
+	<description>
+		Ecology Biosphere Resource (Resource subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_simulation_step_counter">
+			<return type="Variant" />
+			<description>
+				Executes get simulation step counter on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="reset_default_guild_catalog">
+			<return type="Variant" />
+			<description>
+				Executes reset default guild catalog on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="generate_initial_biosphere">
+			<return type="Variant" />
+			<description>
+				Executes generate initial biosphere on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="step_simulation">
+			<return type="Variant" />
+			<param index="0" name="steps" type="Variant" />
+			<param index="1" name="dt_years" type="Variant" />
+			<description>
+				Executes step simulation on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="ignite_wildfire_at_cell">
+			<return type="Variant" />
+			<param index="0" name="x" type="Variant" />
+			<param index="1" name="y" type="Variant" />
+			<param index="2" name="intensity_kw_m" type="Variant" />
+			<description>
+				Executes ignite wildfire at cell on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="inspect_cell_quadrat">
+			<return type="Variant" />
+			<param index="0" name="x" type="Variant" />
+			<param index="1" name="y" type="Variant" />
+			<description>
+				Executes inspect cell quadrat on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="render_map_layer_image">
+			<return type="Variant" />
+			<param index="0" name="layer" type="Variant" />
+			<description>
+				Executes render map layer image on EcologyBiosphereResource.
+			</description>
+		</method>
+		<method name="get_domain_telemetry">
+			<return type="Variant" />
+			<description>
+				Executes get domain telemetry on EcologyBiosphereResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="seed_profile" type="EcologySeedProfileResource" setter="set_seed_profile" getter="get_seed_profile">
+			Configures seed profile for this EcologyBiosphereResource.
+		</member>
+		<member name="guild_catalog" type="Array" setter="set_guild_catalog" getter="get_guild_catalog">
+			Configures guild catalog for this EcologyBiosphereResource.
+		</member>
+		<member name="default_step_dt_years" type="float" setter="set_default_step_dt_years" getter="get_default_step_dt_years">
+			Configures default step dt years for this EcologyBiosphereResource.
+		</member>
+		<member name="active_stage_mask" type="int" setter="set_active_stage_mask" getter="get_active_stage_mask">
+			Configures active stage mask for this EcologyBiosphereResource.
+		</member>
+	</members>
+</class>

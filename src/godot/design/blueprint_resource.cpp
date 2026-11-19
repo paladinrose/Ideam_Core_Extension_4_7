@@ -4,8 +4,104 @@
 
 namespace ideam::godot_ext {
 
+void BlueprintResource::_sync_core_from_serialized() {
+    core_blueprint_.clear();
+
+    for (int i = 0; i < serialized_spaces_.size(); ++i) {
+        const godot::Dictionary d = serialized_spaces_[i];
+        const godot::String name = d.get("room_name", "Room");
+        const godot::PackedVector2Array pts = d.get("vertices_2d", godot::PackedVector2Array());
+        if (pts.size() < 3) {
+            continue;
+        }
+        std::vector<glm::vec2> verts;
+        verts.reserve(static_cast<size_t>(pts.size()));
+        for (int j = 0; j < pts.size(); ++j) {
+            const godot::Vector2 v = pts[j];
+            verts.emplace_back(v.x, v.y);
+        }
+        const int role_id    = d.get("semantic_role_id", static_cast<int>(core::SEMANTIC_ROLE_ASSEMBLY_ROOM));
+        const int seme_mask  = d.get("nuclear_seme_mask", 0);
+        const float floor_el = d.get("floor_elevation", 0.0f);
+        const float ceil_h   = d.get("ceiling_height", 3.0f);
+        godot::CharString cs = name.utf8();
+        core_blueprint_.add_space_polygon(
+            cs.get_data() ? cs.get_data() : "Room",
+            verts,
+            static_cast<uint32_t>(role_id),
+            static_cast<uint32_t>(seme_mask),
+            floor_el,
+            ceil_h
+        );
+    }
+
+    for (int i = 0; i < serialized_features_.size(); ++i) {
+        const godot::Dictionary d = serialized_features_[i];
+        const int sym_type   = std::clamp(static_cast<int>(d.get("symbol_type", 0)), 0, 5);
+        const godot::Vector2 pos = d.get("position_2d", godot::Vector2(0.0f, 0.0f));
+        const float width_m  = d.get("width_meters", 0.90f);
+        const float height_m = d.get("height_meters", 2.10f);
+        const float sill_el  = d.get("sill_elevation", 0.0f);
+        const godot::String label = d.get("map_key_label", "");
+        godot::CharString cs = label.utf8();
+        core_blueprint_.add_feature_symbol(
+            static_cast<core::BlueprintFeatureSymbolType>(sym_type),
+            glm::vec2(pos.x, pos.y),
+            width_m,
+            height_m,
+            sill_el,
+            cs.get_data() ? cs.get_data() : ""
+        );
+    }
+
+    core_blueprint_.rebuild_reactive_layers();
+}
+
+void BlueprintResource::_sync_serialized_from_core() {
+    serialized_spaces_.clear();
+    for (const auto &sp : core_blueprint_.spaces()) {
+        godot::Dictionary d;
+        d["room_name"]         = godot::String(sp.room_name.c_str());
+        d["semantic_role_id"]  = static_cast<int>(sp.semantic_role_id);
+        d["nuclear_seme_mask"] = static_cast<int>(sp.nuclear_seme_mask);
+        d["floor_elevation"]   = sp.floor_elevation;
+        d["ceiling_height"]    = sp.ceiling_height;
+        godot::PackedVector2Array pts;
+        pts.resize(static_cast<int64_t>(sp.vertices_2d.size()));
+        for (size_t i = 0; i < sp.vertices_2d.size(); ++i) {
+            pts.set(static_cast<int64_t>(i), godot::Vector2(sp.vertices_2d[i].x, sp.vertices_2d[i].y));
+        }
+        d["vertices_2d"] = pts;
+        serialized_spaces_.push_back(d);
+    }
+
+    serialized_features_.clear();
+    for (const auto &feat : core_blueprint_.features()) {
+        godot::Dictionary d;
+        d["symbol_type"]    = static_cast<int>(feat.symbol_type);
+        d["position_2d"]    = godot::Vector2(feat.position_2d.x, feat.position_2d.y);
+        d["width_meters"]   = feat.width_meters;
+        d["height_meters"]  = feat.height_meters;
+        d["sill_elevation"] = feat.sill_elevation;
+        d["map_key_label"]  = godot::String("");
+        serialized_features_.push_back(d);
+    }
+}
+
 void BlueprintResource::set_section_cut_height_meters(float p_height) {
     section_cut_height_meters_ = std::max(0.1f, p_height);
+    emit_changed();
+}
+
+void BlueprintResource::set_spaces(const godot::TypedArray<godot::Dictionary> &p_spaces) {
+    serialized_spaces_ = p_spaces;
+    _sync_core_from_serialized();
+    emit_changed();
+}
+
+void BlueprintResource::set_features(const godot::TypedArray<godot::Dictionary> &p_features) {
+    serialized_features_ = p_features;
+    _sync_core_from_serialized();
     emit_changed();
 }
 
@@ -50,6 +146,7 @@ int BlueprintResource::add_space_polygon(
         p_floor_elevation,
         p_ceiling_height
     );
+    _sync_serialized_from_core();
     emit_changed();
     return static_cast<int>(id);
 }
@@ -71,8 +168,28 @@ int BlueprintResource::add_feature_symbol(
         p_sill_elevation,
         cs.get_data() ? cs.get_data() : ""
     );
+    _sync_serialized_from_core();
     emit_changed();
     return static_cast<int>(id);
+}
+
+void BlueprintResource::populate_sample_room() {
+    const int idx = get_space_count();
+    const float offset_x = static_cast<float>(idx) * 5.0f;
+    godot::PackedVector2Array pts;
+    pts.push_back(godot::Vector2(offset_x, 0.0f));
+    pts.push_back(godot::Vector2(offset_x + 5.0f, 0.0f));
+    pts.push_back(godot::Vector2(offset_x + 5.0f, 4.0f));
+    pts.push_back(godot::Vector2(offset_x, 4.0f));
+    add_space_polygon("Room " + godot::String::num_int64(idx + 1), pts);
+    rebuild_reactive_layers();
+}
+
+void BlueprintResource::clear_blueprint() {
+    core_blueprint_.clear();
+    serialized_spaces_.clear();
+    serialized_features_.clear();
+    emit_changed();
 }
 
 void BlueprintResource::rebuild_reactive_layers() {
@@ -137,6 +254,12 @@ void BlueprintResource::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("set_section_cut_height_meters", "height"), &BlueprintResource::set_section_cut_height_meters);
     ClassDB::bind_method(D_METHOD("get_section_cut_height_meters"), &BlueprintResource::get_section_cut_height_meters);
+
+    ClassDB::bind_method(D_METHOD("set_spaces", "spaces"), &BlueprintResource::set_spaces);
+    ClassDB::bind_method(D_METHOD("get_spaces"), &BlueprintResource::get_spaces);
+    ClassDB::bind_method(D_METHOD("set_features", "features"), &BlueprintResource::set_features);
+    ClassDB::bind_method(D_METHOD("get_features"), &BlueprintResource::get_features);
+
     ClassDB::bind_method(
         D_METHOD("commit_set_section_cut_height_meters", "new_height", "undo_redo"),
         &BlueprintResource::commit_set_section_cut_height_meters,
@@ -159,6 +282,8 @@ void BlueprintResource::_bind_methods() {
         DEFVAL(0.0f),
         DEFVAL("")
     );
+    ClassDB::bind_method(D_METHOD("populate_sample_room"), &BlueprintResource::populate_sample_room);
+    ClassDB::bind_method(D_METHOD("clear_blueprint"), &BlueprintResource::clear_blueprint);
     ClassDB::bind_method(D_METHOD("rebuild_reactive_layers"), &BlueprintResource::rebuild_reactive_layers);
 
     ClassDB::bind_method(D_METHOD("get_space_count"), &BlueprintResource::get_space_count);
@@ -171,6 +296,8 @@ void BlueprintResource::_bind_methods() {
     ClassDB::bind_method(D_METHOD("extrude_to_3d_layout_summary"), &BlueprintResource::extrude_to_3d_layout_summary);
 
     ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "section_cut_height_meters"), "set_section_cut_height_meters", "get_section_cut_height_meters");
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "spaces", PROPERTY_HINT_ARRAY_TYPE, "Dictionary"), "set_spaces", "get_spaces");
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "features", PROPERTY_HINT_ARRAY_TYPE, "Dictionary"), "set_features", "get_features");
 
     BIND_ENUM_CONSTANT(LAYER_SPACES);
     BIND_ENUM_CONSTANT(LAYER_WALLS);
@@ -194,7 +321,6 @@ void BlueprintCanvas2D::_notification(int p_what) {
     if (p_what == NOTIFICATION_DRAW && blueprint_.is_valid()) {
         const auto &core = blueprint_->get_core_blueprint();
 
-        // 1. LAYER_SPACES
         if (is_layer_visible(BlueprintResource::LAYER_SPACES)) {
             const auto style = core::ArchitecturalBlueprintCore::get_layer_visual_style(core::BlueprintLayerType::LAYER_SPACES);
             Color stroke(style.color_rgba.r, style.color_rgba.g, style.color_rgba.b, style.color_rgba.a);
@@ -213,7 +339,6 @@ void BlueprintCanvas2D::_notification(int p_what) {
             }
         }
 
-        // 2. LAYER_WALLS
         if (is_layer_visible(BlueprintResource::LAYER_WALLS)) {
             for (const auto &w : core.walls()) {
                 const auto style = core::ArchitecturalBlueprintCore::get_layer_visual_style(
@@ -231,7 +356,6 @@ void BlueprintCanvas2D::_notification(int p_what) {
             }
         }
 
-        // 3. LAYER_FEATURES_AND_APERTURES
         if (is_layer_visible(BlueprintResource::LAYER_FEATURES_AND_APERTURES)) {
             const auto style = core::ArchitecturalBlueprintCore::get_layer_visual_style(core::BlueprintLayerType::LAYER_FEATURES_AND_APERTURES);
             Color stroke(style.color_rgba.r, style.color_rgba.g, style.color_rgba.b, style.color_rgba.a);

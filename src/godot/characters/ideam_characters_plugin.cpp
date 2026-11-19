@@ -1,4 +1,13 @@
 #include "ideam_characters_plugin.h"
+
+#include "../controls/ideam_tier1_control_registry.h"
+#include "character_blueprint_resource.h"
+#include "ui/character_modeler.h"
+#include "ui/character_morph_slider_panel.h"
+
+#include <godot_cpp/classes/label.hpp>
+#include <godot_cpp/classes/scroll_container.hpp>
+#include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
@@ -46,9 +55,60 @@ void IdeamCharactersPlugin::_enter_tree() {
     register_to_ecosystem("WizardSettings", "IdeamCharacters", godot::String(CHARACTERS_SETTINGS_PATH.data()));
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
+
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
+
+    reg.register_control({
+        ws_id, "CharacterBlueprintResource", "Blueprints", "Character Blueprint", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            using namespace godot;
+            Ref<CharacterBlueprintResource> bp = p_asset;
+            if (bp.is_null()) return nullptr;
+
+            auto *scroll = memnew(ScrollContainer);
+            scroll->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+            scroll->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+
+            auto *panel = memnew(CharacterMorphSliderPanel);
+            panel->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) {
+                panel->set_undo_redo(p_ctx->get_undo_redo());
+            } else {
+                panel->set_undo_redo(IdeamCharactersPlugin::create_undo_redo_wrapper());
+            }
+            panel->set_blueprint(bp);
+            scroll->add_child(panel);
+            return scroll;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "CharacterApparelResource", "Apparel", "Character Apparel", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            using namespace godot;
+            (void)p_ctx;
+            if (p_asset.is_null()) return nullptr;
+
+            auto *vbox = memnew(VBoxContainer);
+            vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+            auto *hdr = memnew(Label);
+            hdr->set_text("Character Apparel Asset — Edit garment layer, material, and refit parameters in the Inspector on the right.");
+            hdr->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+            vbox->add_child(hdr);
+            return vbox;
+        },
+        nullptr
+    });
 }
 
 void IdeamCharactersPlugin::_exit_tree() {
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "CharacterBlueprintResource");
+    reg.unregister_class(ws_id, "CharacterApparelResource");
+
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
         inspector_plugin_.unref();

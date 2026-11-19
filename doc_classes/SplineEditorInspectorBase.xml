@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineEditorInspectorBase" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Editor Inspector Base class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Editor Inspector Base (GeometryEditorInspectorBase subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="hide_managed_spline_properties" type="bool" setter="set_hide_managed_spline_properties" getter="get_hide_managed_spline_properties">
+			Configures hide managed spline properties for this SplineEditorInspectorBase.
+		</member>
+	</members>
+</class>

@@ -140,6 +140,14 @@ String TaskGraphEdit::_resolve_task_menu_path(
     String raw_cat = p_raw_category.strip_edges();
     bool is_promoted = raw_cat.begins_with("@");
     String clean_cat = is_promoted ? raw_cat.substr(1).strip_edges() : raw_cat;
+    if (!p_domain_prefix.is_empty() && !clean_cat.is_empty()) {
+        const String prefix_slash = p_domain_prefix + String("/");
+        if (clean_cat.nocasecmp_to(p_domain_prefix) == 0) {
+            clean_cat = "";
+        } else if (clean_cat.begins_with(prefix_slash)) {
+            clean_cat = clean_cat.substr(prefix_slash.length()).strip_edges();
+        }
+    }
     bool is_general = clean_cat.is_empty() || clean_cat == "General";
 
     r_is_direct_axis_item = false;
@@ -265,7 +273,9 @@ TypedArray<String> TaskGraphEdit::_get_new_node_types() const {
                 }
             }
         }
+        #ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("Active Filter Mask set to: ", mutable_this->active_filter_mask);
+        #endif
     }
     core::BufferLayoutType layout_requirement = static_cast<core::BufferLayoutType>(mutable_this->active_filter_mask);
     bool check_layout = layout_requirement != core::BufferLayoutType::NONE && layout_requirement != core::BufferLayoutType::ANY;
@@ -287,12 +297,14 @@ TypedArray<String> TaskGraphEdit::_get_new_node_types() const {
         const String& p_domain_prefix
     ) {
         Array keys = p_matrix.keys();
+        #ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print(
             "Category Check: ", p_category,
             " | Domain: ", String(p_plugin_domain),
             " | Total Tasks found in Registry Matrix: ", keys.size()
         );
-
+        #endif
+        
         std::vector<PendingMenuEntry> valid_entries;
         valid_entries.reserve(keys.size());
 

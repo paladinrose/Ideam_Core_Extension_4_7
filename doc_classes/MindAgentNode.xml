@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MindAgentNode" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Mind Agent Node class in IdeamMinds.
+	</brief_description>
+	<description>
+		Mind Agent Node (Node subclass) belonging to IdeamMinds (cognitive models, beliefs, goals, emotions, and decision making).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="query_believed_value">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes query believed value on MindAgentNode.
+			</description>
+		</method>
+		<method name="query_belief_confidence">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes query belief confidence on MindAgentNode.
+			</description>
+		</method>
+		<method name="query_belief_acceptance">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes query belief acceptance on MindAgentNode.
+			</description>
+		</method>
+		<method name="query_belief_intuition_charge">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes query belief intuition charge on MindAgentNode.
+			</description>
+		</method>
+		<method name="is_fact_known">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes is fact known on MindAgentNode.
+			</description>
+		</method>
+		<method name="is_fact_misreferenced">
+			<return type="Variant" />
+			<param index="0" name="fact_id" type="Variant" />
+			<description>
+				Executes is fact misreferenced on MindAgentNode.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="information_matrix" type="InformationMatrixResource" setter="set_information_matrix" getter="get_information_matrix">
+			Configures information matrix for this MindAgentNode.
+		</member>
+		<member name="agent_mind" type="AgentMindResource" setter="set_agent_mind" getter="get_agent_mind">
+			Configures agent mind for this MindAgentNode.
+		</member>
+	</members>
+</class>

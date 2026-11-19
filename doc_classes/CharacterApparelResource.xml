@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterApparelResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Character Apparel Resource class in IdeamCharacters.
+	</brief_description>
+	<description>
+		Character Apparel Resource (Resource subclass) belonging to IdeamCharacters (parametric anatomy, morph sliders, and apparel).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_garment_vertex_count">
+			<return type="Variant" />
+			<description>
+				Executes get garment vertex count on CharacterApparelResource.
+			</description>
+		</method>
+		<method name="generate_default_bindings_for_blueprint">
+			<return type="Variant" />
+			<param index="0" name="blueprint" type="Variant" />
+			<description>
+				Executes generate default bindings for blueprint on CharacterApparelResource.
+			</description>
+		</method>
+		<method name="evaluate_refitted_positions">
+			<return type="Variant" />
+			<param index="0" name="blueprint" type="Variant" />
+			<description>
+				Executes evaluate refitted positions on CharacterApparelResource.
+			</description>
+		</method>
+		<method name="build_refitted_apparel_mesh">
+			<return type="Variant" />
+			<param index="0" name="blueprint" type="Variant" />
+			<description>
+				Executes build refitted apparel mesh on CharacterApparelResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="normal_offset" type="float" setter="set_normal_offset" getter="get_normal_offset">
+			Configures normal offset for this CharacterApparelResource.
+		</member>
+		<member name="xpbd_relax_iterations" type="int" setter="set_xpbd_relax_iterations" getter="get_xpbd_relax_iterations">
+			Configures xpbd relax iterations for this CharacterApparelResource.
+		</member>
+		<member name="xpbd_compliance" type="float" setter="set_xpbd_compliance" getter="get_xpbd_compliance">
+			Configures xpbd compliance for this CharacterApparelResource.
+		</member>
+		<member name="target_partition_mask" type="int" setter="set_target_partition_mask" getter="get_target_partition_mask">
+			Configures target partition mask for this CharacterApparelResource.
+		</member>
+		<member name="substeps_per_quad_axis" type="int" setter="set_substeps_per_quad_axis" getter="get_substeps_per_quad_axis">
+			Configures substeps per quad axis for this CharacterApparelResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this CharacterApparelResource.
+		</member>
+	</members>
+</class>

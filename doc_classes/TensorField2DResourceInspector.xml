@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TensorField2DResourceInspector" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		EditorInspectorPlugin for TensorField2DResource.
+	</brief_description>
+	<description>
+		Displays the thin GeometryComposer launcher bar for [TensorField2DResource] assets in the Godot Inspector.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

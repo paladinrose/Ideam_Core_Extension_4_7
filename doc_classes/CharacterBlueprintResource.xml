@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterBlueprintResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Character Blueprint Resource class in IdeamCharacters.
+	</brief_description>
+	<description>
+		Character Blueprint Resource (Resource subclass) belonging to IdeamCharacters (parametric anatomy, morph sliders, and apparel).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_morph_channel_count">
+			<return type="Variant" />
+			<description>
+				Executes get morph channel count on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_morph_channel_name">
+			<return type="Variant" />
+			<param index="0" name="channel" type="Variant" />
+			<description>
+				Executes get morph channel name on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_all_morph_channel_names">
+			<return type="Variant" />
+			<description>
+				Executes get all morph channel names on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="set_morph_channel_weight">
+			<return type="Variant" />
+			<param index="0" name="channel" type="Variant" />
+			<param index="1" name="weight" type="Variant" />
+			<description>
+				Executes set morph channel weight on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_morph_channel_weight">
+			<return type="Variant" />
+			<param index="0" name="channel" type="Variant" />
+			<description>
+				Executes get morph channel weight on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="reset_all_morph_weights">
+			<return type="Variant" />
+			<description>
+				Executes reset all morph weights on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_base_vertex_count">
+			<return type="Variant" />
+			<description>
+				Executes get base vertex count on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_base_quad_count">
+			<return type="Variant" />
+			<description>
+				Executes get base quad count on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_sparse_morph_delta_count">
+			<return type="Variant" />
+			<description>
+				Executes get sparse morph delta count on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_deformed_vertex_positions">
+			<return type="Variant" />
+			<description>
+				Executes get deformed vertex positions on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="get_deformed_vertex_normals">
+			<return type="Variant" />
+			<description>
+				Executes get deformed vertex normals on CharacterBlueprintResource.
+			</description>
+		</method>
+		<method name="build_evaluated_array_mesh">
+			<return type="Variant" />
+			<description>
+				Executes build evaluated array mesh on CharacterBlueprintResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="body_archetype" type="int" setter="set_body_archetype" getter="get_body_archetype">
+			Configures body archetype for this CharacterBlueprintResource (Biped,Quadruped,Avian,FlyingEye,Serpentine,Custom).
+		</member>
+		<member name="subdivision_lod_level" type="int" setter="set_subdivision_lod_level" getter="get_subdivision_lod_level">
+			Configures subdivision lod level for this CharacterBlueprintResource.
+		</member>
+		<member name="active_partition_mask" type="int" setter="set_active_partition_mask" getter="get_active_partition_mask">
+			Configures active partition mask for this CharacterBlueprintResource.
+		</member>
+		<member name="morph_weights" type="PackedFloat32Array" setter="set_morph_weights" getter="get_morph_weights">
+			Configures morph weights for this CharacterBlueprintResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this CharacterBlueprintResource.
+		</member>
+	</members>
+</class>

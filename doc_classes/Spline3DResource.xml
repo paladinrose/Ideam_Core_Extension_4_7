@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline3DResource" inherits="SplineResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline3 DResource class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline3 DResource (SplineResource subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="position" type="Variant" />
+			<description>
+				Executes set point position on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point position on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_point_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point back handle on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_point_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point fore handle on Spline3DResource.
+			</description>
+		</method>
+		<method name="sample">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_point">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get point on Spline3DResource.
+			</description>
+		</method>
+		<method name="sample_section">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section on Spline3DResource.
+			</description>
+		</method>
+		<method name="sample_derivative">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample derivative on Spline3DResource.
+			</description>
+		</method>
+		<method name="sample_section_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section derivative on Spline3DResource.
+			</description>
+		</method>
+		<method name="sample_section_second_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section second derivative on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_tangent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get tangent on Spline3DResource.
+			</description>
+		</method>
+		<method name="get_aabb">
+			<return type="Variant" />
+			<param index="0" name="use_smoothed" type="Variant" />
+			<description>
+				Executes get aabb on Spline3DResource.
+			</description>
+		</method>
+		<method name="rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="euler_radians" type="Variant" />
+			<description>
+				Executes rotate spline on Spline3DResource.
+			</description>
+		</method>
+		<method name="scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes scale spline on Spline3DResource.
+			</description>
+		</method>
+		<method name="commit_rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="euler_radians" type="Variant" />
+			<description>
+				Executes commit rotate spline on Spline3DResource.
+			</description>
+		</method>
+		<method name="commit_scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes commit scale spline on Spline3DResource.
+			</description>
+		</method>
+		<method name="create_line" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="start" type="Variant" />
+			<param index="1" name="end" type="Variant" />
+			<param index="2" name="points" type="Variant" />
+			<param index="3" name="type" type="Variant" />
+			<description>
+				Executes create line on Spline3DResource.
+			</description>
+		</method>
+		<method name="create_circle_xz" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<param index="1" name="points" type="Variant" />
+			<description>
+				Executes create circle xz on Spline3DResource.
+			</description>
+		</method>
+		<method name="create_helix" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<param index="1" name="height" type="Variant" />
+			<param index="2" name="turns" type="Variant" />
+			<param index="3" name="points_per_turn" type="Variant" />
+			<description>
+				Executes create helix on Spline3DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="points" type="PackedVector3Array" setter="set_points_array" getter="get_points_array">
+			Configures points for this Spline3DResource.
+		</member>
+		<member name="back_handles" type="PackedVector3Array" setter="set_back_handles_array" getter="get_back_handles_array">
+			Configures back handles for this Spline3DResource.
+		</member>
+		<member name="fore_handles" type="PackedVector3Array" setter="set_fore_handles_array" getter="get_fore_handles_array">
+			Configures fore handles for this Spline3DResource.
+		</member>
+	</members>
+</class>

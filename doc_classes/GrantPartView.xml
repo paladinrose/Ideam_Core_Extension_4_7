@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GrantPartView" inherits="PanelContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Grant Part View class in IdeamMemory.
+	</brief_description>
+	<description>
+		Grant Part View (PanelContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="populate">
+			<return type="Variant" />
+			<param index="0" name="data" type="Variant" />
+			<param index="1" name="index" type="Variant" />
+			<description>
+				Executes populate on GrantPartView.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="inspect_requested">
+			<param index="0" name="part_index" type="int" />
+			<description>
+				Emitted when inspect requested occurs on this GrantPartView.
+			</description>
+		</signal>
+	</signals>
+</class>

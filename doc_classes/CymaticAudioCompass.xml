@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CymaticAudioCompass" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: CymaticAudioCompass bridges `GameplayAudioOption` (`acoustic_quality`, `ai_hearing_sensitivity_multiplier`, `CymaticMap`) and `GameplayAccessibilityOption`...
+	</brief_description>
+	<description>
+		DOD NOTE: CymaticAudioCompass bridges `GameplayAudioOption` (`acoustic_quality`, `ai_hearing_sensitivity_multiplier`, `CymaticMap`) and `GameplayAccessibilityOption` (`visual_sound_indicators`, `cymatic_visual_gain`, `enemy_highlight_color`, `hazard_highlight_color`, `interactable_highlight_color`). It composes `CircularGauge` and `HeatmapGrid` to visualize directional acoustic energy sectors, 2D cymatic field propagation, and nearby AI `HearingRange` alert thresholds around the controlled `GameAgent` without holding raw entity pointers across frames. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

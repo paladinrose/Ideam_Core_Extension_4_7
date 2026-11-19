@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationMediumResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Communication Medium Resource class in IdeamCommunications.
+	</brief_description>
+	<description>
+		Communication Medium Resource (Resource subclass) belonging to IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="classify_noise_tier_preview">
+			<return type="Variant" />
+			<param index="0" name="effective_snr_db" type="Variant" />
+			<description>
+				Executes classify noise tier preview on CommunicationMediumResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on CommunicationMediumResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on CommunicationMediumResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="medium_id" type="int" setter="set_medium_id" getter="get_medium_id">
+			Configures medium id for this CommunicationMediumResource.
+		</member>
+		<member name="ambient_noise_db" type="float" setter="set_ambient_noise_db" getter="get_ambient_noise_db">
+			Configures ambient noise db for this CommunicationMediumResource.
+		</member>
+		<member name="attenuation_db_per_m" type="float" setter="set_attenuation_db_per_m" getter="get_attenuation_db_per_m">
+			Configures attenuation db per m for this CommunicationMediumResource.
+		</member>
+		<member name="occlusion_damping_db" type="float" setter="set_occlusion_damping_db" getter="get_occlusion_damping_db">
+			Configures occlusion damping db for this CommunicationMediumResource.
+		</member>
+		<member name="place_flip_sensitivity" type="float" setter="set_place_flip_sensitivity" getter="get_place_flip_sensitivity">
+			Configures place flip sensitivity for this CommunicationMediumResource.
+		</member>
+		<member name="manner_flip_sensitivity" type="float" setter="set_manner_flip_sensitivity" getter="get_manner_flip_sensitivity">
+			Configures manner flip sensitivity for this CommunicationMediumResource.
+		</member>
+		<member name="voicing_flip_sensitivity" type="float" setter="set_voicing_flip_sensitivity" getter="get_voicing_flip_sensitivity">
+			Configures voicing flip sensitivity for this CommunicationMediumResource.
+		</member>
+		<member name="modality" type="int" setter="set_modality" getter="get_modality">
+			Configures modality for this CommunicationMediumResource (SpokenAcoustic:0,WrittenInscription:1,RadioElectromagnetic:2,NonVerbalGesture:3,CymaticResonance:4).
+		</member>
+		<member name="reverb_intelligibility_penalty" type="int" setter="set_reverb_intelligibility_penalty" getter="get_reverb_intelligibility_penalty">
+			Configures reverb intelligibility penalty for this CommunicationMediumResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this CommunicationMediumResource.
+		</member>
+	</members>
+</class>

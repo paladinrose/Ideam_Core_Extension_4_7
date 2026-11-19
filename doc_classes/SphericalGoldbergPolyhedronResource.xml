@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SphericalGoldbergPolyhedronResource" inherits="TilingResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spherical Goldberg Polyhedron Resource class in IdeamTiles.
+	</brief_description>
+	<description>
+		Spherical Goldberg Polyhedron Resource (TilingResource subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_cell_elevation">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<param index="1" name="elevation" type="Variant" />
+			<description>
+				Executes set cell elevation on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_elevation">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell elevation on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="set_cell_tag">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<param index="1" name="tag" type="Variant" />
+			<description>
+				Executes set cell tag on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_tag">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell tag on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="rebuild">
+			<return type="Variant" />
+			<description>
+				Executes rebuild on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="commit_set_subdivision_frequency">
+			<return type="Variant" />
+			<param index="0" name="frequency" type="Variant" />
+			<description>
+				Executes commit set subdivision frequency on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="commit_set_planet_radius">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<description>
+				Executes commit set planet radius on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="commit_set_cell_elevation">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<param index="1" name="elevation" type="Variant" />
+			<description>
+				Executes commit set cell elevation on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="commit_set_cell_tag">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<param index="1" name="tag" type="Variant" />
+			<description>
+				Executes commit set cell tag on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get cell count on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_pentagon_count">
+			<return type="Variant" />
+			<description>
+				Executes get pentagon count on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_hexagon_count">
+			<return type="Variant" />
+			<description>
+				Executes get hexagon count on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="is_cell_pentagon">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes is cell pentagon on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_unit_normal">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell unit normal on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_surface_center_3d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell surface center 3d on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_surface_transform_3d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell surface transform 3d on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_cell_neighbors">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get cell neighbors on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="get_pentagon_cell_ids">
+			<return type="Variant" />
+			<description>
+				Executes get pentagon cell ids on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+		<method name="locate_cell_from_direction">
+			<return type="Variant" />
+			<param index="0" name="direction" type="Variant" />
+			<description>
+				Executes locate cell from direction on SphericalGoldbergPolyhedronResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="subdivision_frequency" type="int" setter="set_subdivision_frequency" getter="get_subdivision_frequency">
+			Configures subdivision frequency for this SphericalGoldbergPolyhedronResource.
+		</member>
+		<member name="planet_radius" type="float" setter="set_planet_radius" getter="get_planet_radius">
+			Configures planet radius for this SphericalGoldbergPolyhedronResource.
+		</member>
+		<member name="cell_elevations" type="PackedFloat32Array" setter="set_cell_elevations" getter="get_cell_elevations">
+			Configures cell elevations for this SphericalGoldbergPolyhedronResource.
+		</member>
+		<member name="cell_tags" type="PackedInt32Array" setter="set_cell_tags" getter="get_cell_tags">
+			Configures cell tags for this SphericalGoldbergPolyhedronResource.
+		</member>
+	</members>
+</class>

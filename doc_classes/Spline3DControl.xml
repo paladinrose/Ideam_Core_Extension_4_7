@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline3DControl" inherits="SplineControlBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline3 DControl class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline3 DControl (SplineControlBase subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_spline_3d">
+			<return type="Variant" />
+			<param index="0" name="spline" type="Variant" />
+			<description>
+				Executes set spline 3d on Spline3DControl.
+			</description>
+		</method>
+		<method name="get_spline_3d">
+			<return type="Variant" />
+			<description>
+				Executes get spline 3d on Spline3DControl.
+			</description>
+		</method>
+		<method name="set_bound_gizmo_node">
+			<return type="Variant" />
+			<param index="0" name="node" type="Variant" />
+			<description>
+				Executes set bound gizmo node on Spline3DControl.
+			</description>
+		</method>
+		<method name="get_bound_gizmo_node">
+			<return type="Variant" />
+			<description>
+				Executes get bound gizmo node on Spline3DControl.
+			</description>
+		</method>
+	</methods>
+</class>

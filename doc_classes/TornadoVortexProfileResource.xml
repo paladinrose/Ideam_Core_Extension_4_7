@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TornadoVortexProfileResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tornado Vortex Profile Resource class in IdeamClimatology.
+	</brief_description>
+	<description>
+		Tornado Vortex Profile Resource (Resource subclass) belonging to IdeamClimatology (synoptic atmosphere, winds, and severe weather).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_ef_rating">
+			<return type="Variant" />
+			<description>
+				Executes get ef rating on TornadoVortexProfileResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="core_radius_m" type="float" setter="set_core_radius_m" getter="get_core_radius_m">
+			Configures core radius m for this TornadoVortexProfileResource.
+		</member>
+		<member name="outer_damage_radius_m" type="float" setter="set_outer_damage_radius_m" getter="get_outer_damage_radius_m">
+			Configures outer damage radius m for this TornadoVortexProfileResource.
+		</member>
+		<member name="max_tangential_wind_mps" type="float" setter="set_max_tangential_wind_mps" getter="get_max_tangential_wind_mps">
+			Configures max tangential wind mps for this TornadoVortexProfileResource.
+		</member>
+		<member name="central_pressure_deficit_hpa" type="float" setter="set_central_pressure_deficit_hpa" getter="get_central_pressure_deficit_hpa">
+			Configures central pressure deficit hpa for this TornadoVortexProfileResource.
+		</member>
+		<member name="vertical_suction_updraft_mps" type="float" setter="set_vertical_suction_updraft_mps" getter="get_vertical_suction_updraft_mps">
+			Configures vertical suction updraft mps for this TornadoVortexProfileResource.
+		</member>
+		<member name="radial_inflow_ratio" type="float" setter="set_radial_inflow_ratio" getter="get_radial_inflow_ratio">
+			Configures radial inflow ratio for this TornadoVortexProfileResource.
+		</member>
+		<member name="swirl_ratio_s" type="float" setter="set_swirl_ratio_s" getter="get_swirl_ratio_s">
+			Configures swirl ratio s for this TornadoVortexProfileResource.
+		</member>
+		<member name="default_lifetime_sec" type="float" setter="set_default_lifetime_sec" getter="get_default_lifetime_sec">
+			Configures default lifetime sec for this TornadoVortexProfileResource.
+		</member>
+	</members>
+</class>

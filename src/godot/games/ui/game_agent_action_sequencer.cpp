@@ -22,8 +22,8 @@ void GameAgentActionSequencer::_bind_methods() {
     
     godot::ClassDB::bind_method(godot::D_METHOD("_new_sequence_step"), &GameAgentActionSequencer::_new_sequence_step);
     godot::ClassDB::bind_method(godot::D_METHOD("_new_piece_step", "step_id", "step_container"), &GameAgentActionSequencer::_new_piece_step);
-    godot::ClassDB::bind_method(godot::D_METHOD("_select_piece", "step_id", "piece_step_id", "piece_id"), &GameAgentActionSequencer::_select_piece);
-    godot::ClassDB::bind_method(godot::D_METHOD("_select_piece_action", "step_id", "piece_step_id", "action_id", "new_selection"), &GameAgentActionSequencer::_select_piece_action);
+    godot::ClassDB::bind_method(godot::D_METHOD("_select_piece", "piece_id", "step_id", "piece_step_id"), &GameAgentActionSequencer::_select_piece);
+    godot::ClassDB::bind_method(godot::D_METHOD("_select_piece_action", "new_selection", "step_id", "piece_step_id", "action_id"), &GameAgentActionSequencer::_select_piece_action);
     godot::ClassDB::bind_method(godot::D_METHOD("_new_action", "step_id", "piece_step_id"), &GameAgentActionSequencer::_new_action);
 
     godot::ClassDB::bind_method(godot::D_METHOD("set_undo_redo", "undo_redo"), &GameAgentActionSequencer::set_undo_redo);
@@ -123,8 +123,10 @@ void GameAgentActionSequencer::_generate_step(int step_id) {
     
     new_piece_button->connect("pressed", godot::Callable(this, "_new_piece_step").bind(step_id, step_container));
     
-    for (int i = 1; i < step.size(); ++i) {
-        _generate_piece_step(step_id, i, step_container);
+    for (int i = 0; i < step.size(); ++i) {
+        if (step[i].get_type() == godot::Variant::ARRAY) {
+            _generate_piece_step(step_id, i, step_container);
+        }
     }
     
     step_container->add_child(new_piece_button);
@@ -217,6 +219,9 @@ void GameAgentActionSequencer::_release_action() {
 
 void GameAgentActionSequencer::_clear_sequencer() {
     if (container) {
+        if (container->get_parent()) {
+            container->get_parent()->remove_child(container);
+        }
         container->queue_free();
         container = nullptr;
     }
@@ -270,13 +275,16 @@ void GameAgentActionSequencer::_new_piece_step(int step_id, godot::Container* st
     _update_sequence("New Piece Step", act_seq);
 }
 
-void GameAgentActionSequencer::_select_piece(int step_id, int piece_step_id, int piece_id) {
+void GameAgentActionSequencer::_select_piece(int piece_id, int step_id, int piece_step_id) {
+    if (!action) return;
     godot::Array sequence = action->get_sequence();
+    if (step_id < 0 || step_id >= sequence.size()) return;
     godot::Array step = sequence[step_id].duplicate();
+    if (piece_step_id < 0 || piece_step_id >= step.size()) return;
     godot::Array piece_step = step[piece_step_id].duplicate();
-    
+    if (piece_step.is_empty()) return;
+
     if (int(piece_step[0]) == piece_id) {
-        godot::UtilityFunctions::print("Same Piece!");
         return;
     }
     
@@ -295,10 +303,14 @@ void GameAgentActionSequencer::_select_piece(int step_id, int piece_step_id, int
     _update_sequence("Select Piece", act_seq);
 }
 
-void GameAgentActionSequencer::_select_piece_action(int step_id, int piece_step_id, int action_id, int new_selection) {
+void GameAgentActionSequencer::_select_piece_action(int new_selection, int step_id, int piece_step_id, int action_id) {
+    if (!action) return;
     godot::Array sequence = action->get_sequence();
+    if (step_id < 0 || step_id >= sequence.size()) return;
     godot::Array step = sequence[step_id].duplicate(true);
+    if (piece_step_id < 0 || piece_step_id >= step.size()) return;
     godot::Array piece_step = step[piece_step_id];
+    if (action_id < 0 || action_id >= piece_step.size()) return;
 
     int old_selection = piece_step[action_id];
     if (old_selection == new_selection) {

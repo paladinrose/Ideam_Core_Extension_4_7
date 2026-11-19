@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineControlBase" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Control Base class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Control Base (VBoxContainer subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_minimum_list_height">
+			<return type="Variant" />
+			<param index="0" name="height" type="Variant" />
+			<description>
+				Executes set minimum list height on SplineControlBase.
+			</description>
+		</method>
+		<method name="get_minimum_list_height">
+			<return type="Variant" />
+			<description>
+				Executes get minimum list height on SplineControlBase.
+			</description>
+		</method>
+		<method name="select_point">
+			<return type="Variant" />
+			<param index="0" name="point_index" type="Variant" />
+			<description>
+				Executes select point on SplineControlBase.
+			</description>
+		</method>
+		<method name="get_selected_point_index">
+			<return type="Variant" />
+			<description>
+				Executes get selected point index on SplineControlBase.
+			</description>
+		</method>
+		<method name="select_section">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<description>
+				Executes select section on SplineControlBase.
+			</description>
+		</method>
+		<method name="get_selected_section_index">
+			<return type="Variant" />
+			<description>
+				Executes get selected section index on SplineControlBase.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on SplineControlBase.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline_resource" type="SplineResource" setter="set_spline_resource" getter="get_spline_resource">
+			Configures spline resource for this SplineControlBase.
+		</member>
+		<member name="list_view_mode" type="int" setter="set_list_view_mode" getter="get_list_view_mode">
+			Configures list view mode for this SplineControlBase (Interleaved (P ⇄ S):0,Points Only:1,Sections Only:2).
+		</member>
+	</members>
+	<signals>
+		<signal name="point_selected">
+			<param index="0" name="point_index" type="int" />
+			<description>
+				Emitted when point selected occurs on this SplineControlBase.
+			</description>
+		</signal>
+		<signal name="section_selected">
+			<param index="0" name="section_index" type="int" />
+			<description>
+				Emitted when section selected occurs on this SplineControlBase.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="LIST_VIEW_INTERLEAVED" value="0">
+			List view interleaved constant.
+		</constant>
+		<constant name="LIST_VIEW_POINTS_ONLY" value="0">
+			List view points only constant.
+		</constant>
+		<constant name="LIST_VIEW_SECTIONS_ONLY" value="0">
+			List view sections only constant.
+		</constant>
+	</constants>
+</class>

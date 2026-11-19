@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayMode" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayMode acts as a collection of gameplay-altering components representing the Mode Layer (RuleCascadeLayer::LAYER_MODE) in the GameplayStyle cascade.
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayMode acts as a collection of gameplay-altering components representing the Mode Layer (RuleCascadeLayer::LAYER_MODE) in the GameplayStyle cascade. Storing these in separate TypedArrays of Objects (AoS) creates a fragmented memory profile. In a high-performance C++26 environment, these should be refactored into a single contiguous Block of Memory (SoA) where components are stored as raw POD data, minimizing cache misses during mode initialization and updates. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

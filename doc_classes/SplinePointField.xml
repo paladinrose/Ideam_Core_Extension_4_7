@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplinePointField" inherits="PanelContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Point Field class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Point Field (PanelContainer subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_dimension">
+			<return type="Variant" />
+			<param index="0" name="dimension" type="Variant" />
+			<description>
+				Executes set dimension on SplinePointField.
+			</description>
+		</method>
+		<method name="get_dimension">
+			<return type="Variant" />
+			<description>
+				Executes get dimension on SplinePointField.
+			</description>
+		</method>
+		<method name="set_point_index">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes set point index on SplinePointField.
+			</description>
+		</method>
+		<method name="get_point_index">
+			<return type="Variant" />
+			<description>
+				Executes get point index on SplinePointField.
+			</description>
+		</method>
+		<method name="set_selected">
+			<return type="Variant" />
+			<param index="0" name="selected" type="Variant" />
+			<description>
+				Executes set selected on SplinePointField.
+			</description>
+		</method>
+		<method name="is_selected">
+			<return type="Variant" />
+			<description>
+				Executes is selected on SplinePointField.
+			</description>
+		</method>
+		<method name="set_handles_expanded">
+			<return type="Variant" />
+			<param index="0" name="expanded" type="Variant" />
+			<description>
+				Executes set handles expanded on SplinePointField.
+			</description>
+		</method>
+		<method name="is_handles_expanded">
+			<return type="Variant" />
+			<description>
+				Executes is handles expanded on SplinePointField.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="point_selected">
+			<param index="0" name="point_index" type="int" />
+			<description>
+				Emitted when point selected occurs on this SplinePointField.
+			</description>
+		</signal>
+		<signal name="position_changed">
+			<param index="0" name="point_index" type="int" />
+			<param index="1" name="position" type="Variant" />
+			<description>
+				Emitted when position changed occurs on this SplinePointField.
+			</description>
+		</signal>
+		<signal name="back_handle_changed">
+			<param index="0" name="point_index" type="int" />
+			<param index="1" name="handle" type="Variant" />
+			<param index="2" name="enabled" type="bool" />
+			<description>
+				Emitted when back handle changed occurs on this SplinePointField.
+			</description>
+		</signal>
+		<signal name="fore_handle_changed">
+			<param index="0" name="point_index" type="int" />
+			<param index="1" name="handle" type="Variant" />
+			<param index="2" name="enabled" type="bool" />
+			<description>
+				Emitted when fore handle changed occurs on this SplinePointField.
+			</description>
+		</signal>
+		<signal name="remove_point_requested">
+			<param index="0" name="point_index" type="int" />
+			<description>
+				Emitted when remove point requested occurs on this SplinePointField.
+			</description>
+		</signal>
+	</signals>
+</class>

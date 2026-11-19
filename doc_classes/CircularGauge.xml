@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CircularGauge" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Circular Gauge class in IdeamControls.
+	</brief_description>
+	<description>
+		Circular Gauge (Control subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="direction" type="int" setter="set_direction" getter="get_direction">
+			Configures direction for this CircularGauge (Clockwise,Counter-Clockwise).
+		</member>
+		<member name="marker_count" type="int" setter="set_marker_count" getter="get_marker_count">
+			Configures marker count for this CircularGauge.
+		</member>
+		<member name="start_angle" type="float" setter="set_start_angle" getter="get_start_angle">
+			Configures start angle for this CircularGauge.
+		</member>
+		<member name="end_angle" type="float" setter="set_end_angle" getter="get_end_angle">
+			Configures end angle for this CircularGauge.
+		</member>
+		<member name="min_value" type="float" setter="set_min_value" getter="get_min_value">
+			Configures min value for this CircularGauge.
+		</member>
+		<member name="max_value" type="float" setter="set_max_value" getter="get_max_value">
+			Configures max value for this CircularGauge.
+		</member>
+		<member name="value_1" type="float" setter="set_value_1" getter="get_value_1">
+			Configures value 1 for this CircularGauge.
+		</member>
+		<member name="value_2" type="float" setter="set_value_2" getter="get_value_2">
+			Configures value 2 for this CircularGauge.
+		</member>
+		<member name="draw_as_band" type="bool" setter="set_draw_as_band" getter="get_draw_as_band">
+			Configures draw as band for this CircularGauge.
+		</member>
+		<member name="width_curve" type="Curve" setter="set_width_curve" getter="get_width_curve">
+			Configures width curve for this CircularGauge.
+		</member>
+		<member name="is_wrapped" type="bool" setter="set_is_wrapped" getter="get_is_wrapped">
+			Configures is wrapped for this CircularGauge.
+		</member>
+		<member name="is_full" type="bool" setter="set_is_full" getter="get_is_full">
+			Configures is full for this CircularGauge.
+		</member>
+		<member name="is_overflowing" type="bool" setter="set_is_overflowing" getter="get_is_overflowing">
+			Configures is overflowing for this CircularGauge.
+		</member>
+		<member name="slot_count" type="int" setter="set_slot_count" getter="get_slot_count">
+			Configures slot count for this CircularGauge.
+		</member>
+		<member name="draw_slot_ticks" type="bool" setter="set_draw_slot_ticks" getter="get_draw_slot_ticks">
+			Configures draw slot ticks for this CircularGauge.
+		</member>
+		<member name="draw_head_tail_markers" type="bool" setter="set_draw_head_tail_markers" getter="get_draw_head_tail_markers">
+			Configures draw head tail markers for this CircularGauge.
+		</member>
+		<member name="layer_colors" type="PackedColorArray" setter="set_layer_colors" getter="get_layer_colors">
+			Configures layer colors for this CircularGauge.
+		</member>
+		<member name="custom_bg_color" type="Color" setter="set_custom_bg_color" getter="get_custom_bg_color">
+			Configures custom bg color for this CircularGauge.
+		</member>
+		<member name="custom_fill_color" type="Color" setter="set_custom_fill_color" getter="get_custom_fill_color">
+			Configures custom fill color for this CircularGauge.
+		</member>
+		<member name="custom_overflow_color" type="Color" setter="set_custom_overflow_color" getter="get_custom_overflow_color">
+			Configures custom overflow color for this CircularGauge.
+		</member>
+	</members>
+</class>

@@ -23,6 +23,7 @@
 #include "../resources/polygon_2d_resource.h"
 #include "../resources/voronoi_diagram_2d_resource.h"
 #include "../resources/sdf_grid_2d_resource.h"
+#include "../resources/tensor_field_2d_resource.h"
 
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/object.hpp>
@@ -36,7 +37,8 @@ class GeometryEditorInspectorBase : public IdeamEditorInspectorPlugin {
 
 private:
     godot::Control *editor_root           = nullptr;
-    bool hide_managed_geometry_properties = true;
+    bool hide_managed_geometry_properties = false;
+    bool embed_full_control_in_inspector  = false;
 
 protected:
     static void _bind_methods();
@@ -74,6 +76,13 @@ public:
     [[nodiscard]] bool get_hide_managed_geometry_properties() const noexcept {
         return hide_managed_geometry_properties;
     }
+
+    void set_embed_full_control_in_inspector(bool p_embed);
+    [[nodiscard]] bool get_embed_full_control_in_inspector() const noexcept {
+        return embed_full_control_in_inspector;
+    }
+
+    void _on_open_in_geometry_composer(const godot::Ref<godot::Resource> &p_resource);
 
     // --- IdeamEditorInspectorPlugin Overrides ---
 #ifdef TOOLS_ENABLED
@@ -163,6 +172,32 @@ protected:
 public:
     SDFGrid2DResourceInspector() = default;
     ~SDFGrid2DResourceInspector() override = default;
+
+    bool _can_handle(godot::Object *p_object) override;
+};
+
+
+/**
+ * TensorField2DResourceInspector
+ * Concrete Inspector Plugin mounting a `TensorField2DControl` (visualizing cross-fields,
+ * major/minor hyperstreamlines, topological singularities, and closed parcels)
+ * whenever a `TensorField2DResource` is inspected in the Godot Editor.
+ */
+class TensorField2DResourceInspector : public GeometryEditorInspectorBase {
+    GDCLASS(TensorField2DResourceInspector, GeometryEditorInspectorBase)
+
+protected:
+    static void _bind_methods() {}
+
+    [[nodiscard]] godot::Control *_create_inspector_control(godot::Object *p_object) override;
+    [[nodiscard]] bool _is_managed_property(
+        godot::Object *p_object,
+        const godot::String &p_name
+    ) const override;
+
+public:
+    TensorField2DResourceInspector() = default;
+    ~TensorField2DResourceInspector() override = default;
 
     bool _can_handle(godot::Object *p_object) override;
 };

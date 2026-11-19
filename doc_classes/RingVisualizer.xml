@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RingVisualizer" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ring Visualizer class in IdeamMemory.
+	</brief_description>
+	<description>
+		Ring Visualizer (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on RingVisualizer.
+			</description>
+		</method>
+		<method name="step_enqueue">
+			<return type="Variant" />
+			<param index="0" name="count" type="Variant" />
+			<description>
+				Executes step enqueue on RingVisualizer.
+			</description>
+		</method>
+		<method name="step_dequeue">
+			<return type="Variant" />
+			<param index="0" name="count" type="Variant" />
+			<description>
+				Executes step dequeue on RingVisualizer.
+			</description>
+		</method>
+		<method name="reset_simulation">
+			<return type="Variant" />
+			<description>
+				Executes reset simulation on RingVisualizer.
+			</description>
+		</method>
+		<method name="get_head_index">
+			<return type="Variant" />
+			<description>
+				Executes get head index on RingVisualizer.
+			</description>
+		</method>
+		<method name="get_tail_index">
+			<return type="Variant" />
+			<description>
+				Executes get tail index on RingVisualizer.
+			</description>
+		</method>
+		<method name="get_element_count">
+			<return type="Variant" />
+			<description>
+				Executes get element count on RingVisualizer.
+			</description>
+		</method>
+		<method name="get_is_overflowing">
+			<return type="Variant" />
+			<description>
+				Executes get is overflowing on RingVisualizer.
+			</description>
+		</method>
+	</methods>
+</class>

@@ -489,7 +489,10 @@ void MemoryGraphEdit::_on_node_memory_grant_requested(godot::Object* p_node) {
 
 // The target callback that catches the data payload when the user clicks "Request Grant"
 void MemoryGraphEdit::_on_grant_window_payload_submitted(const StringName& p_node_name, const PackedInt32Array& p_buffer_ids) {
+    #ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("Received grant request submission for node: ", p_node_name);
+    #endif
+
     Node* target_node = get_node_or_null(NodePath(p_node_name));
     MemoryGraphNode* memory_node = Object::cast_to<MemoryGraphNode>(target_node);
     if (!memory_node) return;
@@ -505,14 +508,17 @@ void MemoryGraphEdit::_on_grant_window_payload_submitted(const StringName& p_nod
 
     // 2. Evaluate the result token
     if (compiled_grant.is_valid()) {
+        #ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("Compiled Grant is valid.");
+        #endif
         // Apply the newly authenticated configuration layout directly to the node resource
         memory_node->receive_memory_grant(compiled_grant);
         
         // Trigger a visual refresh of the canvas element
         memory_node->queue_redraw();
-        
+        #ifdef IDEAM_VERBOSE_TASK_LOGS
         UtilityFunctions::print_rich("[color=green]Successfully applied valid MemoryGrantResource to node " + String(p_node_name) + "![/color]");
+        #endif
     } else {
         // Handle validation rejection gracefully in the UI
         memory_node->set_header_state(MemoryGraphNode::HEADER_ERROR);

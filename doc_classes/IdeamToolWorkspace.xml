@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamToolWorkspace" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Reusable Tier 2 orchestration workspace base class for Ideam studio tools.
+	</brief_description>
+	<description>
+		Provides a standardized MemoryProfiler/GraphComposer-inspired shell: a top command bar with [ThemeSelector], Update Policy picker, Save / Save All buttons, and domain action slots; a left tabbed open-asset sidebar; a center Tier 1 control host resolved through the decoupled registry; and a right [RuntimeInspector] dock. Tier 2 workspaces never mutate domain data directly and can be embedded cleanly inside future Tier 3+ cross-plugin tools.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="configure_theme_registry">
+			<return type="void" />
+			<param index="0" name="registry_path" type="String" />
+			<description>
+				Configures the ThemeRegistry resource path used by the command bar's ThemeSelector.
+			</description>
+		</method>
+		<method name="ensure_sidebar_tab">
+			<return type="void" />
+			<param index="0" name="tab_name" type="String" />
+			<description>
+				Creates a named open-asset sidebar tab if it does not already exist.
+			</description>
+		</method>
+		<method name="set_tool_context">
+			<return type="void" />
+			<param index="0" name="context" type="IdeamToolContext" />
+			<description>
+				Binds a shared [IdeamToolContext] so multiple Tier 2 workspaces can share themes, undo/redo, and dirty state.
+			</description>
+		</method>
+		<method name="get_tool_context" qualifiers="const">
+			<return type="IdeamToolContext" />
+			<description>
+				Returns the workspace's active [IdeamToolContext].
+			</description>
+		</method>
+		<method name="open_asset">
+			<return type="bool" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Opens [param asset] in its registered sidebar tab and mounts its Tier 1 control.
+			</description>
+		</method>
+		<method name="open_asset_in_tab">
+			<return type="bool" />
+			<param index="0" name="asset" type="Resource" />
+			<param index="1" name="tab_name" type="String" />
+			<description>
+				Opens [param asset] explicitly under [param tab_name].
+			</description>
+		</method>
+		<method name="close_asset">
+			<return type="void" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Closes [param asset] and removes it from the open-asset sidebar.
+			</description>
+		</method>
+		<method name="close_all_assets">
+			<return type="void" />
+			<description>
+				Closes all currently open assets in this workspace.
+			</description>
+		</method>
+		<method name="select_asset">
+			<return type="void" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Focuses an already-open [param asset] in the center host and right inspector.
+			</description>
+		</method>
+		<method name="get_active_asset" qualifiers="const">
+			<return type="Resource" />
+			<description>
+				Returns the currently selected asset.
+			</description>
+		</method>
+		<method name="save_asset">
+			<return type="bool" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Saves [param asset] to disk via [ResourceSaver] and clears its dirty badge.
+			</description>
+		</method>
+		<method name="save_active_asset">
+			<return type="bool" />
+			<description>
+				Saves the currently focused asset.
+			</description>
+		</method>
+		<method name="save_all_assets">
+			<return type="int" />
+			<description>
+				Saves all open dirty assets and returns the number of assets saved.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="workspace_id" type="StringName" setter="set_workspace_id" getter="get_workspace_id">
+			Unique identifier used to look up registered Tier 1 control factories in the control registry.
+		</member>
+	</members>
+	<signals>
+		<signal name="asset_opened">
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Emitted when an asset is opened in the workspace.
+			</description>
+		</signal>
+		<signal name="asset_closed">
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Emitted when an asset is closed.
+			</description>
+		</signal>
+		<signal name="asset_selected">
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Emitted when the user switches the active asset.
+			</description>
+		</signal>
+		<signal name="asset_saved">
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Emitted after an asset is saved to disk.
+			</description>
+		</signal>
+		<signal name="theme_changed">
+			<param index="0" name="theme" type="Theme" />
+			<param index="1" name="theme_index" type="int" />
+			<description>
+				Emitted when the workspace theme changes.
+			</description>
+		</signal>
+	</signals>
+</class>

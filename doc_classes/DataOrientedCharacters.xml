@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedCharacters" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Characters class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Characters (Resource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_dod_buffers">
+			<return type="Variant" />
+			<description>
+				Executes initialize dod buffers on DataOrientedCharacters.
+			</description>
+		</method>
+		<method name="stage_active_sources_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes stage active sources to dod on DataOrientedCharacters.
+			</description>
+		</method>
+		<method name="read_deformed_positions">
+			<return type="Variant" />
+			<description>
+				Executes read deformed positions on DataOrientedCharacters.
+			</description>
+		</method>
+		<method name="read_deformed_normals">
+			<return type="Variant" />
+			<description>
+				Executes read deformed normals on DataOrientedCharacters.
+			</description>
+		</method>
+		<method name="read_garment_positions">
+			<return type="Variant" />
+			<description>
+				Executes read garment positions on DataOrientedCharacters.
+			</description>
+		</method>
+		<method name="read_active_lod_masks">
+			<return type="Variant" />
+			<description>
+				Executes read active lod masks on DataOrientedCharacters.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager_resource" type="MemoryManagerResource" setter="set_memory_manager_resource" getter="get_memory_manager_resource">
+			Configures memory manager resource for this DataOrientedCharacters.
+		</member>
+		<member name="task_graph_resource" type="TaskGraphResource" setter="set_task_graph_resource" getter="get_task_graph_resource">
+			Configures task graph resource for this DataOrientedCharacters.
+		</member>
+		<member name="active_blueprint" type="CharacterBlueprintResource" setter="set_active_blueprint" getter="get_active_blueprint">
+			Configures active blueprint for this DataOrientedCharacters.
+		</member>
+		<member name="active_apparel" type="CharacterApparelResource" setter="set_active_apparel" getter="get_active_apparel">
+			Configures active apparel for this DataOrientedCharacters.
+		</member>
+		<member name="max_vertices" type="int" setter="set_max_vertices" getter="get_max_vertices">
+			Configures max vertices for this DataOrientedCharacters.
+		</member>
+		<member name="max_garment_vertices" type="int" setter="set_max_garment_vertices" getter="get_max_garment_vertices">
+			Configures max garment vertices for this DataOrientedCharacters.
+		</member>
+	</members>
+</class>

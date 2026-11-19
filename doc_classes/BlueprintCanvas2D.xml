@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlueprintCanvas2D" inherits="Node2D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		2D scene node that renders a BlueprintResource floorplan.
+	</brief_description>
+	<description>
+		Draws spaces, exterior/interior walls, and feature symbols from a bound [BlueprintResource] scaled by [member pixels_per_meter] and filtered by [member visible_layer_mask].
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_layer_visible">
+			<return type="void" />
+			<param index="0" name="layer_index" type="int" />
+			<param index="1" name="visible" type="bool" />
+			<description>
+				Enables or disables drawing of a specific [enum BlueprintResource.LayerIndex].
+			</description>
+		</method>
+		<method name="is_layer_visible" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="layer_index" type="int" />
+			<description>
+				Returns whether the specified blueprint layer is currently visible.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="blueprint" type="BlueprintResource" setter="set_blueprint" getter="get_blueprint">
+			The [BlueprintResource] rendered by this 2D node.
+		</member>
+		<member name="pixels_per_meter" type="float" setter="set_pixels_per_meter" getter="get_pixels_per_meter" default="32.0">
+			Scale factor converting architectural meters to 2D canvas pixels.
+		</member>
+		<member name="visible_layer_mask" type="int" setter="set_visible_layer_mask" getter="get_visible_layer_mask" default="15">
+			Bitmask controlling which blueprint layers are drawn.
+		</member>
+	</members>
+</class>

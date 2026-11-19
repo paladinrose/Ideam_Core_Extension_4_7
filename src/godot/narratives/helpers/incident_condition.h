@@ -1,13 +1,13 @@
 #pragma once
 
-#include <godot_cpp/classes/ref_counted.hpp>
+#include <godot_cpp/classes/resource.hpp>
 #include <godot_cpp/variant/string.hpp>
 #include "../narreme.h" // Needed for NarremeConditionStatus
 
 namespace ideam::godot_ext {
 
-class Incident_Condition : public godot::RefCounted {
-    GDCLASS(Incident_Condition, godot::RefCounted)
+class Incident_Condition : public godot::Resource {
+    GDCLASS(Incident_Condition, godot::Resource)
 
 private:
     godot::String title;

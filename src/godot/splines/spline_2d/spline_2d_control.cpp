@@ -50,6 +50,7 @@ Spline2DCanvas::Spline2DCanvas() {
     set_point_style(POINT_STYLE_CIRCLE);
     set_anchor_drag_constraint(DRAG_AXIS_FREE_2D);
     set_lock_aspect_ratio(true);
+    set_y_down(true);
     set_pan_zoom_axes(true, true, true, true);
     set_plot_margins(44.0f, 18.0f, 14.0f, 22.0f);
     set_view_bounds(godot::Vector2(-75.0f, -75.0f), godot::Vector2(75.0f, 75.0f));

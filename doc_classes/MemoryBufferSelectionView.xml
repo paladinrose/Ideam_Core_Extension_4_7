@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferSelectionView" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer Selection View class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer Selection View (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="populate">
+			<return type="Variant" />
+			<param index="0" name="inspector" type="Variant" />
+			<description>
+				Executes populate on MemoryBufferSelectionView.
+			</description>
+		</method>
+		<method name="set_conflict_state">
+			<return type="Variant" />
+			<param index="0" name="has_conflict" type="Variant" />
+			<param index="1" name="message" type="Variant" />
+			<description>
+				Executes set conflict state on MemoryBufferSelectionView.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="selection_modified">
+			<description>
+				Emitted when selection modified occurs on this MemoryBufferSelectionView.
+			</description>
+		</signal>
+	</signals>
+</class>

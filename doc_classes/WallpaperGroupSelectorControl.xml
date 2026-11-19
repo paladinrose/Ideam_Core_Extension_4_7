@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="WallpaperGroupSelectorControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Wallpaper Group Selector Control class in IdeamTiles.
+	</brief_description>
+	<description>
+		Wallpaper Group Selector Control (VBoxContainer subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_lattice_family_filter">
+			<return type="Variant" />
+			<param index="0" name="family" type="Variant" />
+			<description>
+				Executes set lattice family filter on WallpaperGroupSelectorControl.
+			</description>
+		</method>
+		<method name="get_lattice_family_filter">
+			<return type="Variant" />
+			<description>
+				Executes get lattice family filter on WallpaperGroupSelectorControl.
+			</description>
+		</method>
+		<method name="refresh_ui">
+			<return type="Variant" />
+			<description>
+				Executes refresh ui on WallpaperGroupSelectorControl.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="wallpaper_tiling" type="WallpaperTilingResource" setter="set_wallpaper_tiling" getter="get_wallpaper_tiling">
+			Configures wallpaper tiling for this WallpaperGroupSelectorControl.
+		</member>
+	</members>
+	<signals>
+		<signal name="wallpaper_group_selected">
+			<param index="0" name="wallpaper_group" type="int" />
+			<description>
+				Emitted when wallpaper group selected occurs on this WallpaperGroupSelectorControl.
+			</description>
+		</signal>
+		<signal name="tactile_ih_type_selected">
+			<param index="0" name="ih_type" type="int" />
+			<description>
+				Emitted when tactile ih type selected occurs on this WallpaperGroupSelectorControl.
+			</description>
+		</signal>
+	</signals>
+</class>

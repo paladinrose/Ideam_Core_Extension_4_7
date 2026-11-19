@@ -153,7 +153,9 @@ void IdeamTasksPlugin::_check_manifest_and_setup() {
             manifest_valid = true;
             task_inspector = Ref<TaskGraphInspector>(memnew(TaskGraphInspector));
             add_inspector_plugin(task_inspector);
+            #ifdef IDEAM_VERBOSE_TASK_LOGS
             UtilityFunctions::print("IdeamTasks: All active domain manifests validated. Task Graph Editing is enabled.");
+            #endif
         }
     } else {
         if (manifest_valid) {

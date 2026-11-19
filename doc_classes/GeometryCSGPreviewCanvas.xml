@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryCSGPreviewCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geometry CSGPreview Canvas class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Geometry CSGPreview Canvas (GeometryCanvas2DBase subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_subject_polygon">
+			<return type="Variant" />
+			<param index="0" name="subject" type="Variant" />
+			<description>
+				Executes set subject polygon on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_subject_polygon">
+			<return type="Variant" />
+			<description>
+				Executes get subject polygon on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_boundary_polygon">
+			<return type="Variant" />
+			<param index="0" name="boundary" type="Variant" />
+			<description>
+				Executes set boundary polygon on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_boundary_polygon">
+			<return type="Variant" />
+			<description>
+				Executes get boundary polygon on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_preview_mode">
+			<return type="Variant" />
+			<param index="0" name="mode" type="Variant" />
+			<description>
+				Executes set preview mode on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_preview_mode">
+			<return type="Variant" />
+			<description>
+				Executes get preview mode on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_half_plane_origin">
+			<return type="Variant" />
+			<param index="0" name="origin" type="Variant" />
+			<description>
+				Executes set half plane origin on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_half_plane_origin">
+			<return type="Variant" />
+			<description>
+				Executes get half plane origin on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_half_plane_angle_deg">
+			<return type="Variant" />
+			<param index="0" name="angle_deg" type="Variant" />
+			<description>
+				Executes set half plane angle deg on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_half_plane_angle_deg">
+			<return type="Variant" />
+			<description>
+				Executes get half plane angle deg on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_half_plane_normal">
+			<return type="Variant" />
+			<description>
+				Executes get half plane normal on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_weld_tolerance">
+			<return type="Variant" />
+			<param index="0" name="tol" type="Variant" />
+			<description>
+				Executes set weld tolerance on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_weld_tolerance">
+			<return type="Variant" />
+			<description>
+				Executes get weld tolerance on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="set_show_intersections">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show intersections on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+		<method name="get_show_intersections">
+			<return type="Variant" />
+			<description>
+				Executes get show intersections on GeometryCSGPreviewCanvas.
+			</description>
+		</method>
+	</methods>
+	<constants>
+		<constant name="CSG_PREVIEW_CONVEX_CLIP" value="0">
+			Csg preview convex clip constant.
+		</constant>
+		<constant name="CSG_PREVIEW_HALF_PLANE_CLIP" value="0">
+			Csg preview half plane clip constant.
+		</constant>
+		<constant name="CSG_PREVIEW_SEAM_WELD_SPLIT" value="0">
+			Csg preview seam weld split constant.
+		</constant>
+		<constant name="CSG_PREVIEW_WAVE2_CLASSIFY" value="0">
+			Csg preview wave2 classify constant.
+		</constant>
+	</constants>
+</class>

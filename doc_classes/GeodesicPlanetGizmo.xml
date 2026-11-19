@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeodesicPlanetGizmo" inherits="EditorNode3DGizmoPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Interactive 3D Viewport Gizmo Plugin for `GeodesicPlanetNode3D`.
+	</brief_description>
+	<description>
+		Interactive 3D Viewport Gizmo Plugin for `GeodesicPlanetNode3D`. Handle 0 controls `planet_radius`; Handles 1..12 control radial elevation on the 12 pentagon hubs. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

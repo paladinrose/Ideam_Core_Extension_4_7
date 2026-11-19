@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="XREyeEffectResource" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		XREyeEffectResource Declarative `GameplayResource` driving stereoscopic per-eye shader parameters via `Spline1DResource` (float tracks such as `eye_open`, `eye_feather`,...
+	</brief_description>
+	<description>
+		XREyeEffectResource Declarative `GameplayResource` driving stereoscopic per-eye shader parameters via `Spline1DResource` (float tracks such as `eye_open`, `eye_feather`, `override`) and `Spline4DResource` (4-channel RGBA/HSVA color tracks such as `color`, `override_color`, `eye_closed_color`). Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

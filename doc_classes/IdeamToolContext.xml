@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamToolContext" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Shared session context carried by Tier 2 Ideam workspaces and composable Tier 3+ bridges.
+	</brief_description>
+	<description>
+		Holds the active [Theme], [IdeamUndoRedo] wrapper, active asset reference, dirty-asset flags, and the global [enum UpdateCommitPolicy] governing whether Tier 1 controls mutate data live, on drag release, or on explicit trigger.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_undo_redo">
+			<return type="void" />
+			<param index="0" name="undo_redo" type="IdeamUndoRedo" />
+			<description>
+				Assigns the shared undo/redo wrapper used by Tier 1 controls hosted in this context.
+			</description>
+		</method>
+		<method name="get_undo_redo" qualifiers="const">
+			<return type="IdeamUndoRedo" />
+			<description>
+				Returns the shared undo/redo wrapper.
+			</description>
+		</method>
+		<method name="set_active_theme">
+			<return type="void" />
+			<param index="0" name="theme" type="Theme" />
+			<param index="1" name="theme_index" type="int" default="-1" />
+			<description>
+				Applies a new workspace theme and emits [signal theme_changed].
+			</description>
+		</method>
+		<method name="get_active_theme" qualifiers="const">
+			<return type="Theme" />
+			<description>
+				Returns the currently active workspace [Theme].
+			</description>
+		</method>
+		<method name="get_active_theme_index" qualifiers="const">
+			<return type="int" />
+			<description>
+				Returns the index of the active theme in the ThemeRegistry.
+			</description>
+		</method>
+		<method name="set_active_asset">
+			<return type="void" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Sets the active asset currently focused in the workspace and emits [signal active_asset_changed].
+			</description>
+		</method>
+		<method name="get_active_asset" qualifiers="const">
+			<return type="Resource" />
+			<description>
+				Returns the currently focused asset.
+			</description>
+		</method>
+		<method name="mark_asset_dirty">
+			<return type="void" />
+			<param index="0" name="asset" type="Resource" />
+			<param index="1" name="dirty" type="bool" default="true" />
+			<description>
+				Marks or clears the unsaved-changes state for [param asset] and emits [signal asset_dirty_changed].
+			</description>
+		</method>
+		<method name="is_asset_dirty" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Returns [code]true[/code] if [param asset] has uncommitted or unsaved changes.
+			</description>
+		</method>
+		<method name="has_any_dirty_assets" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns [code]true[/code] if any tracked asset in this session is marked dirty.
+			</description>
+		</method>
+		<method name="clear_all_dirty">
+			<return type="void" />
+			<description>
+				Clears the dirty flag on all tracked assets.
+			</description>
+		</method>
+		<method name="trigger_explicit_rebuild">
+			<return type="void" />
+			<description>
+				Emits [signal explicit_rebuild_triggered] so heavy solvers or simulations recompute on demand.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="update_commit_policy" type="int" setter="set_update_commit_policy" getter="get_update_commit_policy" default="1">
+			Controls when interactive Tier 1 edits commit to underlying resources. Defaults to [constant UPDATE_ON_COMMIT] so an entire drag gesture produces one atomic undo action.
+		</member>
+	</members>
+	<signals>
+		<signal name="theme_changed">
+			<param index="0" name="theme" type="Theme" />
+			<param index="1" name="theme_index" type="int" />
+			<description>
+				Emitted when the active workspace theme changes.
+			</description>
+		</signal>
+		<signal name="update_commit_policy_changed">
+			<param index="0" name="policy" type="int" />
+			<description>
+				Emitted when [member update_commit_policy] changes.
+			</description>
+		</signal>
+		<signal name="active_asset_changed">
+			<param index="0" name="asset" type="Resource" />
+			<description>
+				Emitted when the focused asset in the workspace changes.
+			</description>
+		</signal>
+		<signal name="asset_dirty_changed">
+			<param index="0" name="asset" type="Resource" />
+			<param index="1" name="dirty" type="bool" />
+			<description>
+				Emitted when an asset's dirty state changes.
+			</description>
+		</signal>
+		<signal name="explicit_rebuild_triggered">
+			<description>
+				Emitted when the user explicitly requests a solver or simulation rebuild.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="UPDATE_IMMEDIATE" value="0" enum="UpdateCommitPolicy">
+			Mutate the underlying resource continuously during pointer drags.
+		</constant>
+		<constant name="UPDATE_ON_COMMIT" value="1" enum="UpdateCommitPolicy">
+			Preview changes visually during drag and commit one atomic undo/redo action on release (default).
+		</constant>
+		<constant name="UPDATE_EXPLICIT_TRIGGER" value="2" enum="UpdateCommitPolicy">
+			Stage edits and wait for an explicit Execute/Rebuild/Step button press before recomputing.
+		</constant>
+	</constants>
+</class>

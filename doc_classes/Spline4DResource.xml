@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline4DResource" inherits="SplineResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline4 DResource class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline4 DResource (SplineResource subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="position" type="Variant" />
+			<description>
+				Executes set point position on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point_position">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point position on Spline4DResource.
+			</description>
+		</method>
+		<method name="set_point_xyz">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="xyz" type="Variant" />
+			<description>
+				Executes set point xyz on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point_xyz">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point xyz on Spline4DResource.
+			</description>
+		</method>
+		<method name="set_point_w">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<param index="1" name="w" type="Variant" />
+			<description>
+				Executes set point w on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point_w">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point w on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point_back_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point back handle on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point_fore_handle">
+			<return type="Variant" />
+			<param index="0" name="index" type="Variant" />
+			<description>
+				Executes get point fore handle on Spline4DResource.
+			</description>
+		</method>
+		<method name="sample">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_point">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get point on Spline4DResource.
+			</description>
+		</method>
+		<method name="sample_section">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section on Spline4DResource.
+			</description>
+		</method>
+		<method name="sample_derivative">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes sample derivative on Spline4DResource.
+			</description>
+		</method>
+		<method name="sample_section_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section derivative on Spline4DResource.
+			</description>
+		</method>
+		<method name="sample_section_second_derivative">
+			<return type="Variant" />
+			<param index="0" name="section_index" type="Variant" />
+			<param index="1" name="local_t" type="Variant" />
+			<description>
+				Executes sample section second derivative on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_tangent">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get tangent on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_tangent_3d">
+			<return type="Variant" />
+			<param index="0" name="percent" type="Variant" />
+			<param index="1" name="weighted" type="Variant" />
+			<description>
+				Executes get tangent 3d on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_aabb_3d">
+			<return type="Variant" />
+			<param index="0" name="use_smoothed" type="Variant" />
+			<description>
+				Executes get aabb 3d on Spline4DResource.
+			</description>
+		</method>
+		<method name="get_w_range">
+			<return type="Variant" />
+			<param index="0" name="use_smoothed" type="Variant" />
+			<description>
+				Executes get w range on Spline4DResource.
+			</description>
+		</method>
+		<method name="rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="euler_radians" type="Variant" />
+			<description>
+				Executes rotate spline on Spline4DResource.
+			</description>
+		</method>
+		<method name="scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes scale spline on Spline4DResource.
+			</description>
+		</method>
+		<method name="commit_rotate_spline">
+			<return type="Variant" />
+			<param index="0" name="euler_radians" type="Variant" />
+			<description>
+				Executes commit rotate spline on Spline4DResource.
+			</description>
+		</method>
+		<method name="commit_scale_spline">
+			<return type="Variant" />
+			<param index="0" name="scale" type="Variant" />
+			<description>
+				Executes commit scale spline on Spline4DResource.
+			</description>
+		</method>
+		<method name="create_tapered_line" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="start" type="Variant" />
+			<param index="1" name="start_w" type="Variant" />
+			<param index="2" name="end" type="Variant" />
+			<param index="3" name="end_w" type="Variant" />
+			<param index="4" name="points" type="Variant" />
+			<param index="5" name="type" type="Variant" />
+			<description>
+				Executes create tapered line on Spline4DResource.
+			</description>
+		</method>
+		<method name="create_banked_circle_xz" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="radius" type="Variant" />
+			<param index="1" name="bank_roll_rad" type="Variant" />
+			<param index="2" name="points" type="Variant" />
+			<description>
+				Executes create banked circle xz on Spline4DResource.
+			</description>
+		</method>
+		<method name="create_color_gradient" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="colors" type="Variant" />
+			<param index="1" name="convert_to_hsva" type="Variant" />
+			<description>
+				Executes create color gradient on Spline4DResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="color_gradient_mode" type="bool" setter="set_color_gradient_mode" getter="get_color_gradient_mode">
+			Configures color gradient mode for this Spline4DResource.
+		</member>
+		<member name="points" type="PackedVector4Array" setter="set_points_array" getter="get_points_array">
+			Configures points for this Spline4DResource.
+		</member>
+		<member name="back_handles" type="PackedVector4Array" setter="set_back_handles_array" getter="get_back_handles_array">
+			Configures back handles for this Spline4DResource.
+		</member>
+		<member name="fore_handles" type="PackedVector4Array" setter="set_fore_handles_array" getter="get_fore_handles_array">
+			Configures fore handles for this Spline4DResource.
+		</member>
+	</members>
+</class>

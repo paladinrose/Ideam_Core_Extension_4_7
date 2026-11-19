@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayStyle" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: GameplayStyle acts as a cascading stylesheet container for gameplay modes and GameplayRules.
+	</brief_description>
+	<description>
+		DOD NOTE: GameplayStyle acts as a cascading stylesheet container for gameplay modes and GameplayRules. Storing these as TypedArrays of Resource pointers (AoS) results in pointer indirection when querying style settings across thousands of entities. GameplayStyle manages the object-level cascade via merge_with_child(), filtering out parent RuleScope::SELF rules, promoting inherited RuleScope::DESCENDANTS rules to RuleScope::ALL for descendants, harvesting synthesized rules from attached GameplayModes, and ordering rules by importance, cascade layer (@layer), priority, and selector specificity. When applied to a target Object or GameEntity, GameplayStyle first restores any previously cached Base Values and removes prior rule-injected modifiers/hooks before evaluating the active cascade in precedence order. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

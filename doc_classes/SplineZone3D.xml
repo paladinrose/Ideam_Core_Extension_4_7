@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineZone3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Zone3 D class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Zone3 D (Node3D subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_world_point_inside">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes is world point inside on SplineZone3D.
+			</description>
+		</method>
+		<method name="query_zone_at_world_pos">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes query zone at world pos on SplineZone3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="spline_3d" type="Spline3DResource" setter="set_spline_3d" getter="get_spline_3d">
+			Configures spline 3d for this SplineZone3D.
+		</member>
+		<member name="spline_4d" type="Spline4DResource" setter="set_spline_4d" getter="get_spline_4d">
+			Configures spline 4d for this SplineZone3D.
+		</member>
+		<member name="radius_envelope_1d" type="Spline1DResource" setter="set_radius_envelope_1d" getter="get_radius_envelope_1d">
+			Configures radius envelope 1d for this SplineZone3D.
+		</member>
+		<member name="falloff_curve_1d" type="Spline1DResource" setter="set_falloff_curve_1d" getter="get_falloff_curve_1d">
+			Configures falloff curve 1d for this SplineZone3D.
+		</member>
+		<member name="base_corridor_radius" type="float" setter="set_base_corridor_radius" getter="get_base_corridor_radius">
+			Configures base corridor radius for this SplineZone3D.
+		</member>
+		<member name="axial_flow_speed" type="float" setter="set_axial_flow_speed" getter="get_axial_flow_speed">
+			Configures axial flow speed for this SplineZone3D.
+		</member>
+		<member name="radial_pull_speed" type="float" setter="set_radial_pull_speed" getter="get_radial_pull_speed">
+			Configures radial pull speed for this SplineZone3D.
+		</member>
+		<member name="swirl_angular_speed" type="float" setter="set_swirl_angular_speed" getter="get_swirl_angular_speed">
+			Configures swirl angular speed for this SplineZone3D.
+		</member>
+		<member name="search_samples" type="int" setter="set_search_samples" getter="get_search_samples">
+			Configures search samples for this SplineZone3D.
+		</member>
+	</members>
+</class>

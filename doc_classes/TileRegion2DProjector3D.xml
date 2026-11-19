@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TileRegion2DProjector3D" inherits="Geometry2DProjector3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tile Region2 DProjector3 D class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tile Region2 DProjector3 D (Geometry2DProjector3D subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_highlighted_cell_id">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes set highlighted cell id on TileRegion2DProjector3D.
+			</description>
+		</method>
+		<method name="get_highlighted_cell_id">
+			<return type="Variant" />
+			<description>
+				Executes get highlighted cell id on TileRegion2DProjector3D.
+			</description>
+		</method>
+		<method name="get_projected_cell_count">
+			<return type="Variant" />
+			<description>
+				Executes get projected cell count on TileRegion2DProjector3D.
+			</description>
+		</method>
+		<method name="get_projected_cell_center_3d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get projected cell center 3d on TileRegion2DProjector3D.
+			</description>
+		</method>
+		<method name="get_projected_cell_transform_3d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get projected cell transform 3d on TileRegion2DProjector3D.
+			</description>
+		</method>
+		<method name="get_projected_cell_polygon_3d">
+			<return type="Variant" />
+			<param index="0" name="cell_id" type="Variant" />
+			<description>
+				Executes get projected cell polygon 3d on TileRegion2DProjector3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="tiling_resource" type="TilingResource" setter="set_tiling_resource" getter="get_tiling_resource">
+			Configures tiling resource for this TileRegion2DProjector3D.
+		</member>
+		<member name="boundary_spline_2d" type="Spline2DResource" setter="set_boundary_spline_2d" getter="get_boundary_spline_2d">
+			Configures boundary spline 2d for this TileRegion2DProjector3D.
+		</member>
+		<member name="fallback_region_rect" type="Rect2" setter="set_fallback_region_rect" getter="get_fallback_region_rect">
+			Configures fallback region rect for this TileRegion2DProjector3D.
+		</member>
+		<member name="tile_inset_ratio" type="float" setter="set_tile_inset_ratio" getter="get_tile_inset_ratio">
+			Configures tile inset ratio for this TileRegion2DProjector3D.
+		</member>
+		<member name="edge_subdivisions" type="int" setter="set_edge_subdivisions" getter="get_edge_subdivisions">
+			Configures edge subdivisions for this TileRegion2DProjector3D.
+		</member>
+		<member name="project_hex_super_cells" type="bool" setter="set_project_hex_super_cells" getter="get_project_hex_super_cells">
+			Configures project hex super cells for this TileRegion2DProjector3D.
+		</member>
+		<member name="color_0" type="Color" setter="set_color_0" getter="get_color_0">
+			Configures color 0 for this TileRegion2DProjector3D.
+		</member>
+		<member name="color_1" type="Color" setter="set_color_1" getter="get_color_1">
+			Configures color 1 for this TileRegion2DProjector3D.
+		</member>
+		<member name="color_2" type="Color" setter="set_color_2" getter="get_color_2">
+			Configures color 2 for this TileRegion2DProjector3D.
+		</member>
+		<member name="bridge_quad_color" type="Color" setter="set_bridge_quad_color" getter="get_bridge_quad_color">
+			Configures bridge quad color for this TileRegion2DProjector3D.
+		</member>
+		<member name="highlight_color" type="Color" setter="set_highlight_color" getter="get_highlight_color">
+			Configures highlight color for this TileRegion2DProjector3D.
+		</member>
+	</members>
+</class>

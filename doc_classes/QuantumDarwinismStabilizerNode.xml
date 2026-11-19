@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismStabilizerNode" inherits="ProceduralGenerationHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Quantum Darwinism Stabilizer Node class in IdeamQuantumDarwinism.
+	</brief_description>
+	<description>
+		Quantum Darwinism Stabilizer Node (ProceduralGenerationHost subclass) belonging to IdeamQuantumDarwinism (pointer-state stabilization and observer redundancy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="target_wfc_solver_path" type="NodePath" setter="set_target_wfc_solver_path" getter="get_target_wfc_solver_path">
+			Configures target wfc solver path for this QuantumDarwinismStabilizerNode.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TilingEditorInspectorBase" inherits="GeometryEditorInspectorBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tiling Editor Inspector Base class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tiling Editor Inspector Base (GeometryEditorInspectorBase subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="hide_managed_tiling_properties" type="bool" setter="set_hide_managed_tiling_properties" getter="get_hide_managed_tiling_properties">
+			Configures hide managed tiling properties for this TilingEditorInspectorBase.
+		</member>
+	</members>
+</class>

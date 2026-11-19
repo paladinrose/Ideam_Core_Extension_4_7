@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TiledSoAVisualizer" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tiled So AVisualizer class in IdeamMemory.
+	</brief_description>
+	<description>
+		Tiled So AVisualizer (Control subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="setup_from_resource">
+			<return type="Variant" />
+			<param index="0" name="buffer" type="Variant" />
+			<description>
+				Executes setup from resource on TiledSoAVisualizer.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="focused_tile_index" type="int" setter="set_focused_tile_index" getter="get_focused_tile_index">
+			Configures focused tile index for this TiledSoAVisualizer.
+		</member>
+		<member name="show_locality_comparison" type="bool" setter="set_show_locality_comparison" getter="get_show_locality_comparison">
+			Configures show locality comparison for this TiledSoAVisualizer.
+		</member>
+	</members>
+</class>

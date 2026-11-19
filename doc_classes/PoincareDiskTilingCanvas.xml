@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PoincareDiskTilingCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Interactive 2D viewport for `HyperbolicPoincareTilingResource`.
+	</brief_description>
+	<description>
+		Interactive 2D viewport for `HyperbolicPoincareTilingResource`. Part of IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_tiling_resource">
+			<return type="Variant" />
+			<param index="0" name="resource" type="Variant" />
+			<description>
+				Executes set tiling resource on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_tiling_resource">
+			<return type="Variant" />
+			<description>
+				Executes get tiling resource on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="set_show_geodesic_edges">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show geodesic edges on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_show_geodesic_edges">
+			<return type="Variant" />
+			<description>
+				Executes get show geodesic edges on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="set_show_cell_centers">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show cell centers on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_show_cell_centers">
+			<return type="Variant" />
+			<description>
+				Executes get show cell centers on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="set_show_path_overlay">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show path overlay on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_show_path_overlay">
+			<return type="Variant" />
+			<description>
+				Executes get show path overlay on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="set_show_flow_field">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show flow field on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_show_flow_field">
+			<return type="Variant" />
+			<description>
+				Executes get show flow field on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="set_path_endpoints">
+			<return type="Variant" />
+			<param index="0" name="start_cell" type="Variant" />
+			<param index="1" name="goal_cell" type="Variant" />
+			<description>
+				Executes set path endpoints on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_path_start_cell">
+			<return type="Variant" />
+			<description>
+				Executes get path start cell on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+		<method name="get_path_goal_cell">
+			<return type="Variant" />
+			<description>
+				Executes get path goal cell on PoincareDiskTilingCanvas.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="cell_selected">
+			<param index="0" name="cell_id" type="int" />
+			<description>
+				Emitted when cell selected occurs on this PoincareDiskTilingCanvas.
+			</description>
+		</signal>
+	</signals>
+</class>

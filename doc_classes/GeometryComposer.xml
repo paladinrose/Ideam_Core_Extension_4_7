@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryComposer" inherits="IdeamToolWorkspace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 2 studio workspace unifying Geometry, Splines, and Tiles.
+	</brief_description>
+	<description>
+		Orchestrates Tier 1 2D geometry, spline, and tile editors inside a single tabbed workspace with sidebar tabs for [b]General[/b] (Polygons, Voronoi, SDF Grids, Tensor Fields), [b]Splines[/b], and [b]Tiles[/b]. Exposes shared Fit View, Grid, and Y-Down viewport toggles in the command bar.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_geometry_resource" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="resource" type="Resource" />
+			<param index="1" name="owner" type="Control" default="null" />
+			<description>
+				Opens or focuses the shared [GeometryComposer] window and loads [param resource].
+			</description>
+		</method>
+	</methods>
+</class>

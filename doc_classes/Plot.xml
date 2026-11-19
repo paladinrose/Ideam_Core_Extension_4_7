@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Plot" inherits="Narreme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Plot class in IdeamNarratives.
+	</brief_description>
+	<description>
+		Plot (Narreme subclass) belonging to IdeamNarratives (story arcs, beats, tropes, themes, and narrative generation).
+	</description>
+	<tutorials>
+	</tutorials>
+	<constants>
+		<constant name="PLOT_NOT_BEGUN" value="0">
+			Plot not begun constant.
+		</constant>
+		<constant name="PLOT_IN_PROGRESS" value="0">
+			Plot in progress constant.
+		</constant>
+		<constant name="PLOT_COMPLETE" value="0">
+			Plot complete constant.
+		</constant>
+		<constant name="PLOT_CANNOT_COMPLETE" value="0">
+			Plot cannot complete constant.
+		</constant>
+		<constant name="PLOT_FAILED" value="0">
+			Plot failed constant.
+		</constant>
+	</constants>
+</class>

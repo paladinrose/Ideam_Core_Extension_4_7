@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedSplines" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Splines class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Splines (GeometryResource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bind_data_oriented_geometry">
+			<return type="Variant" />
+			<param index="0" name="geometry" type="Variant" />
+			<description>
+				Executes bind data oriented geometry on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="setup_dod_pipeline">
+			<return type="Variant" />
+			<description>
+				Executes setup dod pipeline on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="bake_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes bake to dod on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="rebuild_dod_task_graph">
+			<return type="Variant" />
+			<description>
+				Executes rebuild dod task graph on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="execute_dod_step">
+			<return type="Variant" />
+			<param index="0" name="delta" type="Variant" />
+			<description>
+				Executes execute dod step on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_evaluated_outputs">
+			<return type="Variant" />
+			<description>
+				Executes get evaluated outputs on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_evaluated_tangents">
+			<return type="Variant" />
+			<description>
+				Executes get evaluated tangents on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="stage_proximity_queries">
+			<return type="Variant" />
+			<param index="0" name="query_points" type="Variant" />
+			<description>
+				Executes stage proximity queries on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_closest_percents">
+			<return type="Variant" />
+			<description>
+				Executes get closest percents on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_closest_distances">
+			<return type="Variant" />
+			<description>
+				Executes get closest distances on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_closest_anchors">
+			<return type="Variant" />
+			<description>
+				Executes get closest anchors on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_spline_dod_slot">
+			<return type="Variant" />
+			<param index="0" name="spline" type="Variant" />
+			<description>
+				Executes get spline dod slot on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_spline_geometry_polyline_slot">
+			<return type="Variant" />
+			<param index="0" name="spline_slot" type="Variant" />
+			<description>
+				Executes get spline geometry polyline slot on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_flattened_polyline_2d">
+			<return type="Variant" />
+			<param index="0" name="spline_slot" type="Variant" />
+			<description>
+				Executes get flattened polyline 2d on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_flattened_polyline_3d">
+			<return type="Variant" />
+			<param index="0" name="spline_slot" type="Variant" />
+			<description>
+				Executes get flattened polyline 3d on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_swept_bishop_transforms_3d">
+			<return type="Variant" />
+			<param index="0" name="spline_slot" type="Variant" />
+			<description>
+				Executes get swept bishop transforms 3d on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_buffer_id">
+			<return type="Variant" />
+			<param index="0" name="semantic_name" type="Variant" />
+			<description>
+				Executes get buffer id on DataOrientedSplines.
+			</description>
+		</method>
+		<method name="get_buffer_manifest_dictionary">
+			<return type="Variant" />
+			<description>
+				Executes get buffer manifest dictionary on DataOrientedSplines.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="splines" type="Array" setter="set_splines" getter="get_splines">
+			Configures splines for this DataOrientedSplines.
+		</member>
+		<member name="linked_geometry_resource" type="DataOrientedGeometry" setter="set_linked_geometry_resource" getter="get_linked_geometry_resource">
+			Configures linked geometry resource for this DataOrientedSplines.
+		</member>
+		<member name="dod_execution_mode" type="int" setter="set_dod_execution_mode" getter="get_dod_execution_mode">
+			Configures dod execution mode for this DataOrientedSplines (Disabled:0,Composable Stages:1,Custom TaskGraphResource:2,Manual Graph:3).
+		</member>
+		<member name="pipeline_stage_mask" type="int" setter="set_pipeline_stage_mask" getter="get_pipeline_stage_mask">
+			Configures pipeline stage mask for this DataOrientedSplines.
+		</member>
+		<member name="auto_connect_pipeline_stages" type="bool" setter="set_auto_connect_pipeline_stages" getter="get_auto_connect_pipeline_stages">
+			Configures auto connect pipeline stages for this DataOrientedSplines.
+		</member>
+		<member name="default_subdivisions_per_section" type="int" setter="set_default_subdivisions_per_section" getter="get_default_subdivisions_per_section">
+			Configures default subdivisions per section for this DataOrientedSplines.
+		</member>
+		<member name="lut_bins_per_spline" type="int" setter="set_lut_bins_per_spline" getter="get_lut_bins_per_spline">
+			Configures lut bins per spline for this DataOrientedSplines.
+		</member>
+		<member name="custom_task_graph_resource" type="TaskGraphResource" setter="set_custom_task_graph_resource" getter="get_custom_task_graph_resource">
+			Configures custom task graph resource for this DataOrientedSplines.
+		</member>
+		<member name="max_dod_splines" type="int" setter="set_max_dod_splines" getter="get_max_dod_splines">
+			Configures max dod splines for this DataOrientedSplines.
+		</member>
+		<member name="max_dod_segments" type="int" setter="set_max_dod_segments" getter="get_max_dod_segments">
+			Configures max dod segments for this DataOrientedSplines.
+		</member>
+		<member name="max_dod_sample_requests" type="int" setter="set_max_dod_sample_requests" getter="get_max_dod_sample_requests">
+			Configures max dod sample requests for this DataOrientedSplines.
+		</member>
+		<member name="max_dod_query_points" type="int" setter="set_max_dod_query_points" getter="get_max_dod_query_points">
+			Configures max dod query points for this DataOrientedSplines.
+		</member>
+	</members>
+	<constants>
+		<constant name="SPLINES_DOD_EXEC_DISABLED" value="0">
+			Splines dod exec disabled constant.
+		</constant>
+		<constant name="SPLINES_DOD_EXEC_COMPOSABLE_STAGES" value="0">
+			Splines dod exec composable stages constant.
+		</constant>
+		<constant name="SPLINES_DOD_EXEC_CUSTOM_GRAPH_RESOURCE" value="0">
+			Splines dod exec custom graph resource constant.
+		</constant>
+		<constant name="SPLINES_DOD_EXEC_MANUAL_GRAPH" value="0">
+			Splines dod exec manual graph constant.
+		</constant>
+	</constants>
+</class>

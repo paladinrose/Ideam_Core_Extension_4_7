@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Spline4DControl" inherits="SplineControlBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Full Editor &amp; Runtime composite UI control for `Spline4DResource`.
+	</brief_description>
+	<description>
+		Full Editor &amp; Runtime composite UI control for `Spline4DResource`. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_spline_4d">
+			<return type="Variant" />
+			<param index="0" name="spline" type="Variant" />
+			<description>
+				Executes set spline 4d on Spline4DControl.
+			</description>
+		</method>
+		<method name="get_spline_4d">
+			<return type="Variant" />
+			<description>
+				Executes get spline 4d on Spline4DControl.
+			</description>
+		</method>
+		<method name="get_w_channel_canvas">
+			<return type="Variant" />
+			<description>
+				Executes get w channel canvas on Spline4DControl.
+			</description>
+		</method>
+		<method name="set_bound_gizmo_node">
+			<return type="Variant" />
+			<param index="0" name="node" type="Variant" />
+			<description>
+				Executes set bound gizmo node on Spline4DControl.
+			</description>
+		</method>
+		<method name="get_bound_gizmo_node">
+			<return type="Variant" />
+			<description>
+				Executes get bound gizmo node on Spline4DControl.
+			</description>
+		</method>
+	</methods>
+</class>

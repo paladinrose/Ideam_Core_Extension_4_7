@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ControlActionRebindMatrix" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		DOD NOTE: ControlActionRebindMatrix provides a modular, interactive action-rebinding and Custom USB / Arduino ADC channel calibration matrix for `GameplayControlMap`.
+	</brief_description>
+	<description>
+		DOD NOTE: ControlActionRebindMatrix provides a modular, interactive action-rebinding and Custom USB / Arduino ADC channel calibration matrix for `GameplayControlMap`. It supports: 1. Semantic Action Rebinding: Displays all 15 standard semantic actions (`move_forward`, `primary_action`, `interact`, `jump`, etc.) plus custom entries in `action_remap_table` and `action_to_agent_action_map`, with a one-click "Listen for Input..." capture mode that intercepts Keyboard keys, Mouse buttons, Joypad buttons/axes, or Custom USB channels. 2. binding Conflict Detection: Highlights duplicate input bindings across actions. 3. Custom USB / Arduino Serial &amp; HID Channel Monitor &amp; Calibrator: Subscribes to `custom_packet_received` on `GameplayControlMap`, displaying live normalized channel strengths (`AX`, `AY`, `LX`, `LY`, `BTN1`..`BTN4`) and one-click Min/Center/Max ADC calibration (`custom_channel_calibration`). Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

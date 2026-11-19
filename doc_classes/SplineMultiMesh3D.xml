@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineMultiMesh3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Multi Mesh3 D class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Multi Mesh3 D (Node3D subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_multimesh">
+			<return type="Variant" />
+			<description>
+				Executes get multimesh on SplineMultiMesh3D.
+			</description>
+		</method>
+		<method name="rebuild_instances">
+			<return type="Variant" />
+			<description>
+				Executes rebuild instances on SplineMultiMesh3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="placement_mode" type="int" setter="set_placement_mode" getter="get_placement_mode">
+			Configures placement mode for this SplineMultiMesh3D (Along 3D Spline Path:0,Inside Closed 2D Spline Region:1).
+		</member>
+		<member name="path_spline_3d" type="Spline3DResource" setter="set_path_spline_3d" getter="get_path_spline_3d">
+			Configures path spline 3d for this SplineMultiMesh3D.
+		</member>
+		<member name="region_spline_2d" type="Spline2DResource" setter="set_region_spline_2d" getter="get_region_spline_2d">
+			Configures region spline 2d for this SplineMultiMesh3D.
+		</member>
+		<member name="scale_curve_1d" type="Spline1DResource" setter="set_scale_curve_1d" getter="get_scale_curve_1d">
+			Configures scale curve 1d for this SplineMultiMesh3D.
+		</member>
+		<member name="color_gradient_4d" type="Spline4DResource" setter="set_color_gradient_4d" getter="get_color_gradient_4d">
+			Configures color gradient 4d for this SplineMultiMesh3D.
+		</member>
+		<member name="instance_mesh" type="Mesh" setter="set_instance_mesh" getter="get_instance_mesh">
+			Configures instance mesh for this SplineMultiMesh3D.
+		</member>
+		<member name="material_override" type="Material" setter="set_material_override" getter="get_material_override">
+			Configures material override for this SplineMultiMesh3D.
+		</member>
+		<member name="instance_count" type="int" setter="set_instance_count" getter="get_instance_count">
+			Configures instance count for this SplineMultiMesh3D.
+		</member>
+		<member name="scatter_width" type="float" setter="set_scatter_width" getter="get_scatter_width">
+			Configures scatter width for this SplineMultiMesh3D.
+		</member>
+		<member name="random_yaw_radians" type="float" setter="set_random_yaw_radians" getter="get_random_yaw_radians">
+			Configures random yaw radians for this SplineMultiMesh3D.
+		</member>
+		<member name="random_scale_jitter" type="float" setter="set_random_scale_jitter" getter="get_random_scale_jitter">
+			Configures random scale jitter for this SplineMultiMesh3D.
+		</member>
+		<member name="align_to_spline_frame" type="bool" setter="set_align_to_spline_frame" getter="get_align_to_spline_frame">
+			Configures align to spline frame for this SplineMultiMesh3D.
+		</member>
+		<member name="use_weighted_distribution" type="bool" setter="set_use_weighted_distribution" getter="get_use_weighted_distribution">
+			Configures use weighted distribution for this SplineMultiMesh3D.
+		</member>
+		<member name="random_seed" type="int" setter="set_random_seed" getter="get_random_seed">
+			Configures random seed for this SplineMultiMesh3D.
+		</member>
+	</members>
+	<constants>
+		<constant name="SCATTER_ALONG_PATH_3D" value="0">
+			Scatter along path 3 d constant.
+		</constant>
+		<constant name="SCATTER_INSIDE_REGION_2D" value="0">
+			Scatter inside region 2 d constant.
+		</constant>
+	</constants>
+</class>

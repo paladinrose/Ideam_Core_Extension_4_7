@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GenerationRule" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Generation Rule class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Generation Rule (Resource subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="compute_specificity">
+			<return type="Variant" />
+			<description>
+				Executes compute specificity on GenerationRule.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="target_class" type="StringName" setter="set_target_class" getter="get_target_class">
+			Configures target class for this GenerationRule.
+		</member>
+		<member name="subject_token_name" type="StringName" setter="set_subject_token_name" getter="get_subject_token_name">
+			Configures subject token name for this GenerationRule.
+		</member>
+		<member name="name_prefix" type="String" setter="set_name_prefix" getter="get_name_prefix">
+			Configures name prefix for this GenerationRule.
+		</member>
+		<member name="name_suffix" type="String" setter="set_name_suffix" getter="get_name_suffix">
+			Configures name suffix for this GenerationRule.
+		</member>
+		<member name="operation" type="int" setter="set_operation" getter="get_operation">
+			Configures operation for this GenerationRule (AdmitArchetype:0,AcceptParents:1,AcceptChildrenCardinality:2,RequireSibling:3,ForbidSibling:4,AllowSpatialNeighbor:5,ConstrainPropertyRange:6).
+		</member>
+		<member name="scope" type="int" setter="set_scope" getter="get_scope">
+			Configures scope for this GenerationRule (Self:0,Children:1,Descendants:2,Siblings:3,All:4).
+		</member>
+		<member name="cascade_layer" type="int" setter="set_cascade_layer" getter="get_cascade_layer">
+			Configures cascade layer for this GenerationRule (Domain:0,HierarchyParent:1,SiblingDependency:2,ChildCardinality:3,SpatialSocket:4,VariantDetail:5,PinnedOverride:6).
+		</member>
+		<member name="priority" type="int" setter="set_priority" getter="get_priority">
+			Configures priority for this GenerationRule.
+		</member>
+		<member name="is_important" type="bool" setter="set_is_important" getter="get_is_important">
+			Configures is important for this GenerationRule.
+		</member>
+		<member name="min_occurrences" type="int" setter="set_min_occurrences" getter="get_min_occurrences">
+			Configures min occurrences for this GenerationRule.
+		</member>
+		<member name="max_occurrences" type="int" setter="set_max_occurrences" getter="get_max_occurrences">
+			Configures max occurrences for this GenerationRule.
+		</member>
+		<member name="allowed_relatives" type="PackedStringArray" setter="set_allowed_relatives" getter="get_allowed_relatives">
+			Configures allowed relatives for this GenerationRule.
+		</member>
+		<member name="required_sibling" type="StringName" setter="set_required_sibling" getter="get_required_sibling">
+			Configures required sibling for this GenerationRule.
+		</member>
+		<member name="forbidden_sibling" type="StringName" setter="set_forbidden_sibling" getter="get_forbidden_sibling">
+			Configures forbidden sibling for this GenerationRule.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this GenerationRule.
+		</member>
+		<member name="child_rules" type="Array" setter="set_child_rules" getter="get_child_rules">
+			Configures child rules for this GenerationRule.
+		</member>
+	</members>
+</class>

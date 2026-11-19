@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TaskGraphNode" inherits="MemoryGraphNode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Task Graph Node class in IdeamTasks.
+	</brief_description>
+	<description>
+		Task Graph Node (MemoryGraphNode subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_task_node_resource">
+			<return type="Variant" />
+			<description>
+				Executes get task node resource on TaskGraphNode.
+			</description>
+		</method>
+		<method name="get_task_type">
+			<return type="Variant" />
+			<description>
+				Executes get task type on TaskGraphNode.
+			</description>
+		</method>
+		<method name="get_task_name">
+			<return type="Variant" />
+			<description>
+				Executes get task name on TaskGraphNode.
+			</description>
+		</method>
+		<method name="update_preview_image">
+			<return type="Variant" />
+			<param index="0" name="image" type="Variant" />
+			<description>
+				Executes update preview image on TaskGraphNode.
+			</description>
+		</method>
+		<method name="request_snapshot">
+			<return type="Variant" />
+			<description>
+				Executes request snapshot on TaskGraphNode.
+			</description>
+		</method>
+	</methods>
+</class>

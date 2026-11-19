@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeometryResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geometry Resource class in IdeamGeometry.
+	</brief_description>
+	<description>
+		Geometry Resource (Resource subclass) belonging to IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_geometry_dimension">
+			<return type="Variant" />
+			<description>
+				Executes get geometry dimension on GeometryResource.
+			</description>
+		</method>
+		<method name="get_bounds_2d">
+			<return type="Variant" />
+			<description>
+				Executes get bounds 2d on GeometryResource.
+			</description>
+		</method>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on GeometryResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on GeometryResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this GeometryResource.
+		</member>
+	</members>
+	<signals>
+		<signal name="geometry_changed">
+			<description>
+				Emitted when geometry changed occurs on this GeometryResource.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="WINDING_CLOCKWISE" value="0">
+			Winding clockwise constant.
+		</constant>
+		<constant name="WINDING_COLINEAR" value="0">
+			Winding colinear constant.
+		</constant>
+		<constant name="WINDING_COUNTER_CLOCKWISE" value="0">
+			Winding counter clockwise constant.
+		</constant>
+		<constant name="CONTAINMENT_OUTSIDE" value="0">
+			Containment outside constant.
+		</constant>
+		<constant name="CONTAINMENT_INSIDE" value="0">
+			Containment inside constant.
+		</constant>
+		<constant name="CONTAINMENT_ON_BOUNDARY" value="0">
+			Containment on boundary constant.
+		</constant>
+		<constant name="JOIN_STYLE_MITER" value="0">
+			Join style miter constant.
+		</constant>
+		<constant name="JOIN_STYLE_BEVEL" value="0">
+			Join style bevel constant.
+		</constant>
+		<constant name="JOIN_STYLE_ROUND" value="0">
+			Join style round constant.
+		</constant>
+		<constant name="CSG_OP_UNION" value="0">
+			Csg op union constant.
+		</constant>
+		<constant name="CSG_OP_INTERSECTION" value="0">
+			Csg op intersection constant.
+		</constant>
+		<constant name="CSG_OP_DIFFERENCE" value="0">
+			Csg op difference constant.
+		</constant>
+		<constant name="CSG_OP_XOR" value="0">
+			Csg op xor constant.
+		</constant>
+		<constant name="CLIP_CLASS_FULLY_OUTSIDE" value="0">
+			Clip class fully outside constant.
+		</constant>
+		<constant name="CLIP_CLASS_FULLY_INSIDE" value="0">
+			Clip class fully inside constant.
+		</constant>
+		<constant name="CLIP_CLASS_STRADDLING_BOUNDARY" value="0">
+			Clip class straddling boundary constant.
+		</constant>
+		<constant name="SDF_COMBINE_REPLACE" value="0">
+			Sdf combine replace constant.
+		</constant>
+		<constant name="SDF_COMBINE_UNION" value="0">
+			Sdf combine union constant.
+		</constant>
+		<constant name="SDF_COMBINE_SUBTRACT" value="0">
+			Sdf combine subtract constant.
+		</constant>
+		<constant name="SDF_COMBINE_INTERSECT" value="0">
+			Sdf combine intersect constant.
+		</constant>
+		<constant name="SDF_COMBINE_SMOOTH_UNION" value="0">
+			Sdf combine smooth union constant.
+		</constant>
+		<constant name="SDF_COMBINE_SMOOTH_SUBTRACT" value="0">
+			Sdf combine smooth subtract constant.
+		</constant>
+		<constant name="SDF_COMBINE_SMOOTH_INTERSECT" value="0">
+			Sdf combine smooth intersect constant.
+		</constant>
+	</constants>
+</class>

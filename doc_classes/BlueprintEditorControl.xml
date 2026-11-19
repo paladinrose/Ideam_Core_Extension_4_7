@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlueprintEditorControl" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 1 architectural floorplan authoring control hosted inside DesignComposer.
+	</brief_description>
+	<description>
+		Provides a live [BlueprintPreviewSurface], room/wall/feature telemetry, and quick authoring buttons (Add Sample Room, Add Door, Add Window, Clear) for [BlueprintResource] assets.
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_blueprint">
+			<return type="void" />
+			<param index="0" name="blueprint" type="BlueprintResource" />
+			<description>
+				Binds a [BlueprintResource] to this editor control.
+			</description>
+		</method>
+		<method name="get_blueprint" qualifiers="const">
+			<return type="BlueprintResource" />
+			<description>
+				Returns the currently bound [BlueprintResource].
+			</description>
+		</method>
+	</methods>
+</class>

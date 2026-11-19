@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamGraphResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Graph Resource class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Ideam Graph Resource (Resource subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="queue_update_managed_buffers">
+			<return type="Variant" />
+			<description>
+				Executes queue update managed buffers on IdeamGraphResource.
+			</description>
+		</method>
+		<method name="update_managed_buffers">
+			<return type="Variant" />
+			<description>
+				Executes update managed buffers on IdeamGraphResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager" type="MemoryManagerResource" setter="set_memory_manager" getter="get_memory_manager">
+			Configures memory manager for this IdeamGraphResource.
+		</member>
+		<member name="nodes" type="Array" setter="set_nodes" getter="get_nodes">
+			Configures nodes for this IdeamGraphResource.
+		</member>
+		<member name="edges" type="Array" setter="set_edges" getter="get_edges">
+			Configures edges for this IdeamGraphResource.
+		</member>
+		<member name="groups" type="Array" setter="set_groups" getter="get_groups">
+			Configures groups for this IdeamGraphResource.
+		</member>
+		<member name="is_volatile_at_runtime" type="bool" setter="set_is_volatile" getter="get_is_volatile">
+			Configures is volatile at runtime for this IdeamGraphResource.
+		</member>
+		<member name="volatile_node_capacity" type="int" setter="set_volatile_node_capacity" getter="get_volatile_node_capacity">
+			Configures volatile node capacity for this IdeamGraphResource.
+		</member>
+		<member name="volatile_edge_capacity" type="int" setter="set_volatile_edge_capacity" getter="get_volatile_edge_capacity">
+			Configures volatile edge capacity for this IdeamGraphResource.
+		</member>
+		<member name="consumer_key" type="String" setter="set_consumer_key" getter="get_consumer_key">
+			Configures consumer key for this IdeamGraphResource.
+		</member>
+		<member name="node_buffer" type="ManagedBufferResource" setter="set_node_buffer" getter="get_node_buffer">
+			Configures node buffer for this IdeamGraphResource.
+		</member>
+		<member name="edge_buffer" type="ManagedBufferResource" setter="set_edge_buffer" getter="get_edge_buffer">
+			Configures edge buffer for this IdeamGraphResource.
+		</member>
+	</members>
+</class>

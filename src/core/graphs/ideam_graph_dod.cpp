@@ -76,22 +76,36 @@ bool IdeamGraphDOD::bake_topology_grant(MemoryGrantPOD& r_grant) {
 }
 
 void IdeamGraphDOD::_rebuild_topology() {
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - START");
+#endif
     if (dirty_flags & (STRUCTURE | CONNECTIONS)) {
+#ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - Calling _bake_adjacency...");
+#endif
         _bake_adjacency();
+#ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - _bake_adjacency COMPLETE.");
+#endif
     }
     
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - Calling _sort_kahn_waves...");
+#endif
     _sort_kahn_waves();
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - _sort_kahn_waves COMPLETE.");
+#endif
     
     dirty_flags = CLEAN;
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - Calling virtual on_topology_changed...");
+#endif
     on_topology_changed();
     
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _rebuild_topology() - END");
+#endif
 }
 
 void IdeamGraphDOD::_bake_adjacency() {
@@ -276,7 +290,9 @@ void IdeamGraphDOD::_sort_kahn_waves() {
         std::swap(current_wave, next_wave);
     }
 
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _sort_kahn_waves() - Ensuring wave buffers...");
+#endif
     _ensure_buffer(wave_node_id, total_node_count * sizeof(NodeID), sizeof(NodeID));
     _ensure_buffer(wave_meta_id, wave_list.size() * sizeof(WaveInfo), sizeof(WaveInfo));
 
@@ -312,28 +328,44 @@ void IdeamGraphDOD::_sort_kahn_waves() {
     manager->bake_grant(m_grant, m_req);
     
     // CRITICAL DIAGNOSTIC: These should NOT be 0 anymore!
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _sort_kahn_waves() - n_grant valid elements: ", n_grant.parts[0].selection.element_count);
+#endif
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _sort_kahn_waves() - m_grant valid elements: ", m_grant.parts[0].selection.element_count);
+#endif
 
     auto n_view = _get_paged_view<NodeID, FlatStrategy>(n_grant, 0);
     auto m_view = _get_paged_view<WaveInfo, FlatStrategy>(m_grant, 0);
 
     // --- PAGED VIEW DIAGNOSTIC ---
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("--- PAGED VIEW DIAGNOSTIC ---");
+#endif
     
     // 1. Is the Grant holding the correct stride?
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("m_grant Stride: ", m_grant.parts[0].element_stride);
+#endif
     
     // 2. Did the View successfully grab the Page Table pointer?
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("m_view Page Table Ptr: ", reinterpret_cast<uint64_t>(m_view.page_table));
+#endif
     
     // 3. If the table exists, does Page 0 point to valid Master Block memory?
     if (m_view.page_table) {
+#ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("m_view Page[0] Ptr: ", reinterpret_cast<uint64_t>(m_view.page_table[0]));
+#endif
     }
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("-----------------------------");
+#endif
 
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _sort_kahn_waves() - Writing to Views...");
+#endif
     uint32_t write_ptr = 0;
     for (uint32_t w = 0; w < wave_list.size(); ++w) {
         m_view[w] = { write_ptr, static_cast<uint32_t>(wave_list[w].size()) };
@@ -342,7 +374,9 @@ void IdeamGraphDOD::_sort_kahn_waves() {
         }
     }
     
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker]   _sort_kahn_waves() - Releasing Grants...");
+#endif
     manager->release_grant(n_grant);
     manager->release_grant(m_grant);
 
@@ -396,14 +430,20 @@ void IdeamGraphDOD::reserve(size_t p_node_count, size_t p_edge_count) {
 }
 
 void IdeamGraphDOD::defragment() {
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] IdeamGraphDOD::defragment() - START");
+#endif
     if (build_nodes.empty() && build_edges.empty()) {
+#ifdef IDEAM_VERBOSE_TASK_LOGS
         godot::UtilityFunctions::print("[DOD Tracker] defragment() - Graph is empty. Clearing.");
+#endif
         clear();
         return;
     }
 
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - Packing Nodes...");
+#endif
     std::vector<NodeID> node_lut(build_nodes.size(), INVALID_ID);
     std::vector<EdgeID> edge_lut(build_edges.size(), INVALID_ID);
 
@@ -417,7 +457,9 @@ void IdeamGraphDOD::defragment() {
         }
     }
 
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - Packing Edges...");
+#endif
     std::vector<GraphEdgeData> packed_edges;
     packed_edges.reserve(build_edges.size());
 
@@ -441,16 +483,26 @@ void IdeamGraphDOD::defragment() {
     build_nodes = std::move(packed_nodes);
     build_edges = std::move(packed_edges);
 
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - Calling Virtual _remap_ids...");
+#endif
     _remap_ids(node_lut, edge_lut);
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - Virtual _remap_ids COMPLETE.");
+#endif
 
     dirty_flags = ALL;
     
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - Calling _rebuild_topology()...");
+#endif
     _rebuild_topology();
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] defragment() - _rebuild_topology() COMPLETE.");
+#endif
+#ifdef IDEAM_VERBOSE_TASK_LOGS
     godot::UtilityFunctions::print("[DOD Tracker] IdeamGraphDOD::defragment() - FULLY COMPLETE.");
+#endif
 }
 
 void IdeamGraphDOD::_remap_ids(const std::vector<NodeID>& p_node_lut, const std::vector<EdgeID>& p_edge_lut) {

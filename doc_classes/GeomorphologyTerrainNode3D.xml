@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeomorphologyTerrainNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geomorphology Terrain Node3 D class in IdeamGeomorphology.
+	</brief_description>
+	<description>
+		Geomorphology Terrain Node3 D (Node3D subclass) belonging to IdeamGeomorphology (tectonics, fluvial erosion, karst, and stratigraphy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="world_to_grid">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes world to grid on GeomorphologyTerrainNode3D.
+			</description>
+		</method>
+		<method name="sample_surface_elevation_at_world">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample surface elevation at world on GeomorphologyTerrainNode3D.
+			</description>
+		</method>
+		<method name="sample_column_at_world">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample column at world on GeomorphologyTerrainNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="terrain_resource" type="GeomorphologyTerrainResource" setter="set_terrain_resource" getter="get_terrain_resource">
+			Configures terrain resource for this GeomorphologyTerrainNode3D.
+		</member>
+		<member name="auto_generate_on_ready" type="bool" setter="set_auto_generate_on_ready" getter="get_auto_generate_on_ready">
+			Configures auto generate on ready for this GeomorphologyTerrainNode3D.
+		</member>
+	</members>
+</class>

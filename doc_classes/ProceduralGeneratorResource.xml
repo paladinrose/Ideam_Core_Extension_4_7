@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralGeneratorResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Procedural Generator Resource class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Procedural Generator Resource (Resource subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_snapshot_state">
+			<return type="Variant" />
+			<description>
+				Executes get snapshot state on ProceduralGeneratorResource.
+			</description>
+		</method>
+		<method name="apply_snapshot_state">
+			<return type="Variant" />
+			<param index="0" name="state" type="Variant" />
+			<description>
+				Executes apply snapshot state on ProceduralGeneratorResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="master_seed" type="int" setter="set_master_seed" getter="get_master_seed">
+			Configures master seed for this ProceduralGeneratorResource.
+		</member>
+		<member name="deterministic_mode" type="bool" setter="set_deterministic_mode" getter="get_deterministic_mode">
+			Configures deterministic mode for this ProceduralGeneratorResource.
+		</member>
+		<member name="semantic_tags" type="SemanticTagSetResource" setter="set_semantic_tags" getter="get_semantic_tags">
+			Configures semantic tags for this ProceduralGeneratorResource.
+		</member>
+	</members>
+</class>

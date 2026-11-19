@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CommunicationSpeechBox2D" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		CommunicationSpeechBox2D (`Control`) Runtime 2D speech-box presenter replacing `old_gdscript_plugins/ideam_dialogue/scripts/dialogue_box.gd`.
+	</brief_description>
+	<description>
+		CommunicationSpeechBox2D (`Control`) Runtime 2D speech-box presenter replacing `old_gdscript_plugins/ideam_dialogue/scripts/dialogue_box.gd`. Driven by `Spline1DResource` reveal curves, `Spline2DResource` prosody font modulation, and `GameplayAccessibilityOption` closed-caption scaling. Part of IdeamCommunications (in-game messaging, channels, and dialogue routing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_dialogue_box">
+			<return type="Variant" />
+			<description>
+				Executes open dialogue box on CommunicationSpeechBox2D.
+			</description>
+		</method>
+		<method name="close_dialogue_box">
+			<return type="Variant" />
+			<description>
+				Executes close dialogue box on CommunicationSpeechBox2D.
+			</description>
+		</method>
+		<method name="update_dialogue">
+			<return type="Variant" />
+			<param index="0" name="normalized_progress" type="Variant" />
+			<description>
+				Executes update dialogue on CommunicationSpeechBox2D.
+			</description>
+		</method>
+		<method name="stop_dialogue">
+			<return type="Variant" />
+			<description>
+				Executes stop dialogue on CommunicationSpeechBox2D.
+			</description>
+		</method>
+		<method name="complete_dialogue">
+			<return type="Variant" />
+			<description>
+				Executes complete dialogue on CommunicationSpeechBox2D.
+			</description>
+		</method>
+		<method name="fast_track_dialogue">
+			<return type="Variant" />
+			<description>
+				Executes fast track dialogue on CommunicationSpeechBox2D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="label_type" type="int" setter="set_label_type" getter="get_label_type">
+			Configures label type for this CommunicationSpeechBox2D (Label:0,RichTextLabel:1).
+		</member>
+		<member name="main_text_type" type="int" setter="set_main_text_type" getter="get_main_text_type">
+			Configures main text type for this CommunicationSpeechBox2D (Label:0,RichTextLabel:1).
+		</member>
+		<member name="interlocutor_id" type="int" setter="set_interlocutor_id" getter="get_interlocutor_id">
+			Configures interlocutor id for this CommunicationSpeechBox2D.
+		</member>
+		<member name="reveal_rate_cps" type="float" setter="set_reveal_rate_cps" getter="get_reveal_rate_cps">
+			Configures reveal rate cps for this CommunicationSpeechBox2D.
+		</member>
+		<member name="visible_ratio" type="float" setter="set_visible_ratio" getter="get_visible_ratio">
+			Configures visible ratio for this CommunicationSpeechBox2D.
+		</member>
+		<member name="speaker_name" type="String" setter="set_speaker_name" getter="get_speaker_name">
+			Configures speaker name for this CommunicationSpeechBox2D.
+		</member>
+		<member name="full_text" type="String" setter="set_full_text" getter="get_full_text">
+			Configures full text for this CommunicationSpeechBox2D.
+		</member>
+		<member name="reveal_curve" type="Spline1DResource" setter="set_reveal_curve" getter="get_reveal_curve">
+			Configures reveal curve for this CommunicationSpeechBox2D.
+		</member>
+		<member name="active_prosody_spline" type="Spline2DResource" setter="set_active_prosody_spline" getter="get_active_prosody_spline">
+			Configures active prosody spline for this CommunicationSpeechBox2D.
+		</member>
+		<member name="accessibility_option" type="GameplayAccessibilityOption" setter="set_accessibility_option" getter="get_accessibility_option">
+			Configures accessibility option for this CommunicationSpeechBox2D.
+		</member>
+	</members>
+	<signals>
+		<signal name="box_opened">
+			<description>
+				Emitted when box opened occurs on this CommunicationSpeechBox2D.
+			</description>
+		</signal>
+		<signal name="box_closed">
+			<description>
+				Emitted when box closed occurs on this CommunicationSpeechBox2D.
+			</description>
+		</signal>
+		<signal name="dialogue_started">
+			<param index="0" name="interlocutor_id" type="int" />
+			<description>
+				Emitted when dialogue started occurs on this CommunicationSpeechBox2D.
+			</description>
+		</signal>
+		<signal name="dialogue_updated">
+			<param index="0" name="interlocutor_id" type="int" />
+			<param index="1" name="visible_ratio" type="float" />
+			<description>
+				Emitted when dialogue updated occurs on this CommunicationSpeechBox2D.
+			</description>
+		</signal>
+		<signal name="dialogue_completed">
+			<param index="0" name="interlocutor_id" type="int" />
+			<description>
+				Emitted when dialogue completed occurs on this CommunicationSpeechBox2D.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="TEXT_CLASS_LABEL" value="0">
+			Text class label constant.
+		</constant>
+		<constant name="TEXT_CLASS_RICH_TEXT_LABEL" value="0">
+			Text class rich text label constant.
+		</constant>
+	</constants>
+</class>

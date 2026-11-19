@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryBufferView" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Buffer View class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Buffer View (VBoxContainer subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_buffers">
+			<return type="Variant" />
+			<param index="0" name="buffers" type="Variant" />
+			<description>
+				Executes open buffers on MemoryBufferView.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="manager_resource" type="MemoryManagerResource" setter="set_manager_resource" getter="get_manager_resource">
+			Configures manager resource for this MemoryBufferView.
+		</member>
+	</members>
+</class>

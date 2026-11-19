@@ -1,5 +1,14 @@
 #include "ideam_splines_plugin.h"
 
+#include "../controls/ideam_tier1_control_registry.h"
+#include "../geometry/ui/geometry_composer.h"
+#include "spline_1d/spline_1d_control.h"
+#include "spline_2d/spline_2d_control.h"
+#include "spline_3d/spline_3d_control.h"
+#include "spline_4d/color_spline_control.h"
+#include "spline_4d/spline_4d_control.h"
+#include <godot_cpp/classes/v_box_container.hpp>
+
 #include "../../core/tasks/domains/splines/registration/splines_task_domain_pack.h"
 #include "../../core/tasks/registration/ideam_task_registry.h"
 
@@ -84,9 +93,106 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     spline_corridor_gizmo.instantiate();
     add_node_3d_gizmo_plugin(spline_corridor_gizmo);
+
+    // 4. Mount 2D Scene-Space Viewport Editor Toolbar for SplineNode2D & SplinePolygon2D
+    spline_2d_viewport_editor = memnew(Spline2DViewportEditor);
+    spline_2d_viewport_editor->set_owner_plugin(this);
+    add_control_to_container(EditorPlugin::CONTAINER_CANVAS_EDITOR_MENU, spline_2d_viewport_editor);
+
+    // 5. Register Splines Tier 1 Controls with GeometryComposer ("Splines" tab)
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
+
+    reg.register_control({
+        ws_id, "Spline1DResource", "Splines", "1D Spline", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<Spline1DResource> s1 = p_asset;
+            if (s1.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s1->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(Spline1DControl);
+            ctrl->set_spline_1d(s1);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "Spline2DResource", "Splines", "2D Spline", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<Spline2DResource> s2 = p_asset;
+            if (s2.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s2->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(Spline2DControl);
+            ctrl->set_spline_2d(s2);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "Spline3DResource", "Splines", "3D Spline", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<Spline3DResource> s3 = p_asset;
+            if (s3.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s3->set_undo_redo(p_ctx->get_undo_redo());
+            auto *ctrl = memnew(Spline3DControl);
+            ctrl->set_spline_3d(s3);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "Spline4DResource", "Splines", "4D / Color Spline", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            godot::Ref<Spline4DResource> s4 = p_asset;
+            if (s4.is_null()) return nullptr;
+            if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s4->set_undo_redo(p_ctx->get_undo_redo());
+            if (s4->get_color_gradient_mode()) {
+                auto *wrapper = memnew(godot::VBoxContainer);
+                wrapper->add_theme_constant_override("separation", 8);
+                auto *color_ctrl = memnew(ColorSplineControl);
+                color_ctrl->set_spline_4d(s4);
+                wrapper->add_child(color_ctrl);
+                auto *spatial_ctrl = memnew(Spline4DControl);
+                spatial_ctrl->set_spline_4d(s4);
+                wrapper->add_child(spatial_ctrl);
+                return wrapper;
+            }
+            auto *ctrl = memnew(Spline4DControl);
+            ctrl->set_spline_4d(s4);
+            return ctrl;
+        },
+        nullptr
+    });
+
+    reg.register_control({
+        ws_id, "SplineTweenResource", "Splines", "Spline Tween", UPDATE_ON_COMMIT,
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+            (void)p_ctx;
+            godot::Ref<SplineTweenResource> tw = p_asset;
+            if (tw.is_null()) return nullptr;
+            auto *ctrl = memnew(SplineTweenerControl);
+            ctrl->set_tween_resource(tw);
+            return ctrl;
+        },
+        nullptr
+    });
 }
 
 void IdeamSplinesPlugin::_exit_tree() {
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "Spline1DResource");
+    reg.unregister_class(ws_id, "Spline2DResource");
+    reg.unregister_class(ws_id, "Spline3DResource");
+    reg.unregister_class(ws_id, "Spline4DResource");
+    reg.unregister_class(ws_id, "SplineTweenResource");
+    if (spline_2d_viewport_editor) {
+        remove_control_from_container(EditorPlugin::CONTAINER_CANVAS_EDITOR_MENU, spline_2d_viewport_editor);
+        memdelete(spline_2d_viewport_editor);
+        spline_2d_viewport_editor = nullptr;
+    }
     if (spline_corridor_gizmo.is_valid()) {
         remove_node_3d_gizmo_plugin(spline_corridor_gizmo);
         spline_corridor_gizmo.unref();
@@ -132,6 +238,35 @@ void IdeamSplinesPlugin::_exit_tree() {
     set_plugin_active("IdeamSplines", false);
     if (auto *task_reg = core::IdeamTaskRegistry::get_singleton()) {
         task_reg->set_domain_pack_active("IdeamSplines", false);
+    }
+}
+
+bool IdeamSplinesPlugin::_handles(godot::Object *p_object) const {
+    return spline_2d_viewport_editor && spline_2d_viewport_editor->handles_object(p_object);
+}
+
+void IdeamSplinesPlugin::_edit(godot::Object *p_object) {
+    if (spline_2d_viewport_editor) {
+        spline_2d_viewport_editor->edit_object(p_object);
+    }
+}
+
+void IdeamSplinesPlugin::_make_visible(bool p_visible) {
+    if (spline_2d_viewport_editor) {
+        spline_2d_viewport_editor->set_editor_visible(p_visible);
+    }
+}
+
+bool IdeamSplinesPlugin::_forward_canvas_gui_input(const godot::Ref<godot::InputEvent> &p_event) {
+    if (spline_2d_viewport_editor) {
+        return spline_2d_viewport_editor->forward_canvas_gui_input(p_event);
+    }
+    return false;
+}
+
+void IdeamSplinesPlugin::_forward_canvas_draw_over_viewport(godot::Control *p_viewport_control) {
+    if (spline_2d_viewport_editor) {
+        spline_2d_viewport_editor->forward_canvas_draw_over_viewport(p_viewport_control);
     }
 }
 

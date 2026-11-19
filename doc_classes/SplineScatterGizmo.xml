@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineScatterGizmo" inherits="EditorNode3DGizmoPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		SplineScatterGizmo (`godot::EditorNode3DGizmoPlugin`) 3D Viewport Gizmo for `SplineMultiMesh3D`.
+	</brief_description>
+	<description>
+		SplineScatterGizmo (`godot::EditorNode3DGizmoPlugin`) 3D Viewport Gizmo for `SplineMultiMesh3D`. Part of IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

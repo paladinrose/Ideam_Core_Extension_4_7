@@ -34,10 +34,19 @@ env.Append(CPPPATH=["src/external"])
 # --- SOURCE DISCOVERY ---
 sources = []
 for root, dirs, files in os.walk("src"):
+    if "gen" in dirs:
+        dirs.remove("gen")
     for file in files:
-        if file.endswith(".cpp"):
+        if file.endswith(".cpp") and not file.endswith(".gen.cpp"):
             full_path = os.path.join(root, file).replace("\\", "/")
             sources.append(full_path)
+
+# --- GDEXTENSION IN-EDITOR CLASS DOCUMENTATION (Godot 4.3+) ---
+if env["target"] in ["editor", "template_debug"] and hasattr(env, "GodotCPPDocData"):
+    doc_xmls = Glob("doc_classes/*.xml")
+    if doc_xmls:
+        doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=doc_xmls)
+        sources.append(doc_data)
 
 if env["platform"] == "windows":
     if env.get("is_msvc", False):

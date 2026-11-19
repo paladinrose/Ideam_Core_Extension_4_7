@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EcologyBiosphereNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ecology Biosphere Node3 D class in IdeamEcology.
+	</brief_description>
+	<description>
+		Ecology Biosphere Node3 D (Node3D subclass) belonging to IdeamEcology (Whittaker biomes, succession, trophic webs, and wildfire).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="world_to_grid">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes world to grid on EcologyBiosphereNode3D.
+			</description>
+		</method>
+		<method name="sample_canopy_height_at_world">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample canopy height at world on EcologyBiosphereNode3D.
+			</description>
+		</method>
+		<method name="sample_quadrat_at_world">
+			<return type="Variant" />
+			<param index="0" name="world_pos" type="Variant" />
+			<description>
+				Executes sample quadrat at world on EcologyBiosphereNode3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="biosphere_resource" type="EcologyBiosphereResource" setter="set_biosphere_resource" getter="get_biosphere_resource">
+			Configures biosphere resource for this EcologyBiosphereNode3D.
+		</member>
+		<member name="auto_generate_on_ready" type="bool" setter="set_auto_generate_on_ready" getter="get_auto_generate_on_ready">
+			Configures auto generate on ready for this EcologyBiosphereNode3D.
+		</member>
+	</members>
+</class>

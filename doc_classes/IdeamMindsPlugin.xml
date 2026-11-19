@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="IdeamMindsPlugin" inherits="IdeamEditorPlugin" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Ideam Minds Plugin class in IdeamMinds.
+	</brief_description>
+	<description>
+		Ideam Minds Plugin (IdeamEditorPlugin subclass) belonging to IdeamMinds (cognitive models, beliefs, goals, emotions, and decision making).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

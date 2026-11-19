@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MetadataLinguisticsManager" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Metadata Linguistics Manager class in IdeamLinguistics.
+	</brief_description>
+	<description>
+		Metadata Linguistics Manager (RefCounted subclass) belonging to IdeamLinguistics (phonology, morphology, syntax, and semantic lexicons).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="has_linguistic_metadata" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes has linguistic metadata on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="clear_linguistic_metadata" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes clear linguistic metadata on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="set_object_seme_tags" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="nuclear_tags" type="Variant" />
+			<param index="2" name="peripheral_tags" type="Variant" />
+			<param index="3" name="emotive_valence" type="Variant" />
+			<param index="4" name="lexical_category" type="Variant" />
+			<param index="5" name="lect_id" type="Variant" />
+			<description>
+				Executes set object seme tags on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="add_object_nuclear_seme" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="tag" type="Variant" />
+			<description>
+				Executes add object nuclear seme on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="add_object_peripheral_seme" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="tag" type="Variant" />
+			<description>
+				Executes add object peripheral seme on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_nuclear_seme_tags" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object nuclear seme tags on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_peripheral_seme_tags" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object peripheral seme tags on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_nuclear_bitmask_words" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object nuclear bitmask words on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_peripheral_bitmask_words" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object peripheral bitmask words on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="set_object_semantic_aliases" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="aliases" type="Variant" />
+			<description>
+				Executes set object semantic aliases on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_semantic_aliases" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object semantic aliases on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="set_object_lect_id" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="lect_id" type="Variant" />
+			<description>
+				Executes set object lect id on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_lect_id" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object lect id on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="set_object_emotive_valence" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="valence" type="Variant" />
+			<description>
+				Executes set object emotive valence on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_emotive_valence" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object emotive valence on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="write_tag_set_to_metadata" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="tag_set" type="Variant" />
+			<description>
+				Executes write tag set to metadata on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="read_tag_set_from_metadata" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes read tag set from metadata on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_cached_profile_pod_bytes" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get cached profile pod bytes on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="compute_metadata_affinity_between_objects" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object_a" type="Variant" />
+			<param index="1" name="object_b" type="Variant" />
+			<param index="2" name="nuclear_weight" type="Variant" />
+			<param index="3" name="peripheral_weight" type="Variant" />
+			<description>
+				Executes compute metadata affinity between objects on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="pack_objects_metadata_to_dod_buffer" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="objects" type="Variant" />
+			<description>
+				Executes pack objects metadata to dod buffer on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="get_object_metadata_snapshot" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes get object metadata snapshot on MetadataLinguisticsManager.
+			</description>
+		</method>
+		<method name="apply_object_metadata_snapshot" qualifiers="static">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<param index="1" name="snapshot" type="Variant" />
+			<description>
+				Executes apply object metadata snapshot on MetadataLinguisticsManager.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="undo_redo" type="Object" setter="set_undo_redo" getter="get_undo_redo">
+			Configures undo redo for this MetadataLinguisticsManager.
+		</member>
+		<member name="prompt_parser" type="SemanticPromptParser" setter="set_prompt_parser" getter="get_prompt_parser">
+			Configures prompt parser for this MetadataLinguisticsManager.
+		</member>
+	</members>
+</class>

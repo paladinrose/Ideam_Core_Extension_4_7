@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ThemeRegistry" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Theme Registry class in IdeamControls.
+	</brief_description>
+	<description>
+		Theme Registry (Resource subclass) belonging to IdeamControls (shared Tier 2 workspace and Tier 1 control framework).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_theme_path">
+			<return type="Variant" />
+			<param index="0" name="path" type="Variant" />
+			<description>
+				Executes add theme path on ThemeRegistry.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="theme_paths" type="Array" setter="set_theme_paths" getter="get_theme_paths">
+			Configures theme paths for this ThemeRegistry.
+		</member>
+	</members>
+</class>

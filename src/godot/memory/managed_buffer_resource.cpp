@@ -165,6 +165,15 @@ StringName ManagedBufferResource::get_effective_buffer_name() const {
     if (schema_reference.is_valid()) {
         return schema_reference->get_buffer_name();
     }
+    if (!purpose.is_empty()) {
+        if (!consumer_name.is_empty()) {
+            const String base = String(consumer_name).get_file().get_basename();
+            if (!base.is_empty()) {
+                return StringName(base + String(" — ") + String(purpose));
+            }
+        }
+        return purpose;
+    }
     if (!consumer_name.is_empty()) {
         return consumer_name;
     }
@@ -189,7 +198,22 @@ Ref<MemoryBufferResource> ManagedBufferResource::get_effective_schema() const {
     }
 
     const ideam::core::MemoryBufferPOD* pod = _get_live_pod();
-    if (!pod) return Ref<MemoryBufferResource>();
+    if (!pod) {
+        if (fallback_byte_footprint <= 0) {
+            return Ref<MemoryBufferResource>();
+        }
+        if (!synthetic_schema.is_valid()) {
+            synthetic_schema.instantiate();
+            synthetic_schema->set_buffer_name(get_effective_buffer_name());
+            synthetic_schema->set_layout_type(fallback_layout_type);
+            synthetic_schema->set_alignment(fallback_alignment);
+            synthetic_schema->set_max_elements(std::max(1, fallback_byte_footprint));
+            if (fallback_layout_type == static_cast<int>(core::BufferLayoutType::PAGED)) {
+                synthetic_schema->set_page_size_bytes(4096);
+            }
+        }
+        return synthetic_schema;
+    }
 
     if (synthetic_schema.is_valid() && cached_pod_version == pod->version) {
         return synthetic_schema;

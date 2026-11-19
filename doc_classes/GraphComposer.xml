@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GraphComposer" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Graph Composer class in IdeamGraphs.
+	</brief_description>
+	<description>
+		Graph Composer (VBoxContainer subclass) belonging to IdeamGraphs (node-graph authoring, GraphComposer, and graph execution).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="open_graph">
+			<return type="Variant" />
+			<param index="0" name="graph_edit" type="Variant" />
+			<description>
+				Executes open graph on GraphComposer.
+			</description>
+		</method>
+		<method name="close_graph">
+			<return type="Variant" />
+			<param index="0" name="graph_edit" type="Variant" />
+			<description>
+				Executes close graph on GraphComposer.
+			</description>
+		</method>
+	</methods>
+</class>

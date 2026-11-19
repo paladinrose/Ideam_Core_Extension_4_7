@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GeomorphologySeedProfileResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Geomorphology Seed Profile Resource class in IdeamGeomorphology.
+	</brief_description>
+	<description>
+		Geomorphology Seed Profile Resource (Resource subclass) belonging to IdeamGeomorphology (tectonics, fluvial erosion, karst, and stratigraphy).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_tectonic_seed">
+			<return type="Variant" />
+			<description>
+				Executes get tectonic seed on GeomorphologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_stratigraphy_seed">
+			<return type="Variant" />
+			<description>
+				Executes get stratigraphy seed on GeomorphologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_hydrology_seed">
+			<return type="Variant" />
+			<description>
+				Executes get hydrology seed on GeomorphologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_karst_seed">
+			<return type="Variant" />
+			<description>
+				Executes get karst seed on GeomorphologySeedProfileResource.
+			</description>
+		</method>
+		<method name="get_resource_vein_seed">
+			<return type="Variant" />
+			<description>
+				Executes get resource vein seed on GeomorphologySeedProfileResource.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="master_seed" type="int" setter="set_master_seed" getter="get_master_seed">
+			Configures master seed for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="grid_width" type="int" setter="set_grid_width" getter="get_grid_width">
+			Configures grid width for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="grid_height" type="int" setter="set_grid_height" getter="get_grid_height">
+			Configures grid height for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="plate_count" type="int" setter="set_plate_count" getter="get_plate_count">
+			Configures plate count for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="active_strata_per_column" type="int" setter="set_active_strata_per_column" getter="get_active_strata_per_column">
+			Configures active strata per column for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="cell_size_meters" type="float" setter="set_cell_size_meters" getter="get_cell_size_meters">
+			Configures cell size meters for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="base_crust_thickness_m" type="float" setter="set_base_crust_thickness_m" getter="get_base_crust_thickness_m">
+			Configures base crust thickness m for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="max_orogenic_uplift_m" type="float" setter="set_max_orogenic_uplift_m" getter="get_max_orogenic_uplift_m">
+			Configures max orogenic uplift m for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="sea_level_elevation_m" type="float" setter="set_sea_level_elevation_m" getter="get_sea_level_elevation_m">
+			Configures sea level elevation m for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="tectonic_noise_frequency" type="float" setter="set_tectonic_noise_frequency" getter="get_tectonic_noise_frequency">
+			Configures tectonic noise frequency for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="hydro_gravity_mps2" type="float" setter="set_hydro_gravity_mps2" getter="get_hydro_gravity_mps2">
+			Configures hydro gravity mps2 for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="karst_dissolution_scale" type="float" setter="set_karst_dissolution_scale" getter="get_karst_dissolution_scale">
+			Configures karst dissolution scale for this GeomorphologySeedProfileResource.
+		</member>
+		<member name="pedogenesis_rate_scale" type="float" setter="set_pedogenesis_rate_scale" getter="get_pedogenesis_rate_scale">
+			Configures pedogenesis rate scale for this GeomorphologySeedProfileResource.
+		</member>
+	</members>
+</class>

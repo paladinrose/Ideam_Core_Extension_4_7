@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SplineExtrudeMesh3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Spline Extrude Mesh3 D class in IdeamSplines.
+	</brief_description>
+	<description>
+		Spline Extrude Mesh3 D (Node3D subclass) belonging to IdeamSplines (2D/3D Bezier/Catmull-Rom splines and scene-space spline editing).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_extruded_mesh">
+			<return type="Variant" />
+			<description>
+				Executes get extruded mesh on SplineExtrudeMesh3D.
+			</description>
+		</method>
+		<method name="bake_concave_collision_shape">
+			<return type="Variant" />
+			<description>
+				Executes bake concave collision shape on SplineExtrudeMesh3D.
+			</description>
+		</method>
+		<method name="rebuild_mesh">
+			<return type="Variant" />
+			<description>
+				Executes rebuild mesh on SplineExtrudeMesh3D.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="path_spline_3d" type="Spline3DResource" setter="set_path_spline_3d" getter="get_path_spline_3d">
+			Configures path spline 3d for this SplineExtrudeMesh3D.
+		</member>
+		<member name="path_spline_4d" type="Spline4DResource" setter="set_path_spline_4d" getter="get_path_spline_4d">
+			Configures path spline 4d for this SplineExtrudeMesh3D.
+		</member>
+		<member name="profile_spline_2d" type="Spline2DResource" setter="set_profile_spline_2d" getter="get_profile_spline_2d">
+			Configures profile spline 2d for this SplineExtrudeMesh3D.
+		</member>
+		<member name="taper_curve_1d" type="Spline1DResource" setter="set_taper_curve_1d" getter="get_taper_curve_1d">
+			Configures taper curve 1d for this SplineExtrudeMesh3D.
+		</member>
+		<member name="color_gradient_4d" type="Spline4DResource" setter="set_color_gradient_4d" getter="get_color_gradient_4d">
+			Configures color gradient 4d for this SplineExtrudeMesh3D.
+		</member>
+		<member name="w_channel_mode" type="int" setter="set_w_channel_mode" getter="get_w_channel_mode">
+			Configures w channel mode for this SplineExtrudeMesh3D (W = Radius Scale:0,W = Roll (Radians):1,Ignore W:2).
+		</member>
+		<member name="profile_scale" type="Vector2" setter="set_profile_scale" getter="get_profile_scale">
+			Configures profile scale for this SplineExtrudeMesh3D.
+		</member>
+		<member name="total_twist_radians" type="float" setter="set_total_twist_radians" getter="get_total_twist_radians">
+			Configures total twist radians for this SplineExtrudeMesh3D.
+		</member>
+		<member name="path_subdivisions" type="int" setter="set_path_subdivisions" getter="get_path_subdivisions">
+			Configures path subdivisions for this SplineExtrudeMesh3D.
+		</member>
+		<member name="profile_subdivisions" type="int" setter="set_profile_subdivisions" getter="get_profile_subdivisions">
+			Configures profile subdivisions for this SplineExtrudeMesh3D.
+		</member>
+		<member name="cap_ends" type="bool" setter="set_cap_ends" getter="get_cap_ends">
+			Configures cap ends for this SplineExtrudeMesh3D.
+		</member>
+		<member name="uv_scale" type="Vector2" setter="set_uv_scale" getter="get_uv_scale">
+			Configures uv scale for this SplineExtrudeMesh3D.
+		</member>
+		<member name="base_color" type="Color" setter="set_base_color" getter="get_base_color">
+			Configures base color for this SplineExtrudeMesh3D.
+		</member>
+		<member name="material_override" type="Material" setter="set_material_override" getter="get_material_override">
+			Configures material override for this SplineExtrudeMesh3D.
+		</member>
+	</members>
+	<constants>
+		<constant name="EXTRUDE_W_RADIUS_SCALE" value="0">
+			Extrude w radius scale constant.
+		</constant>
+		<constant name="EXTRUDE_W_ROLL_RADIANS" value="0">
+			Extrude w roll radians constant.
+		</constant>
+		<constant name="EXTRUDE_W_IGNORE" value="0">
+			Extrude w ignore constant.
+		</constant>
+	</constants>
+</class>

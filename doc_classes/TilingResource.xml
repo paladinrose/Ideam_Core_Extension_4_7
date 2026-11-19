@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TilingResource" inherits="GeometryResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tiling Resource class in IdeamTiles.
+	</brief_description>
+	<description>
+		Tiling Resource (GeometryResource subclass) belonging to IdeamTiles (Wang/corner/edge tile sets, terrain rules, and procedural tiling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_vertex_count">
+			<return type="Variant" />
+			<description>
+				Executes get vertex count on TilingResource.
+			</description>
+		</method>
+		<method name="get_aspect_count">
+			<return type="Variant" />
+			<description>
+				Executes get aspect count on TilingResource.
+			</description>
+		</method>
+		<method name="get_edge_shape_count">
+			<return type="Variant" />
+			<description>
+				Executes get edge shape count on TilingResource.
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="topology_changed">
+			<description>
+				Emitted when topology changed occurs on this TilingResource.
+			</description>
+		</signal>
+		<signal name="prototile_changed">
+			<description>
+				Emitted when prototile changed occurs on this TilingResource.
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="WALLPAPER_P1" value="0">
+			Wallpaper p1 constant.
+		</constant>
+		<constant name="WALLPAPER_P2" value="0">
+			Wallpaper p2 constant.
+		</constant>
+		<constant name="WALLPAPER_PM" value="0">
+			Wallpaper pm constant.
+		</constant>
+		<constant name="WALLPAPER_PG" value="0">
+			Wallpaper pg constant.
+		</constant>
+		<constant name="WALLPAPER_CM" value="0">
+			Wallpaper cm constant.
+		</constant>
+		<constant name="WALLPAPER_PMM" value="0">
+			Wallpaper pmm constant.
+		</constant>
+		<constant name="WALLPAPER_PMG" value="0">
+			Wallpaper pmg constant.
+		</constant>
+		<constant name="WALLPAPER_PGG" value="0">
+			Wallpaper pgg constant.
+		</constant>
+		<constant name="WALLPAPER_CMM" value="0">
+			Wallpaper cmm constant.
+		</constant>
+		<constant name="WALLPAPER_P4" value="0">
+			Wallpaper p4 constant.
+		</constant>
+		<constant name="WALLPAPER_P4M" value="0">
+			Wallpaper p4 m constant.
+		</constant>
+		<constant name="WALLPAPER_P4G" value="0">
+			Wallpaper p4 g constant.
+		</constant>
+		<constant name="WALLPAPER_P3" value="0">
+			Wallpaper p3 constant.
+		</constant>
+		<constant name="WALLPAPER_P3M1" value="0">
+			Wallpaper p3 m1 constant.
+		</constant>
+		<constant name="WALLPAPER_P31M" value="0">
+			Wallpaper p31 m constant.
+		</constant>
+		<constant name="WALLPAPER_P6" value="0">
+			Wallpaper p6 constant.
+		</constant>
+		<constant name="WALLPAPER_P6M" value="0">
+			Wallpaper p6 m constant.
+		</constant>
+		<constant name="LATTICE_OBLIQUE" value="0">
+			Lattice oblique constant.
+		</constant>
+		<constant name="LATTICE_RECTANGULAR" value="0">
+			Lattice rectangular constant.
+		</constant>
+		<constant name="LATTICE_RHOMBIC" value="0">
+			Lattice rhombic constant.
+		</constant>
+		<constant name="LATTICE_SQUARE" value="0">
+			Lattice square constant.
+		</constant>
+		<constant name="LATTICE_HEXAGONAL" value="0">
+			Lattice hexagonal constant.
+		</constant>
+		<constant name="TILING_MODE_WALLPAPER_17" value="0">
+			Tiling mode wallpaper 17 constant.
+		</constant>
+		<constant name="TILING_MODE_ISOHEDRAL_81" value="0">
+			Tiling mode isohedral 81 constant.
+		</constant>
+		<constant name="SHAPE_PRESET_TACTILE_DEFAULT" value="0">
+			Shape preset tactile default constant.
+		</constant>
+		<constant name="SHAPE_PRESET_QUAD" value="0">
+			Shape preset quad constant.
+		</constant>
+		<constant name="SHAPE_PRESET_BRICK_HEX" value="0">
+			Shape preset brick hex constant.
+		</constant>
+		<constant name="SHAPE_PRESET_RIGHT_TRIANGLE" value="0">
+			Shape preset right triangle constant.
+		</constant>
+		<constant name="SHAPE_PRESET_EQUILATERAL_TRIANGLE" value="0">
+			Shape preset equilateral triangle constant.
+		</constant>
+		<constant name="SHAPE_PRESET_FLAT_TRIANGLE" value="0">
+			Shape preset flat triangle constant.
+		</constant>
+		<constant name="SHAPE_PRESET_TALL_TRIANGLE" value="0">
+			Shape preset tall triangle constant.
+		</constant>
+		<constant name="SHAPE_PRESET_RHOMBUS_60" value="0">
+			Shape preset rhombus 60 constant.
+		</constant>
+		<constant name="EDGE_SHAPE_J" value="0">
+			Edge shape j constant.
+		</constant>
+		<constant name="EDGE_SHAPE_U" value="0">
+			Edge shape u constant.
+		</constant>
+		<constant name="EDGE_SHAPE_S" value="0">
+			Edge shape s constant.
+		</constant>
+		<constant name="EDGE_SHAPE_I" value="0">
+			Edge shape i constant.
+		</constant>
+		<constant name="COVERAGE_STRICT_INTERIOR" value="0">
+			Coverage strict interior constant.
+		</constant>
+		<constant name="COVERAGE_CENTROID_INSIDE" value="0">
+			Coverage centroid inside constant.
+		</constant>
+		<constant name="COVERAGE_INCLUDE_STRADDLING" value="0">
+			Coverage include straddling constant.
+		</constant>
+		<constant name="COVERAGE_CLIP_EXACT_TO_SPLINE" value="0">
+			Coverage clip exact to spline constant.
+		</constant>
+		<constant name="STITCH_QUAD_BRIDGE" value="0">
+			Stitch quad bridge constant.
+		</constant>
+		<constant name="STITCH_TOPOLOGICAL_SEAM_WELD" value="0">
+			Stitch topological seam weld constant.
+		</constant>
+		<constant name="STITCH_CURVILINEAR_METRIC_MORPH" value="0">
+			Stitch curvilinear metric morph constant.
+		</constant>
+		<constant name="PORT_DIR_FREE" value="0">
+			Port dir free constant.
+		</constant>
+		<constant name="PORT_DIR_IN_ONLY" value="0">
+			Port dir in only constant.
+		</constant>
+		<constant name="PORT_DIR_OUT_ONLY" value="0">
+			Port dir out only constant.
+		</constant>
+		<constant name="PORT_DIR_CLOSED" value="0">
+			Port dir closed constant.
+		</constant>
+	</constants>
+</class>

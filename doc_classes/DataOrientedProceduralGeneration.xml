@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataOrientedProceduralGeneration" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Data Oriented Procedural Generation class in IdeamTasks.
+	</brief_description>
+	<description>
+		Data Oriented Procedural Generation (Resource subclass) belonging to IdeamTasks (data-oriented task graphs, domain hosts, and parallel scheduling).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="initialize_dod_buffers">
+			<return type="Variant" />
+			<description>
+				Executes initialize dod buffers on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+		<method name="set_slot_children">
+			<return type="Variant" />
+			<param index="0" name="parent_slot" type="Variant" />
+			<param index="1" name="child_slots" type="Variant" />
+			<description>
+				Executes set slot children on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+		<method name="pin_slot_token">
+			<return type="Variant" />
+			<param index="0" name="slot_id" type="Variant" />
+			<param index="1" name="token_name" type="Variant" />
+			<description>
+				Executes pin slot token on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+		<method name="stage_pattern_to_dod">
+			<return type="Variant" />
+			<description>
+				Executes stage pattern to dod on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+		<method name="read_environment_slots_as_dicts">
+			<return type="Variant" />
+			<description>
+				Executes read environment slots as dicts on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+		<method name="read_pointer_or_conflict_masks">
+			<return type="Variant" />
+			<description>
+				Executes read pointer or conflict masks on DataOrientedProceduralGeneration.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="memory_manager_resource" type="MemoryManagerResource" setter="set_memory_manager_resource" getter="get_memory_manager_resource">
+			Configures memory manager resource for this DataOrientedProceduralGeneration.
+		</member>
+		<member name="task_graph_resource" type="TaskGraphResource" setter="set_task_graph_resource" getter="get_task_graph_resource">
+			Configures task graph resource for this DataOrientedProceduralGeneration.
+		</member>
+		<member name="active_pattern" type="ProceduralPattern" setter="set_active_pattern" getter="get_active_pattern">
+			Configures active pattern for this DataOrientedProceduralGeneration.
+		</member>
+		<member name="slot_count" type="int" setter="set_slot_count" getter="get_slot_count">
+			Configures slot count for this DataOrientedProceduralGeneration.
+		</member>
+		<member name="pointer_redundancy_threshold" type="float" setter="set_pointer_redundancy_threshold" getter="get_pointer_redundancy_threshold">
+			Configures pointer redundancy threshold for this DataOrientedProceduralGeneration.
+		</member>
+		<member name="max_propagation_sweeps" type="int" setter="set_max_propagation_sweeps" getter="get_max_propagation_sweeps">
+			Configures max propagation sweeps for this DataOrientedProceduralGeneration.
+		</member>
+	</members>
+</class>

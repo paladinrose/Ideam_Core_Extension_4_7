@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Polygon2DCanvas" inherits="GeometryCanvas2DBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Polygon2DCanvas Concrete 2D interactive polygon canvas built on `GeometryCanvas2DBase`.
+	</brief_description>
+	<description>
+		Polygon2DCanvas Concrete 2D interactive polygon canvas built on `GeometryCanvas2DBase`. Renders ear-clipped polygon triangulation, centroid marker, convex hull overlay, live offset contour preview (`compute_offset_polygon`), and supports double-click vertex insertion and right-click vertex deletion with Undo/Redo. Part of IdeamGeometry (2D/3D polygons, Voronoi diagrams, SDF grids, and tensor fields).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_show_triangulation">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show triangulation on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_triangulation">
+			<return type="Variant" />
+			<description>
+				Executes get show triangulation on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_centroid">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show centroid on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_centroid">
+			<return type="Variant" />
+			<description>
+				Executes get show centroid on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_convex_hull">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show convex hull on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_convex_hull">
+			<return type="Variant" />
+			<description>
+				Executes get show convex hull on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="set_show_offset_preview">
+			<return type="Variant" />
+			<param index="0" name="show" type="Variant" />
+			<description>
+				Executes set show offset preview on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_show_offset_preview">
+			<return type="Variant" />
+			<description>
+				Executes get show offset preview on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_preview_offset_delta">
+			<return type="Variant" />
+			<description>
+				Executes get preview offset delta on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_preview_join_style">
+			<return type="Variant" />
+			<description>
+				Executes get preview join style on Polygon2DCanvas.
+			</description>
+		</method>
+		<method name="get_preview_miter_limit">
+			<return type="Variant" />
+			<description>
+				Executes get preview miter limit on Polygon2DCanvas.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="polygon_resource" type="Polygon2DResource" setter="set_polygon_resource" getter="get_polygon_resource">
+			Configures polygon resource for this Polygon2DCanvas.
+		</member>
+	</members>
+</class>

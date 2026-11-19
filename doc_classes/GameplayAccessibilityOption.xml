@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="GameplayAccessibilityOption" inherits="GameplayResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		GameplayAccessibilityOption encapsulates a comprehensive suite of visual, UI/Theme, shader, motion/photosensitivity, audio/cymatic, and motor/cognitive accessibility settings.
+	</brief_description>
+	<description>
+		GameplayAccessibilityOption encapsulates a comprehensive suite of visual, UI/Theme, shader, motion/photosensitivity, audio/cymatic, and motor/cognitive accessibility settings. Beyond direct Godot Server/Scene application (`apply_to_scene`), this class bridges into the `GameplayStyle` cascade by overriding `collect_rules()`. When enabled, motor and cognitive assists (such as slowing enemy movement/charge speed or boosting player survivability) automatically synthesize `!important` `GameplayRule` declarations that outweigh standard `GameplayDifficulty` rules. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

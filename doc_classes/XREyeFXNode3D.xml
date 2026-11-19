@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="XREyeFXNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		XREyeFXNode3D Stereoscopic per-eye shader overlay controller node (ported from `xr_eye_fx.gd` and `xr_eye_fx.tscn`).
+	</brief_description>
+	<description>
+		XREyeFXNode3D Stereoscopic per-eye shader overlay controller node (ported from `xr_eye_fx.gd` and `xr_eye_fx.tscn`). Can be attached as a child of `XRCamera3D` / `Camera3D` on `GamePlayer`. Part of IdeamGames (game agents, players, rules, scoring, and match orchestration).
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

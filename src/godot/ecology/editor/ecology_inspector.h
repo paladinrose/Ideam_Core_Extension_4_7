@@ -2,11 +2,13 @@
 
 /**
  * @file ecology_inspector.h
- * @brief Custom EditorInspectorPlugin for EcologyBiosphereResource and EcologyBiosphereNode3D.
+ * @brief Thin EditorInspectorPlugin launcher for EcologyBiosphereResource and
+ * EcologyBiosphereNode3D -> opens the full studio in Tier 2 `PlanetarySystemsModeler`.
  */
 
 #include <godot_cpp/classes/editor_inspector_plugin.hpp>
 #include <godot_cpp/classes/object.hpp>
+#include <godot_cpp/classes/resource.hpp>
 
 #include "godot/ecology/ecology_biosphere_resource.h"
 
@@ -21,6 +23,8 @@ protected:
 public:
     EcologyInspector() = default;
     ~EcologyInspector() override = default;
+
+    void _on_open_in_planetary_modeler(const godot::Ref<godot::Resource> &p_resource);
 
     bool _can_handle(godot::Object* p_object) const override;
     void _parse_begin(godot::Object* p_object) override;

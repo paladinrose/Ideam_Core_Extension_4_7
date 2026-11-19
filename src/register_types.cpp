@@ -22,6 +22,8 @@
 
 #include "godot/controls/theme_registry.h"
 #include "godot/controls/theme_selector.h"
+#include "godot/controls/ideam_tool_context.h"
+#include "godot/controls/ideam_tool_workspace.h"
 
 // --- Graphs ---
 #include "godot/graphs/ideam_graphs_plugin.h"
@@ -137,6 +139,12 @@
 #include "godot/geometry/ui/voronoi_2d_canvas.h"
 #include "godot/geometry/ui/sdf_grid_2d_canvas.h"
 #include "godot/geometry/ui/tensor_field_2d_canvas.h"
+#include "godot/geometry/ui/geometry_composer.h"
+#include "godot/geomorphology/ui/planetary_systems_modeler.h"
+#include "godot/characters/ui/character_modeler.h"
+#include "godot/design/ui/blueprint_editor_control.h"
+#include "godot/design/ui/design_composer.h"
+#include "godot/procedural_generation/ui/procedural_composer.h"
 #include "godot/geometry/ui/geometry_csg_bridge_control.h"
 #include "godot/geometry/ui/polygon_2d_control.h"
 #include "godot/geometry/editor/geometry_editor_inspector_base.h"
@@ -184,6 +192,7 @@
 #include "godot/splines/editor/spline_2d_resource_inspector.h"
 #include "godot/splines/editor/spline_3d_resource_inspector.h"
 #include "godot/splines/editor/spline_4d_resource_inspector.h"
+#include "godot/splines/editor/spline_2d_viewport_editor.h"
 #include "godot/splines/ideam_splines_plugin.h"
 #include "godot/tasks/domains/splines/data_oriented_splines.h"
 #include "godot/tasks/domains/splines/spline_task_host.h"
@@ -414,6 +423,8 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         GDREGISTER_CLASS(ideam::godot_ext::ThemeRegistry);
         GDREGISTER_CLASS(ideam::godot_ext::ThemeSelector);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamToolContext);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamToolWorkspace);
         
         // --- Graphs ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::IdeamGraphResource);
@@ -508,6 +519,13 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DControl);
         GDREGISTER_CLASS(ideam::godot_ext::TensorField2DCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::TensorField2DControl);
+        GDREGISTER_CLASS(ideam::godot_ext::GeometryComposer);
+        GDREGISTER_CLASS(ideam::godot_ext::PlanetarySystemsModeler);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterModeler);
+        GDREGISTER_CLASS(ideam::godot_ext::BlueprintPreviewSurface);
+        GDREGISTER_CLASS(ideam::godot_ext::BlueprintEditorControl);
+        GDREGISTER_CLASS(ideam::godot_ext::DesignComposer);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralComposer);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGPreviewCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGBridgeControl);
         GDREGISTER_CLASS(ideam::godot_ext::Polygon2DControl);
@@ -805,6 +823,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Polygon2DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::VoronoiDiagram2DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::SDFGrid2DResourceInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::TensorField2DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamGeometryPlugin);
 
         // Splines tooling
@@ -819,6 +838,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::SplineExtrudeGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::SplineScatterGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::SplineCorridorGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline2DViewportEditor);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamSplinesPlugin);
 
         // Tiles tooling
@@ -845,7 +865,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::IdeamClimatologyPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::EcologyInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamEcologyPlugin);
-        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);
+        GDREGISTER_CLASS(ideam::godot_ext::ProceduralGeneratorInspectorBase);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamProceduralGenerationPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::WFCRuleTensorInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamWaveFunctionCollapsePlugin);

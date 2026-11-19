@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnalysisRule" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Analysis Rule class in IdeamProceduralGeneration.
+	</brief_description>
+	<description>
+		Analysis Rule (Resource subclass) belonging to IdeamProceduralGeneration (CSS-cascade pattern analysis and procedural generators).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="compute_specificity">
+			<return type="Variant" />
+			<description>
+				Executes compute specificity on AnalysisRule.
+			</description>
+		</method>
+		<method name="matches_godot_object">
+			<return type="Variant" />
+			<param index="0" name="object" type="Variant" />
+			<description>
+				Executes matches godot object on AnalysisRule.
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="target_class" type="StringName" setter="set_target_class" getter="get_target_class">
+			Configures target class for this AnalysisRule.
+		</member>
+		<member name="name_prefix" type="String" setter="set_name_prefix" getter="get_name_prefix">
+			Configures name prefix for this AnalysisRule.
+		</member>
+		<member name="name_suffix" type="String" setter="set_name_suffix" getter="get_name_suffix">
+			Configures name suffix for this AnalysisRule.
+		</member>
+		<member name="ignore_non_matching" type="bool" setter="set_ignore_non_matching" getter="get_ignore_non_matching">
+			Configures ignore non matching for this AnalysisRule.
+		</member>
+		<member name="priority" type="int" setter="set_priority" getter="get_priority">
+			Configures priority for this AnalysisRule.
+		</member>
+		<member name="is_important" type="bool" setter="set_is_important" getter="get_is_important">
+			Configures is important for this AnalysisRule.
+		</member>
+		<member name="scope" type="int" setter="set_scope" getter="get_scope">
+			Configures scope for this AnalysisRule (Self:0,Children:1,Descendants:2,Siblings:3,All:4).
+		</member>
+		<member name="cascade_layer" type="int" setter="set_cascade_layer" getter="get_cascade_layer">
+			Configures cascade layer for this AnalysisRule (Domain:0,HierarchyParent:1,SiblingDependency:2,ChildCardinality:3,SpatialSocket:4,VariantDetail:5,PinnedOverride:6).
+		</member>
+		<member name="directives_mask" type="int" setter="set_directives_mask" getter="get_directives_mask">
+			Configures directives mask for this AnalysisRule (FollowSceneHierarchy:1,UseNodeNamesAsTokens:2,ExtractParentAcceptance:4,ExtractChildCardinality:8,ExtractSiblingRequirements:16,ExtractSpatialOffsets:32,ExtractPropertyRanges:64,IgnoreNonMatchingNodes:128).
+		</member>
+		<member name="property_range_min" type="float" setter="set_property_range_min" getter="get_property_range_min">
+			Configures property range min for this AnalysisRule.
+		</member>
+		<member name="property_range_max" type="float" setter="set_property_range_max" getter="get_property_range_max">
+			Configures property range max for this AnalysisRule.
+		</member>
+		<member name="required_properties" type="Array" setter="set_required_properties" getter="get_required_properties">
+			Configures required properties for this AnalysisRule.
+		</member>
+		<member name="required_methods" type="Array" setter="set_required_methods" getter="get_required_methods">
+			Configures required methods for this AnalysisRule.
+		</member>
+		<member name="required_signals" type="Array" setter="set_required_signals" getter="get_required_signals">
+			Configures required signals for this AnalysisRule.
+		</member>
+		<member name="child_rules" type="Array" setter="set_child_rules" getter="get_child_rules">
+			Configures child rules for this AnalysisRule.
+		</member>
+	</members>
+</class>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryGraphEdit" inherits="IdeamGraphEdit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Memory Graph Edit class in IdeamMemory.
+	</brief_description>
+	<description>
+		Memory Graph Edit (IdeamGraphEdit subclass) belonging to IdeamMemory (memory profiling, arenas, and telemetry visualization).
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="set_telemetry_mapping">
+			<return type="Variant" />
+			<param index="0" name="map" type="Variant" />
+			<description>
+				Executes set telemetry mapping on MemoryGraphEdit.
+			</description>
+		</method>
+		<method name="push_telemetry">
+			<return type="Variant" />
+			<param index="0" name="core_id" type="Variant" />
+			<param index="1" name="inspector" type="Variant" />
+			<description>
+				Executes push telemetry on MemoryGraphEdit.
+			</description>
+		</method>
+	</methods>
+</class>
