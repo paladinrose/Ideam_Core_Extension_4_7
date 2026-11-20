@@ -62,6 +62,17 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
     auto &reg = IdeamTier1ControlRegistry::get_singleton();
     const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
 
+    reg.register_workspace_launcher({
+        ws_id,
+        "Procedural Composer",
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+            if (ProceduralComposer *composer = ProceduralComposer::get_or_create_shared_composer()) {
+                if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
+                composer->open_asset(p_asset);
+            }
+        }
+    });
+
     auto make_procgen_panel = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
         using namespace godot;
         (void)p_ctx;
@@ -86,6 +97,7 @@ void IdeamProceduralGenerationPlugin::_exit_tree() {
     reg.unregister_class(ws_id, "ProceduralGeneratorResource");
     reg.unregister_class(ws_id, "ProceduralPattern");
     reg.unregister_class(ws_id, "GenerationRule");
+    reg.unregister_workspace_launcher(ws_id);
 
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);

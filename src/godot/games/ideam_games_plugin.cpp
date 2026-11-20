@@ -23,6 +23,7 @@
 
 #include "../../core/tasks/registration/ideam_task_registry.h"
 #include "../../core/tasks/domains/games/registration/games_task_domain_pack.h"
+#include "../project_tools/ideam_project_contribution_registry.h"
 
 namespace ideam::godot_ext {
 
@@ -61,17 +62,17 @@ void IdeamGamesPlugin::_enter_tree() {
     // Call base class template setup
     validate_script_templates();
 
-    // Ecosystem Handshake: Announce IdeamGames is active and offer TaskDomainPack if IdeamTasks is active
+    // Ecosystem Handshake: Announce IdeamGames is active and register typed Project Tools manifest
     set_plugin_active("IdeamGames", true);
-    register_to_ecosystem("WizardSettings", "IdeamGames", GAME_SETTINGS_PATH);
+    register_wizard_manifest("IdeamGames", GAME_SETTINGS_PATH);
     register_to_ecosystem("TaskManifests", "IdeamGames", godot::String(core::GamesTaskDomainPack::MANIFEST_PATH));
     if (is_plugin_active("IdeamTasks")) {
         register_task_domain_pack();
     }
 
-    // Call our specialized template setups
+    // Register specialized script templates and programmatic Project Tools contribution
     validate_game_script_templates();
-    check_for_project_tools();
+    _register_project_contribution();
 
     // 1. Instantiate native C++ entity inspector plugins
     agent_editor.instantiate();
@@ -154,7 +155,8 @@ void IdeamGamesPlugin::_exit_tree() {
         agent_editor.unref();
     }
 
-    // Ecosystem Handshake: Mark IdeamGames inactive and unmount its TaskDomainPack in editor
+    // Ecosystem Handshake: Mark IdeamGames inactive and unregister Project Tools & Task contributions
+    IdeamProjectContributionRegistry::get_singleton().unregister_plugin("IdeamGames");
     set_plugin_active("IdeamGames", false);
     if (auto* task_reg = core::IdeamTaskRegistry::get_singleton()) {
         task_reg->set_domain_pack_active("IdeamGames", false);
@@ -203,72 +205,62 @@ void IdeamGamesPlugin::close_agent_action_tool() {
     }
 }
 
-void IdeamGamesPlugin::check_for_project_tools() {
-    if (godot::ResourceLoader::get_singleton()->exists(GAME_SETTINGS_PATH) && godot::DirAccess::dir_exists_absolute("res://addons/ideam_project_tools")) {
-        godot::TypedArray<godot::String> settings_paths;
-        godot::Ref<godot::FileAccess> paths_file = godot::FileAccess::open(SETTINGS_PATHS, godot::FileAccess::READ);
-
-        bool has_settings = false;
-
-        if (paths_file.is_valid()) {
-            while (paths_file->get_position() < paths_file->get_length()) {
-                godot::String path = paths_file->get_line();
-                if (path == GAME_SETTINGS_PATH) {
-                    has_settings = true;
-                }
-                settings_paths.append(path);
-            }
-            paths_file->close();
-        }
-
-        if (!has_settings) {
-            settings_paths.append(GAME_SETTINGS_PATH);
-            paths_file = godot::FileAccess::open(SETTINGS_PATHS, godot::FileAccess::WRITE);
-            if (paths_file.is_valid()) {
-                for (int i = 0; i < settings_paths.size(); ++i) {
-                    godot::String path_line = settings_paths[i];
-                    paths_file->store_line(path_line);
-                }
-                paths_file->close();
-            }
-        }
-    }
-}
-
-// DRY helper to clean up the validation block
-void IdeamGamesPlugin::_create_template(const godot::String& folder_name, const godot::String& default_file_name) {
-    godot::String base_path = "res://script_templates/";
-    godot::String folder_path = base_path + folder_name;
-
-    godot::Ref<godot::DirAccess> dir = godot::DirAccess::open(base_path);
-    if (dir.is_valid() && !dir->dir_exists(folder_name)) {
-        dir->make_dir(folder_name);
-    }
-
-    godot::Ref<godot::DirAccess> template_dir = godot::DirAccess::open(folder_path);
-    if (template_dir.is_valid() && !template_dir->file_exists("default_template.gd")) {
-        godot::String source_path = "res://addons/ideam_games/resources/" + default_file_name;
-        godot::Ref<godot::FileAccess> default_text = godot::FileAccess::open(source_path, godot::FileAccess::READ);
-
-        if (default_text.is_valid()) {
-            godot::Ref<godot::FileAccess> new_template = godot::FileAccess::open(folder_path + "/default_template.gd", godot::FileAccess::WRITE);
-            if (new_template.is_valid()) {
-                new_template->store_string(default_text->get_as_text());
-                new_template->close();
-            }
-            default_text->close();
-        }
-    }
-}
-
 void IdeamGamesPlugin::validate_game_script_templates() {
-    _create_template("Game", "default_game_template.txt");
-    _create_template("Game_Agent", "default_game_agent_template.txt");
-    _create_template("Game_Hub", "default_game_hub_template.txt");
-    _create_template("Game_Board", "default_game_board_template.txt");
-    _create_template("Game_Entity", "default_game_entity_template.txt");
-    _create_template("Game_Piece", "default_game_piece_template.txt");
-    _create_template("Game_Player", "default_game_player_template.txt");
+    const godot::String base_res = "res://addons/ideam_games/resources/";
+    register_script_template("Game", "default_template", base_res + "default_game_template.txt");
+    register_script_template("GameAgent", "default_template", base_res + "default_game_agent_template.txt");
+    register_script_template("GameHub", "default_template", base_res + "default_game_hub_template.txt");
+    register_script_template("GameBoard", "default_template", base_res + "default_game_board_template.txt");
+    register_script_template("GameEntity", "default_template", base_res + "default_game_entity_template.txt");
+    register_script_template("GamePiece", "default_template", base_res + "default_game_piece_template.txt");
+    register_script_template("GamePlayer", "default_template", base_res + "default_game_player_template.txt");
+}
+
+void IdeamGamesPlugin::_register_project_contribution() {
+    IdeamProjectContributionRegistry::get_singleton().register_manifest_contribution({
+        godot::StringName("IdeamGames"),
+        "Games",
+        10,
+        []() -> godot::Ref<ProjectModuleManifest> {
+            godot::Ref<ProjectModuleManifest> mod;
+            mod.instantiate();
+            mod->set_module_id("ideam_games_core");
+            mod->set_display_name("Ideam Games Core");
+            mod->set_plugin_domain("Games");
+            mod->set_description("Scaffolds GameHub, Game, starter GameplayStyle resource, and core folders.");
+            mod->add_folder("scripts/game");
+            mod->add_folder("resources/gameplay");
+            mod->add_folder("scenes/game");
+
+            godot::Ref<ProjectScriptSpec> hub_script;
+            hub_script.instantiate();
+            hub_script->set_target_folder("scripts/game");
+            hub_script->set_script_name("main_game_hub");
+            hub_script->set_base_class("GameHub");
+            hub_script->set_template_name("default_template");
+            mod->add_script_spec(hub_script);
+
+            godot::Ref<ProjectResourceSpec> style_res;
+            style_res.instantiate();
+            style_res->set_target_folder("resources/gameplay");
+            style_res->set_resource_name("default_gameplay_style");
+            style_res->set_resource_class("GameplayStyle");
+            mod->add_resource_spec(style_res);
+
+            godot::Ref<ProjectSceneSpec> hub_scene;
+            hub_scene.instantiate();
+            hub_scene->set_target_folder("scenes/game");
+            hub_scene->set_scene_name("main_game_hub");
+            godot::Ref<ProjectSceneNodeSpec> root_node = hub_scene->get_root_node();
+            root_node->set_node_name("GameHub");
+            root_node->set_node_class("GameHub");
+            root_node->set_use_generated_script(true);
+            root_node->set_generated_script_key("GameHub");
+            mod->add_scene_spec(hub_scene);
+
+            return mod;
+        }
+    });
 }
 
 static godot::Ref<GameplayControlMap> _resolve_control_map_from_style(

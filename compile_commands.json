@@ -6534,6 +6534,120 @@
         "output": "godot-cpp\\gen\\src\\variant\\utility_functions.windows.template_debug.x86_64.obj"
     },
     {
+        "command": "cl /Fosrc\\gen\\doc_data_00.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_00.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_00.gen.cpp",
+        "output": "src\\gen\\doc_data_00.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_01.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_01.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_01.gen.cpp",
+        "output": "src\\gen\\doc_data_01.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_02.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_02.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_02.gen.cpp",
+        "output": "src\\gen\\doc_data_02.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_03.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_03.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_03.gen.cpp",
+        "output": "src\\gen\\doc_data_03.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_04.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_04.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_04.gen.cpp",
+        "output": "src\\gen\\doc_data_04.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_05.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_05.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_05.gen.cpp",
+        "output": "src\\gen\\doc_data_05.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_06.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_06.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_06.gen.cpp",
+        "output": "src\\gen\\doc_data_06.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_07.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_07.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_07.gen.cpp",
+        "output": "src\\gen\\doc_data_07.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_08.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_08.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_08.gen.cpp",
+        "output": "src\\gen\\doc_data_08.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_09.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_09.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_09.gen.cpp",
+        "output": "src\\gen\\doc_data_09.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_10.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_10.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_10.gen.cpp",
+        "output": "src\\gen\\doc_data_10.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_11.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_11.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_11.gen.cpp",
+        "output": "src\\gen\\doc_data_11.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_12.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_12.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_12.gen.cpp",
+        "output": "src\\gen\\doc_data_12.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_13.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_13.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_13.gen.cpp",
+        "output": "src\\gen\\doc_data_13.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_14.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_14.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_14.gen.cpp",
+        "output": "src\\gen\\doc_data_14.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_15.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_15.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_15.gen.cpp",
+        "output": "src\\gen\\doc_data_15.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_16.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_16.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_16.gen.cpp",
+        "output": "src\\gen\\doc_data_16.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_17.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_17.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_17.gen.cpp",
+        "output": "src\\gen\\doc_data_17.gen.windows.template_debug.x86_64.obj"
+    },
+    {
+        "command": "cl /Fosrc\\gen\\doc_data_18.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data_18.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /nologo /utf-8 /MT /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
+        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
+        "file": "src\\gen\\doc_data_18.gen.cpp",
+        "output": "src\\gen\\doc_data_18.gen.windows.template_debug.x86_64.obj"
+    },
+    {
         "command": "cl /Fosrc\\register_types.windows.template_debug.x86_64.obj /c src\\register_types.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\register_types.cpp",
@@ -10720,11 +10834,5 @@
         "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
         "file": "src\\godot\\wave_function_collapse\\wfc_rule_tensor_resource.cpp",
         "output": "src\\godot\\wave_function_collapse\\wfc_rule_tensor_resource.windows.template_debug.x86_64.obj"
-    },
-    {
-        "command": "cl /Fosrc\\gen\\doc_data.gen.windows.template_debug.x86_64.obj /c src\\gen\\doc_data.gen.cpp /TP /Zc:__cplusplus /std:c++latest /Zc:__cplusplus /bigobj /nologo /utf-8 /MT /Zi /FS /Od /DTYPED_METHOD_BIND /DNOMINMAX /DWINDOWS_ENABLED /D_HAS_EXCEPTIONS=0 /DTHREADS_ENABLED /DDEBUG_ENABLED /DNDEBUG /DGDEXTENSION /D_ENABLE_EXTENDED_ALIGNED_STORAGE /Igodot-cpp\\include /Igodot-cpp\\gen\\include /Isrc /Isrc\\external",
-        "directory": "D:\\Game Dev\\Projects\\GDExtensions\\Ideam_Core_Extension_4_7",
-        "file": "src\\gen\\doc_data.gen.cpp",
-        "output": "src\\gen\\doc_data.gen.windows.template_debug.x86_64.obj"
     }
 ]

@@ -43,10 +43,20 @@ for root, dirs, files in os.walk("src"):
 
 # --- GDEXTENSION IN-EDITOR CLASS DOCUMENTATION (Godot 4.3+) ---
 if env["target"] in ["editor", "template_debug"] and hasattr(env, "GodotCPPDocData"):
-    doc_xmls = Glob("doc_classes/*.xml")
+    doc_xmls = sorted(Glob("doc_classes/*.xml"), key=lambda n: str(n))
     if doc_xmls:
-        doc_data = env.GodotCPPDocData("src/gen/doc_data.gen.cpp", source=doc_xmls)
-        sources.append(doc_data)
+        doc_env = env.Clone()
+        if doc_env.get("is_msvc", False):
+            for flag_var in ("CXXFLAGS", "CCFLAGS"):
+                if flag_var in doc_env:
+                    doc_env[flag_var] = [f for f in doc_env[flag_var] if f not in ("/Zi", "/Z7")]
+
+        chunk_size = 20
+        for i in range(0, len(doc_xmls), chunk_size):
+            chunk = doc_xmls[i : i + chunk_size]
+            target_cpp = f"src/gen/doc_data_{i // chunk_size:02d}.gen.cpp"
+            doc_cpp = doc_env.GodotCPPDocData(target_cpp, source=chunk)
+            sources.append(doc_env.SharedObject(doc_cpp))
 
 if env["platform"] == "windows":
     if env.get("is_msvc", False):

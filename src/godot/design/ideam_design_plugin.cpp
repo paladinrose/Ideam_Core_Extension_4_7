@@ -35,6 +35,17 @@ void IdeamDesignPlugin::_enter_tree() {
     auto &reg = IdeamTier1ControlRegistry::get_singleton();
     const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
 
+    reg.register_workspace_launcher({
+        ws_id,
+        "Design Composer",
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+            if (DesignComposer *composer = DesignComposer::get_or_create_shared_composer()) {
+                if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
+                composer->open_asset(p_asset);
+            }
+        }
+    });
+
     reg.register_control({
         ws_id, "BlueprintResource", "Blueprints", "Architectural Blueprint", UPDATE_ON_COMMIT,
         [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
@@ -89,6 +100,7 @@ void IdeamDesignPlugin::_exit_tree() {
     reg.unregister_class(ws_id, "ParametricAssemblyRecipeResource");
     reg.unregister_class(ws_id, "Theme3DResource");
     reg.unregister_class(ws_id, "Style3DResource");
+    reg.unregister_workspace_launcher(ws_id);
 
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);

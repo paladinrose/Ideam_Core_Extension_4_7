@@ -25,6 +25,15 @@
 #include "godot/controls/ideam_tool_context.h"
 #include "godot/controls/ideam_tool_workspace.h"
 
+// --- Project Tools (Tier 2 Ecosystem Bridge) ---
+#include "godot/project_tools/project_blueprint_resource.h"
+#include "godot/project_tools/ideam_project_contribution_registry.h"
+#include "godot/project_tools/project_scaffold_engine.h"
+#include "godot/project_tools/ui/class_picker_dialog.h"
+#include "godot/project_tools/ui/project_blueprint_editor.h"
+#include "godot/project_tools/ui/project_workspace.h"
+#include "godot/project_tools/ideam_project_plugin.h"
+
 // --- Graphs ---
 #include "godot/graphs/ideam_graphs_plugin.h"
 
@@ -425,6 +434,19 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::ThemeSelector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamToolContext);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamToolWorkspace);
+
+        // --- Project Tools (Phase 1 & Phase 2) ---
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectScriptSpec);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectResourceSpec);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectSceneNodeSpec);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectSceneSpec);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectSettingPatch);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectModuleManifest);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectBlueprintResource);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectScaffoldEngine);
+        GDREGISTER_CLASS(ideam::godot_ext::ClassPickerDialog);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectBlueprintEditor);
+        GDREGISTER_CLASS(ideam::godot_ext::ProjectWorkspace);
         
         // --- Graphs ---
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::IdeamGraphResource);
@@ -884,6 +906,9 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GameplayRuleEditorInspectorPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::GameplayStyleCascadeDock);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamGamesPlugin);
+
+        // --- Project Tools Editor Plugin ---
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamProjectPlugin);
     }
 }
 
@@ -891,6 +916,7 @@ void uninitialize_ideam_core_module(ModuleInitializationLevel p_level) {
     if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
         // Flush the static factories and dictionaries to prevent Godot memory leak warnings on exit
         IdeamTaskRegistry::cleanup();
+        ideam::godot_ext::IdeamProjectContributionRegistry::get_singleton().clear();
     }
 
     if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {

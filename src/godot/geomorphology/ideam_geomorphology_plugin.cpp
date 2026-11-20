@@ -29,6 +29,17 @@ void IdeamGeomorphologyPlugin::_enter_tree() {
     auto &reg = IdeamTier1ControlRegistry::get_singleton();
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
 
+    reg.register_workspace_launcher({
+        ws_id,
+        "Planetary Systems Modeler",
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+            if (PlanetarySystemsModeler *modeler = PlanetarySystemsModeler::get_or_create_shared_modeler()) {
+                if (p_ctx.is_valid()) modeler->set_tool_context(p_ctx);
+                modeler->open_asset(p_asset);
+            }
+        }
+    });
+
     reg.register_control({
         ws_id, "GeomorphologyTerrainResource", "Geomorphology", "Geomorphology Terrain", UPDATE_EXPLICIT_TRIGGER,
         [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
@@ -99,10 +110,10 @@ void IdeamGeomorphologyPlugin::_enter_tree() {
 }
 
 void IdeamGeomorphologyPlugin::_exit_tree() {
-    IdeamTier1ControlRegistry::get_singleton().unregister_class(
-        godot::StringName(PlanetarySystemsModeler::WORKSPACE_ID),
-        "GeomorphologyTerrainResource"
-    );
+    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
+    reg.unregister_class(ws_id, "GeomorphologyTerrainResource");
+    reg.unregister_workspace_launcher(ws_id);
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
         inspector_plugin_.unref();

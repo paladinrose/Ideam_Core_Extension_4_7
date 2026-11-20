@@ -80,6 +80,17 @@ void IdeamGeometryPlugin::_enter_tree() {
     auto &reg = IdeamTier1ControlRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
 
+    reg.register_workspace_launcher({
+        ws_id,
+        "Geometry Composer",
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+            if (GeometryComposer *composer = GeometryComposer::get_or_create_shared_composer()) {
+                if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
+                composer->open_asset(p_asset);
+            }
+        }
+    });
+
     reg.register_control({
         ws_id, "Polygon2DResource", "General", "2D Polygon", UPDATE_ON_COMMIT,
         [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
@@ -141,6 +152,7 @@ void IdeamGeometryPlugin::_exit_tree() {
     reg.unregister_class(ws_id, "VoronoiDiagram2DResource");
     reg.unregister_class(ws_id, "SDFGrid2DResource");
     reg.unregister_class(ws_id, "TensorField2DResource");
+    reg.unregister_workspace_launcher(ws_id);
     if (tensor_field_2d_inspector.is_valid()) {
         remove_inspector_plugin(tensor_field_2d_inspector);
         tensor_field_2d_inspector.unref();

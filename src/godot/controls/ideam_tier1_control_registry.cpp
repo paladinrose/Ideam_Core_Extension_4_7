@@ -35,8 +35,51 @@ void IdeamTier1ControlRegistry::unregister_workspace_controls(const godot::Strin
     });
 }
 
+void IdeamTier1ControlRegistry::register_workspace_launcher(Tier2WorkspaceLauncher p_launcher) {
+    for (auto &existing : workspace_launchers_) {
+        if (existing.workspace_id == p_launcher.workspace_id) {
+            existing = std::move(p_launcher);
+            return;
+        }
+    }
+    workspace_launchers_.push_back(std::move(p_launcher));
+}
+
+void IdeamTier1ControlRegistry::unregister_workspace_launcher(const godot::StringName &p_workspace_id) {
+    std::erase_if(workspace_launchers_, [&](const Tier2WorkspaceLauncher &l) {
+        return l.workspace_id == p_workspace_id;
+    });
+}
+
+const Tier2WorkspaceLauncher *IdeamTier1ControlRegistry::find_workspace_launcher(
+    const godot::StringName &p_workspace_id
+) const {
+    for (const auto &l : workspace_launchers_) {
+        if (l.workspace_id == p_workspace_id) {
+            return &l;
+        }
+    }
+    return nullptr;
+}
+
+bool IdeamTier1ControlRegistry::launch_asset_in_workspace(
+    const godot::StringName &p_workspace_id,
+    const godot::Ref<godot::Resource> &p_asset,
+    const godot::Ref<IdeamToolContext> &p_context
+) const {
+    if (p_asset.is_null()) {
+        return false;
+    }
+    if (const auto *launcher = find_workspace_launcher(p_workspace_id); launcher && launcher->open_asset) {
+        launcher->open_asset(p_asset, p_context);
+        return true;
+    }
+    return false;
+}
+
 void IdeamTier1ControlRegistry::clear() {
     descriptors_.clear();
+    workspace_launchers_.clear();
 }
 
 const Tier1ControlDescriptor *IdeamTier1ControlRegistry::find_descriptor(
@@ -66,6 +109,38 @@ const Tier1ControlDescriptor *IdeamTier1ControlRegistry::find_descriptor_for_res
     // 2. Polymorphic inheritance match fallback
     for (const auto &d : descriptors_) {
         if (d.workspace_id == p_workspace_id && p_asset->is_class(godot::String(d.resource_class))) {
+            return &d;
+        }
+    }
+    return nullptr;
+}
+
+const Tier1ControlDescriptor *IdeamTier1ControlRegistry::find_any_descriptor_for_class(
+    const godot::StringName &p_resource_class
+) const {
+    if (p_resource_class == godot::StringName()) {
+        return nullptr;
+    }
+    for (const auto &d : descriptors_) {
+        if (d.resource_class == p_resource_class) {
+            return &d;
+        }
+    }
+    return nullptr;
+}
+
+const Tier1ControlDescriptor *IdeamTier1ControlRegistry::find_any_descriptor_for_resource(
+    const godot::Ref<godot::Resource> &p_asset
+) const {
+    if (p_asset.is_null()) {
+        return nullptr;
+    }
+    const godot::StringName exact_cls(p_asset->get_class());
+    if (const auto *exact = find_any_descriptor_for_class(exact_cls)) {
+        return exact;
+    }
+    for (const auto &d : descriptors_) {
+        if (p_asset->is_class(godot::String(d.resource_class))) {
             return &d;
         }
     }

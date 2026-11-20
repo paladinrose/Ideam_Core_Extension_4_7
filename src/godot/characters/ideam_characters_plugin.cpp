@@ -59,6 +59,17 @@ void IdeamCharactersPlugin::_enter_tree() {
     auto &reg = IdeamTier1ControlRegistry::get_singleton();
     const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
 
+    reg.register_workspace_launcher({
+        ws_id,
+        "Character Modeler",
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+            if (CharacterModeler *modeler = CharacterModeler::get_or_create_shared_modeler()) {
+                if (p_ctx.is_valid()) modeler->set_tool_context(p_ctx);
+                modeler->open_asset(p_asset);
+            }
+        }
+    });
+
     reg.register_control({
         ws_id, "CharacterBlueprintResource", "Blueprints", "Character Blueprint", UPDATE_ON_COMMIT,
         [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
@@ -108,6 +119,7 @@ void IdeamCharactersPlugin::_exit_tree() {
     const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
     reg.unregister_class(ws_id, "CharacterBlueprintResource");
     reg.unregister_class(ws_id, "CharacterApparelResource");
+    reg.unregister_workspace_launcher(ws_id);
 
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
