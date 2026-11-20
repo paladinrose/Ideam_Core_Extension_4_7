@@ -1,5 +1,5 @@
 #include "ideam_procedural_generation_plugin.h"
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "ui/procedural_composer.h"
 #include "../../core/tasks/registration/ideam_task_registry.h"
 
@@ -59,13 +59,13 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
 
     reg.register_workspace_launcher({
         ws_id,
         "Procedural Composer",
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (ProceduralComposer *composer = ProceduralComposer::get_or_create_shared_composer()) {
                 if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
                 composer->open_asset(p_asset);
@@ -73,7 +73,7 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
         }
     });
 
-    auto make_procgen_panel = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+    auto make_procgen_panel = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
         using namespace godot;
         (void)p_ctx;
         if (p_asset.is_null()) return nullptr;
@@ -92,7 +92,7 @@ void IdeamProceduralGenerationPlugin::_enter_tree() {
 }
 
 void IdeamProceduralGenerationPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
     reg.unregister_class(ws_id, "ProceduralGeneratorResource");
     reg.unregister_class(ws_id, "ProceduralPattern");

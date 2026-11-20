@@ -2,7 +2,7 @@
 
 /**
  * geometry_composer.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) unifying Geometry, Splines, and Tiles
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) unifying Geometry, Splines, and Tiles
  * (`src/godot/geometry/ui/`).
  *
  * Sidebar Tabs:
@@ -16,10 +16,10 @@
  *
  * Strict Tier 2 Contract:
  *   `GeometryComposer` never directly mutates geometry, spline, or tiling data. It orchestrates
- *   the registered Tier 1 controls inside the shared 3-pane `IdeamToolWorkspace` shell.
+ *   the registered Tier 1 controls inside the shared 3-pane `ToolWorkspace` shell.
  */
 
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/control.hpp>
@@ -29,8 +29,8 @@
 
 namespace ideam::godot_ext {
 
-class GeometryComposer : public IdeamToolWorkspace {
-    GDCLASS(GeometryComposer, IdeamToolWorkspace)
+class GeometryComposer : public ToolWorkspace {
+    GDCLASS(GeometryComposer, ToolWorkspace)
 
 private:
     static GeometryComposer *shared_instance_;

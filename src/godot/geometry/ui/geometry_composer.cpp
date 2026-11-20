@@ -184,7 +184,7 @@ GeometryComposer *GeometryComposer::get_or_create_shared_composer(Control *p_own
     }
 
     shared_instance_ = memnew(GeometryComposer);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam GeometryComposer",
         Vector2i(1120, 720)

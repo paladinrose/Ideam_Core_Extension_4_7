@@ -4,7 +4,7 @@
  * class_picker_dialog.h
  * Modern C++26 searchable class picker dialog for Ideam Project Tools (Phase 2).
  *
- * Mines `ClassDB`, `ProjectSettings::get_global_class_list()`, and `IdeamTier1ControlRegistry`
+ * Mines `ClassDB`, `ProjectSettings::get_global_class_list()`, and `ToolRegistry`
  * automatically, grouping instantiable classes into:
  *   - Ideam Registered Tool Classes (highlighted with owning Tier 2 workspace)
  *   - Project Global Script Classes

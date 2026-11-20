@@ -5,7 +5,7 @@
  * Lightweight C++26 singleton registry decoupling `ProjectWorkspace` & `ProjectScaffoldExecutor`
  * from domain plugins (`IdeamGamesPlugin`, `IdeamGeometryPlugin`, `IdeamTasksPlugin`, etc.).
  *
- * Mirrors `IdeamTier1ControlRegistry`: plugins register programmatic `ProjectModuleManifest`
+ * Mirrors `ToolRegistry`: plugins register programmatic `ProjectModuleManifest`
  * providers, custom script templates, and post-generation hooks in `_enter_tree()` and
  * unregister them in `_exit_tree()` without compile-time coupling.
  */

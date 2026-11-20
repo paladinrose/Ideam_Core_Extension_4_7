@@ -1,6 +1,6 @@
 #include "ideam_geometry_plugin.h"
 
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "ui/geometry_composer.h"
 #include "ui/polygon_2d_control.h"
 #include "ui/sdf_grid_2d_canvas.h"
@@ -77,13 +77,13 @@ void IdeamGeometryPlugin::_enter_tree() {
     add_inspector_plugin(tensor_field_2d_inspector);
 
     // 3. Register Geometry Tier 1 Controls with GeometryComposer ("General" tab)
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
 
     reg.register_workspace_launcher({
         ws_id,
         "Geometry Composer",
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (GeometryComposer *composer = GeometryComposer::get_or_create_shared_composer()) {
                 if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
                 composer->open_asset(p_asset);
@@ -93,7 +93,7 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "Polygon2DResource", "General", "2D Polygon", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<Polygon2DResource> poly = p_asset;
             if (poly.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) poly->set_undo_redo(p_ctx->get_undo_redo());
@@ -106,7 +106,7 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "VoronoiDiagram2DResource", "General", "Voronoi 2D", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<VoronoiDiagram2DResource> vor = p_asset;
             if (vor.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) vor->set_undo_redo(p_ctx->get_undo_redo());
@@ -119,7 +119,7 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "SDFGrid2DResource", "General", "SDF Grid 2D", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<SDFGrid2DResource> sdf = p_asset;
             if (sdf.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) sdf->set_undo_redo(p_ctx->get_undo_redo());
@@ -132,7 +132,7 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "TensorField2DResource", "General", "Tensor Field 2D", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<TensorField2DResource> tf = p_asset;
             if (tf.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) tf->set_undo_redo(p_ctx->get_undo_redo());
@@ -146,7 +146,7 @@ void IdeamGeometryPlugin::_enter_tree() {
 }
 
 void IdeamGeometryPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
     reg.unregister_class(ws_id, "Polygon2DResource");
     reg.unregister_class(ws_id, "VoronoiDiagram2DResource");

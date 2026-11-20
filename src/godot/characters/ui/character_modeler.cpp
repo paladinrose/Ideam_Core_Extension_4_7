@@ -63,7 +63,7 @@ CharacterModeler *CharacterModeler::get_or_create_shared_modeler(Control *p_owne
     }
 
     shared_instance_ = memnew(CharacterModeler);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam CharacterModeler",
         Vector2i(1080, 700)

@@ -7,7 +7,7 @@
  * Responsibilities:
  *   - Announces `IdeamProjectTools` active in `.ideam_registry.cfg`.
  *   - Registers `ProjectBlueprintEditor` Tier 1 controls for `ProjectBlueprintResource` and
- *     `ProjectModuleManifest` into `IdeamTier1ControlRegistry` (`ProjectWorkspace::WORKSPACE_ID`).
+ *     `ProjectModuleManifest` into `ToolRegistry` (`ProjectWorkspace::WORKSPACE_ID`).
  *   - Exposes `Ideam/Project Workspace` in Godot's Project -> Tools menu (and cleanly removes it).
  *   - Listens to `SceneTree` `node_added` / `node_removed` for companion `IdeamEditorPlugin`
  *     lifecycle events (matching `IdeamTasksPlugin`) so enabling/disabling plugins live-syncs.

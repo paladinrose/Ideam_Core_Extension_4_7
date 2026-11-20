@@ -1,7 +1,7 @@
 #include "project_workspace.h"
 
 #include "../ideam_project_plugin.h"
-#include "../../controls/ideam_tier1_control_registry.h"
+#include "../../tools/tool_registry.h"
 
 #include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
@@ -330,7 +330,7 @@ void ProjectWorkspace::_rebuild_handoff_strip(const Dictionary &p_owner_workspac
         return;
     }
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     int added = 0;
 
     Label *lbl = memnew(Label);
@@ -348,7 +348,7 @@ void ProjectWorkspace::_rebuild_handoff_strip(const Dictionary &p_owner_workspac
 
         Button *btn = memnew(Button);
         btn->set_text(title + " (" + String::num_int64(paths.size()) + ")");
-        btn->set_tooltip_text(String("Open generated assets in ") + title + " with shared IdeamToolContext.");
+        btn->set_tooltip_text(String("Open generated assets in ") + title + " with shared ToolContext.");
         btn->connect("pressed", Callable(this, "_on_handoff_workspace_pressed").bind(ws_id));
         handoff_bar_->add_child(btn);
         ++added;
@@ -362,7 +362,7 @@ bool ProjectWorkspace::launch_handoff_workspace(const String &p_workspace_id) {
         return false;
     }
     const PackedStringArray paths = handoff_assets_by_workspace_[p_workspace_id];
-    auto &reg                     = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg                     = ToolRegistry::get_singleton();
     bool launched_any             = false;
 
     for (int i = 0; i < paths.size(); ++i) {
@@ -591,7 +591,7 @@ ProjectWorkspace *ProjectWorkspace::get_or_create_shared_workspace(Control *p_ow
     }
 
     shared_instance_ = memnew(ProjectWorkspace);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam Project Workspace",
         Vector2i(1180, 740)

@@ -1,4 +1,4 @@
-#include "ideam_tool_workspace.h"
+#include "tool_workspace.h"
 
 #include <godot_cpp/classes/display_server.hpp>
 #include <godot_cpp/classes/engine.hpp>
@@ -6,7 +6,6 @@
 #include <godot_cpp/classes/input_event_mouse_button.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/resource_saver.hpp>
-#include <algorithm>
 #include <godot_cpp/classes/resource_uid.hpp>
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/classes/viewport.hpp>
@@ -14,11 +13,13 @@
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <algorithm>
+
 using namespace godot;
 
 namespace ideam::godot_ext {
 
-void IdeamToolWorkspace::_bind_methods() {
+void ToolWorkspace::_bind_methods() {
     ADD_SIGNAL(MethodInfo(
         "asset_opened",
         PropertyInfo(Variant::OBJECT, "asset", PROPERTY_HINT_RESOURCE_TYPE, "Resource")
@@ -39,61 +40,77 @@ void IdeamToolWorkspace::_bind_methods() {
         "explicit_rebuild_triggered",
         PropertyInfo(Variant::OBJECT, "asset", PROPERTY_HINT_RESOURCE_TYPE, "Resource")
     ));
+    ADD_SIGNAL(MethodInfo(
+        "help_requested",
+        PropertyInfo(Variant::STRING_NAME, "tool_id"),
+        PropertyInfo(Variant::STRING, "ui_selector")
+    ));
 
-    ClassDB::bind_method(D_METHOD("set_workspace_id", "id"), &IdeamToolWorkspace::set_workspace_id);
-    ClassDB::bind_method(D_METHOD("get_workspace_id"), &IdeamToolWorkspace::get_workspace_id);
+    ClassDB::bind_method(D_METHOD("set_workspace_id", "id"), &ToolWorkspace::set_workspace_id);
+    ClassDB::bind_method(D_METHOD("get_workspace_id"), &ToolWorkspace::get_workspace_id);
     ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "workspace_id"), "set_workspace_id", "get_workspace_id");
 
-    ClassDB::bind_method(D_METHOD("configure_theme_registry", "registry_path"), &IdeamToolWorkspace::configure_theme_registry);
-    ClassDB::bind_method(D_METHOD("ensure_sidebar_tab", "tab_name"), &IdeamToolWorkspace::ensure_sidebar_tab);
+    ClassDB::bind_method(D_METHOD("set_help_topic_id", "topic_id"), &ToolWorkspace::set_help_topic_id);
+    ClassDB::bind_method(D_METHOD("get_help_topic_id"), &ToolWorkspace::get_help_topic_id);
+    ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "help_topic_id"), "set_help_topic_id", "get_help_topic_id");
 
-    ClassDB::bind_method(D_METHOD("set_tool_context", "context"), &IdeamToolWorkspace::set_tool_context);
-    ClassDB::bind_method(D_METHOD("get_tool_context"), &IdeamToolWorkspace::get_tool_context);
+    ClassDB::bind_method(
+        D_METHOD("request_workspace_help", "ui_selector"),
+        &ToolWorkspace::request_workspace_help,
+        DEFVAL(String())
+    );
+
+    ClassDB::bind_method(D_METHOD("configure_theme_registry", "registry_path"), &ToolWorkspace::configure_theme_registry);
+    ClassDB::bind_method(D_METHOD("ensure_sidebar_tab", "tab_name"), &ToolWorkspace::ensure_sidebar_tab);
+
+    ClassDB::bind_method(D_METHOD("set_tool_context", "context"), &ToolWorkspace::set_tool_context);
+    ClassDB::bind_method(D_METHOD("get_tool_context"), &ToolWorkspace::get_tool_context);
 
     ClassDB::bind_method(
         D_METHOD("set_chrome_visibility", "show_command_bar", "show_sidebar", "show_inspector", "show_ribbon"),
-        &IdeamToolWorkspace::set_chrome_visibility,
+        &ToolWorkspace::set_chrome_visibility,
         DEFVAL(true),
         DEFVAL(true),
         DEFVAL(false)
     );
     ClassDB::bind_method(
         D_METHOD("set_dirty_banner", "visible", "message", "action_label"),
-        &IdeamToolWorkspace::set_dirty_banner,
+        &ToolWorkspace::set_dirty_banner,
         DEFVAL(String()),
         DEFVAL(String("Rebuild"))
     );
 
     ClassDB::bind_method(
         D_METHOD("open_asset", "asset", "tab_override"),
-        &IdeamToolWorkspace::open_asset,
+        &ToolWorkspace::open_asset,
         DEFVAL(String())
     );
-    ClassDB::bind_method(D_METHOD("close_asset", "asset"), &IdeamToolWorkspace::close_asset);
-    ClassDB::bind_method(D_METHOD("close_all_assets"), &IdeamToolWorkspace::close_all_assets);
-    ClassDB::bind_method(D_METHOD("select_asset", "asset"), &IdeamToolWorkspace::select_asset);
-    ClassDB::bind_method(D_METHOD("get_active_asset"), &IdeamToolWorkspace::get_active_asset);
+    ClassDB::bind_method(D_METHOD("close_asset", "asset"), &ToolWorkspace::close_asset);
+    ClassDB::bind_method(D_METHOD("close_all_assets"), &ToolWorkspace::close_all_assets);
+    ClassDB::bind_method(D_METHOD("select_asset", "asset"), &ToolWorkspace::select_asset);
+    ClassDB::bind_method(D_METHOD("get_active_asset"), &ToolWorkspace::get_active_asset);
 
-    ClassDB::bind_method(D_METHOD("save_asset", "asset"), &IdeamToolWorkspace::save_asset);
-    ClassDB::bind_method(D_METHOD("save_active_asset"), &IdeamToolWorkspace::save_active_asset);
-    ClassDB::bind_method(D_METHOD("save_all_assets"), &IdeamToolWorkspace::save_all_assets);
+    ClassDB::bind_method(D_METHOD("save_asset", "asset"), &ToolWorkspace::save_asset);
+    ClassDB::bind_method(D_METHOD("save_active_asset"), &ToolWorkspace::save_active_asset);
+    ClassDB::bind_method(D_METHOD("save_all_assets"), &ToolWorkspace::save_all_assets);
 
     // Internal Signal Handlers
-    ClassDB::bind_method(D_METHOD("_on_theme_applied", "theme", "index"), &IdeamToolWorkspace::_on_theme_applied);
-    ClassDB::bind_method(D_METHOD("_on_context_theme_changed", "theme", "index"), &IdeamToolWorkspace::_on_context_theme_changed);
-    ClassDB::bind_method(D_METHOD("_on_update_policy_selected", "index"), &IdeamToolWorkspace::_on_update_policy_selected);
-    ClassDB::bind_method(D_METHOD("_on_context_update_policy_changed", "policy"), &IdeamToolWorkspace::_on_context_update_policy_changed);
-    ClassDB::bind_method(D_METHOD("_on_context_asset_dirty_changed", "asset", "dirty"), &IdeamToolWorkspace::_on_context_asset_dirty_changed);
-    ClassDB::bind_method(D_METHOD("_on_save_pressed"), &IdeamToolWorkspace::_on_save_pressed);
-    ClassDB::bind_method(D_METHOD("_on_save_all_pressed"), &IdeamToolWorkspace::_on_save_all_pressed);
-    ClassDB::bind_method(D_METHOD("_on_sidebar_item_selected", "index", "tab_name"), &IdeamToolWorkspace::_on_sidebar_item_selected);
-    ClassDB::bind_method(D_METHOD("_on_sidebar_gui_input", "event", "tab_name"), &IdeamToolWorkspace::_on_sidebar_gui_input);
-    ClassDB::bind_method(D_METHOD("_on_sidebar_context_action", "action_id"), &IdeamToolWorkspace::_on_sidebar_context_action);
-    ClassDB::bind_method(D_METHOD("_on_tier1_commit_completed", "action_name"), &IdeamToolWorkspace::_on_tier1_commit_completed);
-    ClassDB::bind_method(D_METHOD("_on_dirty_banner_action_pressed"), &IdeamToolWorkspace::_on_dirty_banner_action_pressed);
+    ClassDB::bind_method(D_METHOD("_on_theme_applied", "theme", "index"), &ToolWorkspace::_on_theme_applied);
+    ClassDB::bind_method(D_METHOD("_on_context_theme_changed", "theme", "index"), &ToolWorkspace::_on_context_theme_changed);
+    ClassDB::bind_method(D_METHOD("_on_update_policy_selected", "index"), &ToolWorkspace::_on_update_policy_selected);
+    ClassDB::bind_method(D_METHOD("_on_context_update_policy_changed", "policy"), &ToolWorkspace::_on_context_update_policy_changed);
+    ClassDB::bind_method(D_METHOD("_on_context_asset_dirty_changed", "asset", "dirty"), &ToolWorkspace::_on_context_asset_dirty_changed);
+    ClassDB::bind_method(D_METHOD("_on_save_pressed"), &ToolWorkspace::_on_save_pressed);
+    ClassDB::bind_method(D_METHOD("_on_save_all_pressed"), &ToolWorkspace::_on_save_all_pressed);
+    ClassDB::bind_method(D_METHOD("_on_help_pressed"), &ToolWorkspace::_on_help_pressed);
+    ClassDB::bind_method(D_METHOD("_on_sidebar_item_selected", "index", "tab_name"), &ToolWorkspace::_on_sidebar_item_selected);
+    ClassDB::bind_method(D_METHOD("_on_sidebar_gui_input", "event", "tab_name"), &ToolWorkspace::_on_sidebar_gui_input);
+    ClassDB::bind_method(D_METHOD("_on_sidebar_context_action", "action_id"), &ToolWorkspace::_on_sidebar_context_action);
+    ClassDB::bind_method(D_METHOD("_on_domain_commit_completed", "action_name"), &ToolWorkspace::_on_domain_commit_completed);
+    ClassDB::bind_method(D_METHOD("_on_dirty_banner_action_pressed"), &ToolWorkspace::_on_dirty_banner_action_pressed);
 }
 
-IdeamToolWorkspace::IdeamToolWorkspace() {
+ToolWorkspace::ToolWorkspace() {
     set_anchors_preset(PRESET_FULL_RECT);
     set_h_size_flags(SIZE_EXPAND_FILL);
     set_v_size_flags(SIZE_EXPAND_FILL);
@@ -111,7 +128,7 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     sidebar_context_menu_->add_item("Copy Resource UID", CTX_COPY_UID);
     sidebar_context_menu_->connect("id_pressed", Callable(this, "_on_sidebar_context_action"));
 
-    // --- Row 1: Command Bar (GraphComposer / MemoryProfiler Pattern) ---
+    // --- Row 1: Command Bar ---
     command_bar_ = memnew(HBoxContainer);
     command_bar_->set_h_size_flags(SIZE_EXPAND_FILL);
     add_child(command_bar_);
@@ -138,7 +155,7 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     update_policy_btn_->add_item("Updates: Manual", static_cast<int>(UPDATE_EXPLICIT_TRIGGER));
     update_policy_btn_->select(static_cast<int>(UPDATE_ON_COMMIT));
     update_policy_btn_->set_tooltip_text(
-        "Controls when Tier 1 edits commit to the underlying Resource and trigger downstream rebuilds."
+        "Controls when DomainTool edits commit to the underlying Resource and trigger downstream rebuilds."
     );
     command_bar_->add_child(update_policy_btn_);
     update_policy_btn_->connect("item_selected", Callable(this, "_on_update_policy_selected"));
@@ -146,6 +163,12 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     custom_actions_box_ = memnew(HBoxContainer);
     custom_actions_box_->set_h_size_flags(SIZE_EXPAND_FILL);
     command_bar_->add_child(custom_actions_box_);
+
+    help_btn_ = memnew(Button);
+    help_btn_->set_text("?");
+    help_btn_->set_tooltip_text("Open guided help & tutorials for this workspace (F1)");
+    command_bar_->add_child(help_btn_);
+    help_btn_->connect("pressed", Callable(this, "_on_help_pressed"));
 
     // --- Row 2: Optional Ribbon / Dirty-Pipeline Banner ---
     ribbon_slot_ = memnew(PanelContainer);
@@ -167,25 +190,22 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     dirty_banner_box_->add_child(dirty_banner_action_btn_);
     dirty_banner_action_btn_->connect("pressed", Callable(this, "_on_dirty_banner_action_pressed"));
 
-    // --- Row 3: 3-Pane Workspace (Left Sidebar | Center Tier-1 Host | Right Inspector) ---
+    // --- Row 3: 3-Pane Workspace (Left Sidebar | Center DomainTool Host | Right Inspector) ---
     workspace_split_ = memnew(HSplitContainer);
     workspace_split_->set_h_size_flags(SIZE_EXPAND_FILL);
     workspace_split_->set_v_size_flags(SIZE_EXPAND_FILL);
     add_child(workspace_split_);
 
-    // Column A: Sidebar Tabs (MemoryProfiler Pattern)
     sidebar_tabs_ = memnew(TabContainer);
     sidebar_tabs_->set_custom_minimum_size(Vector2(210.0f, 0.0f));
     sidebar_tabs_->set_v_size_flags(SIZE_EXPAND_FILL);
     workspace_split_->add_child(sidebar_tabs_);
 
-    // Inner Horizontal Split: Center Tier-1 Control vs. Right RuntimeInspector
     workspace_inner_split_ = memnew(HSplitContainer);
     workspace_inner_split_->set_h_size_flags(SIZE_EXPAND_FILL);
     workspace_inner_split_->set_v_size_flags(SIZE_EXPAND_FILL);
     workspace_split_->add_child(workspace_inner_split_);
 
-    // Column B: Center Tier-1 Viewport / Editor Host
     center_scroll_ = memnew(ScrollContainer);
     center_scroll_->set_h_size_flags(SIZE_EXPAND_FILL);
     center_scroll_->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -205,7 +225,6 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     empty_state_label_->set_v_size_flags(SIZE_EXPAND_FILL);
     center_host_->add_child(empty_state_label_);
 
-    // Column C: Right-Hand Inspector Pane (Runtime + Editor Parity)
     inspector_panel_ = memnew(PanelContainer);
     inspector_panel_->set_custom_minimum_size(Vector2(260.0f, 0.0f));
     inspector_panel_->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -225,14 +244,28 @@ IdeamToolWorkspace::IdeamToolWorkspace() {
     runtime_inspector_->set_v_size_flags(SIZE_EXPAND_FILL);
     inspector_vbox_->add_child(runtime_inspector_);
 
+    _stamp_ui_selectors();
     _connect_context_signals();
 }
 
-IdeamToolWorkspace::~IdeamToolWorkspace() {
+ToolWorkspace::~ToolWorkspace() {
     _disconnect_context_signals();
 }
 
-void IdeamToolWorkspace::_connect_context_signals() {
+void ToolWorkspace::_stamp_ui_selectors() {
+    const String prefix = String(workspace_id_) + "/";
+    set_meta("ideam_ui_selector", String(workspace_id_));
+    if (command_bar_) command_bar_->set_meta("ideam_ui_selector", prefix + "command_bar");
+    if (save_btn_) save_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/save_btn");
+    if (save_all_btn_) save_all_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/save_all_btn");
+    if (update_policy_btn_) update_policy_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/update_policy_btn");
+    if (help_btn_) help_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/help_btn");
+    if (sidebar_tabs_) sidebar_tabs_->set_meta("ideam_ui_selector", prefix + "sidebar");
+    if (center_host_) center_host_->set_meta("ideam_ui_selector", prefix + "center_host");
+    if (inspector_panel_) inspector_panel_->set_meta("ideam_ui_selector", prefix + "inspector");
+}
+
+void ToolWorkspace::_connect_context_signals() {
     if (tool_context_.is_null()) {
         return;
     }
@@ -250,7 +283,7 @@ void IdeamToolWorkspace::_connect_context_signals() {
     }
 }
 
-void IdeamToolWorkspace::_disconnect_context_signals() {
+void ToolWorkspace::_disconnect_context_signals() {
     if (tool_context_.is_null()) {
         return;
     }
@@ -268,11 +301,16 @@ void IdeamToolWorkspace::_disconnect_context_signals() {
     }
 }
 
-void IdeamToolWorkspace::_input(const Ref<InputEvent> &p_event) {
+void ToolWorkspace::_input(const Ref<InputEvent> &p_event) {
     if (!is_visible_in_tree() || p_event.is_null()) {
         return;
     }
     if (Ref<InputEventKey> key = p_event; key.is_valid() && key->is_pressed() && !key->is_echo()) {
+        if (key->get_keycode() == KEY_F1) {
+            request_workspace_help();
+            get_viewport()->set_input_as_handled();
+            return;
+        }
         if (key->is_command_or_control_pressed()) {
             if (key->get_keycode() == KEY_S) {
                 if (key->is_shift_pressed()) {
@@ -293,15 +331,34 @@ void IdeamToolWorkspace::_input(const Ref<InputEvent> &p_event) {
 // Identity, Configuration & Embeddability
 // ============================================================================
 
-void IdeamToolWorkspace::set_workspace_id(const StringName &p_id) {
+void ToolWorkspace::set_workspace_id(const StringName &p_id) {
     workspace_id_ = p_id;
-    const auto tabs = IdeamTier1ControlRegistry::get_singleton().get_sidebar_tabs_for_workspace(workspace_id_);
+    _stamp_ui_selectors();
+    const auto tabs = ToolRegistry::get_singleton().get_sidebar_tabs_for_workspace(workspace_id_);
     for (const auto &tab : tabs) {
         ensure_sidebar_tab(tab);
     }
 }
 
-void IdeamToolWorkspace::configure_theme_registry(const String &p_registry_path) {
+bool ToolWorkspace::request_workspace_help(const String &p_ui_selector) {
+    const StringName topic = help_topic_id_ == StringName() ? workspace_id_ : help_topic_id_;
+    const String selector  = p_ui_selector.is_empty() ? String(workspace_id_) : p_ui_selector;
+
+    Dictionary ctx;
+    ctx["workspace_id"] = String(workspace_id_);
+    if (active_asset_.is_valid()) {
+        ctx["active_asset_class"] = active_asset_->get_class();
+        ctx["active_asset_path"]  = active_asset_->get_path();
+    }
+
+    emit_signal("help_requested", topic, selector);
+    if (tool_context_.is_valid()) {
+        return tool_context_->request_help(topic, selector, ctx);
+    }
+    return ToolRegistry::get_singleton().dispatch_help_request(topic, selector, ctx);
+}
+
+void ToolWorkspace::configure_theme_registry(const String &p_registry_path) {
     theme_registry_path_ = p_registry_path;
     if (theme_selector_ui_ && !theme_registry_path_.is_empty()) {
         theme_selector_ui_->setup(theme_registry_path_);
@@ -309,14 +366,14 @@ void IdeamToolWorkspace::configure_theme_registry(const String &p_registry_path)
     }
 }
 
-void IdeamToolWorkspace::ensure_sidebar_tab(const String &p_tab_name) {
+void ToolWorkspace::ensure_sidebar_tab(const String &p_tab_name) {
     if (p_tab_name.is_empty()) {
         return;
     }
     (void)_get_or_create_sidebar_bucket(p_tab_name);
 }
 
-void IdeamToolWorkspace::set_tool_context(const Ref<IdeamToolContext> &p_context) {
+void ToolWorkspace::set_tool_context(const Ref<ToolContext> &p_context) {
     if (tool_context_ == p_context) {
         return;
     }
@@ -327,7 +384,6 @@ void IdeamToolWorkspace::set_tool_context(const Ref<IdeamToolContext> &p_context
     }
     _connect_context_signals();
 
-    // Sync local UI to the incoming shared context
     if (tool_context_->get_active_theme().is_valid()) {
         set_theme(tool_context_->get_active_theme());
     }
@@ -337,27 +393,19 @@ void IdeamToolWorkspace::set_tool_context(const Ref<IdeamToolContext> &p_context
     _rebuild_sidebar_lists();
 }
 
-void IdeamToolWorkspace::set_chrome_visibility(
+void ToolWorkspace::set_chrome_visibility(
     bool p_show_command_bar,
     bool p_show_sidebar,
     bool p_show_inspector,
     bool p_show_ribbon
 ) {
-    if (command_bar_) {
-        command_bar_->set_visible(p_show_command_bar);
-    }
-    if (sidebar_tabs_) {
-        sidebar_tabs_->set_visible(p_show_sidebar);
-    }
-    if (inspector_panel_) {
-        inspector_panel_->set_visible(p_show_inspector);
-    }
-    if (ribbon_slot_) {
-        ribbon_slot_->set_visible(p_show_ribbon);
-    }
+    if (command_bar_) command_bar_->set_visible(p_show_command_bar);
+    if (sidebar_tabs_) sidebar_tabs_->set_visible(p_show_sidebar);
+    if (inspector_panel_) inspector_panel_->set_visible(p_show_inspector);
+    if (ribbon_slot_) ribbon_slot_->set_visible(p_show_ribbon);
 }
 
-void IdeamToolWorkspace::set_dirty_banner(
+void ToolWorkspace::set_dirty_banner(
     bool p_visible,
     const String &p_message,
     const String &p_action_label
@@ -375,10 +423,10 @@ void IdeamToolWorkspace::set_dirty_banner(
 }
 
 // ============================================================================
-// Sidebar & Tier 1 Control Orchestration
+// Sidebar & DomainTool Control Orchestration
 // ============================================================================
 
-IdeamToolWorkspace::SidebarTabBucket *IdeamToolWorkspace::_get_or_create_sidebar_bucket(const String &p_tab_name) {
+ToolWorkspace::SidebarTabBucket *ToolWorkspace::_get_or_create_sidebar_bucket(const String &p_tab_name) {
     for (auto &bucket : sidebar_buckets_) {
         if (bucket.tab_name == p_tab_name) {
             return &bucket;
@@ -389,6 +437,7 @@ IdeamToolWorkspace::SidebarTabBucket *IdeamToolWorkspace::_get_or_create_sidebar
     list->set_h_size_flags(SIZE_EXPAND_FILL);
     list->set_v_size_flags(SIZE_EXPAND_FILL);
     list->set_focus_mode(FOCUS_ALL);
+    list->set_meta("ideam_ui_selector", String(workspace_id_) + "/sidebar/" + p_tab_name);
     sidebar_tabs_->add_child(list);
 
     list->connect("item_selected", Callable(this, "_on_sidebar_item_selected").bind(p_tab_name));
@@ -398,7 +447,7 @@ IdeamToolWorkspace::SidebarTabBucket *IdeamToolWorkspace::_get_or_create_sidebar
     return &sidebar_buckets_.back();
 }
 
-String IdeamToolWorkspace::_resolve_asset_display_name(const Ref<Resource> &p_asset) const {
+String ToolWorkspace::_resolve_asset_display_name(const Ref<Resource> &p_asset) const {
     if (p_asset.is_null()) {
         return "Invalid Asset";
     }
@@ -416,14 +465,14 @@ String IdeamToolWorkspace::_resolve_asset_display_name(const Ref<Resource> &p_as
     return label;
 }
 
-String IdeamToolWorkspace::_resolve_sidebar_tab_for_asset(
+String ToolWorkspace::_resolve_sidebar_tab_for_asset(
     const Ref<Resource> &p_asset,
     const String &p_tab_override
 ) const {
     if (!p_tab_override.is_empty()) {
         return p_tab_override;
     }
-    if (const auto *desc = IdeamTier1ControlRegistry::get_singleton().find_descriptor_for_resource(workspace_id_, p_asset)) {
+    if (const auto *desc = ToolRegistry::get_singleton().find_descriptor_for_resource(workspace_id_, p_asset)) {
         if (!desc->sidebar_tab.is_empty()) {
             return desc->sidebar_tab;
         }
@@ -431,15 +480,15 @@ String IdeamToolWorkspace::_resolve_sidebar_tab_for_asset(
     return "General";
 }
 
-Control *IdeamToolWorkspace::_create_tier1_control_for_asset(const Ref<Resource> &p_asset) {
-    const auto *desc = IdeamTier1ControlRegistry::get_singleton().find_descriptor_for_resource(workspace_id_, p_asset);
+Control *ToolWorkspace::_create_domain_control_for_asset(const Ref<Resource> &p_asset) {
+    const auto *desc = ToolRegistry::get_singleton().find_descriptor_for_resource(workspace_id_, p_asset);
     if (desc && desc->create_control) {
         return desc->create_control(p_asset, tool_context_);
     }
     return nullptr;
 }
 
-void IdeamToolWorkspace::_rebuild_sidebar_lists() {
+void ToolWorkspace::_rebuild_sidebar_lists() {
     for (auto &bucket : sidebar_buckets_) {
         if (!bucket.item_list) {
             continue;
@@ -460,10 +509,10 @@ void IdeamToolWorkspace::_rebuild_sidebar_lists() {
     }
 }
 
-void IdeamToolWorkspace::_clear_center_view() {
+void ToolWorkspace::_clear_center_view() {
     for (auto &entry : open_assets_) {
-        if (entry.tier1_control) {
-            entry.tier1_control->set_visible(false);
+        if (entry.domain_control) {
+            entry.domain_control->set_visible(false);
         }
     }
     if (empty_state_label_) {
@@ -471,50 +520,55 @@ void IdeamToolWorkspace::_clear_center_view() {
     }
 }
 
-void IdeamToolWorkspace::_show_asset_in_center(OpenAssetEntry &p_entry) {
+void ToolWorkspace::_show_asset_in_center(OpenAssetEntry &p_entry) {
     for (auto &entry : open_assets_) {
-        if (entry.tier1_control) {
-            entry.tier1_control->set_visible(false);
+        if (entry.domain_control) {
+            entry.domain_control->set_visible(false);
         }
     }
 
-    if (!p_entry.tier1_control) {
-        p_entry.tier1_control = _create_tier1_control_for_asset(p_entry.asset);
-        if (p_entry.tier1_control) {
-            p_entry.tier1_control->set_h_size_flags(SIZE_EXPAND_FILL);
-            p_entry.tier1_control->set_v_size_flags(SIZE_EXPAND_FILL);
-            center_host_->add_child(p_entry.tier1_control);
+    if (!p_entry.domain_control) {
+        p_entry.domain_control = _create_domain_control_for_asset(p_entry.asset);
+        if (p_entry.domain_control) {
+            p_entry.domain_control->set_h_size_flags(SIZE_EXPAND_FILL);
+            p_entry.domain_control->set_v_size_flags(SIZE_EXPAND_FILL);
+            if (!p_entry.domain_control->has_meta("ideam_ui_selector")) {
+                p_entry.domain_control->set_meta(
+                    "ideam_ui_selector",
+                    String(workspace_id_) + "/center_host/" + String(p_entry.asset->get_class())
+                );
+            }
+            center_host_->add_child(p_entry.domain_control);
 
-            // Propagate current update policy if the Tier 1 control supports it
-            if (tool_context_.is_valid() && p_entry.tier1_control->has_method("set_update_commit_policy")) {
-                p_entry.tier1_control->call(
+            if (tool_context_.is_valid() && p_entry.domain_control->has_method("set_update_commit_policy")) {
+                p_entry.domain_control->call(
                     "set_update_commit_policy",
                     static_cast<int>(tool_context_->get_update_commit_policy())
                 );
             }
-            if (p_entry.tier1_control->has_signal("commit_completed")) {
-                p_entry.tier1_control->connect(
+            if (p_entry.domain_control->has_signal("commit_completed")) {
+                p_entry.domain_control->connect(
                     "commit_completed",
-                    Callable(this, "_on_tier1_commit_completed")
+                    Callable(this, "_on_domain_commit_completed")
                 );
             }
         }
     }
 
-    if (p_entry.tier1_control) {
-        p_entry.tier1_control->set_visible(true);
+    if (p_entry.domain_control) {
+        p_entry.domain_control->set_visible(true);
         if (empty_state_label_) {
             empty_state_label_->set_visible(false);
         }
     } else if (empty_state_label_) {
         empty_state_label_->set_text(
-            String("No Tier 1 editor registered for ") + String(p_entry.asset->get_class()) + "."
+            String("No DomainTool editor registered for ") + String(p_entry.asset->get_class()) + "."
         );
         empty_state_label_->set_visible(true);
     }
 }
 
-void IdeamToolWorkspace::_refresh_inspector_for_asset(const Ref<Resource> &p_asset) {
+void ToolWorkspace::_refresh_inspector_for_asset(const Ref<Resource> &p_asset) {
     if (!inspector_title_ || !runtime_inspector_) {
         return;
     }
@@ -531,7 +585,7 @@ void IdeamToolWorkspace::_refresh_inspector_for_asset(const Ref<Resource> &p_ass
 // Asset Lifecycle API
 // ============================================================================
 
-bool IdeamToolWorkspace::open_asset(const Ref<Resource> &p_asset, const String &p_tab_override) {
+bool ToolWorkspace::open_asset(const Ref<Resource> &p_asset, const String &p_tab_override) {
     if (p_asset.is_null()) {
         return false;
     }
@@ -557,17 +611,17 @@ bool IdeamToolWorkspace::open_asset(const Ref<Resource> &p_asset, const String &
     return true;
 }
 
-void IdeamToolWorkspace::close_asset(const Ref<Resource> &p_asset) {
+void ToolWorkspace::close_asset(const Ref<Resource> &p_asset) {
     if (p_asset.is_null()) {
         return;
     }
     for (size_t i = 0; i < open_assets_.size(); ++i) {
         if (open_assets_[i].asset == p_asset) {
-            if (open_assets_[i].tier1_control) {
-                if (open_assets_[i].tier1_control->get_parent()) {
-                    open_assets_[i].tier1_control->get_parent()->remove_child(open_assets_[i].tier1_control);
+            if (open_assets_[i].domain_control) {
+                if (open_assets_[i].domain_control->get_parent()) {
+                    open_assets_[i].domain_control->get_parent()->remove_child(open_assets_[i].domain_control);
                 }
-                open_assets_[i].tier1_control->queue_free();
+                open_assets_[i].domain_control->queue_free();
             }
             open_assets_.erase(open_assets_.begin() + static_cast<ptrdiff_t>(i));
             emit_signal("asset_closed", p_asset);
@@ -591,13 +645,13 @@ void IdeamToolWorkspace::close_asset(const Ref<Resource> &p_asset) {
     }
 }
 
-void IdeamToolWorkspace::close_all_assets() {
+void ToolWorkspace::close_all_assets() {
     for (auto &entry : open_assets_) {
-        if (entry.tier1_control) {
-            if (entry.tier1_control->get_parent()) {
-                entry.tier1_control->get_parent()->remove_child(entry.tier1_control);
+        if (entry.domain_control) {
+            if (entry.domain_control->get_parent()) {
+                entry.domain_control->get_parent()->remove_child(entry.domain_control);
             }
-            entry.tier1_control->queue_free();
+            entry.domain_control->queue_free();
         }
     }
     open_assets_.clear();
@@ -610,7 +664,7 @@ void IdeamToolWorkspace::close_all_assets() {
     }
 }
 
-void IdeamToolWorkspace::select_asset(const Ref<Resource> &p_asset) {
+void ToolWorkspace::select_asset(const Ref<Resource> &p_asset) {
     if (p_asset.is_null()) {
         active_asset_.unref();
         _clear_center_view();
@@ -622,7 +676,6 @@ void IdeamToolWorkspace::select_asset(const Ref<Resource> &p_asset) {
     for (auto &entry : open_assets_) {
         if (entry.asset == p_asset) {
             active_asset_ = p_asset;
-            // Switch sidebar tab to match this asset's category
             for (int t = 0; t < static_cast<int>(sidebar_buckets_.size()); ++t) {
                 if (sidebar_buckets_[static_cast<size_t>(t)].tab_name == entry.sidebar_tab) {
                     sidebar_tabs_->set_current_tab(t);
@@ -643,7 +696,7 @@ void IdeamToolWorkspace::select_asset(const Ref<Resource> &p_asset) {
     }
 }
 
-bool IdeamToolWorkspace::save_asset(const Ref<Resource> &p_asset) {
+bool ToolWorkspace::save_asset(const Ref<Resource> &p_asset) {
     if (p_asset.is_null()) {
         return false;
     }
@@ -675,11 +728,11 @@ bool IdeamToolWorkspace::save_asset(const Ref<Resource> &p_asset) {
     return true;
 }
 
-bool IdeamToolWorkspace::save_active_asset() {
+bool ToolWorkspace::save_active_asset() {
     return save_asset(active_asset_);
 }
 
-int IdeamToolWorkspace::save_all_assets() {
+int ToolWorkspace::save_all_assets() {
     int saved = 0;
     for (const auto &entry : open_assets_) {
         if (save_asset(entry.asset)) {
@@ -693,7 +746,7 @@ int IdeamToolWorkspace::save_all_assets() {
 // Signal Handlers
 // ============================================================================
 
-void IdeamToolWorkspace::_on_theme_applied(const Ref<Theme> &p_theme, int p_index) {
+void ToolWorkspace::_on_theme_applied(const Ref<Theme> &p_theme, int p_index) {
     if (tool_context_.is_valid()) {
         tool_context_->set_active_theme(p_theme, p_index);
     } else {
@@ -701,30 +754,30 @@ void IdeamToolWorkspace::_on_theme_applied(const Ref<Theme> &p_theme, int p_inde
     }
 }
 
-void IdeamToolWorkspace::_on_context_theme_changed(const Ref<Theme> &p_theme, int p_index) {
+void ToolWorkspace::_on_context_theme_changed(const Ref<Theme> &p_theme, int p_index) {
     (void)p_index;
     set_theme(p_theme.is_valid() ? p_theme : Ref<Theme>());
 }
 
-void IdeamToolWorkspace::_on_update_policy_selected(int p_index) {
-    const auto policy = static_cast<IdeamUpdateCommitPolicy>(std::clamp(p_index, 0, 2));
+void ToolWorkspace::_on_update_policy_selected(int p_index) {
+    const auto policy = static_cast<UpdateCommitPolicy>(std::clamp(p_index, 0, 2));
     if (tool_context_.is_valid()) {
         tool_context_->set_update_commit_policy(policy);
     }
 }
 
-void IdeamToolWorkspace::_on_context_update_policy_changed(int p_policy) {
+void ToolWorkspace::_on_context_update_policy_changed(int p_policy) {
     if (update_policy_btn_ && update_policy_btn_->get_selected() != p_policy) {
         update_policy_btn_->select(p_policy);
     }
     for (auto &entry : open_assets_) {
-        if (entry.tier1_control && entry.tier1_control->has_method("set_update_commit_policy")) {
-            entry.tier1_control->call("set_update_commit_policy", p_policy);
+        if (entry.domain_control && entry.domain_control->has_method("set_update_commit_policy")) {
+            entry.domain_control->call("set_update_commit_policy", p_policy);
         }
     }
 }
 
-void IdeamToolWorkspace::_on_context_asset_dirty_changed(const Ref<Resource> &p_asset, bool p_dirty) {
+void ToolWorkspace::_on_context_asset_dirty_changed(const Ref<Resource> &p_asset, bool p_dirty) {
     (void)p_asset;
     _rebuild_sidebar_lists();
     if (tool_context_.is_valid() &&
@@ -734,15 +787,19 @@ void IdeamToolWorkspace::_on_context_asset_dirty_changed(const Ref<Resource> &p_
     }
 }
 
-void IdeamToolWorkspace::_on_save_pressed() {
+void ToolWorkspace::_on_save_pressed() {
     save_active_asset();
 }
 
-void IdeamToolWorkspace::_on_save_all_pressed() {
+void ToolWorkspace::_on_save_all_pressed() {
     save_all_assets();
 }
 
-void IdeamToolWorkspace::_on_sidebar_item_selected(int p_index, const String &p_tab_name) {
+void ToolWorkspace::_on_help_pressed() {
+    request_workspace_help();
+}
+
+void ToolWorkspace::_on_sidebar_item_selected(int p_index, const String &p_tab_name) {
     int bucket_idx = 0;
     for (const auto &entry : open_assets_) {
         if (entry.sidebar_tab != p_tab_name) {
@@ -756,7 +813,7 @@ void IdeamToolWorkspace::_on_sidebar_item_selected(int p_index, const String &p_
     }
 }
 
-void IdeamToolWorkspace::_on_sidebar_gui_input(const Ref<InputEvent> &p_event, const String &p_tab_name) {
+void ToolWorkspace::_on_sidebar_gui_input(const Ref<InputEvent> &p_event, const String &p_tab_name) {
     Ref<InputEventMouseButton> mb = p_event;
     if (mb.is_null() || !mb->is_pressed() || mb->get_button_index() != MOUSE_BUTTON_RIGHT) {
         return;
@@ -794,7 +851,7 @@ void IdeamToolWorkspace::_on_sidebar_gui_input(const Ref<InputEvent> &p_event, c
     }
 }
 
-void IdeamToolWorkspace::_on_sidebar_context_action(int p_action_id) {
+void ToolWorkspace::_on_sidebar_context_action(int p_action_id) {
     if (context_target_asset_.is_null()) {
         return;
     }
@@ -828,14 +885,14 @@ void IdeamToolWorkspace::_on_sidebar_context_action(int p_action_id) {
     }
 }
 
-void IdeamToolWorkspace::_on_tier1_commit_completed(const String &p_action_name) {
+void ToolWorkspace::_on_domain_commit_completed(const String &p_action_name) {
     (void)p_action_name;
     if (active_asset_.is_valid() && tool_context_.is_valid()) {
         tool_context_->mark_asset_dirty(active_asset_, true);
     }
 }
 
-void IdeamToolWorkspace::_on_dirty_banner_action_pressed() {
+void ToolWorkspace::_on_dirty_banner_action_pressed() {
     if (tool_context_.is_valid()) {
         tool_context_->request_explicit_rebuild(active_asset_, "User triggered workspace rebuild");
     }
@@ -843,8 +900,8 @@ void IdeamToolWorkspace::_on_dirty_banner_action_pressed() {
     set_dirty_banner(false);
 }
 
-Window *IdeamToolWorkspace::create_workspace_window(
-    IdeamToolWorkspace *p_workspace,
+Window *ToolWorkspace::create_workspace_window(
+    ToolWorkspace *p_workspace,
     const String &p_title,
     const Vector2i &p_min_size
 ) {

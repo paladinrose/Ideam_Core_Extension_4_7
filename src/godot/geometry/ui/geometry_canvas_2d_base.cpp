@@ -341,7 +341,7 @@ void GeometryCanvas2DBase::set_y_down(bool p_y_down) {
     queue_redraw();
 }
 
-void GeometryCanvas2DBase::set_update_commit_policy(IdeamUpdateCommitPolicy p_policy) {
+void GeometryCanvas2DBase::set_update_commit_policy(UpdateCommitPolicy p_policy) {
     update_commit_policy = p_policy;
 }
 

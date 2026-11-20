@@ -1,7 +1,7 @@
 #include "project_scaffold_engine.h"
 
 #include "ideam_project_contribution_registry.h"
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 
 #include <godot_cpp/classes/config_file.hpp>
 #include <godot_cpp/classes/dir_access.hpp>
@@ -779,7 +779,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
         if (ResourceSaver::get_singleton()->save(res, full_path) == OK) {
             created_resources.push_back(full_path);
             generated_resources[r->get_resource_name()] = res;
-            if (const auto *desc = IdeamTier1ControlRegistry::get_singleton().find_any_descriptor_for_resource(res)) {
+            if (const auto *desc = ToolRegistry::get_singleton().find_any_descriptor_for_resource(res)) {
                 owner_workspaces[full_path] = String(desc->workspace_id);
             }
         }

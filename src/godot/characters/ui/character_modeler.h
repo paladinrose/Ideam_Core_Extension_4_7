@@ -2,7 +2,7 @@
 
 /**
  * character_modeler.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) for the IdeamCharacters domain
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) for the IdeamCharacters domain
  * (`src/godot/characters/ui/`).
  *
  * Sidebar Tabs:
@@ -10,7 +10,7 @@
  *   - `Apparel`: `CharacterApparelResource`
  */
 
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/control.hpp>
@@ -20,8 +20,8 @@
 
 namespace ideam::godot_ext {
 
-class CharacterModeler : public IdeamToolWorkspace {
-    GDCLASS(CharacterModeler, IdeamToolWorkspace)
+class CharacterModeler : public ToolWorkspace {
+    GDCLASS(CharacterModeler, ToolWorkspace)
 
 private:
     static CharacterModeler *shared_instance_;

@@ -87,7 +87,7 @@ ProceduralComposer *ProceduralComposer::get_or_create_shared_composer(Control *p
     }
 
     shared_instance_ = memnew(ProceduralComposer);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam ProceduralComposer",
         Vector2i(1100, 700)

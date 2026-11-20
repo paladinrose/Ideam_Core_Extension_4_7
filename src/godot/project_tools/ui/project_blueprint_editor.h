@@ -5,7 +5,7 @@
  * Reusable Tier 1 Control (`godot::VBoxContainer`) for viewing and editing a
  * `ProjectBlueprintResource` or single `ProjectModuleManifest` (Phase 2).
  *
- * Registered in `IdeamTier1ControlRegistry` for `ProjectWorkspace::WORKSPACE_ID` so it can be
+ * Registered in `ToolRegistry` for `ProjectWorkspace::WORKSPACE_ID` so it can be
  * hosted inside `ProjectWorkspace` OR embedded inside future Tier 3–5 meta-tools.
  *
  * Capabilities:
@@ -13,12 +13,12 @@
  *   - Checkbox toggling in Wizard mode & Add/Remove authoring controls in Author mode
  *   - Live dry-run validation status badges per item
  *   - Embedded Tier 1 Preview slot: when a `ProjectResourceSpec` is selected whose `resource_class`
- *     has a registered Tier 1 control in `IdeamTier1ControlRegistry`, allows live visual previewing!
+ *     has a registered Tier 1 control in `ToolRegistry`, allows live visual previewing!
  */
 
 #include "../project_blueprint_resource.h"
 #include "../project_scaffold_engine.h"
-#include "../../controls/ideam_tool_context.h"
+#include "../../tools/tool_context.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/h_box_container.hpp>
@@ -48,7 +48,7 @@ public:
 private:
     godot::Ref<ProjectBlueprintResource> blueprint_;
     godot::Ref<ProjectModuleManifest> single_manifest_;
-    godot::Ref<IdeamToolContext> tool_context_;
+    godot::Ref<ToolContext> tool_context_;
     godot::Ref<ProjectScaffoldEngine> engine_;
     EditorMode mode_ = MODE_WIZARD;
 
@@ -86,7 +86,7 @@ public:
     ProjectBlueprintEditor();
     ~ProjectBlueprintEditor() override = default;
 
-    void set_tool_context(const godot::Ref<IdeamToolContext> &p_context) { tool_context_ = p_context; }
+    void set_tool_context(const godot::Ref<ToolContext> &p_context) { tool_context_ = p_context; }
     void set_blueprint(const godot::Ref<ProjectBlueprintResource> &p_blueprint);
     [[nodiscard]] godot::Ref<ProjectBlueprintResource> get_blueprint() const { return blueprint_; }
 

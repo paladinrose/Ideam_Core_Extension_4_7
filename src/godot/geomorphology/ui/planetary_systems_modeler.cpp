@@ -66,7 +66,7 @@ void PlanetarySystemsModeler::_on_step_sim_pressed() {
 }
 
 void PlanetarySystemsModeler::_on_dirty_banner_action_pressed() {
-    IdeamToolWorkspace::_on_dirty_banner_action_pressed();
+    ToolWorkspace::_on_dirty_banner_action_pressed();
 }
 
 PlanetarySystemsModeler *PlanetarySystemsModeler::get_or_create_shared_modeler(Control *p_owner) {
@@ -88,7 +88,7 @@ PlanetarySystemsModeler *PlanetarySystemsModeler::get_or_create_shared_modeler(C
     }
 
     shared_instance_ = memnew(PlanetarySystemsModeler);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam PlanetarySystemsModeler",
         Vector2i(1180, 740)

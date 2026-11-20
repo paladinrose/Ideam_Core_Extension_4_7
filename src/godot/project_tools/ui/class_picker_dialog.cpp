@@ -1,6 +1,6 @@
 #include "class_picker_dialog.h"
 
-#include "../../controls/ideam_tier1_control_registry.h"
+#include "../../tools/tool_registry.h"
 
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/tree_item.hpp>
@@ -96,14 +96,14 @@ void ClassPickerDialog::_rebuild_tree() {
         return cdb && (p_cls == base_filter_ || cdb->is_parent_class(p_cls, base_filter_));
     };
 
-    // 1. Ideam Registered Tool Classes (from IdeamTier1ControlRegistry)
+    // 1. Ideam Registered Tool Classes (from ToolRegistry)
     std::unordered_set<std::string> listed_ideam_classes;
     TreeItem *ideam_group = class_tree_->create_item(root);
     ideam_group->set_text(0, "Ideam Tool-Backed Classes");
     ideam_group->set_selectable(0, false);
     ideam_group->set_selectable(1, false);
 
-    const auto &descs = IdeamTier1ControlRegistry::get_singleton().get_all_descriptors();
+    const auto &descs = ToolRegistry::get_singleton().get_all_descriptors();
     int ideam_count   = 0;
     for (const auto &d : descs) {
         const String cls_name(d.resource_class);

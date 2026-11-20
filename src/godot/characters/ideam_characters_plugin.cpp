@@ -1,6 +1,6 @@
 #include "ideam_characters_plugin.h"
 
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "character_blueprint_resource.h"
 #include "ui/character_modeler.h"
 #include "ui/character_morph_slider_panel.h"
@@ -56,13 +56,13 @@ void IdeamCharactersPlugin::_enter_tree() {
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
 
     reg.register_workspace_launcher({
         ws_id,
         "Character Modeler",
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (CharacterModeler *modeler = CharacterModeler::get_or_create_shared_modeler()) {
                 if (p_ctx.is_valid()) modeler->set_tool_context(p_ctx);
                 modeler->open_asset(p_asset);
@@ -72,7 +72,7 @@ void IdeamCharactersPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "CharacterBlueprintResource", "Blueprints", "Character Blueprint", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             Ref<CharacterBlueprintResource> bp = p_asset;
             if (bp.is_null()) return nullptr;
@@ -97,7 +97,7 @@ void IdeamCharactersPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "CharacterApparelResource", "Apparel", "Character Apparel", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             (void)p_ctx;
             if (p_asset.is_null()) return nullptr;
@@ -115,7 +115,7 @@ void IdeamCharactersPlugin::_enter_tree() {
 }
 
 void IdeamCharactersPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(CharacterModeler::WORKSPACE_ID);
     reg.unregister_class(ws_id, "CharacterBlueprintResource");
     reg.unregister_class(ws_id, "CharacterApparelResource");

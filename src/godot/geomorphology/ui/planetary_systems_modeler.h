@@ -2,7 +2,7 @@
 
 /**
  * planetary_systems_modeler.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) unifying Geomorphology, Climatology,
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) unifying Geomorphology, Climatology,
  * and Ecology (`src/godot/geomorphology/ui/`).
  *
  * Sidebar Tabs:
@@ -14,7 +14,7 @@
  * (`Terrain -> Atmosphere -> Biosphere`) plus a `"Step Active Simulation"` trigger in the command bar.
  */
 
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/control.hpp>
@@ -24,8 +24,8 @@
 
 namespace ideam::godot_ext {
 
-class PlanetarySystemsModeler : public IdeamToolWorkspace {
-    GDCLASS(PlanetarySystemsModeler, IdeamToolWorkspace)
+class PlanetarySystemsModeler : public ToolWorkspace {
+    GDCLASS(PlanetarySystemsModeler, ToolWorkspace)
 
 private:
     static PlanetarySystemsModeler *shared_instance_;

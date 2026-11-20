@@ -1,6 +1,6 @@
 #include "godot/geomorphology/ideam_geomorphology_plugin.h"
 
-#include "godot/controls/ideam_tier1_control_registry.h"
+#include "godot/tools/tool_registry.h"
 #include "godot/geomorphology/ui/geomorphology_map_layer_preview_canvas.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 #include "godot/geomorphology/ui/stratigraphic_column_inspector_control.h"
@@ -26,13 +26,13 @@ void IdeamGeomorphologyPlugin::_enter_tree() {
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
 
     reg.register_workspace_launcher({
         ws_id,
         "Planetary Systems Modeler",
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (PlanetarySystemsModeler *modeler = PlanetarySystemsModeler::get_or_create_shared_modeler()) {
                 if (p_ctx.is_valid()) modeler->set_tool_context(p_ctx);
                 modeler->open_asset(p_asset);
@@ -42,7 +42,7 @@ void IdeamGeomorphologyPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "GeomorphologyTerrainResource", "Geomorphology", "Geomorphology Terrain", UPDATE_EXPLICIT_TRIGGER,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             (void)p_ctx;
             Ref<GeomorphologyTerrainResource> terrain_res = p_asset;
@@ -110,7 +110,7 @@ void IdeamGeomorphologyPlugin::_enter_tree() {
 }
 
 void IdeamGeomorphologyPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
     reg.unregister_class(ws_id, "GeomorphologyTerrainResource");
     reg.unregister_workspace_launcher(ws_id);

@@ -1,5 +1,5 @@
 #include "ideam_quantum_darwinism_plugin.h"
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "../procedural_generation/ideam_procedural_generation_plugin.h"
 #include "../procedural_generation/ui/procedural_composer.h"
 #include "../../core/tasks/domains/quantum_darwinism/registration/quantum_darwinism_task_domain_pack.h"
@@ -92,12 +92,12 @@ void IdeamQuantumDarwinismPlugin::_enter_tree() {
     qd_inspector_.instantiate();
     add_inspector_plugin(qd_inspector_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(ProceduralComposer::WORKSPACE_ID);
 
     reg.register_control({
         ws_id, "QuantumDarwinismStabilizerResource", "Quantum Darwinism", "QD Stabilizer", UPDATE_EXPLICIT_TRIGGER,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             (void)p_ctx;
             if (p_asset.is_null()) return nullptr;
@@ -115,7 +115,7 @@ void IdeamQuantumDarwinismPlugin::_enter_tree() {
 }
 
 void IdeamQuantumDarwinismPlugin::_exit_tree() {
-    IdeamTier1ControlRegistry::get_singleton().unregister_class(
+    ToolRegistry::get_singleton().unregister_class(
         godot::StringName(ProceduralComposer::WORKSPACE_ID),
         "QuantumDarwinismStabilizerResource"
     );

@@ -1,25 +1,28 @@
 #pragma once
 
 /**
- * ideam_tool_workspace.h
- * Reusable Tier 2 orchestration workspace base (`godot::VBoxContainer`) in `src/godot/controls/`.
+ * tool_workspace.h
+ * Reusable BridgeTool / WorkflowTool orchestration workspace base (`godot::VBoxContainer`)
+ * in `src/godot/tools/`.
  *
  * Synthesizes the proven UI patterns of `GraphComposer` (command bar, `ThemeSelector`, save
  * workflow, window hosting) and `MemoryProfiler` (sidebar `TabContainer` of open-asset `ItemList`s,
  * central visualization host, right-hand inspector pane, optional top ribbon/banner, context menu).
  *
  * Design Contract:
- *   - Tier 2 workspaces NEVER mutate domain data directly; they orchestrate Tier 1 controls
- *     registered in `IdeamTier1ControlRegistry` (or via `_create_tier1_control_for_asset()`).
- *   - Embeddable-first: any Tier 2 workspace can run inside its own floating `godot::Window` OR
- *     be embedded directly inside a future Tier 3/4/5 meta-tool with shared `IdeamToolContext`
- *     and configurable chrome visibility (`set_chrome_visibility`).
+ *   - BridgeTool workspaces NEVER mutate domain data directly; they orchestrate DomainTool controls
+ *     registered in `ToolRegistry` (or via `_create_domain_control_for_asset()`).
+ *   - Embeddable-first: any workspace can run inside its own floating `godot::Window` OR be embedded
+ *     directly inside a SmartTool / WorkflowTool / AgentTool host sharing `ToolContext` and
+ *     configurable chrome visibility (`set_chrome_visibility`).
+ *   - Tutorials-ready: exposes a built-in Help (`?`) button in the command bar and stamps stable
+ *     `ideam_ui_selector` metadata keys on core panes and actions for `IdeamTutorials`.
  */
 
-#include "ideam_tier1_control_registry.h"
-#include "ideam_tool_context.h"
-#include "runtime_inspector.h"
-#include "theme_selector.h"
+#include "tool_context.h"
+#include "tool_registry.h"
+#include "../controls/runtime_inspector.h"
+#include "../controls/theme_selector.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/h_box_container.hpp>
@@ -43,8 +46,8 @@
 
 namespace ideam::godot_ext {
 
-class IdeamToolWorkspace : public godot::VBoxContainer {
-    GDCLASS(IdeamToolWorkspace, godot::VBoxContainer)
+class ToolWorkspace : public godot::VBoxContainer {
+    GDCLASS(ToolWorkspace, godot::VBoxContainer)
 
 public:
     enum SidebarContextAction : int32_t {
@@ -59,7 +62,7 @@ protected:
         godot::Ref<godot::Resource> asset;
         godot::String sidebar_tab;
         godot::String display_name;
-        godot::Control *tier1_control = nullptr;
+        godot::Control *domain_control = nullptr;
     };
 
     struct SidebarTabBucket {
@@ -67,17 +70,19 @@ protected:
         godot::ItemList *item_list = nullptr;
     };
 
-    godot::StringName workspace_id_ = godot::StringName("IdeamToolWorkspace");
+    godot::StringName workspace_id_ = godot::StringName("ToolWorkspace");
+    godot::StringName help_topic_id_;
     godot::String theme_registry_path_;
-    godot::Ref<IdeamToolContext> tool_context_;
+    godot::Ref<ToolContext> tool_context_;
 
     // Row 1: Command Bar
-    godot::HBoxContainer *command_bar_       = nullptr;
-    ThemeSelector *theme_selector_ui_        = nullptr;
-    godot::OptionButton *update_policy_btn_  = nullptr;
-    godot::Button *save_btn_                 = nullptr;
-    godot::Button *save_all_btn_             = nullptr;
+    godot::HBoxContainer *command_bar_        = nullptr;
+    ThemeSelector *theme_selector_ui_         = nullptr;
+    godot::OptionButton *update_policy_btn_   = nullptr;
+    godot::Button *save_btn_                  = nullptr;
+    godot::Button *save_all_btn_              = nullptr;
     godot::HBoxContainer *custom_actions_box_ = nullptr;
+    godot::Button *help_btn_                  = nullptr;
 
     // Row 2: Optional Ribbon / Dirty-Pipeline Banner
     godot::PanelContainer *ribbon_slot_      = nullptr;
@@ -85,7 +90,7 @@ protected:
     godot::Label *dirty_banner_label_        = nullptr;
     godot::Button *dirty_banner_action_btn_  = nullptr;
 
-    // Row 3: 3-Pane Workspace (Left Sidebar | Center Tier-1 Host | Right Inspector)
+    // Row 3: 3-Pane Workspace (Left Sidebar | Center DomainTool Host | Right Inspector)
     godot::HSplitContainer *workspace_split_       = nullptr;
     godot::HSplitContainer *workspace_inner_split_ = nullptr;
 
@@ -111,6 +116,7 @@ protected:
     // --- Internal Helpers ---
     void _connect_context_signals();
     void _disconnect_context_signals();
+    void _stamp_ui_selectors();
     SidebarTabBucket *_get_or_create_sidebar_bucket(const godot::String &p_tab_name);
     void _rebuild_sidebar_lists();
     void _show_asset_in_center(OpenAssetEntry &p_entry);
@@ -124,26 +130,30 @@ protected:
 
     // --- Subclass Customization Hooks ---
     virtual void _populate_command_bar(godot::HBoxContainer *p_custom_actions) { (void)p_custom_actions; }
-    virtual godot::Control *_create_tier1_control_for_asset(const godot::Ref<godot::Resource> &p_asset);
+    virtual godot::Control *_create_domain_control_for_asset(const godot::Ref<godot::Resource> &p_asset);
     virtual void _on_active_asset_switched(const godot::Ref<godot::Resource> &p_asset) { (void)p_asset; }
     virtual void _on_dirty_banner_action_pressed();
 
 public:
-    IdeamToolWorkspace();
-    ~IdeamToolWorkspace() override;
+    ToolWorkspace();
+    ~ToolWorkspace() override;
 
     void _input(const godot::Ref<godot::InputEvent> &p_event) override;
 
-    // --- Identity & Configuration ---
+    // --- Identity, Tutorials & Configuration ---
     void set_workspace_id(const godot::StringName &p_id);
     [[nodiscard]] godot::StringName get_workspace_id() const { return workspace_id_; }
+
+    void set_help_topic_id(const godot::StringName &p_topic_id) { help_topic_id_ = p_topic_id; }
+    [[nodiscard]] godot::StringName get_help_topic_id() const { return help_topic_id_; }
+    bool request_workspace_help(const godot::String &p_ui_selector = "");
 
     void configure_theme_registry(const godot::String &p_registry_path);
     void ensure_sidebar_tab(const godot::String &p_tab_name);
 
-    // --- Shared Context & Tier 3+ Embeddability ---
-    void set_tool_context(const godot::Ref<IdeamToolContext> &p_context);
-    [[nodiscard]] godot::Ref<IdeamToolContext> get_tool_context() const { return tool_context_; }
+    // --- Shared Context & Multi-Tier Embeddability ---
+    void set_tool_context(const godot::Ref<ToolContext> &p_context);
+    [[nodiscard]] godot::Ref<ToolContext> get_tool_context() const { return tool_context_; }
 
     void set_chrome_visibility(
         bool p_show_command_bar,
@@ -180,14 +190,15 @@ public:
     void _on_context_asset_dirty_changed(const godot::Ref<godot::Resource> &p_asset, bool p_dirty);
     void _on_save_pressed();
     void _on_save_all_pressed();
+    void _on_help_pressed();
     void _on_sidebar_item_selected(int p_index, const godot::String &p_tab_name);
     void _on_sidebar_gui_input(const godot::Ref<godot::InputEvent> &p_event, const godot::String &p_tab_name);
     void _on_sidebar_context_action(int p_action_id);
-    void _on_tier1_commit_completed(const godot::String &p_action_name);
+    void _on_domain_commit_completed(const godot::String &p_action_name);
 
     // --- Window Hosting Helper ---
     static godot::Window *create_workspace_window(
-        IdeamToolWorkspace *p_workspace,
+        ToolWorkspace *p_workspace,
         const godot::String &p_title,
         const godot::Vector2i &p_min_size = godot::Vector2i(1040, 680)
     );

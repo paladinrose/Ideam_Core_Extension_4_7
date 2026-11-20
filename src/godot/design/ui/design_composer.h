@@ -2,7 +2,7 @@
 
 /**
  * design_composer.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) for the IdeamDesign domain
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) for the IdeamDesign domain
  * (`src/godot/design/ui/`).
  *
  * Sidebar Tabs:
@@ -11,7 +11,7 @@
  *   - `Themes & Styles`: `Theme3DResource`, `Style3DResource`
  */
 
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/control.hpp>
 #include <godot_cpp/classes/resource.hpp>
@@ -19,8 +19,8 @@
 
 namespace ideam::godot_ext {
 
-class DesignComposer : public IdeamToolWorkspace {
-    GDCLASS(DesignComposer, IdeamToolWorkspace)
+class DesignComposer : public ToolWorkspace {
+    GDCLASS(DesignComposer, ToolWorkspace)
 
 private:
     static DesignComposer *shared_instance_;

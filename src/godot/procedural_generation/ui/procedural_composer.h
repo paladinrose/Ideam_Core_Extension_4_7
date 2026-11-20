@@ -2,7 +2,7 @@
 
 /**
  * procedural_composer.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) unifying Procedural Generation,
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) unifying Procedural Generation,
  * Wave Function Collapse, and Quantum Darwinism (`src/godot/procedural_generation/ui/`).
  *
  * Sidebar Tabs:
@@ -13,7 +13,7 @@
  * Defaults to `UPDATE_EXPLICIT_TRIGGER` so heavy solver runs only execute on explicit button press.
  */
 
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/control.hpp>
@@ -23,8 +23,8 @@
 
 namespace ideam::godot_ext {
 
-class ProceduralComposer : public IdeamToolWorkspace {
-    GDCLASS(ProceduralComposer, IdeamToolWorkspace)
+class ProceduralComposer : public ToolWorkspace {
+    GDCLASS(ProceduralComposer, ToolWorkspace)
 
 private:
     static ProceduralComposer *shared_instance_;

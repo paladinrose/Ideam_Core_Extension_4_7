@@ -2,7 +2,7 @@
 
 /**
  * project_workspace.h
- * Tier 2 Orchestration Workspace (`IdeamToolWorkspace`) for Ideam Project Tools (Phases 2 & 3).
+ * Tier 2 Orchestration Workspace (`ToolWorkspace`) for Ideam Project Tools (Phases 2 & 3).
  *
  * Unifies:
  *   - New Project Wizard (scaffolding folders, templated .gd scripts, starter Resources, Scenes,
@@ -11,14 +11,14 @@
  *     `ProjectModuleManifest` `.tres` files).
  *   - Phase 3 Cross-Tier-2 Handoff Strip: launches newly generated assets directly inside their
  *     owning sibling Tier 2 workspaces (`GeometryComposer`, `PlanetarySystemsModeler`,
- *     `DesignComposer`, `CharacterModeler`, `ProceduralComposer`) sharing `IdeamToolContext`.
+ *     `DesignComposer`, `CharacterModeler`, `ProceduralComposer`) sharing `ToolContext`.
  */
 
 #include "class_picker_dialog.h"
 #include "project_blueprint_editor.h"
 #include "../project_blueprint_resource.h"
 #include "../project_scaffold_engine.h"
-#include "../../controls/ideam_tool_workspace.h"
+#include "../../tools/tool_workspace.h"
 
 #include <godot_cpp/classes/button.hpp>
 #include <godot_cpp/classes/check_box.hpp>
@@ -34,8 +34,8 @@
 
 namespace ideam::godot_ext {
 
-class ProjectWorkspace : public IdeamToolWorkspace {
-    GDCLASS(ProjectWorkspace, IdeamToolWorkspace)
+class ProjectWorkspace : public ToolWorkspace {
+    GDCLASS(ProjectWorkspace, ToolWorkspace)
 
 private:
     static ProjectWorkspace *shared_instance_;

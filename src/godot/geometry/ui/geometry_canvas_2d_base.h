@@ -24,7 +24,7 @@
  *     snapshot commits.
  */
 
-#include "../../controls/ideam_tool_context.h"
+#include "../../tools/tool_context.h"
 #include "../geometry_resource.h"
 #include "../resources/polygon_2d_resource.h"
 
@@ -94,7 +94,7 @@ protected:
     bool show_origin_axes   = true;
     bool show_point_labels  = true;
     bool y_down             = false;
-    IdeamUpdateCommitPolicy update_commit_policy = UPDATE_ON_COMMIT;
+    UpdateCommitPolicy update_commit_policy = UPDATE_ON_COMMIT;
 
     GeometryCanvasAxisConstraint anchor_drag_constraint = GEOM_DRAG_AXIS_FREE_2D;
     GeometryCanvasPointStyle point_style                = GEOM_POINT_STYLE_CIRCLE;
@@ -311,8 +311,8 @@ public:
     void set_y_down(bool p_y_down);
     [[nodiscard]] bool get_y_down() const noexcept { return y_down; }
 
-    void set_update_commit_policy(IdeamUpdateCommitPolicy p_policy);
-    [[nodiscard]] IdeamUpdateCommitPolicy get_update_commit_policy() const noexcept {
+    void set_update_commit_policy(UpdateCommitPolicy p_policy);
+    [[nodiscard]] UpdateCommitPolicy get_update_commit_policy() const noexcept {
         return update_commit_policy;
     }
 

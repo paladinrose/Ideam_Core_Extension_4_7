@@ -1,6 +1,6 @@
 #include "godot/ecology/ideam_ecology_plugin.h"
 
-#include "godot/controls/ideam_tier1_control_registry.h"
+#include "godot/tools/tool_registry.h"
 #include "godot/ecology/ui/ecology_biome_map_preview_canvas.h"
 #include "godot/ecology/ui/whittaker_ordination_and_trophic_control.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
@@ -25,12 +25,12 @@ void IdeamEcologyPlugin::_enter_tree() {
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
 
     reg.register_control({
         ws_id, "EcologyBiosphereResource", "Ecology", "Ecology Biosphere", UPDATE_EXPLICIT_TRIGGER,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             (void)p_ctx;
             Ref<EcologyBiosphereResource> bio_res = p_asset;
@@ -106,7 +106,7 @@ void IdeamEcologyPlugin::_enter_tree() {
 }
 
 void IdeamEcologyPlugin::_exit_tree() {
-    IdeamTier1ControlRegistry::get_singleton().unregister_class(
+    ToolRegistry::get_singleton().unregister_class(
         godot::StringName(PlanetarySystemsModeler::WORKSPACE_ID),
         "EcologyBiosphereResource"
     );

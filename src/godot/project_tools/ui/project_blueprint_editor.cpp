@@ -1,6 +1,6 @@
 #include "project_blueprint_editor.h"
 
-#include "../../controls/ideam_tier1_control_registry.h"
+#include "../../tools/tool_registry.h"
 
 #include <godot_cpp/classes/tree_item.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -303,7 +303,7 @@ void ProjectBlueprintEditor::_try_mount_tier1_preview(const Ref<ProjectResourceS
         return;
     }
 
-    const auto *desc = IdeamTier1ControlRegistry::get_singleton().find_any_descriptor_for_class(
+    const auto *desc = ToolRegistry::get_singleton().find_any_descriptor_for_class(
         StringName(p_spec->get_resource_class())
     );
     if (!desc || !desc->create_control) {

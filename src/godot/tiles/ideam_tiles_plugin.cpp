@@ -1,6 +1,6 @@
 #include "ideam_tiles_plugin.h"
 
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "../geometry/ui/geometry_composer.h"
 #include "ui/composite_tiling_control.h"
 #include "ui/wallpaper_tiling_control.h"
@@ -77,12 +77,12 @@ void IdeamTilesPlugin::_enter_tree() {
     add_node_3d_gizmo_plugin(geodesic_planet_gizmo_);
 
     // 4. Register Tiles Tier 1 Controls with GeometryComposer ("Tiles" tab)
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
 
     reg.register_control({
         ws_id, "WallpaperTilingResource", "Tiles", "Wallpaper Tiling", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<WallpaperTilingResource> wt = p_asset;
             if (wt.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) wt->set_undo_redo(p_ctx->get_undo_redo());
@@ -95,7 +95,7 @@ void IdeamTilesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "CompositeTilingResource", "Tiles", "Composite Tiling", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<CompositeTilingResource> ct = p_asset;
             if (ct.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) ct->set_undo_redo(p_ctx->get_undo_redo());
@@ -108,7 +108,7 @@ void IdeamTilesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "HyperbolicPoincareTilingResource", "Tiles", "Hyperbolic Poincare", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<HyperbolicPoincareTilingResource> hp = p_asset;
             if (hp.is_null()) return nullptr;
             godot::Ref<IdeamUndoRedo> ur = (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid())
@@ -125,7 +125,7 @@ void IdeamTilesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "SphericalGoldbergPolyhedronResource", "Tiles", "Spherical Goldberg", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<SphericalGoldbergPolyhedronResource> sg = p_asset;
             if (sg.is_null()) return nullptr;
             godot::Ref<IdeamUndoRedo> ur = (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid())
@@ -142,7 +142,7 @@ void IdeamTilesPlugin::_enter_tree() {
 }
 
 void IdeamTilesPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
     reg.unregister_class(ws_id, "WallpaperTilingResource");
     reg.unregister_class(ws_id, "CompositeTilingResource");

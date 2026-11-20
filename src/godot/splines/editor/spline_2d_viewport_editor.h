@@ -15,7 +15,7 @@
  *     resource writes during mouse motion, committing a single atomic Undo/Redo snapshot on release.
  */
 
-#include "../../controls/ideam_tool_context.h"
+#include "../../tools/tool_context.h"
 #include "../spline_2d/spline_2d_resource.h"
 #include "../spline_2d/spline_node2d.h"
 #include "../spline_2d/spline_polygon_2d.h"
@@ -56,7 +56,7 @@ private:
     godot::Ref<Spline2DResource> active_spline_;
 
     ToolMode tool_mode_                           = MODE_TRANSFORM;
-    IdeamUpdateCommitPolicy update_commit_policy_ = UPDATE_ON_COMMIT;
+    UpdateCommitPolicy update_commit_policy_ = UPDATE_ON_COMMIT;
 
     // Toolbar Controls
     godot::Button *btn_transform_ = nullptr;

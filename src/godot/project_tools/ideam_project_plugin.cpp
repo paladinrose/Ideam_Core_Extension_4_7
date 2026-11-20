@@ -4,7 +4,7 @@
 #include "project_blueprint_resource.h"
 #include "ui/project_blueprint_editor.h"
 #include "ui/project_workspace.h"
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 
 #include <godot_cpp/classes/scene_tree.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -54,7 +54,7 @@ void IdeamProjectPlugin::_enter_tree() {
     set_plugin_active("IdeamProjectTools", true);
 
     // 2. Register Tier 1 Blueprint & Manifest editors for ProjectWorkspace
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const StringName ws_id(ProjectWorkspace::WORKSPACE_ID);
 
     reg.register_control({
@@ -63,7 +63,7 @@ void IdeamProjectPlugin::_enter_tree() {
         "Blueprints",
         "Project Blueprint",
         UPDATE_EXPLICIT_TRIGGER,
-        [](const Ref<Resource> &p_asset, const Ref<IdeamToolContext> &p_ctx) -> Control * {
+        [](const Ref<Resource> &p_asset, const Ref<ToolContext> &p_ctx) -> Control * {
             Ref<ProjectBlueprintResource> bp = p_asset;
             if (bp.is_null()) return nullptr;
             auto *ed = memnew(ProjectBlueprintEditor);
@@ -71,7 +71,7 @@ void IdeamProjectPlugin::_enter_tree() {
             ed->set_blueprint(bp);
             return ed;
         },
-        [](Control *p_ctrl, const Ref<Resource> &p_asset, const Ref<IdeamToolContext> &p_ctx) {
+        [](Control *p_ctrl, const Ref<Resource> &p_asset, const Ref<ToolContext> &p_ctx) {
             if (auto *ed = Object::cast_to<ProjectBlueprintEditor>(p_ctrl)) {
                 ed->set_tool_context(p_ctx);
                 ed->set_blueprint(p_asset);
@@ -85,7 +85,7 @@ void IdeamProjectPlugin::_enter_tree() {
         "Modules",
         "Module Manifest",
         UPDATE_ON_COMMIT,
-        [](const Ref<Resource> &p_asset, const Ref<IdeamToolContext> &p_ctx) -> Control * {
+        [](const Ref<Resource> &p_asset, const Ref<ToolContext> &p_ctx) -> Control * {
             Ref<ProjectModuleManifest> mod = p_asset;
             if (mod.is_null()) return nullptr;
             auto *ed = memnew(ProjectBlueprintEditor);
@@ -93,7 +93,7 @@ void IdeamProjectPlugin::_enter_tree() {
             ed->set_manifest(mod);
             return ed;
         },
-        [](Control *p_ctrl, const Ref<Resource> &p_asset, const Ref<IdeamToolContext> &p_ctx) {
+        [](Control *p_ctrl, const Ref<Resource> &p_asset, const Ref<ToolContext> &p_ctx) {
             if (auto *ed = Object::cast_to<ProjectBlueprintEditor>(p_ctrl)) {
                 ed->set_tool_context(p_ctx);
                 ed->set_manifest(p_asset);
@@ -127,7 +127,7 @@ void IdeamProjectPlugin::_exit_tree() {
         }
     }
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const StringName ws_id(ProjectWorkspace::WORKSPACE_ID);
     reg.unregister_class(ws_id, "ProjectBlueprintResource");
     reg.unregister_class(ws_id, "ProjectModuleManifest");

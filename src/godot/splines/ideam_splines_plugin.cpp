@@ -1,6 +1,6 @@
 #include "ideam_splines_plugin.h"
 
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "../geometry/ui/geometry_composer.h"
 #include "spline_1d/spline_1d_control.h"
 #include "spline_2d/spline_2d_control.h"
@@ -100,12 +100,12 @@ void IdeamSplinesPlugin::_enter_tree() {
     add_control_to_container(EditorPlugin::CONTAINER_CANVAS_EDITOR_MENU, spline_2d_viewport_editor);
 
     // 5. Register Splines Tier 1 Controls with GeometryComposer ("Splines" tab)
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
 
     reg.register_control({
         ws_id, "Spline1DResource", "Splines", "1D Spline", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<Spline1DResource> s1 = p_asset;
             if (s1.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s1->set_undo_redo(p_ctx->get_undo_redo());
@@ -118,7 +118,7 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "Spline2DResource", "Splines", "2D Spline", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<Spline2DResource> s2 = p_asset;
             if (s2.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s2->set_undo_redo(p_ctx->get_undo_redo());
@@ -131,7 +131,7 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "Spline3DResource", "Splines", "3D Spline", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<Spline3DResource> s3 = p_asset;
             if (s3.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s3->set_undo_redo(p_ctx->get_undo_redo());
@@ -144,7 +144,7 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "Spline4DResource", "Splines", "4D / Color Spline", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             godot::Ref<Spline4DResource> s4 = p_asset;
             if (s4.is_null()) return nullptr;
             if (p_ctx.is_valid() && p_ctx->get_undo_redo().is_valid()) s4->set_undo_redo(p_ctx->get_undo_redo());
@@ -168,7 +168,7 @@ void IdeamSplinesPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "SplineTweenResource", "Splines", "Spline Tween", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             (void)p_ctx;
             godot::Ref<SplineTweenResource> tw = p_asset;
             if (tw.is_null()) return nullptr;
@@ -181,7 +181,7 @@ void IdeamSplinesPlugin::_enter_tree() {
 }
 
 void IdeamSplinesPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(GeometryComposer::WORKSPACE_ID);
     reg.unregister_class(ws_id, "Spline1DResource");
     reg.unregister_class(ws_id, "Spline2DResource");

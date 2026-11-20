@@ -22,8 +22,42 @@
 
 #include "godot/controls/theme_registry.h"
 #include "godot/controls/theme_selector.h"
-#include "godot/controls/ideam_tool_context.h"
-#include "godot/controls/ideam_tool_workspace.h"
+
+// --- Tools Framework (5-Tier Architecture: Domain, Bridge, Smart, Workflow, Agent) ---
+#include "godot/tools/tool_descriptor.h"
+#include "godot/tools/tool_context.h"
+#include "godot/tools/tool_registry.h"
+#include "godot/tools/tool_workspace.h"
+#include "godot/tools/bridge/bridge_contract.h"
+#include "godot/tools/smart/smart_tool_profile.h"
+#include "godot/tools/smart/smart_tool_base.h"
+#include "godot/tools/workflow/workflow_profile.h"
+#include "godot/tools/workflow/semantic_coverage_report.h"
+#include "godot/tools/workflow/workflow_orchestrator.h"
+#include "godot/tools/agent/semantic_style_rubric.h"
+#include "godot/tools/agent/agent_tool_bridge.h"
+
+// --- IdeamTutorials (Editor & Runtime Guided Learning + Co-Pilot) ---
+#include "godot/tutorials/resources/tutorial_step_resource.h"
+#include "godot/tutorials/resources/tutorial_resource.h"
+#include "godot/tutorials/tutorial_progress_tracker.h"
+#include "godot/tutorials/ui/tutorial_input_validator.h"
+#include "godot/tutorials/ui/tutorial_spotlight_overlay.h"
+#include "godot/tutorials/ui/tutorial_checklist_dock.h"
+#include "godot/tutorials/ui/tutorial_macro_recorder.h"
+#include "godot/tutorials/copilot/tutorial_context_indexer.h"
+#include "godot/tutorials/copilot/tutorial_tool_dispatcher.h"
+#include "godot/tutorials/copilot/tutorial_slm_bridge.h"
+#include "godot/tutorials/ideam_tutorials_plugin.h"
+
+// --- IdeamCymatics (Acoustic Waves, Chladni/Bessel Modal Fields & Music Zones) ---
+#include "core/tasks/domains/cymatics/registration/cymatics_task_domain_pack.h"
+#include "godot/cymatics/cymatic_map.h"
+#include "godot/cymatics/jukebox_resource.h"
+#include "godot/cymatics/editor/cymatics_inspector.h"
+#include "godot/cymatics/ideam_cymatics_plugin.h"
+#include "godot/tasks/domains/cymatics/data_oriented_cymatics.h"
+#include "godot/tasks/domains/cymatics/cymatics_task_host.h"
 
 // --- Project Tools (Tier 2 Ecosystem Bridge) ---
 #include "godot/project_tools/project_blueprint_resource.h"
@@ -432,8 +466,38 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         GDREGISTER_CLASS(ideam::godot_ext::ThemeRegistry);
         GDREGISTER_CLASS(ideam::godot_ext::ThemeSelector);
-        GDREGISTER_CLASS(ideam::godot_ext::IdeamToolContext);
-        GDREGISTER_CLASS(ideam::godot_ext::IdeamToolWorkspace);
+        // --- Tools Framework (5-Tier Architecture) ---
+        GDREGISTER_CLASS(ideam::godot_ext::ToolDescriptor);
+        GDREGISTER_CLASS(ideam::godot_ext::ToolContext);
+        GDREGISTER_CLASS(ideam::godot_ext::ToolWorkspace);
+        GDREGISTER_CLASS(ideam::godot_ext::BridgeHandoffReceipt);
+        GDREGISTER_CLASS(ideam::godot_ext::SmartToolProfile);
+        GDREGISTER_CLASS(ideam::godot_ext::SmartToolBase);
+        GDREGISTER_CLASS(ideam::godot_ext::WorkflowProfile);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticCoverageReport);
+        GDREGISTER_CLASS(ideam::godot_ext::WorkflowOrchestrator);
+        GDREGISTER_CLASS(ideam::godot_ext::SemanticStyleRubric);
+        GDREGISTER_CLASS(ideam::godot_ext::AgentToolBridge);
+
+        // --- IdeamTutorials (Editor & Runtime Guided Learning) ---
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialStepResource);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialResource);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialProgressTracker);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialInputValidator);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialCalloutBubble);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialSpotlightOverlay);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialChecklistDock);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialMacroRecorder);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialContextIndexer);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialToolDispatcher);
+        GDREGISTER_CLASS(ideam::godot_ext::TutorialSLMBridge);
+
+        // --- IdeamCymatics ---
+        GDREGISTER_CLASS(ideam::godot_ext::CymaticMap);
+        GDREGISTER_CLASS(ideam::godot_ext::JukeboxResource);
+        GDREGISTER_CLASS(ideam::godot_ext::MusicZoneNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::DataOrientedCymatics);
+        GDREGISTER_CLASS(ideam::godot_ext::CymaticsTaskHost);
 
         // --- Project Tools (Phase 1 & Phase 2) ---
         GDREGISTER_CLASS(ideam::godot_ext::ProjectScriptSpec);
@@ -809,6 +873,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         ProceduralGenerationTaskDomainPack::register_domain();
         WaveFunctionCollapseTaskDomainPack::register_domain();
         QuantumDarwinismTaskDomainPack::register_domain();
+        ideam::core::CymaticsTaskDomainPack::register_domain();
         LinguisticsTaskDomainPack::register_domain();
         CommunicationsTaskDomainPack::register_domain();
         DesignTaskDomainPack::register_domain();
@@ -909,6 +974,13 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
 
         // --- Project Tools Editor Plugin ---
         GDREGISTER_CLASS(ideam::godot_ext::IdeamProjectPlugin);
+
+        // --- IdeamTutorials Editor Plugin ---
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamTutorialsPlugin);
+
+        // --- IdeamCymatics Editor Plugin ---
+        GDREGISTER_CLASS(ideam::godot_ext::CymaticsEditorInspectorPlugin);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamCymaticsPlugin);
     }
 }
 
@@ -917,6 +989,8 @@ void uninitialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // Flush the static factories and dictionaries to prevent Godot memory leak warnings on exit
         IdeamTaskRegistry::cleanup();
         ideam::godot_ext::IdeamProjectContributionRegistry::get_singleton().clear();
+        ideam::godot_ext::ToolRegistry::get_singleton().clear();
+        ideam::godot_ext::BridgeContractRegistry::get_singleton().clear();
     }
 
     if (p_level == MODULE_INITIALIZATION_LEVEL_EDITOR) {

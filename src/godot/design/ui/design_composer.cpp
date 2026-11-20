@@ -64,7 +64,7 @@ DesignComposer *DesignComposer::get_or_create_shared_composer(Control *p_owner) 
     }
 
     shared_instance_ = memnew(DesignComposer);
-    shared_window_   = IdeamToolWorkspace::create_workspace_window(
+    shared_window_   = ToolWorkspace::create_workspace_window(
         shared_instance_,
         "Ideam DesignComposer",
         Vector2i(1100, 700)

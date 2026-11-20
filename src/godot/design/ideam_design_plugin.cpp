@@ -1,6 +1,6 @@
 #include "ideam_design_plugin.h"
 
-#include "../controls/ideam_tier1_control_registry.h"
+#include "../tools/tool_registry.h"
 #include "blueprint_resource.h"
 #include "ui/blueprint_editor_control.h"
 #include "ui/design_composer.h"
@@ -32,13 +32,13 @@ void IdeamDesignPlugin::_enter_tree() {
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
 
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
 
     reg.register_workspace_launcher({
         ws_id,
         "Design Composer",
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (DesignComposer *composer = DesignComposer::get_or_create_shared_composer()) {
                 if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
                 composer->open_asset(p_asset);
@@ -48,7 +48,7 @@ void IdeamDesignPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "BlueprintResource", "Blueprints", "Architectural Blueprint", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             (void)p_ctx;
             godot::Ref<BlueprintResource> bp = p_asset;
             if (bp.is_null()) return nullptr;
@@ -61,7 +61,7 @@ void IdeamDesignPlugin::_enter_tree() {
 
     reg.register_control({
         ws_id, "ParametricAssemblyRecipeResource", "Recipes", "Assembly Recipe", UPDATE_ON_COMMIT,
-        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+        [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
             using namespace godot;
             (void)p_ctx;
             if (p_asset.is_null()) return nullptr;
@@ -76,7 +76,7 @@ void IdeamDesignPlugin::_enter_tree() {
         nullptr
     });
 
-    auto make_style_host = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<IdeamToolContext> &p_ctx) -> godot::Control * {
+    auto make_style_host = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
         using namespace godot;
         (void)p_ctx;
         if (p_asset.is_null()) return nullptr;
@@ -94,7 +94,7 @@ void IdeamDesignPlugin::_enter_tree() {
 }
 
 void IdeamDesignPlugin::_exit_tree() {
-    auto &reg = IdeamTier1ControlRegistry::get_singleton();
+    auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
     reg.unregister_class(ws_id, "BlueprintResource");
     reg.unregister_class(ws_id, "ParametricAssemblyRecipeResource");
