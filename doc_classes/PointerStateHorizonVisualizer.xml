@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PointerStateHorizonVisualizer" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Tier 1 DomainTool control visualizing Quantum Darwinism Pointer States, channels, couplings, and wavefronts inside ProceduralComposer.
+	</brief_description>
+	<description>
+		Implements `DomainToolInterface` with `IdeamUndoRedo` and `IdeamTutorials` selector/help metadata for inspecting and interactively stepping `QuantumDarwinismGeneratorResource` and `QuantumDarwinismStabilizerResource` assets.
+	</description>
+	<tutorials>
+	</tutorials>
+</class>

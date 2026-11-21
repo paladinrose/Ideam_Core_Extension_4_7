@@ -356,7 +356,10 @@
 #include "godot/wave_function_collapse/ideam_wave_function_collapse_plugin.h"
 #include "godot/tasks/domains/wave_function_collapse/data_oriented_wfc.h"
 #include "godot/tasks/domains/wave_function_collapse/wfc_task_host.h"
+#include "godot/quantum_darwinism/quantum_darwinism_channel_spec.h"
+#include "godot/quantum_darwinism/quantum_darwinism_generator_resource.h"
 #include "godot/quantum_darwinism/quantum_darwinism_stabilizer_resource.h"
+#include "godot/quantum_darwinism/ui/pointer_state_horizon_visualizer.h"
 #include "godot/quantum_darwinism/editor/quantum_darwinism_inspector.h"
 #include "godot/quantum_darwinism/ideam_quantum_darwinism_plugin.h"
 #include "godot/tasks/domains/quantum_darwinism/data_oriented_quantum_darwinism.h"
@@ -793,8 +796,13 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::WFCSolverNode);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedWaveFunctionCollapse);
         GDREGISTER_CLASS(ideam::godot_ext::WaveFunctionCollapseTaskHost);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismChannelSpec);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismCouplingRule);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismGeneratorResource);
+        GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismGeneratorNode);
         GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismStabilizerResource);
         GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismStabilizerNode);
+        GDREGISTER_CLASS(ideam::godot_ext::PointerStateHorizonVisualizer);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedQuantumDarwinism);
         GDREGISTER_CLASS(ideam::godot_ext::QuantumDarwinismTaskHost);
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismChannelSpec" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Defines a factored Godot-reflection or semantic property channel for Quantum Darwinism outward wavefront generation.
+	</brief_description>
+	<description>
+		Configures a single einselection channel propagated across `ProceduralEnvironment` topologies (parent-to-child, child-to-parent, siblings, and graph/spatial edges). Supports reflected properties, ClassDB archetypes, groups/tags, nuclear/peripheral semes, method/signal traits, and custom traits with `IdeamUndoRedo` commit wrappers.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="channel_name" type="StringName" setter="set_channel_name" getter="get_channel_name">
+			Canonical reflection symbol or semantic name for this channel.
+		</member>
+		<member name="aspect" type="int" setter="set_aspect" getter="get_aspect">
+			Godot-canvas aspect represented by this channel (ReflectedProperty:0, ClassArchetype:1, GroupOrTag:2, NuclearSeme:3, PeripheralSeme:4, MethodTrait:5, SignalTrait:6, CustomTrait:7).
+		</member>
+		<member name="topology_mask" type="int" setter="set_topology_mask" getter="get_topology_mask">
+			Bitmask controlling which relational topologies propagate this channel (HierarchyDown, HierarchyUp, Siblings, GraphOrSpatial).
+		</member>
+		<member name="default_threshold_tau" type="float" setter="set_default_threshold_tau" getter="get_default_threshold_tau">
+			Baseline einselection crystallization threshold tau_k.
+		</member>
+		<member name="default_permeability_gamma" type="float" setter="set_default_permeability_gamma" getter="get_default_permeability_gamma">
+			Baseline propagation permeability gamma_k across edges.
+		</member>
+	</members>
+</class>

@@ -92,31 +92,103 @@ bool QuantumDarwinismDOD::stage_environment_to_dod(const ProceduralEnvironment &
     );
 
     const int64_t slot_cnt = static_cast<int64_t>(p_env.slots().size());
-    if (MemoryBufferPOD *ptr_buf = memory_manager_->get_buffer(get_buffer_id(QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK))) {
-        ptr_buf->current_count = slot_cnt;
-    }
-    if (MemoryBufferPOD *ent_buf = memory_manager_->get_buffer(get_buffer_id(QuantumDarwinismBufferSlot::SLOT_ENTROPY_FLOATS))) {
-        ent_buf->current_count = slot_cnt;
-    }
-    if (MemoryBufferPOD *part_buf = memory_manager_->get_buffer(get_buffer_id(QuantumDarwinismBufferSlot::HORIZON_PARTITION_POD))) {
-        part_buf->current_count = slot_cnt;
-    }
-    if (MemoryBufferPOD *rec_buf = memory_manager_->get_buffer(get_buffer_id(QuantumDarwinismBufferSlot::POINTER_STATE_RECORD_POD))) {
-        rec_buf->current_count = slot_cnt;
-    }
-    if (MemoryBufferPOD *br_buf = memory_manager_->get_buffer(get_buffer_id(QuantumDarwinismBufferSlot::COHERENCE_BRIDGE_SLOT_POD))) {
-        br_buf->current_count = slot_cnt;
+    for (QuantumDarwinismBufferSlot slot : {
+            QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK,
+            QuantumDarwinismBufferSlot::SLOT_ENTROPY_FLOATS,
+            QuantumDarwinismBufferSlot::HORIZON_PARTITION_POD,
+            QuantumDarwinismBufferSlot::POINTER_STATE_RECORD_POD,
+            QuantumDarwinismBufferSlot::COHERENCE_BRIDGE_SLOT_POD,
+            QuantumDarwinismBufferSlot::WAVEFRONT_FRONTIER_QUEUE }) {
+        if (MemoryBufferPOD *buf = memory_manager_->get_buffer(get_buffer_id(slot))) {
+            buf->current_count = std::min<int64_t>(slot_cnt, buf->max_elements);
+        }
     }
     return true;
+}
+
+bool QuantumDarwinismDOD::stage_channels_and_couplings_to_dod() {
+    if (!memory_manager_) return false;
+    if (!manifest_.has(QuantumDarwinismBufferSlot::PROPERTY_CHANNEL_SPEC_POD)) {
+        if (!initialize_quantum_darwinism_memory(memory_manager_)) return false;
+    }
+
+    if (solver_.slot_channel_states().size() != environment_.slots().size() * std::max<size_t>(1u, solver_.channel_specs().size())) {
+        solver_.initialize_channel_states_from_environment(environment_);
+    }
+
+    copy_span_to_buffer(
+        memory_manager_,
+        get_buffer_id(QuantumDarwinismBufferSlot::PROPERTY_CHANNEL_SPEC_POD),
+        std::span<const PropertyChannelSpecPOD>(solver_.channel_specs())
+    );
+    copy_span_to_buffer(
+        memory_manager_,
+        get_buffer_id(QuantumDarwinismBufferSlot::SLOT_CHANNEL_STATE_POD),
+        std::span<const SlotChannelStatePOD>(solver_.slot_channel_states())
+    );
+    copy_span_to_buffer(
+        memory_manager_,
+        get_buffer_id(QuantumDarwinismBufferSlot::CHANNEL_COUPLING_RULE_POD),
+        std::span<const ChannelCouplingRulePOD>(solver_.coupling_rules())
+    );
+    return true;
+}
+
+bool QuantumDarwinismDOD::stage_perturbation_field_to_dod(std::span<const float> p_field) {
+    if (!memory_manager_) return false;
+    if (!manifest_.has(QuantumDarwinismBufferSlot::PERTURBATION_FIELD_FLOATS)) {
+        if (!initialize_quantum_darwinism_memory(memory_manager_)) return false;
+    }
+    solver_.set_external_perturbation_field(p_field);
+    return copy_span_to_buffer(
+        memory_manager_,
+        get_buffer_id(QuantumDarwinismBufferSlot::PERTURBATION_FIELD_FLOATS),
+        p_field
+    );
 }
 
 bool QuantumDarwinismDOD::execute_full_pipeline_direct(uint32_t p_stage_mask) {
     if (!memory_manager_) return false;
 
-    const HorizonBoxConfigPOD &cfg = solver_.horizon_config();
+    const HorizonBoxConfigPOD &cfg            = solver_.horizon_config();
+    const GenerativeWavefrontConfigPOD &g_cfg = solver_.generative_config();
     TaskContextPOD ctx{};
     ctx.manager = memory_manager_;
     SingleElementView<uint32_t, FlatStrategy> dummy_view{};
+
+    // Wave 4 (runs first in Generative/Hybrid pipelines): QD4 OutwardWavefrontEinselectionTransformLogic
+    if ((p_stage_mask & QD_STAGE_WAVE_4_OUTWARD_WAVEFRONT_EINSELECTION) != 0u) {
+        OutwardWavefrontEinselectionTransformLogic<> qd4{};
+        qd4.target_buffer_id              = get_buffer_id(QuantumDarwinismBufferSlot::ENVIRONMENT_SLOT_POD);
+        qd4.channel_spec_buffer_id        = get_buffer_id(QuantumDarwinismBufferSlot::PROPERTY_CHANNEL_SPEC_POD);
+        qd4.slot_channel_buffer_id        = get_buffer_id(QuantumDarwinismBufferSlot::SLOT_CHANNEL_STATE_POD);
+        qd4.coupling_rule_buffer_id       = get_buffer_id(QuantumDarwinismBufferSlot::CHANNEL_COUPLING_RULE_POD);
+        qd4.child_csr_buffer_id           = get_buffer_id(QuantumDarwinismBufferSlot::CHILD_SLOT_CSR);
+        qd4.spatial_csr_buffer_id         = get_buffer_id(QuantumDarwinismBufferSlot::SPATIAL_NEIGHBOR_CSR);
+        qd4.perturbation_buffer_id        = get_buffer_id(QuantumDarwinismBufferSlot::PERTURBATION_FIELD_FLOATS);
+        qd4.pointer_conflict_buffer_id    = get_buffer_id(QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK);
+        qd4.master_seed                   = g_cfg.master_seed;
+        qd4.max_wavefront_iterations      = g_cfg.max_wavefront_iterations;
+        qd4.perturbation_strength         = g_cfg.perturbation_strength;
+        qd4.nucleation_temperature        = g_cfg.nucleation_temperature;
+        qd4.min_frontier_redundancy       = g_cfg.min_frontier_redundancy;
+        qd4.enable_spontaneous_nucleation = g_cfg.enable_spontaneous_nucleation;
+        qd4.enable_cross_channel_coupling = g_cfg.enable_cross_channel_coupling;
+        qd4.execute_transform<SingleElementView<uint32_t, FlatStrategy>, FlatStrategy>(ctx, dummy_view);
+    }
+
+    // Wave 5: QD5 ChannelToTokenProjectionTransformLogic
+    if ((p_stage_mask & QD_STAGE_WAVE_5_CHANNEL_TO_TOKEN_PROJECTION) != 0u) {
+        ChannelToTokenProjectionTransformLogic<> qd5{};
+        qd5.target_buffer_id           = get_buffer_id(QuantumDarwinismBufferSlot::ENVIRONMENT_SLOT_POD);
+        qd5.token_buffer_id            = get_buffer_id(QuantumDarwinismBufferSlot::TOKEN_DESCRIPTOR_POD);
+        qd5.channel_spec_buffer_id     = get_buffer_id(QuantumDarwinismBufferSlot::PROPERTY_CHANNEL_SPEC_POD);
+        qd5.slot_channel_buffer_id     = get_buffer_id(QuantumDarwinismBufferSlot::SLOT_CHANNEL_STATE_POD);
+        qd5.pointer_conflict_buffer_id = get_buffer_id(QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK);
+        qd5.pointer_redundancy_thresh  = cfg.pointer_redundancy_thresh;
+        qd5.collapse_to_best_token     = 1u;
+        qd5.execute_transform<SingleElementView<uint32_t, FlatStrategy>, FlatStrategy>(ctx, dummy_view);
+    }
 
     // Wave 1: QD1 ConflictHorizonBoxPartitionMetadataLogic
     if ((p_stage_mask & QD_STAGE_WAVE_1_CONFLICT_HORIZON_BOX_PARTITION) != 0u) {
@@ -126,9 +198,11 @@ bool QuantumDarwinismDOD::execute_full_pipeline_direct(uint32_t p_stage_mask) {
         qd1.child_csr_buffer_id        = get_buffer_id(QuantumDarwinismBufferSlot::CHILD_SLOT_CSR);
         qd1.spatial_csr_buffer_id      = get_buffer_id(QuantumDarwinismBufferSlot::SPATIAL_NEIGHBOR_CSR);
         qd1.pointer_conflict_buffer_id = get_buffer_id(QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK);
+        qd1.frontier_queue_buffer_id   = get_buffer_id(QuantumDarwinismBufferSlot::WAVEFRONT_FRONTIER_QUEUE);
         qd1.max_horizon_radius         = cfg.max_graph_hop_radius;
         qd1.max_horizon_slots          = cfg.max_horizon_slots;
         qd1.min_locked_layer           = cfg.min_locked_layer;
+        qd1.seed_from_pinned_landmarks = (g_cfg.mode == QuantumDarwinismMode::MODE_OUTWARD_GENERATIVE) ? 1u : 0u;
         qd1.execute_metadata<SingleElementView<uint32_t, FlatStrategy>, FlatStrategy>(ctx, dummy_view);
     }
 
@@ -168,6 +242,11 @@ bool QuantumDarwinismDOD::execute_full_pipeline_direct(uint32_t p_stage_mask) {
     return true;
 }
 
+bool QuantumDarwinismDOD::execute_generative_pipeline_direct() {
+    if (!stage_channels_and_couplings_to_dod()) return false;
+    return execute_full_pipeline_direct(QD_STAGE_GENERATIVE_PIPELINE_MASK);
+}
+
 void QuantumDarwinismDOD::read_environment_slots(std::vector<EnvironmentSlotPOD> &r_out) const {
     read_buffer_to_vector(memory_manager_, get_buffer_id(QuantumDarwinismBufferSlot::ENVIRONMENT_SLOT_POD), r_out);
 }
@@ -184,6 +263,10 @@ void QuantumDarwinismDOD::read_coherence_bridge_slots(std::vector<CoherenceBridg
     read_buffer_to_vector(memory_manager_, get_buffer_id(QuantumDarwinismBufferSlot::COHERENCE_BRIDGE_SLOT_POD), r_out);
 }
 
+void QuantumDarwinismDOD::read_slot_channel_states(std::vector<SlotChannelStatePOD> &r_out) const {
+    read_buffer_to_vector(memory_manager_, get_buffer_id(QuantumDarwinismBufferSlot::SLOT_CHANNEL_STATE_POD), r_out);
+}
+
 void QuantumDarwinismDOD::read_pointer_or_conflict_masks(std::vector<uint32_t> &r_out) const {
     read_buffer_to_vector(memory_manager_, get_buffer_id(QuantumDarwinismBufferSlot::POINTER_OR_CONFLICT_MASK), r_out);
 }
@@ -193,6 +276,11 @@ void QuantumDarwinismDOD::sync_dod_slots_back_to_environment() {
     read_environment_slots(updated);
     if (!updated.empty()) {
         environment_.slots() = std::move(updated);
+    }
+    std::vector<SlotChannelStatePOD> updated_ch;
+    read_slot_channel_states(updated_ch);
+    if (!updated_ch.empty()) {
+        solver_.slot_channel_states_mut() = std::move(updated_ch);
     }
 }
 

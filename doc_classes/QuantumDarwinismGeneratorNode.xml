@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismGeneratorNode" inherits="ProceduralGenerationHost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Standalone SceneTree host node for outward multi-channel Quantum Darwinism procedural generation.
+	</brief_description>
+	<description>
+		Owns a `ProceduralEnvironment` and `QuantumDarwinismSolver` (with optional `WFCSolverNode` interoperability), allowing landmark and partial-channel seeding, outward wavefront stepping/solving, solved configuration export, and live Godot SceneTree write-back via `apply_resolved_channels_to_object_tree`.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="slot_count" type="int" setter="set_slot_count" getter="get_slot_count">
+			Number of slots in the standalone ProceduralEnvironment.
+		</member>
+		<member name="procedural_pattern" type="ProceduralPattern" setter="set_procedural_pattern" getter="get_procedural_pattern">
+			Optional ProceduralPattern providing tokens and cascading GenerationRules.
+		</member>
+		<member name="target_wfc_solver_path" type="NodePath" setter="set_target_wfc_solver_path" getter="get_target_wfc_solver_path">
+			Optional NodePath to a WFCSolverNode to share its ProceduralEnvironment for hybrid WFC+QD workflows.
+		</member>
+	</members>
+</class>

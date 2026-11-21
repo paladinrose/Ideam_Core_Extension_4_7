@@ -12,6 +12,8 @@ namespace ideam::core {
 
 enum class QuantumDarwinismTransformLogicID : uint32_t {
     CoherenceCascadeRelaxAndPropagate = 0,
+    OutwardWavefrontEinselection      = 1,
+    ChannelToTokenProjection          = 2,
     Count
 };
 

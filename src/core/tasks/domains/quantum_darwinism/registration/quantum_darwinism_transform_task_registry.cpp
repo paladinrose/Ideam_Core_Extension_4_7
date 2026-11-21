@@ -5,6 +5,8 @@
 namespace ideam::core {
 
 const std::array<LogicVariantGroup, QuantumDarwinismTransformTaskRegistry::STORAGE_COUNT> QuantumDarwinismTransformTaskRegistry::logic_variants = {{
+    { true, 1, nullptr },
+    { true, 1, nullptr },
     { true, 1, nullptr }
 }};
 

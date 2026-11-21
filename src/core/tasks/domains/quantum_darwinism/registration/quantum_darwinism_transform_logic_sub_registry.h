@@ -10,6 +10,8 @@
 
 // --- QuantumDarwinism Transform Logics (Section 1.5: QD3) ---
 #include "../transform_logic/coherence_cascade_relax_and_propagate_transform_logic.h"
+#include "../transform_logic/outward_wavefront_einselection_transform_logic.h"
+#include "../transform_logic/channel_to_token_projection_transform_logic.h"
 
 // --- Views & Strategies ---
 #include "../../../../memory/views/aosoa_view.h"
@@ -60,6 +62,8 @@ namespace {
     template <QuantumDarwinismTransformLogicID ID, typename T_Concrete, typename T_Strategy>
     struct QuantumDarwinismTransformLogicResolver { static constexpr bool is_valid = false; };
     template <typename C, typename S> struct QuantumDarwinismTransformLogicResolver<QuantumDarwinismTransformLogicID::CoherenceCascadeRelaxAndPropagate, C, S> { using Type = CoherenceCascadeRelaxAndPropagateTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QuantumDarwinismTransformLogicResolver<QuantumDarwinismTransformLogicID::OutwardWavefrontEinselection, C, S> { using Type = OutwardWavefrontEinselectionTransformLogic<C>; static constexpr bool is_valid = true; };
+    template <typename C, typename S> struct QuantumDarwinismTransformLogicResolver<QuantumDarwinismTransformLogicID::ChannelToTokenProjection, C, S> { using Type = ChannelToTokenProjectionTransformLogic<C>; static constexpr bool is_valid = true; };
 
     template <QuantumDarwinismTransformLogicID LogicID, typename C, typename S>
     struct QuantumDarwinismTransformLogicKernelExtractor : QuantumDarwinismTransformKernelExtractorImpl<QuantumDarwinismTransformLogicResolver<LogicID, C, S>> {};

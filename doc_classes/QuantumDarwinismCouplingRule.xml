@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismCouplingRule" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Defines a cross-channel threshold and permeability coupling rule for Quantum Darwinism.
+	</brief_description>
+	<description>
+		When the source channel locks in a slot, shifts the effective einselection threshold (delta_threshold_tau), propagation permeability (delta_permeability_gamma), and optional value/state bias of the target channel across slots matching scope and topology_mask.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="source_channel_name" type="StringName" setter="set_source_channel_name" getter="get_source_channel_name">
+			Source channel whose einselection triggers this coupling rule.
+		</member>
+		<member name="target_channel_name" type="StringName" setter="set_target_channel_name" getter="get_target_channel_name">
+			Target channel modulated when the source channel locks.
+		</member>
+		<member name="delta_threshold_tau" type="float" setter="set_delta_threshold_tau" getter="get_delta_threshold_tau">
+			Threshold shift applied to target channel (negative accelerates crystallization, positive inhibits it).
+		</member>
+		<member name="delta_permeability_gamma" type="float" setter="set_delta_permeability_gamma" getter="get_delta_permeability_gamma">
+			Permeability shift applied to target channel.
+		</member>
+		<member name="scope" type="int" setter="set_scope" getter="get_scope">
+			CSS-style rule scope (Self:0, Children:1, Descendants:2, Siblings:3, All:4).
+		</member>
+	</members>
+</class>

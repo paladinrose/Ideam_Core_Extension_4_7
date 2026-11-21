@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="QuantumDarwinismGeneratorResource" inherits="ProceduralGeneratorResource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/godotengine/godot/master/doc/class.xsd">
+	<brief_description>
+		Standalone Godot-canvas Quantum Darwinism procedural generator configuration resource.
+	</brief_description>
+	<description>
+		Configures outward multi-channel wavefront einselection, cross-channel threshold couplings, symmetry breaking perturbation, spontaneous nucleation, and hybrid WFC/QD conflict stabilization over `ProceduralEnvironment`. Supports `IdeamUndoRedo` propagation and commit wrappers.
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="solver_mode" type="int" setter="set_solver_mode" getter="get_solver_mode">
+			Active solver mode (ConflictStabilizer:0, OutwardGenerative:1, HybridGenerateAndStabilize:2).
+		</member>
+		<member name="max_wavefront_iterations" type="int" setter="set_max_wavefront_iterations" getter="get_max_wavefront_iterations">
+			Maximum outward wavefront propagation steps per solve.
+		</member>
+		<member name="perturbation_strength" type="float" setter="set_perturbation_strength" getter="get_perturbation_strength">
+			Amplitude of deterministic hash / external noise field perturbation on thresholds and edge weights.
+		</member>
+		<member name="nucleation_temperature" type="float" setter="set_nucleation_temperature" getter="get_nucleation_temperature">
+			Stochastic tie-breaking temperature during spontaneous frontier nucleation on wavefront stall.
+		</member>
+		<member name="channels" type="Array" setter="set_channels" getter="get_channels">
+			Array of QuantumDarwinismChannelSpec resources defining factored reflection and semantic channels.
+		</member>
+		<member name="coupling_rules" type="Array" setter="set_coupling_rules" getter="get_coupling_rules">
+			Array of QuantumDarwinismCouplingRule resources defining cross-channel threshold and permeability couplings.
+		</member>
+	</members>
+</class>
