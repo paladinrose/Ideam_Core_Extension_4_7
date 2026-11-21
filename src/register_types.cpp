@@ -277,6 +277,13 @@
 #include "godot/narratives/helpers/narrative_condition.h"
 #include "godot/narratives/helpers/plot_event.h"
 
+#include "godot/narratives/editor/narratives_inspector.h"
+#include "godot/narratives/ui/narrative_condition_field.h"
+#include "godot/narratives/ui/narrative_control.h"
+#include "godot/narratives/ui/location_map.h"
+#include "godot/narratives/ui/relationship_map.h"
+#include "godot/narratives/ui/plot_outliner.h"
+#include "godot/narratives/ui/narratives_composer.h"
 #include "godot/narratives/ideam_narratives_plugin.h"
 #include "godot/tasks/domains/narratives/data_oriented_narrative.h"
 #include "godot/tasks/domains/narratives/narrative_task_host.h"
@@ -611,6 +618,12 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::BlueprintPreviewSurface);
         GDREGISTER_CLASS(ideam::godot_ext::BlueprintEditorControl);
         GDREGISTER_CLASS(ideam::godot_ext::DesignComposer);
+        GDREGISTER_CLASS(ideam::godot_ext::NarrativeConditionField);
+        GDREGISTER_CLASS(ideam::godot_ext::NarrativeControl);
+        GDREGISTER_CLASS(ideam::godot_ext::LocationMap);
+        GDREGISTER_CLASS(ideam::godot_ext::RelationshipMap);
+        GDREGISTER_CLASS(ideam::godot_ext::PlotOutliner);
+        GDREGISTER_CLASS(ideam::godot_ext::NarrativesComposer);
         GDREGISTER_CLASS(ideam::godot_ext::ProceduralComposer);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGPreviewCanvas);
         GDREGISTER_CLASS(ideam::godot_ext::GeometryCSGBridgeControl);
@@ -938,6 +951,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::IdeamTilesPlugin);
 
         // Narratives tooling
+        GDREGISTER_CLASS(ideam::godot_ext::NarrativesInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamNarrativesPlugin);
 
         // Minds, Design, Characters, Procedural Generation & WFC tooling (Section 1.1 & 2.2)

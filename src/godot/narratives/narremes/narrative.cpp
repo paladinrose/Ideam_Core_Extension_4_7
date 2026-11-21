@@ -8,6 +8,9 @@
 #include "incident.h"
 #include "plot.h"
 #include "../helpers/relationship.h"
+#include "../helpers/incident_condition.h"
+#include "../helpers/plot_event.h"
+#include <godot_cpp/variant/callable_method_pointer.hpp>
 
 namespace ideam::godot_ext {
 
@@ -83,6 +86,152 @@ void Narrative::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("path_has_changed", "node"), &Narrative::path_has_changed);
     godot::ClassDB::bind_method(godot::D_METHOD("get_class_name_str"), &Narrative::get_class_name_str);
 
+    // Foundational Undo/Redo, Query, Conversion & Instantiation Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("propagate_undo_redo", "undo_redo"), &Narrative::propagate_undo_redo);
+    godot::ClassDB::bind_method(godot::D_METHOD("find_symbolic_from_literal", "narreme"), &Narrative::find_symbolic_from_literal);
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("get_all_narremes", "filter", "class_filter"),
+        &Narrative::get_all_narremes,
+        DEFVAL(FILTER_ALL),
+        DEFVAL(godot::String())
+    );
+    godot::ClassDB::bind_method(godot::D_METHOD("is_narreme_symbolic", "narreme"), &Narrative::is_narreme_symbolic);
+    godot::ClassDB::bind_method(godot::D_METHOD("is_narreme_literal", "narreme"), &Narrative::is_narreme_literal);
+
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_character_to_role", "character_id"), &Narrative::convert_character_to_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_role_to_character", "role_id"), &Narrative::convert_role_to_character);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_prop_to_symbol", "prop_id"), &Narrative::convert_prop_to_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_symbol_to_prop", "symbol_id"), &Narrative::convert_symbol_to_prop);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_location_to_place", "location_id"), &Narrative::convert_location_to_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_place_to_location", "place_id"), &Narrative::convert_place_to_location);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_incident_to_moment", "incident_id"), &Narrative::convert_incident_to_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_moment_to_incident", "moment_id"), &Narrative::convert_moment_to_incident);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_plot_to_story", "plot_id"), &Narrative::convert_plot_to_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_story_to_plot", "story_id"), &Narrative::convert_story_to_plot);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_to_symbolic", "narreme"), &Narrative::convert_to_symbolic);
+    godot::ClassDB::bind_method(godot::D_METHOD("convert_to_literal", "narreme"), &Narrative::convert_to_literal);
+
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_character_from_role", "role_id", "new_name", "auto_fill", "replace_type"),
+        &Narrative::instantiate_character_from_role,
+        DEFVAL(godot::String()), DEFVAL(true), DEFVAL(REPLACE_SYMBOLIC)
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_prop_from_symbol", "symbol_id", "new_name", "auto_fill", "replace_type"),
+        &Narrative::instantiate_prop_from_symbol,
+        DEFVAL(godot::String()), DEFVAL(true), DEFVAL(REPLACE_SYMBOLIC)
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_location_from_place", "place_id", "new_name", "auto_fill", "replace_type"),
+        &Narrative::instantiate_location_from_place,
+        DEFVAL(godot::String()), DEFVAL(true), DEFVAL(REPLACE_SYMBOLIC)
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_incident_from_moment", "moment_id", "new_name", "auto_fill", "replace_type"),
+        &Narrative::instantiate_incident_from_moment,
+        DEFVAL(godot::String()), DEFVAL(true), DEFVAL(REPLACE_SYMBOLIC)
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_plot_from_story", "story_id", "new_name", "auto_fill", "replace_type"),
+        &Narrative::instantiate_plot_from_story,
+        DEFVAL(godot::String()), DEFVAL(true), DEFVAL(REPLACE_SYMBOLIC)
+    );
+    godot::ClassDB::bind_method(
+        godot::D_METHOD("instantiate_literal_from_symbolic", "symbolic", "new_name", "auto_fill"),
+        &Narrative::instantiate_literal_from_symbolic,
+        DEFVAL(godot::String()), DEFVAL(true)
+    );
+
+    // Character / Role Roster Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_character_names"), &Narrative::gather_character_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_character", "new_character"), &Narrative::add_character);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_character_id", "character"), &Narrative::get_character_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_character", "character"), &Narrative::has_character);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_character", "character"), &Narrative::remove_character);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_character_at", "character_ID"), &Narrative::remove_character_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_all_roles_character_is_filling", "character_ID"), &Narrative::get_all_roles_character_is_filling);
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_role_names"), &Narrative::gather_role_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_role", "new_role"), &Narrative::add_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_role_id", "role"), &Narrative::get_role_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_role", "role"), &Narrative::has_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_role", "role"), &Narrative::remove_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_role_at", "role_ID"), &Narrative::remove_role_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_best_fit_character_for_role", "role_ID", "character_mask", "best_fit"), &Narrative::get_best_fit_character_for_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("fill_role", "role_ID", "character_ID", "replace_type"), &Narrative::fill_role);
+    godot::ClassDB::bind_method(godot::D_METHOD("vacate_role", "role_ID"), &Narrative::vacate_role);
+
+    // Prop / Symbol Roster Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_prop_names"), &Narrative::gather_prop_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_prop", "new_prop"), &Narrative::add_prop);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_prop_id", "prop"), &Narrative::get_prop_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_prop", "prop"), &Narrative::has_prop);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_prop", "prop"), &Narrative::remove_prop);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_prop_at", "prop_ID"), &Narrative::remove_prop_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_all_symbols_prop_is_filling", "prop_ID"), &Narrative::get_all_symbols_prop_is_filling);
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_symbol_names"), &Narrative::gather_symbol_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_symbol", "new_symbol"), &Narrative::add_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_symbol_id", "symbol"), &Narrative::get_symbol_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_symbol", "symbol"), &Narrative::has_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_symbol", "symbol"), &Narrative::remove_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_symbol_at", "symbol_ID"), &Narrative::remove_symbol_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_best_fit_prop_for_symbol", "symbol_ID", "prop_mask", "best_fit"), &Narrative::get_best_fit_prop_for_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("fill_symbol", "symbol_ID", "prop_ID", "replace_type"), &Narrative::fill_symbol);
+    godot::ClassDB::bind_method(godot::D_METHOD("vacate_symbol", "symbol_ID"), &Narrative::vacate_symbol);
+
+    // Location / Place Roster Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_location_names"), &Narrative::gather_location_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_location", "new_location"), &Narrative::add_location);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_location_id", "location"), &Narrative::get_location_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_location", "location"), &Narrative::has_location);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_location", "location"), &Narrative::remove_location);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_location_at", "location_ID"), &Narrative::remove_location_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_all_places_location_is_filling", "location_ID"), &Narrative::get_all_places_location_is_filling);
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_place_names"), &Narrative::gather_place_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_place", "new_place"), &Narrative::add_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_place_id", "place"), &Narrative::get_place_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_place", "place"), &Narrative::has_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_place", "place"), &Narrative::remove_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_place_at", "place_ID"), &Narrative::remove_place_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_best_fit_location_for_place", "place_ID", "location_mask", "best_fit"), &Narrative::get_best_fit_location_for_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("fill_place", "place_ID", "location_ID", "replace_type"), &Narrative::fill_place);
+    godot::ClassDB::bind_method(godot::D_METHOD("vacate_place", "place_ID"), &Narrative::vacate_place);
+
+    // Incident / Moment Roster Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_incident_names"), &Narrative::gather_incident_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_incident", "new_incident"), &Narrative::add_incident);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_incident_id", "incident"), &Narrative::get_incident_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_incident", "incident"), &Narrative::has_incident);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_incident", "incident"), &Narrative::remove_incident);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_incident_at", "incident_ID"), &Narrative::remove_incident_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_all_moments_incident_is_filling", "incident_ID"), &Narrative::get_all_moments_incident_is_filling);
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_moment_names"), &Narrative::gather_moment_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_moment", "new_moment"), &Narrative::add_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_moment_id", "moment"), &Narrative::get_moment_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_moment", "moment"), &Narrative::has_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_moment", "moment"), &Narrative::remove_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_moment_at", "moment_ID"), &Narrative::remove_moment_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_best_fit_incident_for_moment", "moment_ID", "incident_mask", "best_fit"), &Narrative::get_best_fit_incident_for_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("fill_moment", "moment_ID", "incident_ID", "replace_type"), &Narrative::fill_moment);
+    godot::ClassDB::bind_method(godot::D_METHOD("vacate_moment", "moment_ID"), &Narrative::vacate_moment);
+
+    // Plot / Story Roster Methods
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_plot_names"), &Narrative::gather_plot_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_plot", "new_plot"), &Narrative::add_plot);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_plot_id", "plot"), &Narrative::get_plot_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_plot", "plot"), &Narrative::has_plot);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_plot", "plot"), &Narrative::remove_plot);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_plot_at", "plot_ID"), &Narrative::remove_plot_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_all_storys_plot_is_filling", "plot_ID"), &Narrative::get_all_storys_plot_is_filling);
+    godot::ClassDB::bind_method(godot::D_METHOD("gather_story_names"), &Narrative::gather_story_names);
+    godot::ClassDB::bind_method(godot::D_METHOD("add_story", "new_story"), &Narrative::add_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_story_id", "story"), &Narrative::get_story_id);
+    godot::ClassDB::bind_method(godot::D_METHOD("has_story", "story"), &Narrative::has_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_story", "story"), &Narrative::remove_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("remove_story_at", "story_ID"), &Narrative::remove_story_at);
+    godot::ClassDB::bind_method(godot::D_METHOD("get_best_fit_plot_for_story", "story_ID", "plot_mask", "best_fit"), &Narrative::get_best_fit_plot_for_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("fill_story", "story_ID", "plot_ID", "replace_type"), &Narrative::fill_story);
+    godot::ClassDB::bind_method(godot::D_METHOD("vacate_story", "story_ID"), &Narrative::vacate_story);
+
     // Enums
     BIND_ENUM_CONSTANT(FIT_BASIC);
     BIND_ENUM_CONSTANT(FIT_SYMBOLIC);
@@ -91,10 +240,49 @@ void Narrative::_bind_methods() {
     BIND_ENUM_CONSTANT(REPLACE_SYMBOLIC);
     BIND_ENUM_CONSTANT(REPLACE_LITERAL);
     BIND_ENUM_CONSTANT(REPLACE_THOROUGH);
+    BIND_ENUM_CONSTANT(FILTER_ALL);
+    BIND_ENUM_CONSTANT(FILTER_LITERAL_ONLY);
+    BIND_ENUM_CONSTANT(FILTER_SYMBOLIC_ONLY);
 
-    // Base Signals
+    // Base & Roster Signals
     ADD_SIGNAL(godot::MethodInfo("narrative_begun"));
     ADD_SIGNAL(godot::MethodInfo("narrative_ended"));
+    ADD_SIGNAL(godot::MethodInfo("roster_changed"));
+
+    ADD_SIGNAL(godot::MethodInfo("character_added", godot::PropertyInfo(godot::Variant::OBJECT, "character", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+    ADD_SIGNAL(godot::MethodInfo("character_removed", godot::PropertyInfo(godot::Variant::OBJECT, "character", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+    ADD_SIGNAL(godot::MethodInfo("role_added", godot::PropertyInfo(godot::Variant::OBJECT, "role", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+    ADD_SIGNAL(godot::MethodInfo("role_removed", godot::PropertyInfo(godot::Variant::OBJECT, "role", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+    ADD_SIGNAL(godot::MethodInfo("role_filled", godot::PropertyInfo(godot::Variant::OBJECT, "role", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character"), godot::PropertyInfo(godot::Variant::OBJECT, "character", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+    ADD_SIGNAL(godot::MethodInfo("role_vacated", godot::PropertyInfo(godot::Variant::OBJECT, "role", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character"), godot::PropertyInfo(godot::Variant::OBJECT, "character", godot::PROPERTY_HINT_RESOURCE_TYPE, "Character")));
+
+    ADD_SIGNAL(godot::MethodInfo("prop_added", godot::PropertyInfo(godot::Variant::OBJECT, "prop", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+    ADD_SIGNAL(godot::MethodInfo("prop_removed", godot::PropertyInfo(godot::Variant::OBJECT, "prop", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+    ADD_SIGNAL(godot::MethodInfo("symbol_added", godot::PropertyInfo(godot::Variant::OBJECT, "symbol", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+    ADD_SIGNAL(godot::MethodInfo("symbol_removed", godot::PropertyInfo(godot::Variant::OBJECT, "symbol", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+    ADD_SIGNAL(godot::MethodInfo("symbol_filled", godot::PropertyInfo(godot::Variant::OBJECT, "symbol", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop"), godot::PropertyInfo(godot::Variant::OBJECT, "prop", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+    ADD_SIGNAL(godot::MethodInfo("symbol_vacated", godot::PropertyInfo(godot::Variant::OBJECT, "symbol", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop"), godot::PropertyInfo(godot::Variant::OBJECT, "prop", godot::PROPERTY_HINT_RESOURCE_TYPE, "Prop")));
+
+    ADD_SIGNAL(godot::MethodInfo("location_added", godot::PropertyInfo(godot::Variant::OBJECT, "location", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+    ADD_SIGNAL(godot::MethodInfo("location_removed", godot::PropertyInfo(godot::Variant::OBJECT, "location", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+    ADD_SIGNAL(godot::MethodInfo("place_added", godot::PropertyInfo(godot::Variant::OBJECT, "place", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+    ADD_SIGNAL(godot::MethodInfo("place_removed", godot::PropertyInfo(godot::Variant::OBJECT, "place", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+    ADD_SIGNAL(godot::MethodInfo("place_filled", godot::PropertyInfo(godot::Variant::OBJECT, "place", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location"), godot::PropertyInfo(godot::Variant::OBJECT, "location", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+    ADD_SIGNAL(godot::MethodInfo("place_vacated", godot::PropertyInfo(godot::Variant::OBJECT, "place", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location"), godot::PropertyInfo(godot::Variant::OBJECT, "location", godot::PROPERTY_HINT_RESOURCE_TYPE, "Location")));
+
+    ADD_SIGNAL(godot::MethodInfo("incident_added", godot::PropertyInfo(godot::Variant::OBJECT, "incident", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+    ADD_SIGNAL(godot::MethodInfo("incident_removed", godot::PropertyInfo(godot::Variant::OBJECT, "incident", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+    ADD_SIGNAL(godot::MethodInfo("moment_added", godot::PropertyInfo(godot::Variant::OBJECT, "moment", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+    ADD_SIGNAL(godot::MethodInfo("moment_removed", godot::PropertyInfo(godot::Variant::OBJECT, "moment", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+    ADD_SIGNAL(godot::MethodInfo("moment_filled", godot::PropertyInfo(godot::Variant::OBJECT, "moment", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident"), godot::PropertyInfo(godot::Variant::OBJECT, "incident", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+    ADD_SIGNAL(godot::MethodInfo("moment_vacated", godot::PropertyInfo(godot::Variant::OBJECT, "moment", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident"), godot::PropertyInfo(godot::Variant::OBJECT, "incident", godot::PROPERTY_HINT_RESOURCE_TYPE, "Incident")));
+
+    ADD_SIGNAL(godot::MethodInfo("plot_added", godot::PropertyInfo(godot::Variant::OBJECT, "plot", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
+    ADD_SIGNAL(godot::MethodInfo("plot_removed", godot::PropertyInfo(godot::Variant::OBJECT, "plot", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
+    ADD_SIGNAL(godot::MethodInfo("story_added", godot::PropertyInfo(godot::Variant::OBJECT, "story", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
+    ADD_SIGNAL(godot::MethodInfo("story_removed", godot::PropertyInfo(godot::Variant::OBJECT, "story", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
+    ADD_SIGNAL(godot::MethodInfo("story_filled", godot::PropertyInfo(godot::Variant::OBJECT, "story", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot"), godot::PropertyInfo(godot::Variant::OBJECT, "plot", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
+    ADD_SIGNAL(godot::MethodInfo("story_vacated", godot::PropertyInfo(godot::Variant::OBJECT, "story", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot"), godot::PropertyInfo(godot::Variant::OBJECT, "plot", godot::PROPERTY_HINT_RESOURCE_TYPE, "Plot")));
 }
 
 Narrative::Narrative() {}
@@ -323,10 +511,12 @@ int Narrative::add_character(const godot::Ref<Character> &new_character) {
     int id = get_character_id(new_character);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = characters.size();
         characters.append(new_character);
         // Note: connect to path_has_changed omitted as it is an empty stub in base script
         emit_signal("character_added", new_character);
+        _record_roster_undo("Add Character to Narrative", _undo_before);
     }
     return id;
 }
@@ -351,6 +541,8 @@ bool Narrative::remove_character(const godot::Ref<Character> &character) {
 
 bool Narrative::remove_character_at(int character_ID) {
     if (character_ID < 0 || character_ID >= characters.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Character> character = characters[character_ID];
     godot::TypedArray<int> role_IDs = get_all_roles_character_is_filling(character_ID);
@@ -360,7 +552,10 @@ bool Narrative::remove_character_at(int character_ID) {
     }
     
     characters.remove_at(character_ID);
+    _shift_assignments_after_literal_removal(role_assignments, character_ID);
     emit_signal("character_removed", character);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Character from Narrative", _undo_before);
     return true;
 }
 
@@ -398,10 +593,12 @@ int Narrative::add_role(const godot::Ref<Character> &new_role) {
     int id = get_role_id(new_role);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = roles.size();
         roles.append(new_role);
         role_assignments.append(-1);
         emit_signal("role_added", new_role);
+        _record_roster_undo("Add Role to Narrative", _undo_before);
     }
     return id;
 }
@@ -424,6 +621,8 @@ bool Narrative::remove_role(const godot::Ref<Character> &role) {
 
 bool Narrative::remove_role_at(int role_ID) {
     if (role_ID < 0 || role_ID >= roles.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Character> role = roles[role_ID];
     
@@ -435,6 +634,8 @@ bool Narrative::remove_role_at(int role_ID) {
     role_assignments.remove_at(role_ID);
     
     emit_signal("role_removed", role);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Role from Narrative", _undo_before);
     return true;
 }
 
@@ -627,6 +828,8 @@ int Narrative::get_best_fit_character_for_role(int role_ID, const godot::TypedAr
 
 bool Narrative::fill_role(int role_ID, int character_ID, NarrativeReplacement replace_type) {
     if (role_ID < 0 || role_ID >= roles.size() || character_ID < 0 || character_ID >= characters.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Character> role = roles[role_ID];
     if (!role.is_valid()) return false;
@@ -714,11 +917,15 @@ bool Narrative::fill_role(int role_ID, int character_ID, NarrativeReplacement re
     role_assignments[role_ID] = character_ID;
     
     emit_signal("role_filled", role, new_character);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Fill Role", _undo_before);
     return true;
 }
 
 bool Narrative::vacate_role(int role_ID) {
     if (role_ID < 0 || role_ID >= role_assignments.size() || (int)role_assignments[role_ID] < 0) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Character> role = roles[role_ID];
     if (!role.is_valid()) return false;
@@ -757,6 +964,8 @@ bool Narrative::vacate_role(int role_ID) {
     // Set assignment to empty (-1)
     role_assignments[role_ID] = -1;
     
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Vacate Role", _undo_before);
     return true;
 }
 
@@ -779,10 +988,12 @@ int Narrative::add_prop(const godot::Ref<Prop> &new_prop) {
     int id = get_prop_id(new_prop);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = props.size();
         props.append(new_prop);
         // new_prop->connect("path_changed", ...) omitted (stub)
         emit_signal("prop_added", new_prop);
+        _record_roster_undo("Add Prop to Narrative", _undo_before);
     }
     return id;
 }
@@ -807,6 +1018,8 @@ bool Narrative::remove_prop(const godot::Ref<Prop> &prop) {
 
 bool Narrative::remove_prop_at(int prop_ID) {
     if (prop_ID < 0 || prop_ID >= props.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Prop> prop = props[prop_ID];
     godot::TypedArray<int> symbol_IDs = get_all_symbols_prop_is_filling(prop_ID);
@@ -816,7 +1029,10 @@ bool Narrative::remove_prop_at(int prop_ID) {
     }
     
     props.remove_at(prop_ID);
+    _shift_assignments_after_literal_removal(symbol_assignments, prop_ID);
     emit_signal("prop_removed", prop);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Prop from Narrative", _undo_before);
     return true;
 }
 
@@ -854,10 +1070,12 @@ int Narrative::add_symbol(const godot::Ref<Prop> &new_symbol) {
     int id = get_symbol_id(new_symbol);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = symbols.size();
         symbols.append(new_symbol);
         symbol_assignments.append(-1);
         emit_signal("symbol_added", new_symbol);
+        _record_roster_undo("Add Symbol to Narrative", _undo_before);
     }
     return id;
 }
@@ -880,6 +1098,8 @@ bool Narrative::remove_symbol(const godot::Ref<Prop> &symbol) {
 
 bool Narrative::remove_symbol_at(int symbol_ID) {
     if (symbol_ID < 0 || symbol_ID >= symbols.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Prop> symbol = symbols[symbol_ID];
     
@@ -891,6 +1111,8 @@ bool Narrative::remove_symbol_at(int symbol_ID) {
     symbol_assignments.remove_at(symbol_ID);
     
     emit_signal("symbol_removed", symbol);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Symbol from Narrative", _undo_before);
     return true;
 }
 
@@ -989,6 +1211,8 @@ int Narrative::get_best_fit_prop_for_symbol(int symbol_ID, const godot::TypedArr
 
 bool Narrative::fill_symbol(int symbol_ID, int prop_ID, NarrativeReplacement replace_type) {
     if (symbol_ID < 0 || symbol_ID >= symbols.size() || prop_ID < 0 || prop_ID >= props.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Prop> symbol = symbols[symbol_ID];
     if (!symbol.is_valid()) return false;
@@ -1079,11 +1303,15 @@ bool Narrative::fill_symbol(int symbol_ID, int prop_ID, NarrativeReplacement rep
     symbol_assignments[symbol_ID] = prop_ID;
     
     emit_signal("symbol_filled", symbol, new_prop);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Fill Symbol", _undo_before);
     return true;
 }
 
 bool Narrative::vacate_symbol(int symbol_ID) {
     if (symbol_ID < 0 || symbol_ID >= symbol_assignments.size() || (int)symbol_assignments[symbol_ID] < 0) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Prop> symbol = symbols[symbol_ID];
     if (!symbol.is_valid()) return false;
@@ -1121,6 +1349,8 @@ bool Narrative::vacate_symbol(int symbol_ID) {
     
     symbol_assignments[symbol_ID] = -1;
     
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Vacate Symbol", _undo_before);
     return true;
 }
 
@@ -1143,9 +1373,11 @@ int Narrative::add_location(const godot::Ref<Location> &new_location) {
     int id = get_location_id(new_location);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = locations.size();
         locations.append(new_location);
         emit_signal("location_added", new_location);
+        _record_roster_undo("Add Location to Narrative", _undo_before);
     }
     return id;
 }
@@ -1170,6 +1402,8 @@ bool Narrative::remove_location(const godot::Ref<Location> &location) {
 
 bool Narrative::remove_location_at(int location_ID) {
     if (location_ID < 0 || location_ID >= locations.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Location> location = locations[location_ID];
     godot::TypedArray<int> place_IDs = get_all_places_location_is_filling(location_ID);
@@ -1179,7 +1413,10 @@ bool Narrative::remove_location_at(int location_ID) {
     }
     
     locations.remove_at(location_ID);
+    _shift_assignments_after_literal_removal(place_assignments, location_ID);
     emit_signal("location_removed", location);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Location from Narrative", _undo_before);
     return true;
 }
 
@@ -1217,10 +1454,12 @@ int Narrative::add_place(const godot::Ref<Location> &new_place) {
     int id = get_place_id(new_place);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = places.size();
         places.append(new_place);
         place_assignments.append(-1);
         emit_signal("place_added", new_place);
+        _record_roster_undo("Add Place to Narrative", _undo_before);
     }
     return id;
 }
@@ -1243,6 +1482,8 @@ bool Narrative::remove_place(const godot::Ref<Location> &place) {
 
 bool Narrative::remove_place_at(int place_ID) {
     if (place_ID < 0 || place_ID >= places.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Location> place = places[place_ID];
     
@@ -1254,6 +1495,8 @@ bool Narrative::remove_place_at(int place_ID) {
     place_assignments.remove_at(place_ID);
     
     emit_signal("place_removed", place);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Place from Narrative", _undo_before);
     return true;
 }
 
@@ -1300,6 +1543,8 @@ int Narrative::get_best_fit_location_for_place(int place_ID, const godot::TypedA
 
 bool Narrative::fill_place(int place_ID, int location_ID, NarrativeReplacement replace_type) {
     if (place_ID < 0 || place_ID >= places.size() || location_ID < 0 || location_ID >= locations.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Location> place = places[place_ID];
     if (!place.is_valid()) return false;
@@ -1409,11 +1654,15 @@ bool Narrative::fill_place(int place_ID, int location_ID, NarrativeReplacement r
     place_assignments[place_ID] = location_ID;
     
     emit_signal("place_filled", place, new_location);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Fill Place", _undo_before);
     return true;
 }
 
 bool Narrative::vacate_place(int place_ID) {
     if (place_ID < 0 || place_ID >= place_assignments.size() || (int)place_assignments[place_ID] < 0) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Location> place = places[place_ID];
     if (!place.is_valid()) return false;
@@ -1467,6 +1716,8 @@ bool Narrative::vacate_place(int place_ID) {
     
     place_assignments[place_ID] = -1;
     
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Vacate Place", _undo_before);
     return true;
 }
 
@@ -1489,9 +1740,11 @@ int Narrative::add_incident(const godot::Ref<Incident> &new_incident) {
     int id = get_incident_id(new_incident);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = incidents.size();
         incidents.append(new_incident);
         emit_signal("incident_added", new_incident);
+        _record_roster_undo("Add Incident to Narrative", _undo_before);
     }
     return id;
 }
@@ -1516,6 +1769,8 @@ bool Narrative::remove_incident(const godot::Ref<Incident> &incident) {
 
 bool Narrative::remove_incident_at(int incident_ID) {
     if (incident_ID < 0 || incident_ID >= incidents.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Incident> incident = incidents[incident_ID];
     godot::TypedArray<int> moment_IDs = get_all_moments_incident_is_filling(incident_ID);
@@ -1525,7 +1780,10 @@ bool Narrative::remove_incident_at(int incident_ID) {
     }
     
     incidents.remove_at(incident_ID);
+    _shift_assignments_after_literal_removal(moment_assignments, incident_ID);
     emit_signal("incident_removed", incident);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Incident from Narrative", _undo_before);
     return true;
 }
 
@@ -1563,10 +1821,12 @@ int Narrative::add_moment(const godot::Ref<Incident> &new_moment) {
     int id = get_moment_id(new_moment);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = moments.size();
         moments.append(new_moment);
         moment_assignments.append(-1);
         emit_signal("moment_added", new_moment);
+        _record_roster_undo("Add Moment to Narrative", _undo_before);
     }
     return id;
 }
@@ -1589,6 +1849,8 @@ bool Narrative::remove_moment(const godot::Ref<Incident> &moment) {
 
 bool Narrative::remove_moment_at(int moment_ID) {
     if (moment_ID < 0 || moment_ID >= moments.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Incident> moment = moments[moment_ID];
     
@@ -1600,6 +1862,8 @@ bool Narrative::remove_moment_at(int moment_ID) {
     moment_assignments.remove_at(moment_ID);
     
     emit_signal("moment_removed", moment);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Moment from Narrative", _undo_before);
     return true;
 }
 
@@ -1663,6 +1927,8 @@ int Narrative::get_best_fit_incident_for_moment(int moment_ID, const godot::Type
 
 bool Narrative::fill_moment(int moment_ID, int incident_ID, NarrativeReplacement replace_type) {
     if (moment_ID < 0 || moment_ID >= moments.size() || incident_ID < 0 || incident_ID >= incidents.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Incident> moment = moments[moment_ID];
     if (!moment.is_valid()) return false;
@@ -1792,11 +2058,15 @@ bool Narrative::fill_moment(int moment_ID, int incident_ID, NarrativeReplacement
     moment_assignments[moment_ID] = incident_ID;
     
     emit_signal("moment_filled", moment, new_incident);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Fill Moment", _undo_before);
     return true;
 }
 
 bool Narrative::vacate_moment(int moment_ID) {
     if (moment_ID < 0 || moment_ID >= moment_assignments.size() || (int)moment_assignments[moment_ID] < 0) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Incident> moment = moments[moment_ID];
     if (!moment.is_valid()) return false;
@@ -1854,6 +2124,8 @@ bool Narrative::vacate_moment(int moment_ID) {
     
     moment_assignments[moment_ID] = -1;
     
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Vacate Moment", _undo_before);
     return true;
 }
 
@@ -1876,9 +2148,11 @@ int Narrative::add_plot(const godot::Ref<Plot> &new_plot) {
     int id = get_plot_id(new_plot);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = plots.size();
         plots.append(new_plot);
         emit_signal("plot_added", new_plot);
+        _record_roster_undo("Add Plot to Narrative", _undo_before);
     }
     return id;
 }
@@ -1903,6 +2177,8 @@ bool Narrative::remove_plot(const godot::Ref<Plot> &plot) {
 
 bool Narrative::remove_plot_at(int plot_ID) {
     if (plot_ID < 0 || plot_ID >= plots.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Plot> plot = plots[plot_ID];
     godot::TypedArray<int> story_IDs = get_all_storys_plot_is_filling(plot_ID);
@@ -1912,7 +2188,10 @@ bool Narrative::remove_plot_at(int plot_ID) {
     }
     
     plots.remove_at(plot_ID);
+    _shift_assignments_after_literal_removal(story_assignments, plot_ID);
     emit_signal("plot_removed", plot);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Plot from Narrative", _undo_before);
     return true;
 }
 
@@ -1950,10 +2229,12 @@ int Narrative::add_story(const godot::Ref<Plot> &new_story) {
     int id = get_story_id(new_story);
     
     if (id < 0) {
+        const godot::Dictionary _undo_before = _capture_roster_snapshot();
         id = stories.size();
         stories.append(new_story);
         story_assignments.append(-1);
         emit_signal("story_added", new_story);
+        _record_roster_undo("Add Story to Narrative", _undo_before);
     }
     return id;
 }
@@ -1976,6 +2257,8 @@ bool Narrative::remove_story(const godot::Ref<Plot> &story) {
 
 bool Narrative::remove_story_at(int story_ID) {
     if (story_ID < 0 || story_ID >= stories.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Plot> story = stories[story_ID];
     
@@ -1987,6 +2270,8 @@ bool Narrative::remove_story_at(int story_ID) {
     story_assignments.remove_at(story_ID);
     
     emit_signal("story_removed", story);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Remove Story from Narrative", _undo_before);
     return true;
 }
 
@@ -2049,6 +2334,8 @@ int Narrative::get_best_fit_plot_for_story(int story_ID, const godot::TypedArray
 
 bool Narrative::fill_story(int story_ID, int plot_ID, NarrativeReplacement replace_type) {
     if (story_ID < 0 || story_ID >= stories.size() || plot_ID < 0 || plot_ID >= plots.size()) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Plot> story = stories[story_ID];
     if (!story.is_valid()) return false;
@@ -2156,11 +2443,15 @@ bool Narrative::fill_story(int story_ID, int plot_ID, NarrativeReplacement repla
     story_assignments[story_ID] = plot_ID;
     
     emit_signal("story_filled", story, new_plot);
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Fill Story", _undo_before);
     return true;
 }
 
 bool Narrative::vacate_story(int story_ID) {
     if (story_ID < 0 || story_ID >= story_assignments.size() || (int)story_assignments[story_ID] < 0) return false;
+    const godot::Dictionary _undo_before = _capture_roster_snapshot();
+    ScopedNarremeUndoSuppress _undo_guard(undo_redo_suppressed_);
     
     godot::Ref<Plot> story = stories[story_ID];
     if (!story.is_valid()) return false;
@@ -2210,6 +2501,8 @@ bool Narrative::vacate_story(int story_ID) {
     
     story_assignments[story_ID] = -1;
     
+    undo_redo_suppressed_ = _undo_guard.previous_value;
+    _record_roster_undo("Vacate Story", _undo_before);
     return true;
 }
 
@@ -2218,26 +2511,675 @@ bool Narrative::vacate_story(int story_ID) {
 // NARRATIVE CONDITIONS OVERRIDES
 // ----------------------------------------------------------------------------
 
-godot::Array Narrative::get_narrative_conditions(Narreme *p_narreme) const {
-    godot::Array conditions;
+// ----------------------------------------------------------------------------
+// UNDO / REDO ROSTER SNAPSHOTS & PROPAGATION
+// ----------------------------------------------------------------------------
+
+void Narrative::propagate_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo) {
+    set_undo_redo(p_undo_redo);
+
+    auto wire_character_list = [&](const godot::TypedArray<Character> &p_list) {
+        for (int i = 0; i < p_list.size(); ++i) {
+            godot::Ref<Character> c = p_list[i];
+            if (!c.is_valid()) continue;
+            c->set_undo_redo(p_undo_redo);
+            godot::TypedArray<Relationship> rels = c->get_relationships();
+            for (int r = 0; r < rels.size(); ++r) {
+                godot::Ref<Relationship> rel = rels[r];
+                if (rel.is_valid()) rel->set_undo_redo(p_undo_redo);
+            }
+        }
+    };
+    auto wire_prop_list = [&](const godot::TypedArray<Prop> &p_list) {
+        for (int i = 0; i < p_list.size(); ++i) {
+            godot::Ref<Prop> p = p_list[i];
+            if (p.is_valid()) p->set_undo_redo(p_undo_redo);
+        }
+    };
+    auto wire_location_list = [&](const godot::TypedArray<Location> &p_list) {
+        for (int i = 0; i < p_list.size(); ++i) {
+            godot::Ref<Location> l = p_list[i];
+            if (l.is_valid()) l->set_undo_redo(p_undo_redo);
+        }
+    };
+    auto wire_incident_list = [&](const godot::TypedArray<Incident> &p_list) {
+        for (int i = 0; i < p_list.size(); ++i) {
+            godot::Ref<Incident> inc = p_list[i];
+            if (!inc.is_valid()) continue;
+            inc->set_undo_redo(p_undo_redo);
+            godot::TypedArray<Incident_Condition> conds = inc->get_conditions();
+            for (int k = 0; k < conds.size(); ++k) {
+                godot::Ref<Incident_Condition> cond = conds[k];
+                if (cond.is_valid()) cond->set_undo_redo(p_undo_redo);
+            }
+        }
+    };
+    auto wire_plot_list = [&](const godot::TypedArray<Plot> &p_list) {
+        for (int i = 0; i < p_list.size(); ++i) {
+            godot::Ref<Plot> pl = p_list[i];
+            if (!pl.is_valid()) continue;
+            pl->set_undo_redo(p_undo_redo);
+            godot::TypedArray<Plot_Event> evs = pl->get_plot_events();
+            for (int e = 0; e < evs.size(); ++e) {
+                godot::Ref<Plot_Event> ev = evs[e];
+                if (ev.is_valid()) ev->set_undo_redo(p_undo_redo);
+            }
+        }
+    };
+
+    wire_character_list(characters);
+    wire_character_list(roles);
+    wire_prop_list(props);
+    wire_prop_list(symbols);
+    wire_location_list(locations);
+    wire_location_list(places);
+    wire_incident_list(incidents);
+    wire_incident_list(moments);
+    wire_plot_list(plots);
+    wire_plot_list(stories);
+}
+
+godot::Dictionary Narrative::_capture_roster_snapshot() const {
+    godot::Dictionary snap;
+    snap["characters"]         = characters.duplicate();
+    snap["roles"]              = roles.duplicate();
+    snap["role_assignments"]   = role_assignments.duplicate();
+    snap["props"]              = props.duplicate();
+    snap["symbols"]            = symbols.duplicate();
+    snap["symbol_assignments"] = symbol_assignments.duplicate();
+    snap["locations"]          = locations.duplicate();
+    snap["places"]             = places.duplicate();
+    snap["place_assignments"]  = place_assignments.duplicate();
+    snap["incidents"]          = incidents.duplicate();
+    snap["moments"]            = moments.duplicate();
+    snap["moment_assignments"] = moment_assignments.duplicate();
+    snap["plots"]              = plots.duplicate();
+    snap["stories"]            = stories.duplicate();
+    snap["story_assignments"]  = story_assignments.duplicate();
+    return snap;
+}
+
+void Narrative::_apply_roster_snapshot(const godot::Dictionary &p_snapshot) {
+    if (p_snapshot.has("characters"))         characters         = p_snapshot["characters"].duplicate();
+    if (p_snapshot.has("roles"))              roles              = p_snapshot["roles"].duplicate();
+    if (p_snapshot.has("role_assignments"))   role_assignments   = p_snapshot["role_assignments"].duplicate();
+    if (p_snapshot.has("props"))              props              = p_snapshot["props"].duplicate();
+    if (p_snapshot.has("symbols"))            symbols            = p_snapshot["symbols"].duplicate();
+    if (p_snapshot.has("symbol_assignments")) symbol_assignments = p_snapshot["symbol_assignments"].duplicate();
+    if (p_snapshot.has("locations"))          locations          = p_snapshot["locations"].duplicate();
+    if (p_snapshot.has("places"))             places             = p_snapshot["places"].duplicate();
+    if (p_snapshot.has("place_assignments"))  place_assignments  = p_snapshot["place_assignments"].duplicate();
+    if (p_snapshot.has("incidents"))          incidents          = p_snapshot["incidents"].duplicate();
+    if (p_snapshot.has("moments"))            moments            = p_snapshot["moments"].duplicate();
+    if (p_snapshot.has("moment_assignments")) moment_assignments = p_snapshot["moment_assignments"].duplicate();
+    if (p_snapshot.has("plots"))              plots              = p_snapshot["plots"].duplicate();
+    if (p_snapshot.has("stories"))            stories            = p_snapshot["stories"].duplicate();
+    if (p_snapshot.has("story_assignments"))  story_assignments  = p_snapshot["story_assignments"].duplicate();
+    emit_signal("roster_changed");
+    emit_changed();
+}
+
+void Narrative::_record_roster_undo(const godot::String &p_action_name, const godot::Dictionary &p_before_snapshot) {
+    if (!_can_record_undo()) {
+        emit_signal("roster_changed");
+        emit_changed();
+        return;
+    }
+    const godot::Dictionary after_snapshot = _capture_roster_snapshot();
+    undo_redo_->create_action(p_action_name);
+    undo_redo_->add_do_method(callable_mp(this, &Narrative::_apply_roster_snapshot).bind(after_snapshot));
+    undo_redo_->add_undo_method(callable_mp(this, &Narrative::_apply_roster_snapshot).bind(p_before_snapshot));
+    undo_redo_->commit_action(false);
+    emit_signal("roster_changed");
+    emit_changed();
+}
+
+void Narrative::_shift_assignments_after_literal_removal(godot::TypedArray<int> &p_assignments, int p_removed_literal_id) {
+    for (int i = 0; i < p_assignments.size(); ++i) {
+        const int assigned = static_cast<int>(p_assignments[i]);
+        if (assigned == p_removed_literal_id) {
+            p_assignments[i] = -1;
+        } else if (assigned > p_removed_literal_id) {
+            p_assignments[i] = assigned - 1;
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// UNIFIED QUERY, FILTERING, REAL <-> SYMBOLIC CONVERSION & INSTANTIATION
+// ----------------------------------------------------------------------------
+
+godot::Ref<Narreme> Narrative::find_symbolic_from_literal(const godot::Ref<Narreme> &narreme) const {
+    if (!narreme.is_valid()) return nullptr;
+    const godot::String class_name = narreme->get_class_name_str();
+
+    if (class_name == "Character") {
+        const int id = get_character_id(narreme);
+        if (id >= 0) {
+            for (int i = 0; i < role_assignments.size() && i < roles.size(); ++i) {
+                if (static_cast<int>(role_assignments[i]) == id) return roles[i];
+            }
+        }
+    } else if (class_name == "Prop") {
+        const int id = get_prop_id(narreme);
+        if (id >= 0) {
+            for (int i = 0; i < symbol_assignments.size() && i < symbols.size(); ++i) {
+                if (static_cast<int>(symbol_assignments[i]) == id) return symbols[i];
+            }
+        }
+    } else if (class_name == "Location") {
+        const int id = get_location_id(narreme);
+        if (id >= 0) {
+            for (int i = 0; i < place_assignments.size() && i < places.size(); ++i) {
+                if (static_cast<int>(place_assignments[i]) == id) return places[i];
+            }
+        }
+    } else if (class_name == "Incident") {
+        const int id = get_incident_id(narreme);
+        if (id >= 0) {
+            for (int i = 0; i < moment_assignments.size() && i < moments.size(); ++i) {
+                if (static_cast<int>(moment_assignments[i]) == id) return moments[i];
+            }
+        }
+    } else if (class_name == "Plot") {
+        const int id = get_plot_id(narreme);
+        if (id >= 0) {
+            for (int i = 0; i < story_assignments.size() && i < stories.size(); ++i) {
+                if (static_cast<int>(story_assignments[i]) == id) return stories[i];
+            }
+        }
+    }
+    return nullptr;
+}
+
+godot::TypedArray<Narreme> Narrative::get_all_narremes(
+    NarremeFilterMode p_filter,
+    const godot::String &p_class_filter
+) const {
+    godot::TypedArray<Narreme> result;
+    const bool include_literal  = (p_filter == FILTER_ALL || p_filter == FILTER_LITERAL_ONLY);
+    const bool include_symbolic = (p_filter == FILTER_ALL || p_filter == FILTER_SYMBOLIC_ONLY);
+
+    auto matches_class = [&](const char *p_cls) {
+        return p_class_filter.is_empty() || p_class_filter == p_cls;
+    };
+
+    if (matches_class("Character")) {
+        if (include_literal) {
+            for (int i = 0; i < characters.size(); ++i) {
+                godot::Ref<Narreme> n = characters[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+        if (include_symbolic) {
+            for (int i = 0; i < roles.size(); ++i) {
+                godot::Ref<Narreme> n = roles[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+    }
+    if (matches_class("Prop")) {
+        if (include_literal) {
+            for (int i = 0; i < props.size(); ++i) {
+                godot::Ref<Narreme> n = props[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+        if (include_symbolic) {
+            for (int i = 0; i < symbols.size(); ++i) {
+                godot::Ref<Narreme> n = symbols[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+    }
+    if (matches_class("Location")) {
+        if (include_literal) {
+            for (int i = 0; i < locations.size(); ++i) {
+                godot::Ref<Narreme> n = locations[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+        if (include_symbolic) {
+            for (int i = 0; i < places.size(); ++i) {
+                godot::Ref<Narreme> n = places[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+    }
+    if (matches_class("Incident")) {
+        if (include_literal) {
+            for (int i = 0; i < incidents.size(); ++i) {
+                godot::Ref<Narreme> n = incidents[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+        if (include_symbolic) {
+            for (int i = 0; i < moments.size(); ++i) {
+                godot::Ref<Narreme> n = moments[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+    }
+    if (matches_class("Plot")) {
+        if (include_literal) {
+            for (int i = 0; i < plots.size(); ++i) {
+                godot::Ref<Narreme> n = plots[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+        if (include_symbolic) {
+            for (int i = 0; i < stories.size(); ++i) {
+                godot::Ref<Narreme> n = stories[i];
+                if (n.is_valid()) result.append(n);
+            }
+        }
+    }
+
+    return result;
+}
+
+bool Narrative::is_narreme_symbolic(const godot::Ref<Narreme> &p_narreme) const {
+    if (!p_narreme.is_valid()) return false;
+    const godot::String cls = p_narreme->get_class_name_str();
+    if (cls == "Character") return has_role(p_narreme);
+    if (cls == "Prop")      return has_symbol(p_narreme);
+    if (cls == "Location")  return has_place(p_narreme);
+    if (cls == "Incident")  return has_moment(p_narreme);
+    if (cls == "Plot")      return has_story(p_narreme);
+    return false;
+}
+
+bool Narrative::is_narreme_literal(const godot::Ref<Narreme> &p_narreme) const {
+    if (!p_narreme.is_valid()) return false;
+    const godot::String cls = p_narreme->get_class_name_str();
+    if (cls == "Character") return has_character(p_narreme);
+    if (cls == "Prop")      return has_prop(p_narreme);
+    if (cls == "Location")  return has_location(p_narreme);
+    if (cls == "Incident")  return has_incident(p_narreme);
+    if (cls == "Plot")      return has_plot(p_narreme);
+    return false;
+}
+
+bool Narrative::convert_character_to_role(int p_character_id) {
+    if (p_character_id < 0 || p_character_id >= characters.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Character> target   = characters[p_character_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_character_at(p_character_id);
+        add_role(target);
+    }
+    _record_roster_undo("Convert Character to Role", before);
+    return true;
+}
+
+bool Narrative::convert_role_to_character(int p_role_id) {
+    if (p_role_id < 0 || p_role_id >= roles.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Character> target   = roles[p_role_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_role_at(p_role_id);
+        add_character(target);
+    }
+    _record_roster_undo("Convert Role to Character", before);
+    return true;
+}
+
+bool Narrative::convert_prop_to_symbol(int p_prop_id) {
+    if (p_prop_id < 0 || p_prop_id >= props.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Prop> target        = props[p_prop_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_prop_at(p_prop_id);
+        add_symbol(target);
+    }
+    _record_roster_undo("Convert Prop to Symbol", before);
+    return true;
+}
+
+bool Narrative::convert_symbol_to_prop(int p_symbol_id) {
+    if (p_symbol_id < 0 || p_symbol_id >= symbols.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Prop> target        = symbols[p_symbol_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_symbol_at(p_symbol_id);
+        add_prop(target);
+    }
+    _record_roster_undo("Convert Symbol to Prop", before);
+    return true;
+}
+
+bool Narrative::convert_location_to_place(int p_location_id) {
+    if (p_location_id < 0 || p_location_id >= locations.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Location> target    = locations[p_location_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_location_at(p_location_id);
+        add_place(target);
+    }
+    _record_roster_undo("Convert Location to Place", before);
+    return true;
+}
+
+bool Narrative::convert_place_to_location(int p_place_id) {
+    if (p_place_id < 0 || p_place_id >= places.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Location> target    = places[p_place_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_place_at(p_place_id);
+        add_location(target);
+    }
+    _record_roster_undo("Convert Place to Location", before);
+    return true;
+}
+
+bool Narrative::convert_incident_to_moment(int p_incident_id) {
+    if (p_incident_id < 0 || p_incident_id >= incidents.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Incident> target    = incidents[p_incident_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_incident_at(p_incident_id);
+        add_moment(target);
+    }
+    _record_roster_undo("Convert Incident to Moment", before);
+    return true;
+}
+
+bool Narrative::convert_moment_to_incident(int p_moment_id) {
+    if (p_moment_id < 0 || p_moment_id >= moments.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Incident> target    = moments[p_moment_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_moment_at(p_moment_id);
+        add_incident(target);
+    }
+    _record_roster_undo("Convert Moment to Incident", before);
+    return true;
+}
+
+bool Narrative::convert_plot_to_story(int p_plot_id) {
+    if (p_plot_id < 0 || p_plot_id >= plots.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Plot> target        = plots[p_plot_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_plot_at(p_plot_id);
+        add_story(target);
+    }
+    _record_roster_undo("Convert Plot to Story", before);
+    return true;
+}
+
+bool Narrative::convert_story_to_plot(int p_story_id) {
+    if (p_story_id < 0 || p_story_id >= stories.size()) return false;
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Plot> target        = stories[p_story_id];
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        remove_story_at(p_story_id);
+        add_plot(target);
+    }
+    _record_roster_undo("Convert Story to Plot", before);
+    return true;
+}
+
+bool Narrative::convert_to_symbolic(const godot::Ref<Narreme> &p_narreme) {
+    if (!p_narreme.is_valid()) return false;
+    const godot::String cls = p_narreme->get_class_name_str();
+    if (cls == "Character") return convert_character_to_role(get_character_id(p_narreme));
+    if (cls == "Prop")      return convert_prop_to_symbol(get_prop_id(p_narreme));
+    if (cls == "Location")  return convert_location_to_place(get_location_id(p_narreme));
+    if (cls == "Incident")  return convert_incident_to_moment(get_incident_id(p_narreme));
+    if (cls == "Plot")      return convert_plot_to_story(get_plot_id(p_narreme));
+    return false;
+}
+
+bool Narrative::convert_to_literal(const godot::Ref<Narreme> &p_narreme) {
+    if (!p_narreme.is_valid()) return false;
+    const godot::String cls = p_narreme->get_class_name_str();
+    if (cls == "Character") return convert_role_to_character(get_role_id(p_narreme));
+    if (cls == "Prop")      return convert_symbol_to_prop(get_symbol_id(p_narreme));
+    if (cls == "Location")  return convert_place_to_location(get_place_id(p_narreme));
+    if (cls == "Incident")  return convert_moment_to_incident(get_moment_id(p_narreme));
+    if (cls == "Plot")      return convert_story_to_plot(get_story_id(p_narreme));
+    return false;
+}
+
+godot::Ref<Character> Narrative::instantiate_character_from_role(
+    int p_role_id,
+    const godot::String &p_new_name,
+    bool p_auto_fill,
+    NarrativeReplacement p_replace_type
+) {
+    if (p_role_id < 0 || p_role_id >= roles.size()) return nullptr;
+    godot::Ref<Character> role = roles[p_role_id];
+    if (!role.is_valid()) return nullptr;
+
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Character> inst = role->duplicate(false);
+    if (!inst.is_valid()) {
+        inst.instantiate();
+    }
+    const godot::String base_name = role->get_official_name().is_empty() ? godot::String("Character") : role->get_official_name();
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    if (role->get_semantic_tags().is_valid()) {
+        inst->set_semantic_tags(role->get_semantic_tags()->duplicate(true));
+    }
+    if (undo_redo_.is_valid()) {
+        inst->set_undo_redo(undo_redo_);
+    }
+
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        const int new_id = add_character(inst);
+        if (p_auto_fill && new_id >= 0) {
+            fill_role(p_role_id, new_id, p_replace_type);
+        }
+    }
+    _record_roster_undo("Instantiate Character from Role", before);
+    return inst;
+}
+
+godot::Ref<Prop> Narrative::instantiate_prop_from_symbol(
+    int p_symbol_id,
+    const godot::String &p_new_name,
+    bool p_auto_fill,
+    NarrativeReplacement p_replace_type
+) {
+    if (p_symbol_id < 0 || p_symbol_id >= symbols.size()) return nullptr;
+    godot::Ref<Prop> symbol = symbols[p_symbol_id];
+    if (!symbol.is_valid()) return nullptr;
+
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Prop> inst = symbol->duplicate(false);
+    if (!inst.is_valid()) {
+        inst.instantiate();
+    }
+    const godot::String base_name = symbol->get_official_name().is_empty() ? godot::String("Prop") : symbol->get_official_name();
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    if (symbol->get_semantic_tags().is_valid()) {
+        inst->set_semantic_tags(symbol->get_semantic_tags()->duplicate(true));
+    }
+    if (undo_redo_.is_valid()) {
+        inst->set_undo_redo(undo_redo_);
+    }
+
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        const int new_id = add_prop(inst);
+        if (p_auto_fill && new_id >= 0) {
+            fill_symbol(p_symbol_id, new_id, p_replace_type);
+        }
+    }
+    _record_roster_undo("Instantiate Prop from Symbol", before);
+    return inst;
+}
+
+godot::Ref<Location> Narrative::instantiate_location_from_place(
+    int p_place_id,
+    const godot::String &p_new_name,
+    bool p_auto_fill,
+    NarrativeReplacement p_replace_type
+) {
+    if (p_place_id < 0 || p_place_id >= places.size()) return nullptr;
+    godot::Ref<Location> place = places[p_place_id];
+    if (!place.is_valid()) return nullptr;
+
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Location> inst = place->duplicate(false);
+    if (!inst.is_valid()) {
+        inst.instantiate();
+    }
+    const godot::String base_name = place->get_official_name().is_empty() ? godot::String("Location") : place->get_official_name();
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    if (place->get_semantic_tags().is_valid()) {
+        inst->set_semantic_tags(place->get_semantic_tags()->duplicate(true));
+    }
+    if (undo_redo_.is_valid()) {
+        inst->set_undo_redo(undo_redo_);
+    }
+
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        const int new_id = add_location(inst);
+        if (p_auto_fill && new_id >= 0) {
+            fill_place(p_place_id, new_id, p_replace_type);
+        }
+    }
+    _record_roster_undo("Instantiate Location from Place", before);
+    return inst;
+}
+
+godot::Ref<Incident> Narrative::instantiate_incident_from_moment(
+    int p_moment_id,
+    const godot::String &p_new_name,
+    bool p_auto_fill,
+    NarrativeReplacement p_replace_type
+) {
+    if (p_moment_id < 0 || p_moment_id >= moments.size()) return nullptr;
+    godot::Ref<Incident> moment = moments[p_moment_id];
+    if (!moment.is_valid()) return nullptr;
+
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Incident> inst = moment->duplicate(false);
+    if (!inst.is_valid()) {
+        inst.instantiate();
+    }
+    const godot::String base_name = moment->get_official_name().is_empty() ? godot::String("Incident") : moment->get_official_name();
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    if (moment->get_semantic_tags().is_valid()) {
+        inst->set_semantic_tags(moment->get_semantic_tags()->duplicate(true));
+    }
+    if (undo_redo_.is_valid()) {
+        inst->set_undo_redo(undo_redo_);
+    }
+
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        const int new_id = add_incident(inst);
+        if (p_auto_fill && new_id >= 0) {
+            fill_moment(p_moment_id, new_id, p_replace_type);
+        }
+    }
+    _record_roster_undo("Instantiate Incident from Moment", before);
+    return inst;
+}
+
+godot::Ref<Plot> Narrative::instantiate_plot_from_story(
+    int p_story_id,
+    const godot::String &p_new_name,
+    bool p_auto_fill,
+    NarrativeReplacement p_replace_type
+) {
+    if (p_story_id < 0 || p_story_id >= stories.size()) return nullptr;
+    godot::Ref<Plot> story = stories[p_story_id];
+    if (!story.is_valid()) return nullptr;
+
+    const godot::Dictionary before = _capture_roster_snapshot();
+    godot::Ref<Plot> inst = story->duplicate(false);
+    if (!inst.is_valid()) {
+        inst.instantiate();
+    }
+    const godot::String base_name = story->get_official_name().is_empty() ? godot::String("Plot") : story->get_official_name();
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    if (story->get_semantic_tags().is_valid()) {
+        inst->set_semantic_tags(story->get_semantic_tags()->duplicate(true));
+    }
+    if (undo_redo_.is_valid()) {
+        inst->set_undo_redo(undo_redo_);
+    }
+
+    {
+        ScopedNarremeUndoSuppress guard(undo_redo_suppressed_);
+        const int new_id = add_plot(inst);
+        if (p_auto_fill && new_id >= 0) {
+            fill_story(p_story_id, new_id, p_replace_type);
+        }
+    }
+    _record_roster_undo("Instantiate Plot from Story", before);
+    return inst;
+}
+
+godot::Ref<Narreme> Narrative::instantiate_literal_from_symbolic(
+    const godot::Ref<Narreme> &p_symbolic,
+    const godot::String &p_new_name,
+    bool p_auto_fill
+) {
+    if (!p_symbolic.is_valid()) return nullptr;
+    const godot::String cls = p_symbolic->get_class_name_str();
+    if (cls == "Character") return instantiate_character_from_role(get_role_id(p_symbolic), p_new_name, p_auto_fill);
+    if (cls == "Prop")      return instantiate_prop_from_symbol(get_symbol_id(p_symbolic), p_new_name, p_auto_fill);
+    if (cls == "Location")  return instantiate_location_from_place(get_place_id(p_symbolic), p_new_name, p_auto_fill);
+    if (cls == "Incident")  return instantiate_incident_from_moment(get_moment_id(p_symbolic), p_new_name, p_auto_fill);
+    if (cls == "Plot")      return instantiate_plot_from_story(get_story_id(p_symbolic), p_new_name, p_auto_fill);
+    return nullptr;
+}
+
+godot::TypedArray<godot::Dictionary> Narrative::get_narrative_condition_descriptors(Narreme *p_narreme) const {
+    godot::TypedArray<godot::Dictionary> out;
+
+    auto make_tags = [](std::initializer_list<const char *> p_list) {
+        godot::PackedStringArray tags;
+        for (const char *t : p_list) {
+            tags.append(godot::String(t));
+        }
+        return tags;
+    };
+
     if (p_narreme) {
-        godot::String class_name = p_narreme->get_class_name_str();
+        const godot::String class_name = p_narreme->get_class_name_str();
         if (class_name == "Narrative") {
-            conditions.append("is");
+            out.append(make_condition_descriptor(
+                0, "narrative.is_same", "is",
+                "Identity", "Entity", "Compare_entity",
+                make_tags({"identity", "narrative"}), true, "Narrative"
+            ));
         }
     } else {
-        conditions.append("has characters");
-        conditions.append("has roles");
-        conditions.append("has props");
-        conditions.append("has symbols");
-        conditions.append("has locations");
-        conditions.append("has places");
-        conditions.append("has incidents");
-        conditions.append("has moments");
-        conditions.append("has plots");
-        conditions.append("has stories");
+        out.append(make_condition_descriptor(0, "narrative.has_characters", "has characters", "Inclusion", "Total", "", make_tags({"narrative", "character", "literal"}), false));
+        out.append(make_condition_descriptor(1, "narrative.has_roles",      "has roles",      "Inclusion", "Total", "", make_tags({"narrative", "character", "symbolic"}), false));
+        out.append(make_condition_descriptor(2, "narrative.has_props",      "has props",      "Inclusion", "Total", "", make_tags({"narrative", "prop", "literal"}), false));
+        out.append(make_condition_descriptor(3, "narrative.has_symbols",    "has symbols",    "Inclusion", "Total", "", make_tags({"narrative", "prop", "symbolic"}), false));
+        out.append(make_condition_descriptor(4, "narrative.has_locations",  "has locations",  "Inclusion", "Total", "", make_tags({"narrative", "location", "literal"}), false));
+        out.append(make_condition_descriptor(5, "narrative.has_places",     "has places",     "Inclusion", "Total", "", make_tags({"narrative", "location", "symbolic"}), false));
+        out.append(make_condition_descriptor(6, "narrative.has_incidents",  "has incidents",  "Inclusion", "Total", "", make_tags({"narrative", "incident", "literal"}), false));
+        out.append(make_condition_descriptor(7, "narrative.has_moments",    "has moments",    "Inclusion", "Total", "", make_tags({"narrative", "incident", "symbolic"}), false));
+        out.append(make_condition_descriptor(8, "narrative.has_plots",      "has plots",      "Inclusion", "Total", "", make_tags({"narrative", "plot", "literal"}), false));
+        out.append(make_condition_descriptor(9, "narrative.has_stories",    "has stories",    "Inclusion", "Total", "", make_tags({"narrative", "plot", "symbolic"}), false));
     }
-    return conditions;
+
+    return out;
+}
+
+godot::Array Narrative::get_narrative_conditions(Narreme *p_narreme) const {
+    return Narreme::get_narrative_conditions(p_narreme);
 }
 
 NarremeConditionStatus Narrative::check_narrative_condition(int p_condition_id, Narreme *p_conditional_narreme) const {
