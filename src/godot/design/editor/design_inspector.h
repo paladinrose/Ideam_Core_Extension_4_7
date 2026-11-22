@@ -1,12 +1,16 @@
 #pragma once
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
-#include "../style_3d_resource.h"
-#include "../parametric_assembly_resource.h"
 #include "../blueprint_resource.h"
 #include "../container_3d.h"
+#include "../form_scaffold_node_3d.h"
+#include "../form_scaffold_resource.h"
+#include "../parametric_assembly_resource.h"
+#include "../proportion_ruler_resource.h"
+#include "../style_3d_resource.h"
 
 #include <godot_cpp/classes/resource.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
 namespace ideam::godot_ext {
 
@@ -21,6 +25,7 @@ public:
     ~DesignInspector() override = default;
 
     void _on_open_in_design_composer(const godot::Ref<godot::Resource> &p_resource);
+    void _on_help_pressed(const godot::StringName &p_topic_id);
 
     bool _can_handle(godot::Object *p_object) const override;
     void _parse_begin(godot::Object *p_object) override;

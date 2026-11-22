@@ -2,17 +2,22 @@
 
 /**
  * characters_inspector.h
- * Thin EditorInspectorPlugin launcher for `IdeamCharacters` (`CharacterBlueprintResource`,
- * `CharacterApparelResource`, `ParametricCharacterNode3D`, and `DataOrientedCharacters`)
- * -> opens the full workspace in Tier 2 `CharacterModeler`.
+ * EditorInspectorPlugin for `IdeamCharacters` (`BodyPlanResource`, `CharacterInstanceResource`,
+ * `LayeredCharacterNode3D`, `CharacterBlueprintResource`, `CharacterApparelResource`,
+ * `ParametricCharacterNode3D`, and `DataOrientedCharacters`) -> opens Tier 2 `CharacterModeler`
+ * and dispatches `IdeamTutorials` help topics.
  */
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
+#include "../body_plan_resource.h"
 #include "../character_blueprint_resource.h"
+#include "../character_instance_resource.h"
+#include "../layered_character_node_3d.h"
 #include "../ui/character_morph_slider_panel.h"
 #include "../../tasks/domains/characters/data_oriented_characters.h"
 
 #include <godot_cpp/classes/resource.hpp>
+#include <godot_cpp/variant/string_name.hpp>
 
 namespace ideam::godot_ext {
 
@@ -27,6 +32,7 @@ public:
     ~CharactersInspector() override = default;
 
     void _on_open_in_character_modeler(const godot::Ref<godot::Resource> &p_resource);
+    void _on_help_pressed(const godot::StringName &p_topic_id);
 
 #ifdef TOOLS_ENABLED
     godot::EditorUndoRedoManager *get_undo_redo() const override;

@@ -185,8 +185,18 @@
 #include "godot/geometry/ui/geometry_composer.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 #include "godot/characters/ui/character_modeler.h"
+#include "godot/characters/body_plan_resource.h"
+#include "godot/characters/character_instance_resource.h"
+#include "godot/characters/layered_character_node_3d.h"
+#include "godot/characters/character_gallery_bank_resource.h"
+#include "godot/characters/ui/body_plan_authoring_control.h"
+#include "godot/characters/ui/character_generator_control.h"
 #include "godot/design/ui/blueprint_editor_control.h"
 #include "godot/design/ui/design_composer.h"
+#include "godot/design/proportion_ruler_resource.h"
+#include "godot/design/form_scaffold_resource.h"
+#include "godot/design/form_scaffold_node_3d.h"
+#include "godot/design/ui/form_scaffold_control.h"
 #include "godot/procedural_generation/ui/procedural_composer.h"
 #include "godot/geometry/ui/geometry_csg_bridge_control.h"
 #include "godot/geometry/ui/polygon_2d_control.h"
@@ -239,6 +249,17 @@
 #include "godot/splines/ideam_splines_plugin.h"
 #include "godot/tasks/domains/splines/data_oriented_splines.h"
 #include "godot/tasks/domains/splines/spline_task_host.h"
+
+// --- Surfaces (Parametric NURBS/Coons/Gordon Curve-Network Quad-Patch Engine & Plugin) ---
+#include "godot/surfaces/surface_patch_resource.h"
+#include "godot/surfaces/nurbs_patch_3d_resource.h"
+#include "godot/surfaces/coons_patch_3d_resource.h"
+#include "godot/surfaces/surface_network_resource.h"
+#include "godot/surfaces/surface_mesh_node_3d.h"
+#include "godot/surfaces/ui/surface_patch_control.h"
+#include "godot/surfaces/ui/surfaces_composer.h"
+#include "godot/surfaces/editor/surfaces_inspector.h"
+#include "godot/surfaces/ideam_surfaces_plugin.h"
 
 // --- Tiles (Resources, SceneTree Nodes, 2D-to-3D Projector, Non-Euclidean & Planetary Tilings, DOD Bridge, UI Controls, Inspectors & Plugin) ---
 #include "godot/tiles/tiling_resource.h"
@@ -618,9 +639,19 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GeometryComposer);
         GDREGISTER_CLASS(ideam::godot_ext::PlanetarySystemsModeler);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterModeler);
+        GDREGISTER_CLASS(ideam::godot_ext::BodyPlanResource);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterInstanceResource);
+        GDREGISTER_CLASS(ideam::godot_ext::LayeredCharacterNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterGalleryBankResource);
+        GDREGISTER_CLASS(ideam::godot_ext::BodyPlanAuthoringControl);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterGeneratorControl);
         GDREGISTER_CLASS(ideam::godot_ext::BlueprintPreviewSurface);
         GDREGISTER_CLASS(ideam::godot_ext::BlueprintEditorControl);
         GDREGISTER_CLASS(ideam::godot_ext::DesignComposer);
+        GDREGISTER_CLASS(ideam::godot_ext::ProportionRulerGraphResource);
+        GDREGISTER_CLASS(ideam::godot_ext::FormScaffoldResource);
+        GDREGISTER_CLASS(ideam::godot_ext::FormScaffoldNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::FormScaffoldControl);
         GDREGISTER_CLASS(ideam::godot_ext::NarrativeConditionField);
         GDREGISTER_CLASS(ideam::godot_ext::NarrativeControl);
         GDREGISTER_CLASS(ideam::godot_ext::LocationMap);
@@ -647,6 +678,15 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Spline2DProjector3D);
         GDREGISTER_CLASS(ideam::godot_ext::SplineNode3D);
         GDREGISTER_CLASS(ideam::godot_ext::SplineExtrudeMesh3D);
+
+        // --- Surfaces (NURBS, Coons/Gordon, Multi-Patch Networks, 3D Node & Tools UI) ---
+        GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::SurfacePatchResource);
+        GDREGISTER_CLASS(ideam::godot_ext::NurbsPatch3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::CoonsPatch3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfaceNetworkResource);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfaceMeshNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfacePatchControl);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfacesComposer);
         GDREGISTER_CLASS(ideam::godot_ext::SplineMultiMesh3D);
         GDREGISTER_CLASS(ideam::godot_ext::SplineZone3D);
         GDREGISTER_CLASS(ideam::godot_ext::SplineNode4D);
@@ -949,6 +989,11 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Spline2DViewportEditor);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamSplinesPlugin);
 
+        // Surfaces tooling
+        GDREGISTER_CLASS(ideam::godot_ext::SurfacesInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfacePatchGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamSurfacesPlugin);
+
         // Tiles tooling
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::TilingEditorInspectorBase);
         GDREGISTER_CLASS(ideam::godot_ext::WallpaperTilingResourceInspector);
@@ -965,6 +1010,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // Minds, Design, Characters, Procedural Generation & WFC tooling (Section 1.1 & 2.2)
         GDREGISTER_CLASS(ideam::godot_ext::IdeamMindsPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::DesignInspector);
+        GDREGISTER_CLASS(ideam::godot_ext::FormScaffoldGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamDesignPlugin);
         GDREGISTER_CLASS(ideam::godot_ext::CharactersInspector);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamCharactersPlugin);

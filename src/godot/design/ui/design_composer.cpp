@@ -22,8 +22,10 @@ void DesignComposer::_bind_methods() {
 
 DesignComposer::DesignComposer() {
     set_workspace_id(StringName(WORKSPACE_ID));
+    set_help_topic_id(StringName("IdeamDesign"));
 
     ensure_sidebar_tab("Blueprints");
+    ensure_sidebar_tab("Scaffolds & Rulers");
     ensure_sidebar_tab("Recipes");
     ensure_sidebar_tab("Themes & Styles");
 

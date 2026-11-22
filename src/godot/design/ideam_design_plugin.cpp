@@ -1,13 +1,16 @@
 #include "ideam_design_plugin.h"
 
+#include "../tools/tool_descriptor.h"
 #include "../tools/tool_registry.h"
 #include "blueprint_resource.h"
 #include "ui/blueprint_editor_control.h"
 #include "ui/design_composer.h"
+#include "ui/form_scaffold_control.h"
 
 #include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/v_box_container.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/callable.hpp>
 
 namespace ideam::godot_ext {
 
@@ -29,9 +32,48 @@ void IdeamDesignPlugin::_enter_tree() {
     validate_script_templates();
     set_plugin_active("IdeamDesign", true);
     register_to_ecosystem("WizardSettings", "IdeamDesign", godot::String(DESIGN_SETTINGS_PATH.data()));
-    inspector_plugin_.instantiate();
+
+    if (!inspector_plugin_.is_valid()) {
+        inspector_plugin_.instantiate();
+    }
     add_inspector_plugin(inspector_plugin_);
 
+    if (!form_scaffold_gizmo_.is_valid()) {
+        form_scaffold_gizmo_.instantiate();
+    }
+    add_node_3d_gizmo_plugin(form_scaffold_gizmo_);
+
+    _register_tools_and_workspace();
+
+#ifdef TOOLS_ENABLED
+    add_tool_menu_item(TOOLS_MENU_COMPOSER_ITEM, godot::Callable(this, "open_design_composer"));
+#endif
+}
+
+void IdeamDesignPlugin::_exit_tree() {
+#ifdef TOOLS_ENABLED
+    remove_tool_menu_item(TOOLS_MENU_COMPOSER_ITEM);
+#endif
+
+    _unregister_tools_and_workspace();
+
+    if (form_scaffold_gizmo_.is_valid()) {
+        remove_node_3d_gizmo_plugin(form_scaffold_gizmo_);
+        form_scaffold_gizmo_.unref();
+    }
+
+    if (inspector_plugin_.is_valid()) {
+        remove_inspector_plugin(inspector_plugin_);
+        inspector_plugin_.unref();
+    }
+    set_plugin_active("IdeamDesign", false);
+}
+
+void IdeamDesignPlugin::open_design_composer() {
+    DesignComposer::get_or_create_shared_composer();
+}
+
+void IdeamDesignPlugin::_register_tools_and_workspace() {
     auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
 
@@ -41,7 +83,7 @@ void IdeamDesignPlugin::_enter_tree() {
         [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
             if (DesignComposer *composer = DesignComposer::get_or_create_shared_composer()) {
                 if (p_ctx.is_valid()) composer->set_tool_context(p_ctx);
-                composer->open_asset(p_asset);
+                if (p_asset.is_valid()) composer->open_asset(p_asset);
             }
         }
     });
@@ -58,6 +100,20 @@ void IdeamDesignPlugin::_enter_tree() {
         },
         nullptr
     });
+
+    auto make_scaffold_ctrl = [](const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) -> godot::Control * {
+        auto *ctrl = memnew(FormScaffoldControl);
+        ctrl->bind_domain_asset(p_asset, p_ctx);
+        return ctrl;
+    };
+    auto rebind_scaffold_ctrl = [](godot::Control *p_ctrl, const godot::Ref<godot::Resource> &p_asset, const godot::Ref<ToolContext> &p_ctx) {
+        if (auto *fsc = godot::Object::cast_to<FormScaffoldControl>(p_ctrl)) {
+            fsc->bind_domain_asset(p_asset, p_ctx);
+        }
+    };
+
+    reg.register_control({ws_id, "FormScaffoldResource", "Scaffolds & Rulers", "Loomis Form Scaffold", UPDATE_ON_COMMIT, make_scaffold_ctrl, rebind_scaffold_ctrl});
+    reg.register_control({ws_id, "ProportionRulerGraphResource", "Scaffolds & Rulers", "Proportion Ruler Graph", UPDATE_ON_COMMIT, make_scaffold_ctrl, rebind_scaffold_ctrl});
 
     reg.register_control({
         ws_id, "ParametricAssemblyRecipeResource", "Recipes", "Assembly Recipe", UPDATE_ON_COMMIT,
@@ -91,22 +147,49 @@ void IdeamDesignPlugin::_enter_tree() {
 
     reg.register_control({ws_id, "Theme3DResource", "Themes & Styles", "3D Theme", UPDATE_ON_COMMIT, make_style_host, nullptr});
     reg.register_control({ws_id, "Style3DResource", "Themes & Styles", "3D Style", UPDATE_ON_COMMIT, make_style_host, nullptr});
+
+    // Register ToolDescriptor catalog entries for IdeamTutorials & AgentToolBridge
+    auto add_desc = [&](const char *p_id, ToolTier p_tier, const char *p_name, const char *p_desc,
+                        std::initializer_list<const char *> p_classes, std::initializer_list<const char *> p_tags) {
+        godot::Ref<ToolDescriptor> d;
+        d.instantiate();
+        d->set_tool_id(godot::StringName(p_id));
+        d->set_tier(p_tier);
+        d->set_plugin_id("IdeamDesign");
+        d->set_display_name(p_name);
+        d->set_description(p_desc);
+        godot::PackedStringArray cls;
+        for (const char *c : p_classes) cls.append(c);
+        d->set_handled_classes(cls);
+        godot::PackedStringArray tgs;
+        for (const char *t : p_tags) tgs.append(t);
+        d->set_semantic_tags(tgs);
+        d->set_help_topic_id(godot::StringName(p_id));
+        reg.register_tool_descriptor(d);
+    };
+
+    add_desc("DesignComposer", TOOL_TIER_BRIDGE, "Design Composer",
+             "Context-aware ToolWorkspace hosting Blueprints, Loomis Form Scaffolds, Proportion Rulers, Assembly Recipes, and 3D Themes.",
+             {"BlueprintResource", "FormScaffoldResource", "ProportionRulerGraphResource", "ParametricAssemblyRecipeResource", "Theme3DResource", "Style3DResource"},
+             {"design", "blueprint", "loomis", "scaffold", "workspace"});
+
+    add_desc("FormScaffoldControl", TOOL_TIER_DOMAIN, "Loomis Form Scaffold & Ruler Control",
+             "Interactive proportion canon preset strip, canonical unit scaler, contrapposto slider, and orthographic plumb-line balance canvas.",
+             {"FormScaffoldResource", "ProportionRulerGraphResource"},
+             {"design", "loomis", "scaffold", "proportions", "contrapposto", "skeleton"});
+
+    add_desc("FormScaffoldGizmo", TOOL_TIER_DOMAIN, "3D Loomis Scaffold Gizmo",
+             "3D viewport gizmo drawing canonical proportion ruler staves, center-of-gravity plumb lines, bone hierarchies, and Undo/Redo node handles.",
+             {"FormScaffoldNode3D"},
+             {"design", "loomis", "gizmo", "ruler", "balance"});
 }
 
-void IdeamDesignPlugin::_exit_tree() {
+void IdeamDesignPlugin::_unregister_tools_and_workspace() {
     auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(DesignComposer::WORKSPACE_ID);
-    reg.unregister_class(ws_id, "BlueprintResource");
-    reg.unregister_class(ws_id, "ParametricAssemblyRecipeResource");
-    reg.unregister_class(ws_id, "Theme3DResource");
-    reg.unregister_class(ws_id, "Style3DResource");
+    reg.unregister_workspace_controls(ws_id);
     reg.unregister_workspace_launcher(ws_id);
-
-    if (inspector_plugin_.is_valid()) {
-        remove_inspector_plugin(inspector_plugin_);
-        inspector_plugin_.unref();
-    }
-    set_plugin_active("IdeamDesign", false);
+    reg.unregister_plugin_tools("IdeamDesign");
 }
 
 #ifdef TOOLS_ENABLED
@@ -131,11 +214,15 @@ godot::Ref<IdeamUndoRedo> IdeamDesignPlugin::create_undo_redo_wrapper() {
 
 void IdeamDesignPlugin::_bind_methods() {
     using namespace godot;
+    ClassDB::bind_method(D_METHOD("open_design_composer"), &IdeamDesignPlugin::open_design_composer);
     ClassDB::bind_method(D_METHOD("get_plugin_domain_name"), &IdeamDesignPlugin::get_plugin_domain_name);
     ClassDB::bind_method(D_METHOD("is_geometry_handshake_available"), &IdeamDesignPlugin::is_geometry_handshake_available);
     ClassDB::bind_method(D_METHOD("is_splines_handshake_available"), &IdeamDesignPlugin::is_splines_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_surfaces_handshake_available"), &IdeamDesignPlugin::is_surfaces_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_characters_handshake_available"), &IdeamDesignPlugin::is_characters_handshake_available);
     ClassDB::bind_method(D_METHOD("is_tiles_handshake_available"), &IdeamDesignPlugin::is_tiles_handshake_available);
     ClassDB::bind_method(D_METHOD("is_linguistics_handshake_available"), &IdeamDesignPlugin::is_linguistics_handshake_available);
+    ClassDB::bind_method(D_METHOD("is_tutorials_handshake_available"), &IdeamDesignPlugin::is_tutorials_handshake_available);
     ClassDB::bind_method(D_METHOD("is_tasks_handshake_available"), &IdeamDesignPlugin::is_tasks_handshake_available);
 
 #ifdef TOOLS_ENABLED
