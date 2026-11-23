@@ -105,8 +105,8 @@ Control *GeometryComposer::_find_active_canvas_recursive(Node *p_root) const {
 void GeometryComposer::_sync_canvas_command_buttons() {
     GeometryCanvas2DBase *active_canvas = nullptr;
     for (const auto &entry : open_assets_) {
-        if (entry.asset == active_asset_ && entry.tier1_control) {
-            active_canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.tier1_control));
+        if (entry.asset == active_asset_ && entry.domain_control) {
+            active_canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.domain_control));
             break;
         }
     }
@@ -134,8 +134,8 @@ void GeometryComposer::_on_active_asset_switched(const Ref<Resource> &p_asset) {
 
 void GeometryComposer::_on_fit_view_pressed() {
     for (const auto &entry : open_assets_) {
-        if (entry.asset == active_asset_ && entry.tier1_control) {
-            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.tier1_control))) {
+        if (entry.asset == active_asset_ && entry.domain_control) {
+            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.domain_control))) {
                 canvas->fit_view_to_data(true, true);
             }
             return;
@@ -145,8 +145,8 @@ void GeometryComposer::_on_fit_view_pressed() {
 
 void GeometryComposer::_on_grid_toggled(bool p_show) {
     for (const auto &entry : open_assets_) {
-        if (entry.asset == active_asset_ && entry.tier1_control) {
-            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.tier1_control))) {
+        if (entry.asset == active_asset_ && entry.domain_control) {
+            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.domain_control))) {
                 canvas->set_show_grid(p_show);
             }
             return;
@@ -156,8 +156,8 @@ void GeometryComposer::_on_grid_toggled(bool p_show) {
 
 void GeometryComposer::_on_y_down_toggled(bool p_y_down) {
     for (const auto &entry : open_assets_) {
-        if (entry.asset == active_asset_ && entry.tier1_control) {
-            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.tier1_control))) {
+        if (entry.asset == active_asset_ && entry.domain_control) {
+            if (auto *canvas = Object::cast_to<GeometryCanvas2DBase>(_find_active_canvas_recursive(entry.domain_control))) {
                 canvas->set_y_down(p_y_down);
             }
             return;

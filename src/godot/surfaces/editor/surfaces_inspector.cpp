@@ -99,6 +99,25 @@ void SurfacesInspector::_parse_begin(godot::Object *p_object) {
     _refresh_summary_panel();
 }
 
+bool SurfacesInspector::_parse_property(
+    godot::Object *p_object,
+    godot::Variant::Type p_type,
+    const godot::String &p_name,
+    godot::PropertyHint p_hint_type,
+    const godot::String &p_hint_string,
+    godot::BitField<godot::PropertyUsageFlags> p_usage_flags,
+    bool p_wide
+) {
+    (void)p_object;
+    (void)p_type;
+    (void)p_name;
+    (void)p_hint_type;
+    (void)p_hint_string;
+    (void)p_usage_flags;
+    (void)p_wide;
+    return false;
+}
+
 void SurfacesInspector::_refresh_summary_panel() {
     if (current_object_id_.is_null() || summary_label_id_.is_null()) return;
     godot::Object *obj = godot::ObjectDB::get_instance(current_object_id_);

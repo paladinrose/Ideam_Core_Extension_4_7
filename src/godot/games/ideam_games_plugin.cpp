@@ -207,13 +207,13 @@ void IdeamGamesPlugin::close_agent_action_tool() {
 
 void IdeamGamesPlugin::validate_game_script_templates() {
     const godot::String base_res = "res://addons/ideam_games/resources/";
-    register_script_template("Game", "default_template", base_res + "default_game_template.txt");
-    register_script_template("GameAgent", "default_template", base_res + "default_game_agent_template.txt");
-    register_script_template("GameHub", "default_template", base_res + "default_game_hub_template.txt");
-    register_script_template("GameBoard", "default_template", base_res + "default_game_board_template.txt");
-    register_script_template("GameEntity", "default_template", base_res + "default_game_entity_template.txt");
-    register_script_template("GamePiece", "default_template", base_res + "default_game_piece_template.txt");
-    register_script_template("GamePlayer", "default_template", base_res + "default_game_player_template.txt");
+    register_script_template("Game", "default_template", base_res + String("default_game_template.txt"));
+    register_script_template("GameAgent", "default_template", base_res + String("default_game_agent_template.txt"));
+    register_script_template("GameHub", "default_template", base_res + String("default_game_hub_template.txt"));
+    register_script_template("GameBoard", "default_template", base_res + String("default_game_board_template.txt"));
+    register_script_template("GameEntity", "default_template", base_res + String("default_game_entity_template.txt"));
+    register_script_template("GamePiece", "default_template", base_res + String("default_game_piece_template.txt"));
+    register_script_template("GamePlayer", "default_template", base_res + String("default_game_player_template.txt"));
 }
 
 void IdeamGamesPlugin::_register_project_contribution() {

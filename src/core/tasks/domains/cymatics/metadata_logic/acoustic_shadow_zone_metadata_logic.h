@@ -3,13 +3,14 @@
 /**
  * acoustic_shadow_zone_metadata_logic.h
  * 64-byte cache-aligned MetadataLogic task struct (`CYM6`) for `IdeamCymatics`.
- * Classifies grid cells into Direct LOS (0), Diffracted Rim (1), Reverberant Chamber (2),
- * and Acoustic Shadow (3) in `r_selection.lod_levels`.
+ * Classifies selected grid cells into Direct LOS (0), Diffracted Rim (1),
+ * Reverberant Chamber (2), and Acoustic Shadow (3) in `r_selection.lod_levels`.
  */
 
 #include "../../../../cymatics/cymatics_solver_core.h"
 #include "../../../../memory/memory_common.h"
 #include "../../../../memory/memory_grant_pod.h"
+#include "../../../../memory/memory_buffer_selection_pod.h"
 #include "../../../../memory/views/single_element_view.h"
 #include "../../../../memory/views/strategies.h"
 #include "../../../i_native_task.h"
@@ -19,6 +20,7 @@
 #include <godot_cpp/variant/dictionary.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <string_view>
 
@@ -59,6 +61,15 @@ struct alignas(64) AcousticShadowZoneMetadataLogic {
 
     static godot::Array get_ui_properties() {
         godot::Array props;
+        auto add_buf = [&](const char *n) {
+            godot::Dictionary dict;
+            dict["name"]        = n;
+            dict["type"]        = static_cast<int>(godot::Variant::INT);
+            dict["hint"]        = static_cast<int>(godot::PROPERTY_HINT_NONE);
+            dict["hint_string"] = "buffer_option";
+            dict["default"]     = static_cast<int64_t>(INVALID_ID);
+            props.push_back(dict);
+        };
         auto add = [&](const char *n, godot::Variant::Type t, godot::Variant d) {
             godot::Dictionary dict;
             dict["name"]    = n;
@@ -66,13 +77,13 @@ struct alignas(64) AcousticShadowZoneMetadataLogic {
             dict["default"] = d;
             props.push_back(dict);
         };
-        add("target_buffer_id",       godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("reflectivity_buffer_id", godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("out_class_buffer_id",    godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("grid_width",             godot::Variant::INT,   static_cast<int64_t>(32));
-        add("grid_height",            godot::Variant::INT,   static_cast<int64_t>(32));
-        add("source_grid_x",          godot::Variant::FLOAT, 16.0);
-        add("source_grid_y",          godot::Variant::FLOAT, 16.0);
+        add_buf("target_buffer_id");
+        add_buf("reflectivity_buffer_id");
+        add_buf("out_class_buffer_id");
+        add("grid_width",    godot::Variant::INT,   static_cast<int64_t>(32));
+        add("grid_height",   godot::Variant::INT,   static_cast<int64_t>(32));
+        add("source_grid_x", godot::Variant::FLOAT, 16.0);
+        add("source_grid_y", godot::Variant::FLOAT, 16.0);
         return props;
     }
 
@@ -88,19 +99,18 @@ struct alignas(64) AcousticShadowZoneMetadataLogic {
         if (p_props.has("source_grid_y"))          source_grid_y          = static_cast<float>(static_cast<double>(p_props["source_grid_y"]));
     }
 
-    template <typename T_ActiveView>
-    inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view;
-        (void)p_ctx;
-    }
-
     template <typename T_ActiveView, typename T_ActiveStrategy>
-    void execute(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
+    void execute(
+        MemoryBufferSelectionPOD &r_selection,
+        const TaskContextPOD &p_ctx,
+        const T_ActiveView &p_view
+    ) const noexcept {
         (void)p_view;
         const size_t total = static_cast<size_t>(grid_width) * grid_height;
         if (total == 0u) {
             return;
         }
+
         const float *field = nullptr;
         if (const GrantPartPOD *fp = p_ctx.get_grant_part(target_buffer_id);
             fp && fp->raw_base_ptr && fp->capacity_bytes / sizeof(float) >= total) {
@@ -126,34 +136,128 @@ struct alignas(64) AcousticShadowZoneMetadataLogic {
             CymaticsSolverCore::classify_shadow_zones(field, refl, out_cls, cfg, source_grid_x, source_grid_y);
         }
 
-        if (GrantPartPOD *target_part = const_cast<GrantPartPOD *>(p_ctx.get_grant_part(target_buffer_id))) {
-            MemoryBufferSelectionPOD &sel = target_part->selection;
-            if (sel.lod_levels && sel.element_count > 0) {
-                const size_t lim = std::min<size_t>(total, static_cast<size_t>(sel.element_count));
-                if (out_cls) {
-                    for (size_t i = 0; i < lim; ++i) {
-                        sel.lod_levels[i] = out_cls[i];
-                    }
-                } else {
-                    CymaticsSolverCore::classify_shadow_zones(field, refl, sel.lod_levels, cfg, source_grid_x, source_grid_y);
+        if (!r_selection.lod_levels || r_selection.element_count <= 0) {
+            return;
+        }
+
+        const int64_t limit = std::min<int64_t>(static_cast<int64_t>(total), r_selection.capacity);
+        if (limit <= 0) {
+            return;
+        }
+
+        if (r_selection.mode == SelectionMode::DENSE) {
+            _dispatch_dense(r_selection, limit, field, refl, out_cls);
+        } else if (r_selection.mode == SelectionMode::SPARSE) {
+            _dispatch_sparse(r_selection, limit, field, refl, out_cls);
+        } else if (r_selection.mode == SelectionMode::RANGE) {
+            _dispatch_range(r_selection, limit, field, refl, out_cls, cfg);
+        }
+    }
+
+private:
+    [[nodiscard]] inline uint8_t _classify_cell(
+        const float *p_field,
+        const float *p_refl,
+        size_t p_idx
+    ) const noexcept {
+        const uint32_t w = grid_width;
+        const uint32_t h = grid_height;
+        const uint32_t x = static_cast<uint32_t>(p_idx % w);
+        const uint32_t y = static_cast<uint32_t>(p_idx / w);
+        const float energy = p_field ? std::fabs(p_field[p_idx]) : 0.0f;
+
+        const float dx  = static_cast<float>(x) - source_grid_x;
+        const float dy  = static_cast<float>(y) - source_grid_y;
+        const int steps = std::max(1, static_cast<int>(std::ceil(std::max(std::fabs(dx), std::fabs(dy)))));
+        bool occluded   = false;
+        int obs_hits    = 0;
+
+        if (p_refl) {
+            for (int s = 1; s < steps; ++s) {
+                const float t = static_cast<float>(s) / static_cast<float>(steps);
+                const int sx  = std::clamp(static_cast<int>(std::lround(source_grid_x + dx * t)), 0, static_cast<int>(w - 1u));
+                const int sy  = std::clamp(static_cast<int>(std::lround(source_grid_y + dy * t)), 0, static_cast<int>(h - 1u));
+                if (p_refl[static_cast<uint32_t>(sy) * w + static_cast<uint32_t>(sx)] >= 0.5f) {
+                    occluded = true;
+                    ++obs_hits;
                 }
+            }
+        }
+
+        AcousticShadowClass cls = AcousticShadowClass::DIRECT_LOS;
+        if (!occluded) {
+            cls = (energy > 0.35f) ? AcousticShadowClass::DIRECT_LOS : AcousticShadowClass::REVERBERANT_CHAMBER;
+        } else if (obs_hits == 1 && energy > 0.15f) {
+            cls = AcousticShadowClass::DIFFRACTED_RIM;
+        } else if (energy > 0.08f) {
+            cls = AcousticShadowClass::REVERBERANT_CHAMBER;
+        } else {
+            cls = AcousticShadowClass::ACOUSTIC_SHADOW;
+        }
+        return static_cast<uint8_t>(cls);
+    }
+
+    inline void _dispatch_dense(
+        MemoryBufferSelectionPOD &r_sel,
+        int64_t p_limit,
+        const float *p_field,
+        const float *p_refl,
+        const uint8_t *p_precomputed
+    ) const noexcept {
+        const uint64_t *bitset = r_sel.data.bitset;
+        if (!bitset) return;
+        uint8_t *lods = r_sel.lod_levels;
+
+        for (int64_t i = 0; i < p_limit; ++i) {
+            if (bitset[i >> 6] & (1ULL << (i & 63))) {
+                lods[i] = p_precomputed ? p_precomputed[i] : _classify_cell(p_field, p_refl, static_cast<size_t>(i));
             }
         }
     }
 
-    template <typename T_ActiveView, typename T_ActiveStrategy>
-    void execute(
-        MemoryBufferSelectionPOD &r_selection,
-        const TaskContextPOD &p_ctx,
-        T_ActiveView &p_view
+    inline void _dispatch_sparse(
+        MemoryBufferSelectionPOD &r_sel,
+        int64_t p_limit,
+        const float *p_field,
+        const float *p_refl,
+        const uint8_t *p_precomputed
     ) const noexcept {
-        (void)r_selection;
-        execute<T_ActiveView, T_ActiveStrategy>(p_ctx, p_view);
+        const int64_t *indices = r_sel.data.indices;
+        if (!indices) return;
+        uint8_t *lods       = r_sel.lod_levels;
+        const int64_t count = r_sel.element_count;
+
+        for (int64_t i = 0; i < count; ++i) {
+            const int64_t idx = indices[i];
+            if (idx >= 0 && idx < p_limit) {
+                lods[idx] = p_precomputed ? p_precomputed[idx] : _classify_cell(p_field, p_refl, static_cast<size_t>(idx));
+            }
+        }
     }
 
-    template <typename T_ActiveView, typename T_ActiveStrategy>
-    inline void execute_metadata(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
-        execute<T_ActiveView, T_ActiveStrategy>(p_ctx, p_view);
+    inline void _dispatch_range(
+        MemoryBufferSelectionPOD &r_sel,
+        int64_t p_limit,
+        const float *p_field,
+        const float *p_refl,
+        const uint8_t *p_precomputed,
+        const CymaticGridConfigPOD &p_cfg
+    ) const noexcept {
+        const int64_t start = std::max<int64_t>(0, r_sel.start_index);
+        const int64_t end   = std::min<int64_t>(p_limit, r_sel.start_index + r_sel.element_count);
+        if (start >= end) return;
+
+        uint8_t *lods = r_sel.lod_levels;
+        const int64_t full_grid = static_cast<int64_t>(p_cfg.width) * static_cast<int64_t>(p_cfg.height);
+
+        if (!p_precomputed && start == 0 && end == full_grid) {
+            CymaticsSolverCore::classify_shadow_zones(p_field, p_refl, lods, p_cfg, source_grid_x, source_grid_y);
+            return;
+        }
+
+        for (int64_t i = start; i < end; ++i) {
+            lods[i] = p_precomputed ? p_precomputed[i] : _classify_cell(p_field, p_refl, static_cast<size_t>(i));
+        }
     }
 };
 

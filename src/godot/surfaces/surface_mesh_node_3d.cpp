@@ -405,8 +405,11 @@ void SurfacePatchGizmo::_set_handle(
 
     const godot::Vector3 ray_origin = p_camera->project_ray_origin(p_screen_pos);
     const godot::Vector3 ray_dir    = p_camera->project_ray_normal(p_screen_pos);
-    const godot::Variant hit = drag_plane.intersects_ray(ray_origin, ray_dir);
-    if (hit.get_type() == godot::Variant::VECTOR3) {
+    godot::Vector3 hit;
+    if (drag_plane.intersects_ray(
+            p_camera->project_ray_origin(p_screen_pos),
+            p_camera->project_ray_normal(p_screen_pos),
+            &hit)) {
         const godot::Vector3 local_hit = gt.affine_inverse().xform(godot::Vector3(hit));
         nurbs->set_control_point(u, v, local_hit, nurbs->get_control_weight(u, v));
     }

@@ -28,6 +28,7 @@
 #include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/vector2.hpp>
 #include <godot_cpp/variant/vector3.hpp>
+#include <godot_cpp/classes/standard_material3d.hpp>
 
 namespace ideam::godot_ext {
 

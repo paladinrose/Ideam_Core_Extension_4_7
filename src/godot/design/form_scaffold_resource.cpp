@@ -244,8 +244,8 @@ void FormScaffoldResource::commit_set_node_local_offset(int p_node_id, const god
     const godot::Vector3 old_off = get_node_local_offset(p_node_id);
     if (undo_redo_.is_valid()) {
         undo_redo_->create_action("Move Scaffold Node");
-        undo_redo_->add_do_method(this, "set_node_local_offset", {p_node_id, p_offset});
-        undo_redo_->add_undo_method(this, "set_node_local_offset", {p_node_id, old_off});
+        undo_redo_->add_do_method(this, "set_node_local_offset", p_node_id, p_offset);
+        undo_redo_->add_undo_method(this, "set_node_local_offset", p_node_id, old_off);
         undo_redo_->commit_action();
     } else {
         set_node_local_offset(p_node_id, p_offset);

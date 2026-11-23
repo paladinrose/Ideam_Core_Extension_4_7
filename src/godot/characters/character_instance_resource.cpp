@@ -201,8 +201,8 @@ void CharacterInstanceResource::commit_set_parameter_value(const godot::String &
     const real_t old_val = get_parameter_value(p_name);
     if (undo_redo_.is_valid()) {
         undo_redo_->create_action("Set Character Parameter: " + p_name);
-        undo_redo_->add_do_method(this, "set_parameter_value", {p_name, p_value});
-        undo_redo_->add_undo_method(this, "set_parameter_value", {p_name, old_val});
+        undo_redo_->add_do_method(this, "set_parameter_value", p_name, p_value);
+        undo_redo_->add_undo_method(this, "set_parameter_value", p_name, old_val);
         undo_redo_->commit_action();
     } else {
         set_parameter_value(p_name, p_value);

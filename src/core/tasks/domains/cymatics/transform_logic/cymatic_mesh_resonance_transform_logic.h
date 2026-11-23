@@ -35,7 +35,7 @@ struct alignas(64) CymaticMeshResonanceTransformLogic {
     static constexpr ViewCapability required_capabilities = ViewCapability::LINEAR_ACCESS;
     static constexpr BufferLayoutType required_layouts =
         BufferLayoutType::FLAT | BufferLayoutType::AOS | BufferLayoutType::SOA;
-    static constexpr DataType required_types = DataType::FLOAT32;
+    static constexpr DataType required_types = DataType::VECTOR3 | DataType::FLOAT32;
 
     static constexpr size_t dimensions                = 0;
     static constexpr bool requires_static_kernel      = false;
@@ -45,7 +45,7 @@ struct alignas(64) CymaticMeshResonanceTransformLogic {
     static constexpr std::string_view display_name = "CYM4 Mesh Resonance Displacement";
     static constexpr std::string_view ui_category  = "Cymatics";
 
-    uint32_t vertex_buffer_id    = INVALID_ID;
+    uint32_t target_buffer_id    = INVALID_ID; // Primary 3D mesh vertex buffer (Vector3 or float3)
     uint32_t normal_buffer_id    = INVALID_ID;
     uint32_t field_buffer_id     = INVALID_ID;
     uint32_t nodal_out_buffer_id = INVALID_ID;
@@ -57,6 +57,15 @@ struct alignas(64) CymaticMeshResonanceTransformLogic {
 
     static godot::Array get_ui_properties() {
         godot::Array props;
+        auto add_buf = [&](const char *n) {
+            godot::Dictionary dict;
+            dict["name"]        = n;
+            dict["type"]        = static_cast<int>(godot::Variant::INT);
+            dict["hint"]        = static_cast<int>(godot::PROPERTY_HINT_NONE);
+            dict["hint_string"] = "buffer_option";
+            dict["default"]     = static_cast<int64_t>(INVALID_ID);
+            props.push_back(dict);
+        };
         auto add = [&](const char *n, godot::Variant::Type t, godot::Variant d) {
             godot::Dictionary dict;
             dict["name"]    = n;
@@ -64,19 +73,27 @@ struct alignas(64) CymaticMeshResonanceTransformLogic {
             dict["default"] = d;
             props.push_back(dict);
         };
-        add("vertex_buffer_id",    godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("normal_buffer_id",    godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("field_buffer_id",     godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("nodal_out_buffer_id", godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("grid_width",          godot::Variant::INT,   static_cast<int64_t>(32));
-        add("grid_height",         godot::Variant::INT,   static_cast<int64_t>(32));
-        add("cell_size",           godot::Variant::FLOAT, 1.0);
-        add("displacement_scale",  godot::Variant::FLOAT, 0.25);
+        add_buf("target_buffer_id");
+        add_buf("normal_buffer_id");
+        add_buf("field_buffer_id");
+        add_buf("nodal_out_buffer_id");
+        add("grid_width",         godot::Variant::INT,   static_cast<int64_t>(32));
+        add("grid_height",        godot::Variant::INT,   static_cast<int64_t>(32));
+        add("cell_size",          godot::Variant::FLOAT, 1.0);
+        add("displacement_scale", godot::Variant::FLOAT, 0.25);
         return props;
     }
 
+    [[nodiscard]] constexpr uint32_t get_target_buffer_id() const noexcept {
+        return (target_buffer_id != INVALID_ID) ? target_buffer_id : field_buffer_id;
+    }
+
     void apply_properties(const godot::Dictionary &p_props) noexcept {
-        if (p_props.has("vertex_buffer_id"))    vertex_buffer_id    = static_cast<uint32_t>(static_cast<int64_t>(p_props["vertex_buffer_id"]));
+        if (p_props.has("target_buffer_id")) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["target_buffer_id"]));
+        } else if (p_props.has("vertex_buffer_id") && target_buffer_id == INVALID_ID) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["vertex_buffer_id"]));
+        }
         if (p_props.has("normal_buffer_id"))    normal_buffer_id    = static_cast<uint32_t>(static_cast<int64_t>(p_props["normal_buffer_id"]));
         if (p_props.has("field_buffer_id"))     field_buffer_id     = static_cast<uint32_t>(static_cast<int64_t>(p_props["field_buffer_id"]));
         if (p_props.has("nodal_out_buffer_id")) nodal_out_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["nodal_out_buffer_id"]));
@@ -86,16 +103,10 @@ struct alignas(64) CymaticMeshResonanceTransformLogic {
         if (p_props.has("displacement_scale"))  displacement_scale  = static_cast<float>(static_cast<double>(p_props["displacement_scale"]));
     }
 
-    template <typename T_ActiveView>
-    inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view;
-        (void)p_ctx;
-    }
-
     template <typename T_ActiveView, typename T_ActiveStrategy>
     void execute(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
         (void)p_view;
-        const GrantPartPOD *vp = p_ctx.get_grant_part(vertex_buffer_id);
+        const GrantPartPOD *vp = p_ctx.get_grant_part(target_buffer_id);
         const GrantPartPOD *fp = p_ctx.get_grant_part(field_buffer_id);
         if (!vp || !fp || !vp->raw_base_ptr || !fp->raw_base_ptr) {
             return;

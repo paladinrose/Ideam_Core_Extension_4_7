@@ -363,12 +363,12 @@ void FormScaffoldGizmo::_set_handle(
     const godot::Vector3 cam_fwd = -p_camera->get_global_transform().basis.get_column(2);
     const godot::Plane drag_plane(cam_fwd, cur_world);
 
-    const godot::Variant hit = drag_plane.intersects_ray(
-        p_camera->project_ray_origin(p_screen_pos),
-        p_camera->project_ray_normal(p_screen_pos)
-    );
-    if (hit.get_type() == godot::Variant::VECTOR3) {
-        const godot::Vector3 delta_world = godot::Vector3(hit) - cur_world;
+    godot::Vector3 hit;
+    if (drag_plane.intersects_ray(
+            p_camera->project_ray_origin(p_screen_pos),
+            p_camera->project_ray_normal(p_screen_pos),
+            &hit)) {
+        const godot::Vector3 delta_world = hit - cur_world;
         const godot::Vector3 delta_local = gt.basis.inverse().xform(delta_world);
         node->get_scaffold()->set_node_local_offset(nid, node->get_scaffold()->get_node_local_offset(nid) + delta_local);
     }

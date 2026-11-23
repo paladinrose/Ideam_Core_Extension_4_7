@@ -46,9 +46,9 @@ struct alignas(64) AcousticWavePropagationTransformLogic {
     static constexpr std::string_view display_name = "CYM1 Acoustic Wave Propagation (FDTD)";
     static constexpr std::string_view ui_category  = "Cymatics";
 
+    uint32_t target_buffer_id       = INVALID_ID; // Primary output (next FDTD step) pressure grid
     uint32_t prev_buffer_id         = INVALID_ID;
     uint32_t curr_buffer_id         = INVALID_ID;
-    uint32_t next_buffer_id         = INVALID_ID;
     uint32_t reflectivity_buffer_id = INVALID_ID;
     uint32_t grid_width             = 32;
     uint32_t grid_height            = 32;
@@ -61,6 +61,15 @@ struct alignas(64) AcousticWavePropagationTransformLogic {
 
     static godot::Array get_ui_properties() {
         godot::Array props;
+        auto add_buf = [&](const char *n) {
+            godot::Dictionary dict;
+            dict["name"]        = n;
+            dict["type"]        = static_cast<int>(godot::Variant::INT);
+            dict["hint"]        = static_cast<int>(godot::PROPERTY_HINT_NONE);
+            dict["hint_string"] = "buffer_option";
+            dict["default"]     = static_cast<int64_t>(INVALID_ID);
+            props.push_back(dict);
+        };
         auto add = [&](const char *n, godot::Variant::Type t, godot::Variant d) {
             godot::Dictionary dict;
             dict["name"]    = n;
@@ -68,24 +77,32 @@ struct alignas(64) AcousticWavePropagationTransformLogic {
             dict["default"] = d;
             props.push_back(dict);
         };
-        add("prev_buffer_id",         godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("curr_buffer_id",         godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("next_buffer_id",         godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("reflectivity_buffer_id", godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("grid_width",             godot::Variant::INT,   static_cast<int64_t>(32));
-        add("grid_height",            godot::Variant::INT,   static_cast<int64_t>(32));
-        add("grid_depth",             godot::Variant::INT,   static_cast<int64_t>(1));
-        add("cell_size",              godot::Variant::FLOAT, 1.0);
-        add("wave_speed",             godot::Variant::FLOAT, 1.0);
-        add("damping",                godot::Variant::FLOAT, 0.985);
-        add("dt",                     godot::Variant::FLOAT, 0.016);
+        add_buf("target_buffer_id");
+        add_buf("prev_buffer_id");
+        add_buf("curr_buffer_id");
+        add_buf("reflectivity_buffer_id");
+        add("grid_width",  godot::Variant::INT,   static_cast<int64_t>(32));
+        add("grid_height", godot::Variant::INT,   static_cast<int64_t>(32));
+        add("grid_depth",  godot::Variant::INT,   static_cast<int64_t>(1));
+        add("cell_size",   godot::Variant::FLOAT, 1.0);
+        add("wave_speed",  godot::Variant::FLOAT, 1.0);
+        add("damping",     godot::Variant::FLOAT, 0.985);
+        add("dt",          godot::Variant::FLOAT, 0.016);
         return props;
     }
 
+    [[nodiscard]] constexpr uint32_t get_target_buffer_id() const noexcept {
+        return (target_buffer_id != INVALID_ID) ? target_buffer_id : curr_buffer_id;
+    }
+
     void apply_properties(const godot::Dictionary &p_props) noexcept {
+        if (p_props.has("target_buffer_id")) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["target_buffer_id"]));
+        } else if (p_props.has("next_buffer_id") && target_buffer_id == INVALID_ID) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["next_buffer_id"]));
+        }
         if (p_props.has("prev_buffer_id"))         prev_buffer_id         = static_cast<uint32_t>(static_cast<int64_t>(p_props["prev_buffer_id"]));
         if (p_props.has("curr_buffer_id"))         curr_buffer_id         = static_cast<uint32_t>(static_cast<int64_t>(p_props["curr_buffer_id"]));
-        if (p_props.has("next_buffer_id"))         next_buffer_id         = static_cast<uint32_t>(static_cast<int64_t>(p_props["next_buffer_id"]));
         if (p_props.has("reflectivity_buffer_id")) reflectivity_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["reflectivity_buffer_id"]));
         if (p_props.has("grid_width"))             grid_width             = static_cast<uint32_t>(static_cast<int64_t>(p_props["grid_width"]));
         if (p_props.has("grid_height"))            grid_height            = static_cast<uint32_t>(static_cast<int64_t>(p_props["grid_height"]));
@@ -94,12 +111,6 @@ struct alignas(64) AcousticWavePropagationTransformLogic {
         if (p_props.has("wave_speed"))             wave_speed             = static_cast<float>(static_cast<double>(p_props["wave_speed"]));
         if (p_props.has("damping"))                damping                = static_cast<float>(static_cast<double>(p_props["damping"]));
         if (p_props.has("dt"))                     dt                     = static_cast<float>(static_cast<double>(p_props["dt"]));
-    }
-
-    template <typename T_ActiveView>
-    inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view;
-        (void)p_ctx;
     }
 
     template <typename T_Elem>
@@ -121,7 +132,7 @@ struct alignas(64) AcousticWavePropagationTransformLogic {
         size_t prev_cap = 0, curr_cap = 0, next_cap = 0, refl_cap = 0;
         const float *prev = _resolve_ptr<const float>(p_ctx, prev_buffer_id, prev_cap);
         const float *curr = _resolve_ptr<const float>(p_ctx, curr_buffer_id, curr_cap);
-        float *next       = _resolve_ptr<float>(p_ctx, next_buffer_id, next_cap);
+        float *next       = _resolve_ptr<float>(p_ctx, target_buffer_id, next_cap);
         const float *refl = _resolve_ptr<const float>(p_ctx, reflectivity_buffer_id, refl_cap);
 
         const size_t needed = static_cast<size_t>(grid_width) * grid_height * std::max<uint32_t>(1u, grid_depth);

@@ -263,8 +263,8 @@ void NurbsPatch3DResource::commit_set_control_point(int p_u, int p_v, const godo
     const real_t w = get_control_weight(p_u, p_v);
     if (undo_redo_.is_valid()) {
         undo_redo_->create_action("Move NURBS Control Point");
-        undo_redo_->add_do_method(this, "set_control_point", {p_u, p_v, p_pos, w});
-        undo_redo_->add_undo_method(this, "set_control_point", {p_u, p_v, old_pos, w});
+        undo_redo_->add_do_method(this, "set_control_point", p_u, p_v, p_pos, w);
+        undo_redo_->add_undo_method(this, "set_control_point", p_u, p_v, old_pos, w);
         undo_redo_->commit_action();
     } else {
         set_control_point(p_u, p_v, p_pos, w);
@@ -275,8 +275,8 @@ void NurbsPatch3DResource::commit_apply_snapshot(const godot::Dictionary &p_befo
     const godot::Dictionary after = get_snapshot_state();
     if (undo_redo_.is_valid()) {
         undo_redo_->create_action(p_action_name);
-        undo_redo_->add_do_method(this, "apply_snapshot_state", {after});
-        undo_redo_->add_undo_method(this, "apply_snapshot_state", {p_before});
+        undo_redo_->add_do_method(this, "apply_snapshot_state", after);
+        undo_redo_->add_undo_method(this, "apply_snapshot_state", p_before);
         undo_redo_->commit_action();
     } else {
         apply_snapshot_state(after);

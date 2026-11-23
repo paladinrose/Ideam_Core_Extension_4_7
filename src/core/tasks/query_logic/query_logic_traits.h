@@ -74,6 +74,7 @@ concept IsQueryLogic = requires {
     { T::display_name } -> std::convertible_to<std::string_view>;
     { T::get_ui_properties() } -> std::same_as<godot::Array>;
     { std::declval<T>().apply_properties(std::declval<const godot::Dictionary&>()) } -> std::same_as<void>;
+    { std::declval<const T&>().get_target_buffer_id() } -> std::convertible_to<uint32_t>;
     
     // Must implement pure 'execute' handling the selection mutation.
     { 

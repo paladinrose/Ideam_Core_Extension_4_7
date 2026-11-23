@@ -200,7 +200,7 @@ bool IdeamEditorPlugin::register_script_template(
 		}
 	}
 
-	const String reg_key = p_base_class + "/" + clean_name.get_basename();
+	const String reg_key = p_base_class + String("/") + clean_name.get_basename();
 	register_to_ecosystem("ScriptTemplates", reg_key, target_path);
 	return true;
 }

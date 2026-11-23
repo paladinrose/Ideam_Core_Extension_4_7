@@ -46,7 +46,7 @@ struct alignas(64) CymaticParticleNodalDriftTransformLogic {
     static constexpr std::string_view display_name = "CYM3 Particle Nodal Drift";
     static constexpr std::string_view ui_category  = "Cymatics";
 
-    uint32_t pos_x_buffer_id     = INVALID_ID;
+    uint32_t target_buffer_id    = INVALID_ID; // Primary particle X position buffer
     uint32_t pos_y_buffer_id     = INVALID_ID;
     uint32_t field_buffer_id     = INVALID_ID;
     uint32_t grid_width          = 32;
@@ -58,6 +58,15 @@ struct alignas(64) CymaticParticleNodalDriftTransformLogic {
 
     static godot::Array get_ui_properties() {
         godot::Array props;
+        auto add_buf = [&](const char *n) {
+            godot::Dictionary dict;
+            dict["name"]        = n;
+            dict["type"]        = static_cast<int>(godot::Variant::INT);
+            dict["hint"]        = static_cast<int>(godot::PROPERTY_HINT_NONE);
+            dict["hint_string"] = "buffer_option";
+            dict["default"]     = static_cast<int64_t>(INVALID_ID);
+            props.push_back(dict);
+        };
         auto add = [&](const char *n, godot::Variant::Type t, godot::Variant d) {
             godot::Dictionary dict;
             dict["name"]    = n;
@@ -65,9 +74,9 @@ struct alignas(64) CymaticParticleNodalDriftTransformLogic {
             dict["default"] = d;
             props.push_back(dict);
         };
-        add("pos_x_buffer_id",  godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("pos_y_buffer_id",  godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("field_buffer_id",  godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
+        add_buf("target_buffer_id");
+        add_buf("pos_y_buffer_id");
+        add_buf("field_buffer_id");
         add("grid_width",       godot::Variant::INT,   static_cast<int64_t>(32));
         add("grid_height",      godot::Variant::INT,   static_cast<int64_t>(32));
         add("rng_seed",         godot::Variant::INT,   static_cast<int64_t>(1337));
@@ -76,8 +85,16 @@ struct alignas(64) CymaticParticleNodalDriftTransformLogic {
         return props;
     }
 
+    [[nodiscard]] constexpr uint32_t get_target_buffer_id() const noexcept {
+        return (target_buffer_id != INVALID_ID) ? target_buffer_id : field_buffer_id;
+    }
+
     void apply_properties(const godot::Dictionary &p_props) noexcept {
-        if (p_props.has("pos_x_buffer_id"))  pos_x_buffer_id  = static_cast<uint32_t>(static_cast<int64_t>(p_props["pos_x_buffer_id"]));
+        if (p_props.has("target_buffer_id")) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["target_buffer_id"]));
+        } else if (p_props.has("pos_x_buffer_id") && target_buffer_id == INVALID_ID) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["pos_x_buffer_id"]));
+        }
         if (p_props.has("pos_y_buffer_id"))  pos_y_buffer_id  = static_cast<uint32_t>(static_cast<int64_t>(p_props["pos_y_buffer_id"]));
         if (p_props.has("field_buffer_id"))  field_buffer_id  = static_cast<uint32_t>(static_cast<int64_t>(p_props["field_buffer_id"]));
         if (p_props.has("grid_width"))       grid_width       = static_cast<uint32_t>(static_cast<int64_t>(p_props["grid_width"]));
@@ -87,16 +104,10 @@ struct alignas(64) CymaticParticleNodalDriftTransformLogic {
         if (p_props.has("jitter_amplitude")) jitter_amplitude = static_cast<float>(static_cast<double>(p_props["jitter_amplitude"]));
     }
 
-    template <typename T_ActiveView>
-    inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view;
-        (void)p_ctx;
-    }
-
     template <typename T_ActiveView, typename T_ActiveStrategy>
     void execute(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
         (void)p_view;
-        const GrantPartPOD *px = p_ctx.get_grant_part(pos_x_buffer_id);
+        const GrantPartPOD *px = p_ctx.get_grant_part(target_buffer_id);
         const GrantPartPOD *py = p_ctx.get_grant_part(pos_y_buffer_id);
         const GrantPartPOD *fd = p_ctx.get_grant_part(field_buffer_id);
         if (!px || !py || !fd || !px->raw_base_ptr || !py->raw_base_ptr || !fd->raw_base_ptr) {

@@ -45,7 +45,7 @@ struct alignas(64) CymaticChladniModalFieldTransformLogic {
     static constexpr std::string_view display_name = "CYM2 Chladni & Bessel Modal Field";
     static constexpr std::string_view ui_category  = "Cymatics";
 
-    uint32_t out_field_buffer_id = INVALID_ID;
+    uint32_t target_buffer_id    = INVALID_ID; // Primary output modal field buffer
     uint32_t fft_peaks_buffer_id = INVALID_ID;
     uint32_t grid_width          = 32;
     uint32_t grid_height         = 32;
@@ -61,6 +61,15 @@ struct alignas(64) CymaticChladniModalFieldTransformLogic {
 
     static godot::Array get_ui_properties() {
         godot::Array props;
+        auto add_buf = [&](const char *n) {
+            godot::Dictionary dict;
+            dict["name"]        = n;
+            dict["type"]        = static_cast<int>(godot::Variant::INT);
+            dict["hint"]        = static_cast<int>(godot::PROPERTY_HINT_NONE);
+            dict["hint_string"] = "buffer_option";
+            dict["default"]     = static_cast<int64_t>(INVALID_ID);
+            props.push_back(dict);
+        };
         auto add = [&](const char *n, godot::Variant::Type t, godot::Variant d) {
             godot::Dictionary dict;
             dict["name"]    = n;
@@ -68,23 +77,31 @@ struct alignas(64) CymaticChladniModalFieldTransformLogic {
             dict["default"] = d;
             props.push_back(dict);
         };
-        add("out_field_buffer_id", godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("fft_peaks_buffer_id", godot::Variant::INT,   static_cast<int64_t>(INVALID_ID));
-        add("grid_width",          godot::Variant::INT,   static_cast<int64_t>(32));
-        add("grid_height",         godot::Variant::INT,   static_cast<int64_t>(32));
-        add("chladni_m",           godot::Variant::FLOAT, 3.0);
-        add("chladni_n",           godot::Variant::FLOAT, 5.0);
-        add("chladni_a",           godot::Variant::FLOAT, 1.0);
-        add("chladni_b",           godot::Variant::FLOAT, -1.0);
-        add("bessel_order",        godot::Variant::FLOAT, 2.0);
-        add("bessel_root",         godot::Variant::FLOAT, 5.1356);
-        add("time_sec",            godot::Variant::FLOAT, 0.0);
-        add("wave_mode",           godot::Variant::INT,   static_cast<int64_t>(CymaticWaveMode::MODE_HYBRID));
+        add_buf("target_buffer_id");
+        add_buf("fft_peaks_buffer_id");
+        add("grid_width",   godot::Variant::INT,   static_cast<int64_t>(32));
+        add("grid_height",  godot::Variant::INT,   static_cast<int64_t>(32));
+        add("chladni_m",    godot::Variant::FLOAT, 3.0);
+        add("chladni_n",    godot::Variant::FLOAT, 5.0);
+        add("chladni_a",    godot::Variant::FLOAT, 1.0);
+        add("chladni_b",    godot::Variant::FLOAT, -1.0);
+        add("bessel_order", godot::Variant::FLOAT, 2.0);
+        add("bessel_root",  godot::Variant::FLOAT, 5.1356);
+        add("time_sec",     godot::Variant::FLOAT, 0.0);
+        add("wave_mode",    godot::Variant::INT,   static_cast<int64_t>(CymaticWaveMode::MODE_HYBRID));
         return props;
     }
 
+    [[nodiscard]] constexpr uint32_t get_target_buffer_id() const noexcept {
+        return target_buffer_id;
+    }
+
     void apply_properties(const godot::Dictionary &p_props) noexcept {
-        if (p_props.has("out_field_buffer_id")) out_field_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["out_field_buffer_id"]));
+        if (p_props.has("target_buffer_id")) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["target_buffer_id"]));
+        } else if (p_props.has("out_field_buffer_id") && target_buffer_id == INVALID_ID) {
+            target_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["out_field_buffer_id"]));
+        }
         if (p_props.has("fft_peaks_buffer_id")) fft_peaks_buffer_id = static_cast<uint32_t>(static_cast<int64_t>(p_props["fft_peaks_buffer_id"]));
         if (p_props.has("grid_width"))          grid_width          = static_cast<uint32_t>(static_cast<int64_t>(p_props["grid_width"]));
         if (p_props.has("grid_height"))         grid_height         = static_cast<uint32_t>(static_cast<int64_t>(p_props["grid_height"]));
@@ -98,16 +115,10 @@ struct alignas(64) CymaticChladniModalFieldTransformLogic {
         if (p_props.has("wave_mode"))           wave_mode           = static_cast<uint8_t>(static_cast<int64_t>(p_props["wave_mode"]));
     }
 
-    template <typename T_ActiveView>
-    inline void configure_view(T_ActiveView &p_view, const TaskContextPOD &p_ctx) const noexcept {
-        (void)p_view;
-        (void)p_ctx;
-    }
-
     template <typename T_ActiveView, typename T_ActiveStrategy>
     void execute(const TaskContextPOD &p_ctx, T_ActiveView &p_view) const noexcept {
         (void)p_view;
-        const GrantPartPOD *out_part = p_ctx.get_grant_part(out_field_buffer_id);
+        const GrantPartPOD *out_part = p_ctx.get_grant_part(target_buffer_id);
         if (!out_part || !out_part->raw_base_ptr) {
             return;
         }

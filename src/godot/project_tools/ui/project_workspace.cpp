@@ -147,8 +147,8 @@ void ProjectWorkspace::_populate_command_bar(HBoxContainer *p_custom_actions) {
 
 ProjectBlueprintEditor *ProjectWorkspace::_get_active_blueprint_editor() const {
     for (const auto &entry : open_assets_) {
-        if (entry.asset == active_asset_ && entry.tier1_control) {
-            return Object::cast_to<ProjectBlueprintEditor>(entry.tier1_control);
+        if (entry.asset == active_asset_ && entry.domain_control) {
+            return Object::cast_to<ProjectBlueprintEditor>(entry.domain_control);
         }
     }
     return nullptr;
