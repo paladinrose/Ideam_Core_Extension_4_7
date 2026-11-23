@@ -72,7 +72,7 @@ void TutorialMacroRecorder::_on_undo_redo_committed(const godot::String &p_actio
     step.instantiate();
     step->set_step_id(godot::StringName(godot::String("step_") + godot::String::num_int64(step_seq_)));
     step->set_title(p_action_name);
-    step->set_markdown_body(godot::String("Perform action: [b]") + p_action_name + "[/b].");
+    step->set_markdown_body(godot::String("Perform action: [b]") + p_action_name + godot::String("[/b]."));
     step->set_completion_mode(UNDO_REDO_ACTION_MATCH);
     step->set_expected_action_name(p_action_name);
 

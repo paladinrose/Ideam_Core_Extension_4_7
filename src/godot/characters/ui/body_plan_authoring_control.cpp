@@ -182,11 +182,11 @@ void BodyPlanAuthoringControl::_refresh_plan_summary() {
         return;
     }
     plan_summary_lbl_->set_text(
-        "Active BodyPlan: " + body_plan_->get_species_name() +
-        "  |  Param Bounds: " + String::num_int64(body_plan_->get_parameter_bounds_list().size()) +
-        "  |  Landmarks: " + String::num_int64(body_plan_->get_topology_landmarks_list().size()) +
-        "  |  Bridge Rules: " + String::num_int64(body_plan_->get_bridge_rules_list().size()) +
-        "  |  Features: " + String::num_int64(body_plan_->get_features_list().size())
+        String("Active BodyPlan: ") + body_plan_->get_species_name() +
+        String("  |  Param Bounds: ") + String::num_int64(body_plan_->get_parameter_bounds_list().size()) +
+        String("  |  Landmarks: ") + String::num_int64(body_plan_->get_topology_landmarks_list().size()) +
+        String("  |  Bridge Rules: ") + String::num_int64(body_plan_->get_bridge_rules_list().size()) +
+        String("  |  Features: ") + String::num_int64(body_plan_->get_features_list().size())
     );
 }
 

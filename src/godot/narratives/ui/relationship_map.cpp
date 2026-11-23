@@ -302,8 +302,8 @@ void RelationshipMap::_refresh_pickers() {
             if (!c.is_valid()) continue;
             const int cid = static_cast<int>(character_choices_.size());
             character_choices_.push_back(c);
-            const String lbl = c->get_official_name().is_empty() ? ("Character #" + String::num_int64(i)) : c->get_official_name();
-            focal_opt_->add_item("Focus: " + lbl, cid);
+            const String lbl = c->get_official_name().is_empty() ? (String("Character #") + String::num_int64(i)) : c->get_official_name();
+            focal_opt_->add_item(String("Focus: ") + lbl, cid);
             source_char_opt_->add_item(lbl, cid);
             if (focal_character_.is_valid() && focal_character_ == c) {
                 focal_sel = focal_opt_->get_item_count() - 1;
@@ -315,8 +315,8 @@ void RelationshipMap::_refresh_pickers() {
             if (!r.is_valid()) continue;
             const int cid = static_cast<int>(character_choices_.size());
             character_choices_.push_back(r);
-            const String lbl = "[Role] " + (r->get_official_name().is_empty() ? ("Role #" + String::num_int64(i)) : r->get_official_name());
-            focal_opt_->add_item("Focus: " + lbl, cid);
+            const String lbl = String("[Role] ") + (r->get_official_name().is_empty() ? (String("Role #") + String::num_int64(i)) : r->get_official_name());
+            focal_opt_->add_item(String("Focus: ") + lbl, cid);
             source_char_opt_->add_item(lbl, cid);
             if (focal_character_.is_valid() && focal_character_ == r) {
                 focal_sel = focal_opt_->get_item_count() - 1;
@@ -329,13 +329,13 @@ void RelationshipMap::_refresh_pickers() {
             if (!n.is_valid()) continue;
             const int tid = static_cast<int>(target_choices_.size());
             target_choices_.push_back(n);
-            const String lbl = (n->get_official_name().is_empty() ? n->get_class_name_str() : n->get_official_name()) + " (" + n->get_class_name_str() + ")";
+            const String lbl = (n->get_official_name().is_empty() ? n->get_class_name_str() : n->get_official_name()) + String(" (") + n->get_class_name_str() + String(")");
             target_nar_opt_->add_item(lbl, tid);
         }
     } else if (focal_character_.is_valid()) {
         character_choices_.push_back(focal_character_);
         const String lbl = focal_character_->get_official_name().is_empty() ? String("Character") : focal_character_->get_official_name();
-        focal_opt_->add_item("Focus: " + lbl, 0);
+        focal_opt_->add_item(String("Focus: ") + lbl, 0);
         source_char_opt_->add_item(lbl, 0);
         focal_sel = 1;
     }
@@ -347,8 +347,8 @@ void RelationshipMap::refresh_map() {
     _rebuild_graph_data();
     _refresh_pickers();
     status_lbl_->set_text(
-        String::num_int64(static_cast<int64_t>(nodes_.size())) + " narremes  |  " +
-        String::num_int64(static_cast<int64_t>(edges_.size())) + " relationships"
+        String::num_int64(static_cast<int64_t>(nodes_.size())) + String(" narremes  |  ") +
+        String::num_int64(static_cast<int64_t>(edges_.size())) + String(" relationships")
     );
     if (canvas_) canvas_->queue_redraw();
 }
@@ -399,7 +399,7 @@ void RelationshipMap::_on_canvas_draw() {
             const Vector2 mid = (start + end) * 0.5f + perp * 10.0f;
             String lbl        = e.relationship->get_title();
             if (e.relationship->get_semantic_tags().is_valid()) {
-                lbl += " [" + String::num_int64(e.relationship->get_semantic_tags()->get_nuclear_popcount()) + "s]";
+                lbl += String(" [") + String::num_int64(e.relationship->get_semantic_tags()->get_nuclear_popcount()) + String("s]");
             }
             canvas_->draw_string(font, mid, lbl, HORIZONTAL_ALIGNMENT_CENTER, 120, 11, Color(0.96f, 0.88f, 1.0f));
         }

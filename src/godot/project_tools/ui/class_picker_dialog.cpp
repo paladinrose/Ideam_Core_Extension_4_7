@@ -4,6 +4,7 @@
 
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/tree_item.hpp>
+#include <godot_cpp/classes/class_db_singleton.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/callable.hpp>
 #include <godot_cpp/variant/packed_string_array.hpp>
@@ -88,7 +89,7 @@ void ClassPickerDialog::_rebuild_tree() {
         return filter_lower.is_empty() || p_name.to_lower().contains(filter_lower);
     };
 
-    ClassDB *cdb = ClassDB::get_singleton();
+    ClassDBSingleton *cdb = ClassDBSingleton::get_singleton();
     auto matches_base = [&](const String &p_cls) -> bool {
         if (base_filter_.is_empty()) {
             return true;
@@ -115,12 +116,12 @@ void ClassPickerDialog::_rebuild_tree() {
         }
         TreeItem *item = class_tree_->create_item(ideam_group);
         item->set_text(0, cls_name);
-        item->set_text(1, String(d.workspace_id) + " (" + d.sidebar_tab + ")");
+        item->set_text(1, String(d.workspace_id) + String(" (") + d.sidebar_tab + String(")"));
         item->set_metadata(0, cls_name);
         ++ideam_count;
     }
     if (ideam_count == 0) {
-        ideam_group->free();
+        memdelete(ideam_group);
     }
 
     // 2. Project Global Script Classes
@@ -150,12 +151,12 @@ void ClassPickerDialog::_rebuild_tree() {
         }
     }
     if (script_count == 0) {
-        script_group->free();
+        memdelete(script_group);
     }
 
     // 3. Built-in & GDExtension ClassDB Classes
     TreeItem *builtin_group = class_tree_->create_item(root);
-    builtin_group->set_text(0, base_filter_.is_empty() ? "Engine & GDExtension Classes" : (base_filter_ + " Subclasses"));
+    builtin_group->set_text(0, base_filter_.is_empty() ? String("Engine & GDExtension Classes") : (base_filter_ + String(" Subclasses")));
     builtin_group->set_selectable(0, false);
     builtin_group->set_selectable(1, false);
 

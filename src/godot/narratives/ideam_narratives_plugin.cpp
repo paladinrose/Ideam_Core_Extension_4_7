@@ -255,11 +255,11 @@ void IdeamNarrativesPlugin::_create_template(const godot::String &folder_name, c
 
     godot::Ref<godot::DirAccess> template_dir = godot::DirAccess::open(folder_path);
     if (template_dir.is_valid() && !template_dir->file_exists("default_template.gd")) {
-        godot::String source_path = "res://addons/ideam_narratives/resources/" + default_file_name;
+        godot::String source_path = godot::String("res://addons/ideam_narratives/resources/") + default_file_name;
         godot::Ref<godot::FileAccess> default_text = godot::FileAccess::open(source_path, godot::FileAccess::READ);
 
         if (default_text.is_valid()) {
-            godot::Ref<godot::FileAccess> new_template = godot::FileAccess::open(folder_path + "/default_template.gd", godot::FileAccess::WRITE);
+            godot::Ref<godot::FileAccess> new_template = godot::FileAccess::open(folder_path + godot::String("/default_template.gd"), godot::FileAccess::WRITE);
             if (new_template.is_valid()) {
                 new_template->store_string(default_text->get_as_text());
                 new_template->close();

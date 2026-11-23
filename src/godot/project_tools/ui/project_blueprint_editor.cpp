@@ -3,6 +3,7 @@
 #include "../../tools/tool_registry.h"
 
 #include <godot_cpp/classes/tree_item.hpp>
+#include <godot_cpp/classes/class_db_singleton.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/callable.hpp>
 
@@ -232,7 +233,7 @@ void ProjectBlueprintEditor::_populate_module_branch(TreeItem *p_parent, const R
         Ref<ProjectScriptSpec> s = scripts[i];
         if (s.is_null()) continue;
         const String fname = ProjectScaffoldEngine::sanitize_filename(s->get_script_name()).to_lower();
-        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, s->get_target_folder()).path_join(fname + ".gd");
+        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, s->get_target_folder()).path_join(fname + String(".gd"));
 
         TreeItem *s_item = scaffold_tree_->create_item(mod_item);
         s_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
@@ -251,7 +252,7 @@ void ProjectBlueprintEditor::_populate_module_branch(TreeItem *p_parent, const R
         if (r.is_null()) continue;
         const String fname = ProjectScaffoldEngine::sanitize_filename(r->get_resource_name());
         const String ext   = r->get_file_extension().is_empty() ? String("tres") : r->get_file_extension().trim_prefix(".");
-        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, r->get_target_folder()).path_join(fname + "." + ext);
+        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, r->get_target_folder()).path_join(fname + String(".") + ext);
 
         TreeItem *r_item = scaffold_tree_->create_item(mod_item);
         r_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
@@ -269,7 +270,7 @@ void ProjectBlueprintEditor::_populate_module_branch(TreeItem *p_parent, const R
         Ref<ProjectSceneSpec> sc = scenes[i];
         if (sc.is_null()) continue;
         const String fname = ProjectScaffoldEngine::sanitize_filename(sc->get_scene_name());
-        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, sc->get_target_folder()).path_join(fname + ".tscn");
+        const String full  = ProjectScaffoldEngine::normalize_res_path(proj_root, sc->get_target_folder()).path_join(fname + String(".tscn"));
 
         TreeItem *sc_item = scaffold_tree_->create_item(mod_item);
         sc_item->set_cell_mode(0, TreeItem::CELL_MODE_CHECK);
@@ -310,7 +311,7 @@ void ProjectBlueprintEditor::_try_mount_tier1_preview(const Ref<ProjectResourceS
         return;
     }
 
-    ClassDB *cdb = ClassDB::get_singleton();
+    ClassDBSingleton *cdb = ClassDBSingleton::get_singleton();
     if (!cdb || !cdb->class_exists(p_spec->get_resource_class()) || !cdb->can_instantiate(p_spec->get_resource_class())) {
         return;
     }
@@ -333,7 +334,7 @@ void ProjectBlueprintEditor::_try_mount_tier1_preview(const Ref<ProjectResourceS
     preview_vbox_->add_child(active_tier1_preview_);
     if (preview_header_label_) {
         preview_header_label_->set_text(
-            String("Tier 1 Preview: ") + desc->display_label + " (Owned by " + String(desc->workspace_id) + ")"
+            String("Tier 1 Preview: ") + desc->display_label + String(" (Owned by ") + String(desc->workspace_id) + String(")")
         );
     }
     preview_panel_->set_visible(true);

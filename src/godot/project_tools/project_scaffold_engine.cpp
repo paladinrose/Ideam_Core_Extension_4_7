@@ -10,6 +10,7 @@
 #include <godot_cpp/classes/project_settings.hpp>
 #include <godot_cpp/classes/resource_loader.hpp>
 #include <godot_cpp/classes/resource_saver.hpp>
+#include <godot_cpp/classes/class_db_singleton.hpp>
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
@@ -123,7 +124,7 @@ bool ProjectScaffoldEngine::is_class_instantiable(const String &p_class_name, co
     if (p_class_name.is_empty()) {
         return false;
     }
-    ClassDB *cdb = ClassDB::get_singleton();
+    ClassDBSingleton *cdb = ClassDBSingleton::get_singleton();
     if (cdb && cdb->class_exists(p_class_name)) {
         if (!cdb->can_instantiate(p_class_name)) {
             return false;
@@ -162,9 +163,10 @@ Dictionary ProjectScaffoldEngine::_make_diagnostic(
 
 String ProjectScaffoldEngine::_synthesize_default_gdscript(const String &p_base_class, const String &p_class_name) {
     String out;
-    out += "class_name " + p_class_name + "\n";
-    out += "extends " + p_base_class + "\n\n";
-    if (ClassDB::get_singleton()->is_parent_class(p_base_class, "Node") || p_base_class == "Node") {
+    out += String("class_name ") + p_class_name + String("\n");
+    out += String("extends ") + p_base_class + String("\n\n");
+    ClassDBSingleton *cdb = ClassDBSingleton::get_singleton();
+    if ((cdb && cdb->is_parent_class(p_base_class, "Node")) || p_base_class == "Node") {
         out += "func _ready() -> void:\n";
         out += "\tpass\n";
     }
@@ -192,7 +194,7 @@ String ProjectScaffoldEngine::_resolve_script_template_text(
     }
 
     // 2. Check res://script_templates/<base_class>/<template_name>.gd
-    String clean_tpl = tpl_name.ends_with(".gd") ? tpl_name : (tpl_name + ".gd");
+    String clean_tpl = tpl_name.ends_with(".gd") ? tpl_name : (tpl_name + String(".gd"));
     const String direct_path = String("res://script_templates/").path_join(p_base_class).path_join(clean_tpl);
     if (FileAccess::file_exists(direct_path)) {
         Ref<FileAccess> f = FileAccess::open(direct_path, FileAccess::READ);
@@ -213,7 +215,7 @@ String ProjectScaffoldEngine::_resolve_script_template_text(
     Ref<ConfigFile> cfg;
     cfg.instantiate();
     if (cfg->load("res://.ideam_registry.cfg") == OK && cfg->has_section("ScriptTemplates")) {
-        const String reg_key = p_base_class + "/" + tpl_name.get_basename();
+        const String reg_key = p_base_class + String("/") + tpl_name.get_basename();
         if (cfg->has_section_key("ScriptTemplates", reg_key)) {
             const String reg_path = cfg->get_value("ScriptTemplates", reg_key, "");
             if (!reg_path.is_empty() && FileAccess::file_exists(reg_path)) {
@@ -436,13 +438,13 @@ Dictionary ProjectScaffoldEngine::validate_blueprint(
             push_diag(PROJECT_DIAG_ERROR, "EMPTY_SCRIPT_NAME", s->get_target_folder(), "Script spec has an empty script_name.", "Set a valid filename.");
             continue;
         }
-        const String full_path = normalize_res_path(root, s->get_target_folder()).path_join(fname + ".gd");
+        const String full_path = normalize_res_path(root, s->get_target_folder()).path_join(fname + String(".gd"));
         if (!is_class_instantiable(s->get_base_class())) {
             push_diag(
                 PROJECT_DIAG_ERROR,
                 "INVALID_BASE_CLASS",
                 full_path,
-                String("Base class '") + s->get_base_class() + "' is not a valid instantiable class.",
+                String("Base class '") + s->get_base_class() + String("' is not a valid instantiable class."),
                 "Choose a registered ClassDB or global script class."
             );
         }
@@ -463,13 +465,13 @@ Dictionary ProjectScaffoldEngine::validate_blueprint(
             push_diag(PROJECT_DIAG_ERROR, "EMPTY_RESOURCE_NAME", r->get_target_folder(), "Resource spec has an empty resource_name.", "Set a valid filename.");
             continue;
         }
-        const String full_path = normalize_res_path(root, r->get_target_folder()).path_join(fname + "." + ext);
+        const String full_path = normalize_res_path(root, r->get_target_folder()).path_join(fname + String(".") + ext);
         if (!is_class_instantiable(r->get_resource_class(), "Resource")) {
             push_diag(
                 PROJECT_DIAG_ERROR,
                 "INVALID_RESOURCE_CLASS",
                 full_path,
-                String("Resource class '") + r->get_resource_class() + "' is not an instantiable Resource.",
+                String("Resource class '") + r->get_resource_class() + String("' is not an instantiable Resource."),
                 "Choose a class deriving from Resource."
             );
         }
@@ -480,7 +482,7 @@ Dictionary ProjectScaffoldEngine::validate_blueprint(
                     PROJECT_DIAG_WARNING,
                     "MISSING_GENERATED_SCRIPT",
                     full_path,
-                    String("Resource requests generated script '") + key + "', which is not enabled in this blueprint.",
+                    String("Resource requests generated script '") + key + String("', which is not enabled in this blueprint."),
                     "Enable the matching ProjectScriptSpec or disable use_generated_script."
                 );
             }
@@ -498,7 +500,7 @@ Dictionary ProjectScaffoldEngine::validate_blueprint(
             push_diag(PROJECT_DIAG_ERROR, "EMPTY_SCENE_NAME", sc->get_target_folder(), "Scene spec has an empty scene_name.", "Set a valid filename.");
             continue;
         }
-        const String full_path = normalize_res_path(root, sc->get_target_folder()).path_join(fname + ".tscn");
+        const String full_path = normalize_res_path(root, sc->get_target_folder()).path_join(fname + String(".tscn"));
         if (sc->get_root_node().is_null()) {
             push_diag(PROJECT_DIAG_ERROR, "NULL_SCENE_ROOT", full_path, "Scene spec has no root_node.", "Assign a ProjectSceneNodeSpec.");
         } else if (!is_class_instantiable(sc->get_root_node()->get_node_class(), "Node")) {
@@ -506,7 +508,7 @@ Dictionary ProjectScaffoldEngine::validate_blueprint(
                 PROJECT_DIAG_ERROR,
                 "INVALID_NODE_CLASS",
                 full_path,
-                String("Root node class '") + sc->get_root_node()->get_node_class() + "' is not an instantiable Node.",
+                String("Root node class '") + sc->get_root_node()->get_node_class() + String("' is not an instantiable Node."),
                 "Choose a class deriving from Node."
             );
         }
@@ -542,7 +544,7 @@ Object *ProjectScaffoldEngine::_instantiate_class_or_script(
     const Dictionary &p_generated_scripts
 ) {
     Object *instance = nullptr;
-    ClassDB *cdb     = ClassDB::get_singleton();
+    ClassDBSingleton *cdb = ClassDBSingleton::get_singleton();
 
     if (cdb && cdb->class_exists(p_class_name) && cdb->can_instantiate(p_class_name)) {
         Variant v = cdb->instantiate(p_class_name);
@@ -634,7 +636,7 @@ Node *ProjectScaffoldEngine::_build_scene_node_recursive(
             PROJECT_DIAG_ERROR,
             "SCENE_NODE_INSTANTIATE_FAILED",
             p_spec->get_node_name(),
-            String("Could not instantiate Node of class '") + p_spec->get_node_class() + "'."
+            String("Could not instantiate Node of class '") + p_spec->get_node_class() + String("'.")
         ));
         return nullptr;
     }
@@ -699,7 +701,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
     for (int i = 0; i < scripts.size(); ++i) {
         Ref<ProjectScriptSpec> s = scripts[i];
         const String fname       = sanitize_filename(s->get_script_name()).to_lower();
-        const String full_path   = normalize_res_path(root, s->get_target_folder()).path_join(fname + ".gd");
+        const String full_path   = normalize_res_path(root, s->get_target_folder()).path_join(fname + String(".gd"));
 
         if (!FileAccess::file_exists(full_path) || p_allow_overwrite) {
             const String class_ident = s->get_effective_class_name();
@@ -716,7 +718,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
                     code            = code.replace(tk, String(tokens[tk]));
                 }
                 if (!code.contains("class_name ")) {
-                    code = String("class_name ") + class_ident + "\n" + code;
+                    code = String("class_name ") + class_ident + String("\n") + code;
                 }
             }
 
@@ -744,7 +746,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
         Ref<ProjectResourceSpec> r = resources[i];
         const String fname         = sanitize_filename(r->get_resource_name());
         const String ext           = r->get_file_extension().is_empty() ? String("tres") : r->get_file_extension().trim_prefix(".");
-        const String full_path     = normalize_res_path(root, r->get_target_folder()).path_join(fname + "." + ext);
+        const String full_path     = normalize_res_path(root, r->get_target_folder()).path_join(fname + String(".") + ext);
 
         if (FileAccess::file_exists(full_path) && !p_allow_overwrite) {
             if (Ref<Resource> existing = ResourceLoader::get_singleton()->load(full_path); existing.is_valid()) {
@@ -768,7 +770,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
                 PROJECT_DIAG_ERROR,
                 "RESOURCE_INSTANTIATE_FAILED",
                 full_path,
-                String("Could not instantiate Resource '") + r->get_resource_class() + "'."
+                String("Could not instantiate Resource '") + r->get_resource_class() + String("'.")
             ));
             continue;
         }
@@ -790,7 +792,7 @@ Dictionary ProjectScaffoldEngine::execute_blueprint(
     for (int i = 0; i < scenes.size(); ++i) {
         Ref<ProjectSceneSpec> sc = scenes[i];
         const String fname       = sanitize_filename(sc->get_scene_name());
-        const String full_path   = normalize_res_path(root, sc->get_target_folder()).path_join(fname + ".tscn");
+        const String full_path   = normalize_res_path(root, sc->get_target_folder()).path_join(fname + String(".tscn"));
 
         if (FileAccess::file_exists(full_path) && !p_allow_overwrite) {
             continue;

@@ -219,12 +219,12 @@ void SurfacePatchControl::_sync_ui_from_asset() {
     if (network_.is_valid()) {
         const Dictionary stats = network_->get_manifold_stats(preview_lod_);
         telemetry_lbl_->set_text(
-            "Network (" + String::num_int64(network_->get_patch_count()) + " patches, " +
-            String::num_int64(network_->get_quad_bridges().size()) + " bridges, " +
-            String::num_int64(network_->get_pole_stitches().size()) + " poles)  |  LOD " +
-            String::num_int64(preview_lod_) + ": " +
-            String::num_int64(int64_t(stats.get("vertex_count", 0))) + " verts / " +
-            String::num_int64(int64_t(stats.get("quad_count", 0))) + " quads  |  Manifold: " +
+            String("Network (") + String::num_int64(network_->get_patch_count()) + String(" patches, ") +
+            String::num_int64(network_->get_quad_bridges().size()) + String(" bridges, ") +
+            String::num_int64(network_->get_pole_stitches().size()) + String(" poles)  |  LOD ") +
+            String::num_int64(preview_lod_) + String(": ") +
+            String::num_int64(int64_t(stats.get("vertex_count", 0))) + String(" verts / ") +
+            String::num_int64(int64_t(stats.get("quad_count", 0))) + String(" quads  |  Manifold: ") +
             (bool(stats.get("is_manifold", false)) ? String("Yes") : String("No"))
         );
     } else if (ap.is_valid()) {
@@ -232,9 +232,9 @@ void SurfacePatchControl::_sync_ui_from_asset() {
         const int64_t quads = static_cast<int64_t>(res.x) * res.y;
         const int64_t verts = static_cast<int64_t>(res.x + 1) * (res.y + 1);
         telemetry_lbl_->set_text(
-            ap->get_patch_type_label() + "  |  LOD " + String::num_int64(preview_lod_) + ": " +
-            String::num_int64(res.x) + "x" + String::num_int64(res.y) + " (" +
-            String::num_int64(verts) + " verts, " + String::num_int64(quads) + " quads)"
+            ap->get_patch_type_label() + String("  |  LOD ") + String::num_int64(preview_lod_) + String(": ") +
+            String::num_int64(res.x) + String("x") + String::num_int64(res.y) + String(" (") +
+            String::num_int64(verts) + String(" verts, ") + String::num_int64(quads) + String(" quads)")
         );
     } else {
         telemetry_lbl_->set_text("No SurfacePatchResource or SurfaceNetworkResource bound.");
@@ -244,9 +244,9 @@ void SurfacePatchControl::_sync_ui_from_asset() {
         const Vector3 pos = ap->sample_position(probe_uv_.x, probe_uv_.y);
         const Vector3 nrm = ap->sample_normal(probe_uv_.x, probe_uv_.y);
         probe_lbl_->set_text(
-            "Frame Probe (u=" + String::num(probe_uv_.x, 2) + ", v=" + String::num(probe_uv_.y, 2) +
-            ")  Pos: (" + String::num(pos.x, 2) + ", " + String::num(pos.y, 2) + ", " + String::num(pos.z, 2) +
-            ")  Normal: (" + String::num(nrm.x, 2) + ", " + String::num(nrm.y, 2) + ", " + String::num(nrm.z, 2) + ")"
+            String("Frame Probe (u=") + String::num(probe_uv_.x, 2) + String(", v=") + String::num(probe_uv_.y, 2) +
+            String(")  Pos: (") + String::num(pos.x, 2) + String(", ") + String::num(pos.y, 2) + String(", ") + String::num(pos.z, 2) +
+            String(")  Normal: (") + String::num(nrm.x, 2) + String(", ") + String::num(nrm.y, 2) + String(", ") + String::num(nrm.z, 2) + String(")")
         );
     } else {
         probe_lbl_->set_text("Click or drag on the UV canvas to probe sample_frame(u, v).");

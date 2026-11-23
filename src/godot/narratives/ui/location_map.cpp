@@ -233,9 +233,9 @@ void LocationMap::_refresh_dropdowns() {
     for (size_t i = 0; i < nodes_.size(); ++i) {
         const Ref<Location> &loc = nodes_[i].location;
         String label = loc->get_official_name().is_empty()
-            ? ("Location #" + String::num_int64(static_cast<int64_t>(i)))
+            ? (String("Location #") + String::num_int64(static_cast<int64_t>(i)))
             : loc->get_official_name();
-        if (nodes_[i].is_symbolic) label = "[Place] " + label;
+        if (nodes_[i].is_symbolic) label = String("[Place] ") + label;
         source_opt_->add_item(label, static_cast<int>(i));
         target_opt_->add_item(label, static_cast<int>(i));
     }
@@ -365,14 +365,14 @@ void LocationMap::_on_canvas_draw() {
 
         if (font.is_valid()) {
             String title = nl.location->get_official_name().is_empty()
-                ? ("Location #" + String::num_int64(static_cast<int64_t>(i)))
+                ? (String("Location #") + String::num_int64(static_cast<int64_t>(i)))
                 : nl.location->get_official_name();
-            if (nl.is_symbolic) title = "[Place] " + title;
+            if (nl.is_symbolic) title = String("[Place] ") + title;
             canvas_->draw_string(font, card.position + Vector2(8, 22), title, HORIZONTAL_ALIGNMENT_LEFT, LOC_NODE_W - 16, 13, Color(0.95f, 0.96f, 1.0f));
 
-            const String sub = "Out: " + String::num_int64(nl.location->get_connection_count()) +
-                               "  |  C:" + String::num_int64(nl.location->get_characters().size()) +
-                               " P:" + String::num_int64(nl.location->get_props().size());
+            const String sub = String("Out: ") + String::num_int64(nl.location->get_connection_count()) +
+                               String("  |  C:") + String::num_int64(nl.location->get_characters().size()) +
+                               String(" P:") + String::num_int64(nl.location->get_props().size());
             canvas_->draw_string(font, card.position + Vector2(8, 42), sub, HORIZONTAL_ALIGNMENT_LEFT, LOC_NODE_W - 16, 11, Color(0.70f, 0.76f, 0.85f));
         }
     }
@@ -473,7 +473,7 @@ void LocationMap::_on_find_path_pressed() {
     const TypedArray<Location> path = src->find_path_to(dst);
 
     if (path.is_empty()) {
-        status_lbl_->set_text("No directed path found from " + src->get_official_name() + " to " + dst->get_official_name() + ".");
+        status_lbl_->set_text(String("No directed path found from ") + src->get_official_name() + String(" to ") + dst->get_official_name() + String("."));
     } else {
         String chain;
         for (int i = 0; i < path.size(); ++i) {
@@ -483,7 +483,7 @@ void LocationMap::_on_find_path_pressed() {
             if (i > 0) chain += " -> ";
             chain += step->get_official_name().is_empty() ? String("Location") : step->get_official_name();
         }
-        status_lbl_->set_text("Shortest Path (" + String::num_int64(path.size() - 1) + " hops): " + chain);
+        status_lbl_->set_text(String("Shortest Path (") + String::num_int64(path.size() - 1) + String(" hops): ") + chain);
     }
     if (canvas_) canvas_->queue_redraw();
 }

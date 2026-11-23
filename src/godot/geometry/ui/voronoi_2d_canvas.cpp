@@ -725,10 +725,10 @@ void Voronoi2DControl::_update_telemetry_labels() {
 
     if (telemetry_label_) {
         telemetry_label_->set_text(
-            "Sites: " + String::num_int64(n_sites) +
-            "  |  Delaunay Triangles: " + String::num_int64(n_tris) +
-            "  |  CSR Dual Directed Arcs: " + String::num_int64(n_csr_arcs) +
-            "  |  Clip Mode: " + (has_poly ? String("Polygon2D + Box") : String("Axis-Aligned Box"))
+            godot::String("Sites: ") + String::num_int64(n_sites) +
+            godot::String("  |  Delaunay Triangles: ") + String::num_int64(n_tris) +
+            godot::String("  |  CSR Dual Directed Arcs: ") + String::num_int64(n_csr_arcs) +
+            godot::String("  |  Clip Mode: ") + (has_poly ? String("Polygon2D + Box") : String("Axis-Aligned Box"))
         );
     }
 
@@ -738,8 +738,8 @@ void Voronoi2DControl::_update_telemetry_labels() {
             const real_t area            = voronoi_resource_->get_cell_area(sel);
             const PackedInt32Array nbrs  = voronoi_resource_->get_site_neighbors(sel);
             cell_inspector_label_->set_text(
-                "  [S" + String::num_int64(sel) + "] Area: " + String::num(static_cast<double>(area), 3) +
-                " | Neighbors: " + String::num_int64(nbrs.size())
+                godot::String("  [S") + String::num_int64(sel) + godot::String("] Area: ") + String::num(static_cast<double>(area), 3) +
+                godot::String(" | Neighbors: ") + String::num_int64(nbrs.size())
             );
         } else {
             cell_inspector_label_->set_text("  (Double-click plot to add site, right-click to remove)");

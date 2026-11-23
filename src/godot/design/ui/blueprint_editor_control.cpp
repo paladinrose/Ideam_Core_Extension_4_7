@@ -171,10 +171,10 @@ void BlueprintEditorControl::_refresh_ui() {
         return;
     }
     telemetry_label_->set_text(
-        "Spaces: " + String::num_int64(blueprint_->get_space_count()) +
-        " | Walls: " + String::num_int64(blueprint_->get_wall_count()) +
-        " | Features: " + String::num_int64(blueprint_->get_feature_count()) +
-        " | Cut Height: " + String::num(blueprint_->get_section_cut_height_meters(), 2) + "m"
+        String("Spaces: ") + String::num_int64(blueprint_->get_space_count()) +
+        String(" | Walls: ") + String::num_int64(blueprint_->get_wall_count()) +
+        String(" | Features: ") + String::num_int64(blueprint_->get_feature_count()) +
+        String(" | Cut Height: ") + String::num(blueprint_->get_section_cut_height_meters(), 2) + String("m")
     );
     if (preview_) {
         preview_->queue_redraw();

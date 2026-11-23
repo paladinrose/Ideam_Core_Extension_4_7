@@ -216,7 +216,7 @@ void TutorialChecklistDock::_update_progress_gauge() {
         progress_gauge_->set_value_2(pct);
     }
     if (progress_label_) {
-        progress_label_->set_text(String::num_int64(static_cast<int64_t>(pct + 0.5f)) + "% complete");
+        progress_label_->set_text(String::num_int64(static_cast<int64_t>(pct + 0.5f)) + String("% complete"));
     }
 }
 

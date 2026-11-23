@@ -199,9 +199,9 @@ godot::String Narrative_Condition::format_sentence() const {
         if (obj_name.is_empty()) {
             obj_name = _object->get_class_name_str();
         }
-        return subj_name + " " + fragment + " " + obj_name;
+        return subj_name + godot::String(" ") + fragment + godot::String(" ") + obj_name;
     }
-    return subj_name + " " + fragment;
+    return subj_name + godot::String(" ") + fragment;
 }
 
 void Narrative_Condition::_apply_configuration_direct(

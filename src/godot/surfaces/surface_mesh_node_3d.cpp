@@ -353,7 +353,7 @@ godot::String SurfacePatchGizmo::_get_handle_name(
         const int idx = p_handle_id - HANDLE_CP_BASE;
         const int u = idx % nurbs->get_count_u();
         const int v = idx / nurbs->get_count_u();
-        return "Control Point (" + godot::String::num_int64(u) + ", " + godot::String::num_int64(v) + ")";
+        return godot::String("Control Point (") + godot::String::num_int64(u) + godot::String(", ") + godot::String::num_int64(v) + godot::String(")");
     }
     return "Surface Handle";
 }

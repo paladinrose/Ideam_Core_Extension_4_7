@@ -2968,7 +2968,7 @@ godot::Ref<Character> Narrative::instantiate_character_from_role(
         inst.instantiate();
     }
     const godot::String base_name = role->get_official_name().is_empty() ? godot::String("Character") : role->get_official_name();
-    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + godot::String(" (Instance)")) : p_new_name);
     if (role->get_semantic_tags().is_valid()) {
         inst->set_semantic_tags(role->get_semantic_tags()->duplicate(true));
     }
@@ -3003,7 +3003,7 @@ godot::Ref<Prop> Narrative::instantiate_prop_from_symbol(
         inst.instantiate();
     }
     const godot::String base_name = symbol->get_official_name().is_empty() ? godot::String("Prop") : symbol->get_official_name();
-    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + godot::String(" (Instance)")) : p_new_name);
     if (symbol->get_semantic_tags().is_valid()) {
         inst->set_semantic_tags(symbol->get_semantic_tags()->duplicate(true));
     }
@@ -3038,7 +3038,7 @@ godot::Ref<Location> Narrative::instantiate_location_from_place(
         inst.instantiate();
     }
     const godot::String base_name = place->get_official_name().is_empty() ? godot::String("Location") : place->get_official_name();
-    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + godot::String(" (Instance)")) : p_new_name);
     if (place->get_semantic_tags().is_valid()) {
         inst->set_semantic_tags(place->get_semantic_tags()->duplicate(true));
     }
@@ -3073,7 +3073,7 @@ godot::Ref<Incident> Narrative::instantiate_incident_from_moment(
         inst.instantiate();
     }
     const godot::String base_name = moment->get_official_name().is_empty() ? godot::String("Incident") : moment->get_official_name();
-    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + godot::String(" (Instance)")) : p_new_name);
     if (moment->get_semantic_tags().is_valid()) {
         inst->set_semantic_tags(moment->get_semantic_tags()->duplicate(true));
     }
@@ -3108,7 +3108,7 @@ godot::Ref<Plot> Narrative::instantiate_plot_from_story(
         inst.instantiate();
     }
     const godot::String base_name = story->get_official_name().is_empty() ? godot::String("Plot") : story->get_official_name();
-    inst->set_official_name(p_new_name.is_empty() ? (base_name + " (Instance)") : p_new_name);
+    inst->set_official_name(p_new_name.is_empty() ? (base_name + godot::String(" (Instance)")) : p_new_name);
     if (story->get_semantic_tags().is_valid()) {
         inst->set_semantic_tags(story->get_semantic_tags()->duplicate(true));
     }

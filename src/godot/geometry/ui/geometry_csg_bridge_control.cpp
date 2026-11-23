@@ -586,9 +586,9 @@ void GeometryCSGBridgeControl::_update_classification_telemetry() {
             : "STRADDLING_BOUNDARY (Wave-3 Clip & Seam Weld)");
 
     classification_label_->set_text(
-        "Wave-2 Classification: " + cls_str +
-        "  |  Edge Intersections: " + String::num_int64(static_cast<int64_t>(num_ix)) +
-        "  |  Subject Area: " + String::num(static_cast<double>(subject_polygon_->get_abs_area()), 3)
+        godot::String("Wave-2 Classification: ") + cls_str +
+        godot::String("  |  Edge Intersections: ") + String::num_int64(static_cast<int64_t>(num_ix)) +
+        godot::String("  |  Subject Area: ") + String::num(static_cast<double>(subject_polygon_->get_abs_area()), 3)
     );
 }
 

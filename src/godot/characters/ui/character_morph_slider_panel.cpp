@@ -156,9 +156,9 @@ void CharacterMorphSliderPanel::_sync_from_blueprint() {
     }
     if (telemetry_label_) {
         telemetry_label_->set_text(
-            "Quad-Loop Vertices: " + godot::String::num_int64(blueprint_->get_base_vertex_count()) +
-            "  |  Quads: " + godot::String::num_int64(blueprint_->get_base_quad_count()) +
-            "  |  Sparse Morph Deltas: " + godot::String::num_int64(blueprint_->get_sparse_morph_delta_count())
+            godot::String("Quad-Loop Vertices: ") + godot::String::num_int64(blueprint_->get_base_vertex_count()) +
+            godot::String("  |  Quads: ") + godot::String::num_int64(blueprint_->get_base_quad_count()) +
+            godot::String("  |  Sparse Morph Deltas: ") + godot::String::num_int64(blueprint_->get_sparse_morph_delta_count())
         );
     }
 

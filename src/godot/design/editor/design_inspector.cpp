@@ -73,7 +73,7 @@ void DesignInspector::_parse_begin(godot::Object *p_object) {
     domain_tool::stamp_ui_selector(bar, "design.inspector.header");
 
     auto *header = memnew(Label);
-    header->set_text("IdeamDesign — " + p_object->get_class());
+    header->set_text(godot::String("IdeamDesign — ") + p_object->get_class());
     header->set_h_size_flags(Control::SIZE_EXPAND_FILL);
     bar->add_child(header);
 

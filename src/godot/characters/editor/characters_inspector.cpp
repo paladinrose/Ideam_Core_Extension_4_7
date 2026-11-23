@@ -86,7 +86,7 @@ void CharactersInspector::_parse_begin(godot::Object *p_object) {
     domain_tool::stamp_ui_selector(bar, "characters.inspector.header");
 
     auto *lbl = memnew(Label);
-    lbl->set_text("IdeamCharacters (" + p_object->get_class() + ")");
+    lbl->set_text(godot::String("IdeamCharacters (") + p_object->get_class() + godot::String(")"));
     lbl->set_h_size_flags(Control::SIZE_EXPAND_FILL);
     bar->add_child(lbl);
 

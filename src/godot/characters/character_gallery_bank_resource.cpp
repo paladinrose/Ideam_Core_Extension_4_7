@@ -92,7 +92,7 @@ godot::String CharacterGalleryBankResource::add_custom_preset(
     const godot::Dictionary &p_payload
 ) {
     auto &bank = _bank_ref(p_category);
-    const godot::String id = godot::String("preset_") + godot::String::num_int64(static_cast<int64_t>(p_category)) + "_" + godot::String::num_int64(bank.size());
+    const godot::String id = godot::String("preset_") + godot::String::num_int64(static_cast<int64_t>(p_category)) + godot::String("_") + godot::String::num_int64(bank.size());
     godot::Dictionary entry;
     entry["id"]           = id;
     entry["category"]     = static_cast<int64_t>(p_category);

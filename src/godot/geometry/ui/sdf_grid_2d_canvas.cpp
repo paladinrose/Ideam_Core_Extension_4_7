@@ -737,10 +737,10 @@ void SDFGrid2DControl::_sync_heatmap_and_telemetry() {
         const float iso    = sdf_resource_->get_iso_value();
         const int64_t segs = sdf_resource_->extract_iso_contour_segments(iso).size() / 2;
         telemetry_label_->set_text(
-            "Resolution: " + String::num_int64(res.x) + "x" + String::num_int64(res.y) +
-            "  |  d_min: " + String::num(min_max.x, 2) +
-            ", d_max: " + String::num(min_max.y, 2) +
-            "  |  Marching Squares Segments (iso=" + String::num(iso, 2) + "): " + String::num_int64(segs)
+            godot::String("Resolution: ") + String::num_int64(res.x) + godot::String("x") + String::num_int64(res.y) +
+            godot::String("  |  d_min: ") + String::num(min_max.x, 2) +
+            godot::String(", d_max: ") + String::num(min_max.y, 2) +
+            godot::String("  |  Marching Squares Segments (iso=") + String::num(iso, 2) + godot::String("): ") + String::num_int64(segs)
         );
     }
 }
@@ -858,11 +858,11 @@ void SDFGrid2DControl::_on_canvas_probed(
     const int64_t segs = sdf_resource_->extract_iso_contour_segments(iso).size() / 2;
 
     telemetry_label_->set_text(
-        "Grid: " + String::num_int64(res.x) + "x" + String::num_int64(res.y) +
-        " | Iso Segments: " + String::num_int64(segs) +
-        " | Probe (" + String::num(p_world_pos.x, 2) + ", " + String::num(p_world_pos.y, 2) +
-        ") -> d = " + String::num(p_distance, 3) +
-        ", ∇d = (" + String::num(p_gradient.x, 2) + ", " + String::num(p_gradient.y, 2) + ")"
+        godot::String("Grid: ") + String::num_int64(res.x) + godot::String("x") + String::num_int64(res.y) +
+        godot::String(" | Iso Segments: ") + String::num_int64(segs) +
+        godot::String(" | Probe (") + String::num(p_world_pos.x, 2) + godot::String(", ") + String::num(p_world_pos.y, 2) +
+        godot::String(") -> d = ") + String::num(p_distance, 3) +
+        godot::String(", ∇d = (") + String::num(p_gradient.x, 2) + godot::String(", ") + String::num(p_gradient.y, 2) + godot::String(")")
     );
 }
 

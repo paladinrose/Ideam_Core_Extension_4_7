@@ -128,37 +128,37 @@ void SurfacesInspector::_refresh_summary_panel() {
         const godot::Vector2i lod0 = nurbs->get_resolved_lod_divs(0);
         const godot::Vector2i lod3 = nurbs->get_resolved_lod_divs(3);
         lbl->set_text(
-            "NURBS Patch (" + godot::String::num_int64(nurbs->get_count_u()) + "x" +
-            godot::String::num_int64(nurbs->get_count_v()) + " ctrl pts, deg " +
-            godot::String::num_int64(nurbs->get_degree_u()) + "x" +
-            godot::String::num_int64(nurbs->get_degree_v()) + ")  |  LOD0: " +
-            godot::String::num_int64(static_cast<int64_t>(lod0.x) * lod0.y) + " quads  |  LOD3: " +
-            godot::String::num_int64(static_cast<int64_t>(lod3.x) * lod3.y) + " quads"
+            godot::String("NURBS Patch (") + godot::String::num_int64(nurbs->get_count_u()) + godot::String("x") +
+            godot::String::num_int64(nurbs->get_count_v()) + godot::String(" ctrl pts, deg ") +
+            godot::String::num_int64(nurbs->get_degree_u()) + godot::String("x") +
+            godot::String::num_int64(nurbs->get_degree_v()) + godot::String(")  |  LOD0: ") +
+            godot::String::num_int64(static_cast<int64_t>(lod0.x) * lod0.y) + godot::String(" quads  |  LOD3: ") +
+            godot::String::num_int64(static_cast<int64_t>(lod3.x) * lod3.y) + godot::String(" quads")
         );
     } else if (const auto *coons = godot::Object::cast_to<CoonsPatch3DResource>(obj)) {
         const godot::Vector2i lod0 = coons->get_resolved_lod_divs(0);
         lbl->set_text(
-            coons->get_patch_type_label() + "  |  U Guides: " +
-            godot::String::num_int64(coons->get_interior_u_guides().size()) + "  |  V Guides: " +
-            godot::String::num_int64(coons->get_interior_v_guides().size()) + "  |  LOD0: " +
-            godot::String::num_int64(static_cast<int64_t>(lod0.x) * lod0.y) + " quads"
+            coons->get_patch_type_label() + godot::String("  |  U Guides: ") +
+            godot::String::num_int64(coons->get_interior_u_guides().size()) + godot::String("  |  V Guides: ") +
+            godot::String::num_int64(coons->get_interior_v_guides().size()) + godot::String("  |  LOD0: ") +
+            godot::String::num_int64(static_cast<int64_t>(lod0.x) * lod0.y) + godot::String(" quads")
         );
     } else if (const auto *net = godot::Object::cast_to<SurfaceNetworkResource>(obj)) {
         const godot::Dictionary stats = net->get_manifold_stats(0);
         lbl->set_text(
-            "Surface Network  |  Patches: " + godot::String::num_int64(net->get_patch_count()) +
-            "  |  Bridges: " + godot::String::num_int64(net->get_quad_bridges().size()) +
-            "  |  Poles: " + godot::String::num_int64(net->get_pole_stitches().size()) +
-            "  |  LOD0 Quads: " + godot::String::num_int64(int64_t(stats.get("quad_count", 0))) +
-            "  |  Manifold: " + (bool(stats.get("is_manifold", false)) ? godot::String("Yes") : godot::String("No"))
+            godot::String("Surface Network  |  Patches: ") + godot::String::num_int64(net->get_patch_count()) +
+            godot::String("  |  Bridges: ") + godot::String::num_int64(net->get_quad_bridges().size()) +
+            godot::String("  |  Poles: ") + godot::String::num_int64(net->get_pole_stitches().size()) +
+            godot::String("  |  LOD0 Quads: ") + godot::String::num_int64(int64_t(stats.get("quad_count", 0))) +
+            godot::String("  |  Manifold: ") + (bool(stats.get("is_manifold", false)) ? godot::String("Yes") : godot::String("No"))
         );
     } else if (const auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(obj)) {
         const godot::String src = node->get_surface_network().is_valid()
             ? godot::String("SurfaceNetworkResource")
             : (node->get_surface_patch().is_valid() ? node->get_surface_patch()->get_patch_type_label() : godot::String("None"));
         lbl->set_text(
-            "SurfaceMeshNode3D  |  Source: " + src +
-            "  |  Active LOD: " + godot::String::num_int64(node->get_lod_level())
+            godot::String("SurfaceMeshNode3D  |  Source: ") + src +
+            godot::String("  |  Active LOD: ") + godot::String::num_int64(node->get_lod_level())
         );
     }
 }

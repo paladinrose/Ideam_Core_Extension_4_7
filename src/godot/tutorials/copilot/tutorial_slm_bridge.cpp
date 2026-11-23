@@ -53,7 +53,7 @@ godot::Dictionary TutorialSLMBridge::query_copilot(const godot::String &p_user_p
             const godot::String title  = td.get("title", "");
             const godot::String desc   = td.get("description", "");
             const float score = prompt_parser_.is_valid()
-                ? prompt_parser_->score_prompt_similarity(p_user_prompt, title + " " + desc)
+                ? prompt_parser_->score_prompt_similarity(p_user_prompt, title + godot::String(" ") + desc)
                 : 0.0f;
             if (score > best_score) {
                 best_score = score;

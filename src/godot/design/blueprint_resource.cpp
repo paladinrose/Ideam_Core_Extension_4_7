@@ -181,7 +181,7 @@ void BlueprintResource::populate_sample_room() {
     pts.push_back(godot::Vector2(offset_x + 5.0f, 0.0f));
     pts.push_back(godot::Vector2(offset_x + 5.0f, 4.0f));
     pts.push_back(godot::Vector2(offset_x, 4.0f));
-    add_space_polygon("Room " + godot::String::num_int64(idx + 1), pts);
+    add_space_polygon(godot::String("Room ") + godot::String::num_int64(idx + 1), pts);
     rebuild_reactive_layers();
 }
 

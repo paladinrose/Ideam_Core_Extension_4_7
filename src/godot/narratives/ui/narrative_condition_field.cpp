@@ -169,7 +169,7 @@ String NarrativeConditionField::_format_narreme_label(const Ref<Narreme> &p_narr
         name = p_narreme->get_class_name_str();
     }
     if (narrative_.is_valid() && narrative_->is_narreme_symbolic(p_narreme)) {
-        return "[Sym] " + name;
+        return String("[Sym] ") + name;
     }
     return name;
 }
@@ -260,16 +260,16 @@ void NarrativeConditionField::_refresh_semantic_badge() {
     const String obj_role   = String(desc.get("object_role", ""));
     const PackedStringArray tags = desc.get("seme_tags", PackedStringArray());
 
-    semantic_badge_lbl_->set_text("[" + frame_name + "]");
-    String tip = "Canonical Key: " + key + "\nFrameNet Frame: " + frame_name;
+    semantic_badge_lbl_->set_text(String("[") + frame_name + String("]"));
+    String tip = String("Canonical Key: ") + key + String("\nFrameNet Frame: ") + frame_name;
     if (!subj_role.is_empty()) {
-        tip += "\nRoles: " + subj_role;
+        tip += String("\nRoles: ") + subj_role;
         if (!obj_role.is_empty()) {
-            tip += " -> " + obj_role;
+            tip += String(" -> ") + obj_role;
         }
     }
     if (!tags.is_empty()) {
-        tip += "\nSemes: " + String(", ").join(tags);
+        tip += String("\nSemes: ") + String(", ").join(tags);
     }
     semantic_badge_lbl_->set_tooltip_text(tip);
 }
@@ -320,22 +320,24 @@ void NarrativeConditionField::_populate_picker_popup(
         r_candidates.push_back(n);
 
         const String cls   = n->get_class_name_str();
-        const String label = _format_narreme_label(n) + "  (" + cls + ")";
+        const String label = _format_narreme_label(n) + String("  (") + cls + String(")");
         p_popup->add_item(label, idx);
     }
 }
 
 void NarrativeConditionField::_on_subject_btn_pressed() {
     _populate_picker_popup(subject_popup_, subject_filter_mode_, false, subject_candidates_);
-    const Rect2 rect = subject_btn_->get_screen_rect();
-    subject_popup_->set_position(Vector2i(static_cast<int>(rect.position.x), static_cast<int>(rect.position.y + rect.size.y)));
+    const Vector2 pos = subject_btn_->get_screen_position();
+    const Vector2 size = subject_btn_->get_size();
+    subject_popup_->set_position(Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y + size.y)));
     subject_popup_->popup();
 }
 
 void NarrativeConditionField::_on_object_btn_pressed() {
     _populate_picker_popup(object_popup_, object_filter_mode_, true, object_candidates_);
-    const Rect2 rect = object_btn_->get_screen_rect();
-    object_popup_->set_position(Vector2i(static_cast<int>(rect.position.x), static_cast<int>(rect.position.y + rect.size.y)));
+    const Vector2 pos = object_btn_->get_screen_position();
+    const Vector2 size = object_btn_->get_size();
+    object_popup_->set_position(Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y + size.y)));
     object_popup_->popup();
 }
 

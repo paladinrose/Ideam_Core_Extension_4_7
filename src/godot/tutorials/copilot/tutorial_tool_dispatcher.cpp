@@ -74,7 +74,7 @@ bool TutorialToolDispatcher::coach_value_entry(
         return false;
     }
     const godot::String hint = godot::String("Recommended ") + godot::String(p_property_name) +
-                               " = " + godot::String(p_recommended_value);
+                               godot::String(" = ") + godot::String(p_recommended_value);
     spotlight_overlay_->spotlight_control(target, "Value Coach", p_rationale, hint);
     return true;
 }

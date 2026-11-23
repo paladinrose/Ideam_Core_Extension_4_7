@@ -106,7 +106,7 @@ Control *CharacterModeler::_create_domain_control_for_asset(const Ref<Resource> 
             if (!active_character_.is_valid() || active_character_->get_body_plan() != bp) {
                 active_character_.instantiate();
                 active_character_->set_body_plan(bp);
-                active_character_->set_character_name(bp->get_species_name() + " Instance");
+                active_character_->set_character_name(bp->get_species_name() + String(" Instance"));
             }
             auto *gen = memnew(CharacterGeneratorControl);
             gen->set_gallery_bank(active_gallery_bank_);
@@ -206,7 +206,7 @@ void CharacterModeler::_on_new_character_pressed() {
     Ref<CharacterInstanceResource> ci;
     ci.instantiate();
     ci->set_body_plan(active_body_plan_);
-    ci->set_character_name(active_body_plan_->get_species_name() + " Character");
+    ci->set_character_name(active_body_plan_->get_species_name() + String(" Character"));
     active_mode_ = MODE_CHARACTER_GENERATOR;
     open_asset(ci, "Characters");
 }

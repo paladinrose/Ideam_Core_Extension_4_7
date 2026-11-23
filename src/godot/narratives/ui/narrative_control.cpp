@@ -304,29 +304,29 @@ void NarrativeControl::refresh_lists() {
             Ref<Narreme> n = p_lits[i];
             String label = (n.is_valid() && !n->get_official_name().is_empty())
                 ? n->get_official_name()
-                : (String(p_lit_fallback) + " #" + String::num_int64(i));
+                : (String(p_lit_fallback) + String(" #") + String::num_int64(i));
             literal_list_->add_item(label);
         }
         for (int i = 0; i < p_syms.size(); ++i) {
             Ref<Narreme> s = p_syms[i];
             String label = (s.is_valid() && !s->get_official_name().is_empty())
                 ? s->get_official_name()
-                : (String(p_sym_fallback) + " #" + String::num_int64(i));
+                : (String(p_sym_fallback) + String(" #") + String::num_int64(i));
 
             int assigned = (i < p_assigns.size()) ? static_cast<int>(p_assigns[i]) : -1;
             if (assigned >= 0 && assigned < p_lits.size()) {
                 Ref<Narreme> lit = p_lits[assigned];
                 const String lit_name = (lit.is_valid() && !lit->get_official_name().is_empty())
                     ? lit->get_official_name()
-                    : (String(p_lit_fallback) + " #" + String::num_int64(assigned));
-                label += "   ->   " + lit_name;
+                    : (String(p_lit_fallback) + String(" #") + String::num_int64(assigned));
+                label += String("   ->   ") + lit_name;
             } else {
                 label += "   ->   [Unassigned]";
             }
             symbolic_list_->add_item(label);
         }
         status_lbl_->set_text(
-            String::num_int64(p_lits.size()) + " real  |  " + String::num_int64(p_syms.size()) + " symbolic"
+            String::num_int64(p_lits.size()) + String(" real  |  ") + String::num_int64(p_syms.size()) + String(" symbolic")
         );
     };
 
@@ -362,31 +362,31 @@ void NarrativeControl::_on_add_literal_pressed() {
     switch (active_family_) {
         case FAMILY_CHARACTERS: {
             Ref<Character> c; c.instantiate();
-            c->set_official_name(name.is_empty() ? ("Character " + String::num_int64(narrative_->get_characters().size() + 1)) : name);
+            c->set_official_name(name.is_empty() ? (String("Character ") + String::num_int64(narrative_->get_characters().size() + 1)) : name);
             narrative_->add_character(c);
             break;
         }
         case FAMILY_LOCATIONS: {
             Ref<Location> l; l.instantiate();
-            l->set_official_name(name.is_empty() ? ("Location " + String::num_int64(narrative_->get_locations().size() + 1)) : name);
+            l->set_official_name(name.is_empty() ? (String("Location ") + String::num_int64(narrative_->get_locations().size() + 1)) : name);
             narrative_->add_location(l);
             break;
         }
         case FAMILY_PROPS: {
             Ref<Prop> p; p.instantiate();
-            p->set_official_name(name.is_empty() ? ("Prop " + String::num_int64(narrative_->get_props().size() + 1)) : name);
+            p->set_official_name(name.is_empty() ? (String("Prop ") + String::num_int64(narrative_->get_props().size() + 1)) : name);
             narrative_->add_prop(p);
             break;
         }
         case FAMILY_INCIDENTS: {
             Ref<Incident> inc; inc.instantiate();
-            inc->set_official_name(name.is_empty() ? ("Incident " + String::num_int64(narrative_->get_incidents().size() + 1)) : name);
+            inc->set_official_name(name.is_empty() ? (String("Incident ") + String::num_int64(narrative_->get_incidents().size() + 1)) : name);
             narrative_->add_incident(inc);
             break;
         }
         case FAMILY_PLOTS: {
             Ref<Plot> pl; pl.instantiate();
-            pl->set_official_name(name.is_empty() ? ("Plot " + String::num_int64(narrative_->get_plots().size() + 1)) : name);
+            pl->set_official_name(name.is_empty() ? (String("Plot ") + String::num_int64(narrative_->get_plots().size() + 1)) : name);
             narrative_->add_plot(pl);
             break;
         }
@@ -401,31 +401,31 @@ void NarrativeControl::_on_add_symbolic_pressed() {
     switch (active_family_) {
         case FAMILY_CHARACTERS: {
             Ref<Character> r; r.instantiate();
-            r->set_official_name(name.is_empty() ? ("Role " + String::num_int64(narrative_->get_roles().size() + 1)) : name);
+            r->set_official_name(name.is_empty() ? (String("Role ") + String::num_int64(narrative_->get_roles().size() + 1)) : name);
             narrative_->add_role(r);
             break;
         }
         case FAMILY_LOCATIONS: {
             Ref<Location> p; p.instantiate();
-            p->set_official_name(name.is_empty() ? ("Place " + String::num_int64(narrative_->get_places().size() + 1)) : name);
+            p->set_official_name(name.is_empty() ? (String("Place ") + String::num_int64(narrative_->get_places().size() + 1)) : name);
             narrative_->add_place(p);
             break;
         }
         case FAMILY_PROPS: {
             Ref<Prop> s; s.instantiate();
-            s->set_official_name(name.is_empty() ? ("Symbol " + String::num_int64(narrative_->get_symbols().size() + 1)) : name);
+            s->set_official_name(name.is_empty() ? (String("Symbol ") + String::num_int64(narrative_->get_symbols().size() + 1)) : name);
             narrative_->add_symbol(s);
             break;
         }
         case FAMILY_INCIDENTS: {
             Ref<Incident> m; m.instantiate();
-            m->set_official_name(name.is_empty() ? ("Moment " + String::num_int64(narrative_->get_moments().size() + 1)) : name);
+            m->set_official_name(name.is_empty() ? (String("Moment ") + String::num_int64(narrative_->get_moments().size() + 1)) : name);
             narrative_->add_moment(m);
             break;
         }
         case FAMILY_PLOTS: {
             Ref<Plot> st; st.instantiate();
-            st->set_official_name(name.is_empty() ? ("Story " + String::num_int64(narrative_->get_stories().size() + 1)) : name);
+            st->set_official_name(name.is_empty() ? (String("Story ") + String::num_int64(narrative_->get_stories().size() + 1)) : name);
             narrative_->add_story(st);
             break;
         }

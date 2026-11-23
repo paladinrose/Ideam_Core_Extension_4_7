@@ -177,15 +177,15 @@ void FormScaffoldControl::_sync_ui() {
 
         const Dictionary bal = scaffold_->get_balance_report();
         telemetry_lbl_->set_text(
-            scaffold_->get_scaffold_name() + "  |  Nodes/Bones: " + String::num_int64(scaffold_->get_node_count()) +
-            "  |  Balance: " + (bool(bal.get("is_balanced", true)) ? String("Balanced") : String("Off-Balance")) +
-            " (CoG offset " + String::num(double(bal.get("horizontal_offset", 0.0)), 2) + "m)"
+            scaffold_->get_scaffold_name() + String("  |  Nodes/Bones: ") + String::num_int64(scaffold_->get_node_count()) +
+            String("  |  Balance: ") + (bool(bal.get("is_balanced", true)) ? String("Balanced") : String("Off-Balance")) +
+            String(" (CoG offset ") + String::num(double(bal.get("horizontal_offset", 0.0)), 2) + String("m)")
         );
     } else if (ruler_.is_valid()) {
         unit_spin_->set_value(static_cast<double>(ruler_->get_base_unit_meters()));
         telemetry_lbl_->set_text(
-            ruler_->get_canon_name() + "  |  Unit: " + String::num(ruler_->get_base_unit_meters(), 2) +
-            "m  |  Landmarks: " + String::num_int64(ruler_->get_landmarks().size())
+            ruler_->get_canon_name() + String("  |  Unit: ") + String::num(ruler_->get_base_unit_meters(), 2) +
+            String("m  |  Landmarks: ") + String::num_int64(ruler_->get_landmarks().size())
         );
     } else {
         telemetry_lbl_->set_text("No FormScaffoldResource or ProportionRulerGraphResource bound.");

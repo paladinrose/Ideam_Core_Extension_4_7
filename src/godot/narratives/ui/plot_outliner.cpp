@@ -339,7 +339,7 @@ void PlotOutliner::_refresh_plot_picker() {
             if (!p.is_valid()) continue;
             const int pid = static_cast<int>(plot_choices_.size());
             plot_choices_.push_back(p);
-            const String lbl = p->get_official_name().is_empty() ? ("Plot #" + String::num_int64(i)) : p->get_official_name();
+            const String lbl = p->get_official_name().is_empty() ? (String("Plot #") + String::num_int64(i)) : p->get_official_name();
             plot_picker_opt_->add_item(lbl, pid);
             if (p == active_plot_) sel = pid;
         }
@@ -349,7 +349,7 @@ void PlotOutliner::_refresh_plot_picker() {
             if (!st.is_valid()) continue;
             const int pid = static_cast<int>(plot_choices_.size());
             plot_choices_.push_back(st);
-            const String lbl = "[Story] " + (st->get_official_name().is_empty() ? ("Story #" + String::num_int64(i)) : st->get_official_name());
+            const String lbl = String("[Story] ") + (st->get_official_name().is_empty() ? (String("Story #") + String::num_int64(i)) : st->get_official_name());
             plot_picker_opt_->add_item(lbl, pid);
             if (st == active_plot_) sel = pid;
         }
@@ -368,7 +368,7 @@ void PlotOutliner::_refresh_plot_picker() {
 
     plot_status_lbl_->set_text(
         active_plot_.is_valid()
-            ? ("[" + _plot_status_to_string(active_plot_->get_status()) + "]")
+            ? (String("[") + _plot_status_to_string(active_plot_->get_status()) + String("]"))
             : String("[NO PLOT]")
     );
 }
@@ -382,11 +382,11 @@ void PlotOutliner::_refresh_event_list() {
         Ref<Plot_Event> ev = evs[i];
         if (!ev.is_valid()) continue;
         const String lane = _requirement_lane_tag(ev->get_requirement());
-        String label      = lane + " " + (ev->get_title().is_empty() ? ("Event #" + String::num_int64(i + 1)) : ev->get_title());
+        String label      = lane + String(" ") + (ev->get_title().is_empty() ? (String("Event #") + String::num_int64(i + 1)) : ev->get_title());
         if (ev->get_incident().is_valid()) {
             const Ref<Incident> inc = ev->get_incident();
-            label += " -> " + (inc->get_official_name().is_empty() ? String("Incident") : inc->get_official_name()) +
-                     " (" + _incident_status_to_string(inc->get_status()) + ")";
+            label += String(" -> ") + (inc->get_official_name().is_empty() ? String("Incident") : inc->get_official_name()) +
+                     String(" (") + _incident_status_to_string(inc->get_status()) + String(")");
         } else {
             label += " -> [Unlinked]";
         }
@@ -415,7 +415,7 @@ void PlotOutliner::_refresh_event_editor() {
             if (!inc.is_valid()) continue;
             const int iid = static_cast<int>(incident_choices_.size());
             incident_choices_.push_back(inc);
-            event_incident_opt_->add_item(inc->get_official_name().is_empty() ? ("Incident #" + String::num_int64(i)) : inc->get_official_name(), iid);
+            event_incident_opt_->add_item(inc->get_official_name().is_empty() ? (String("Incident #") + String::num_int64(i)) : inc->get_official_name(), iid);
         }
         const TypedArray<Incident> moms = narrative_->get_moments();
         for (int i = 0; i < moms.size(); ++i) {
@@ -423,7 +423,7 @@ void PlotOutliner::_refresh_event_editor() {
             if (!m.is_valid()) continue;
             const int iid = static_cast<int>(incident_choices_.size());
             incident_choices_.push_back(m);
-            event_incident_opt_->add_item("[Moment] " + (m->get_official_name().is_empty() ? ("Moment #" + String::num_int64(i)) : m->get_official_name()), iid);
+            event_incident_opt_->add_item(String("[Moment] ") + (m->get_official_name().is_empty() ? (String("Moment #") + String::num_int64(i)) : m->get_official_name()), iid);
         }
     }
 
@@ -469,12 +469,12 @@ void PlotOutliner::_refresh_incident_pane() {
     }
 
     incident_header_lbl_->set_text(
-        "Incident: " + (inc->get_official_name().is_empty() ? String("<Unnamed>") : inc->get_official_name()) +
-        "  [" + _incident_status_to_string(inc->get_status()) + "]"
+        String("Incident: ") + (inc->get_official_name().is_empty() ? String("<Unnamed>") : inc->get_official_name()) +
+        String("  [") + _incident_status_to_string(inc->get_status()) + String("]")
     );
     incident_frame_lbl_->set_text(
         inc->get_semantic_frame().is_valid()
-            ? ("FrameNet: [" + String(inc->get_semantic_frame()->get_frame_name()) + "]")
+            ? (String("FrameNet: [") + String(inc->get_semantic_frame()->get_frame_name()) + String("]"))
             : String("")
     );
 
@@ -514,7 +514,7 @@ void PlotOutliner::_refresh_incident_pane() {
             row->add_child(field);
         } else if (Ref<Gameplay_Condition> gc = cond; gc.is_valid()) {
             Label *tag = memnew(Label);
-            tag->set_text("[Gameplay] " + (gc->get_title().is_empty() ? String("Gameplay Flag") : gc->get_title()));
+            tag->set_text(String("[Gameplay] ") + (gc->get_title().is_empty() ? String("Gameplay Flag") : gc->get_title()));
             tag->set_h_size_flags(SIZE_EXPAND_FILL);
             row->add_child(tag);
 
@@ -535,8 +535,8 @@ void PlotOutliner::_refresh_incident_pane() {
 
             Label *ctitle = memnew(Label);
             ctitle->set_text(
-                "[Causal Gate] " + (cc->get_title().is_empty() ? String("Causal Dependency") : cc->get_title()) +
-                " (" + String::num_int64(cc->get_conditions().size()) + " prerequisites)"
+                String("[Causal Gate] ") + (cc->get_title().is_empty() ? String("Causal Dependency") : cc->get_title()) +
+                String(" (") + String::num_int64(cc->get_conditions().size()) + String(" prerequisites)")
             );
             ctitle->add_theme_color_override("font_color", Color(0.94f, 0.78f, 0.42f));
             cbox->add_child(ctitle);
@@ -547,7 +547,7 @@ void PlotOutliner::_refresh_incident_pane() {
             cbox->add_child(add_prereq);
         } else {
             Label *generic = memnew(Label);
-            generic->set_text("[Condition] " + cond->get_title());
+            generic->set_text(String("[Condition] ") + cond->get_title());
             generic->set_h_size_flags(SIZE_EXPAND_FILL);
             row->add_child(generic);
         }
@@ -587,7 +587,7 @@ void PlotOutliner::_on_add_plot_event_pressed() {
     if (!active_plot_.is_valid()) return;
     Ref<Plot_Event> ev;
     ev.instantiate();
-    ev->set_title("Beat #" + String::num_int64(active_plot_->get_plot_events().size() + 1));
+    ev->set_title(String("Beat #") + String::num_int64(active_plot_->get_plot_events().size() + 1));
     ev->set_requirement(INCIDENT_REQ_HAS_HAPPENED);
     active_plot_->add_plot_event(ev);
     selected_event_idx_ = static_cast<int>(active_plot_->get_plot_events().size()) - 1;
@@ -604,7 +604,7 @@ void PlotOutliner::_on_new_incident_pressed() {
     Ref<Incident> inc;
     inc.instantiate();
     const int num = narrative_.is_valid() ? static_cast<int>(narrative_->get_incidents().size()) + 1 : 1;
-    inc->set_official_name("Incident " + String::num_int64(num));
+    inc->set_official_name(String("Incident ") + String::num_int64(num));
     if (narrative_.is_valid()) {
         narrative_->add_incident(inc);
     } else {
@@ -665,7 +665,7 @@ void PlotOutliner::_on_add_gameplay_cond_pressed() {
     if (!inc.is_valid()) return;
     Ref<Gameplay_Condition> gc;
     gc.instantiate();
-    gc->set_title("Gameplay Flag #" + String::num_int64(inc->get_conditions().size() + 1));
+    gc->set_title(String("Gameplay Flag #") + String::num_int64(inc->get_conditions().size() + 1));
     inc->add_condition(gc);
     _refresh_incident_pane();
 }
@@ -675,7 +675,7 @@ void PlotOutliner::_on_add_causal_cond_pressed() {
     if (!inc.is_valid()) return;
     Ref<Causal_Condition> cc;
     cc.instantiate();
-    cc->set_title("Causal Gate #" + String::num_int64(inc->get_conditions().size() + 1));
+    cc->set_title(String("Causal Gate #") + String::num_int64(inc->get_conditions().size() + 1));
     inc->add_condition(cc);
     _refresh_incident_pane();
 }

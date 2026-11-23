@@ -232,17 +232,17 @@ Dictionary ProjectWorkspace::run_validation() {
     if (errors > 0) {
         set_dirty_banner(
             true,
-            String("Validation failed: ") + String::num_int64(errors) + " error(s), " + String::num_int64(warnings) + " warning(s).",
+            String("Validation failed: ") + String::num_int64(errors) + String(" error(s), ") + String::num_int64(warnings) + String(" warning(s)."),
             "Re-Validate"
         );
     } else {
         set_dirty_banner(
             true,
-            String("Ready: ") + String::num_int64(int(summary.get("folders", 0))) + " folders, "
-                + String::num_int64(int(summary.get("scripts", 0))) + " scripts, "
-                + String::num_int64(int(summary.get("resources", 0))) + " resources, "
-                + String::num_int64(int(summary.get("scenes", 0))) + " scenes ("
-                + String::num_int64(warnings) + " warning(s)).",
+            String("Ready: ") + String::num_int64(int(summary.get("folders", 0))) + String(" folders, ")
+                + String::num_int64(int(summary.get("scripts", 0))) + String(" scripts, ")
+                + String::num_int64(int(summary.get("resources", 0))) + String(" resources, ")
+                + String::num_int64(int(summary.get("scenes", 0))) + String(" scenes (")
+                + String::num_int64(warnings) + String(" warning(s))."),
             "Re-Validate"
         );
     }
@@ -266,10 +266,10 @@ Dictionary ProjectWorkspace::run_generation() {
         const PackedStringArray scenes    = receipt.get("created_scenes", PackedStringArray());
         set_dirty_banner(
             true,
-            String("Generated ") + String::num_int64(folders.size()) + " folders, "
-                + String::num_int64(scripts.size()) + " scripts, "
-                + String::num_int64(resources.size()) + " resources, "
-                + String::num_int64(scenes.size()) + " scenes.",
+            String("Generated ") + String::num_int64(folders.size()) + String(" folders, ")
+                + String::num_int64(scripts.size()) + String(" scripts, ")
+                + String::num_int64(resources.size()) + String(" resources, ")
+                + String::num_int64(scenes.size()) + String(" scenes."),
             "Re-Validate"
         );
         _rebuild_handoff_strip(receipt.get("owner_workspaces", Dictionary()));
@@ -347,8 +347,8 @@ void ProjectWorkspace::_rebuild_handoff_strip(const Dictionary &p_owner_workspac
         const String title = launcher->display_name.is_empty() ? ws_id : launcher->display_name;
 
         Button *btn = memnew(Button);
-        btn->set_text(title + " (" + String::num_int64(paths.size()) + ")");
-        btn->set_tooltip_text(String("Open generated assets in ") + title + " with shared ToolContext.");
+        btn->set_text(title + String(" (") + String::num_int64(paths.size()) + String(")"));
+        btn->set_tooltip_text(String("Open generated assets in ") + title + String(" with shared ToolContext."));
         btn->connect("pressed", Callable(this, "_on_handoff_workspace_pressed").bind(ws_id));
         handoff_bar_->add_child(btn);
         ++added;

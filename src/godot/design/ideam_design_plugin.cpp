@@ -139,7 +139,7 @@ void IdeamDesignPlugin::_register_tools_and_workspace() {
         auto *vbox = memnew(VBoxContainer);
         vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
         auto *lbl = memnew(Label);
-        lbl->set_text(p_asset->get_class() + " — Inspect 3D CSS theme/style tokens and cascading rules in the Inspector on the right.");
+        lbl->set_text(p_asset->get_class() + godot::String(" — Inspect 3D CSS theme/style tokens and cascading rules in the Inspector on the right."));
         lbl->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
         vbox->add_child(lbl);
         return vbox;

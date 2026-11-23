@@ -120,7 +120,7 @@ void CharacterGeneratorControl::_build_ui() {
     for (int64_t i = 0; i < details.size(); ++i) {
         const Dictionary d = details[i];
         auto *b = memnew(Button);
-        b->set_text("+ " + String(d.get("display_name", "Detail")));
+        b->set_text(String("+ ") + String(d.get("display_name", "Detail")));
         b->connect("pressed", Callable(this, "_on_apply_detail_preset_pressed").bind(String(d.get("id", ""))));
         detail_bar->add_child(b);
     }
@@ -232,18 +232,18 @@ void CharacterGeneratorControl::_refresh_telemetry() {
         const int r = int(d.get("active_regime", 0));
         const char *r_str = (r == 2) ? "DEEP_FOLD" : ((r == 1) ? "CREASE" : "SMOOTH");
         if (i > 0) br_text += "  |  ";
-        br_text += String(d.get("name", "Bridge")) + ": " + String(r_str) +
-                   " (" + String::num(double(d.get("evaluated_metric", 0.0)), 2) + ")";
+        br_text += String(d.get("name", "Bridge")) + String(": ") + String(r_str) +
+                   String(" (") + String::num(double(d.get("evaluated_metric", 0.0)), 2) + String(")");
     }
     if (bridge_telemetry_lbl_) bridge_telemetry_lbl_->set_text(br_text);
 
     const Dictionary bal = instance_->get_balance_report();
     if (balance_telemetry_lbl_) {
         balance_telemetry_lbl_->set_text(
-            "Character: " + instance_->get_character_name() +
-            "  |  LOD " + String::num_int64(active_lod_) +
-            "  |  Layer 4 Deltas: " + String::num_int64(instance_->get_detail_deltas().size()) +
-            "  |  Loomis Balance: " + (bool(bal.get("is_balanced", true)) ? String("Balanced") : String("Off-Balance"))
+            String("Character: ") + instance_->get_character_name() +
+            String("  |  LOD ") + String::num_int64(active_lod_) +
+            String("  |  Layer 4 Deltas: ") + String::num_int64(instance_->get_detail_deltas().size()) +
+            String("  |  Loomis Balance: ") + (bool(bal.get("is_balanced", true)) ? String("Balanced") : String("Off-Balance"))
         );
     }
 }

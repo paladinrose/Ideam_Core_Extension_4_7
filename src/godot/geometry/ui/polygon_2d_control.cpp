@@ -353,11 +353,11 @@ void Polygon2DControl::_update_telemetry_label() {
         : ((w == WINDING_CLOCKWISE) ? "CW" : "Collinear");
 
     telemetry_label_->set_text(
-        "  V: " + String::num_int64(n_verts) +
-        " | Tris: " + String::num_int64(n_tris) +
-        " | Area: " + String::num(static_cast<double>(area), 3) +
-        " | Perim: " + String::num(static_cast<double>(perim), 3) +
-        " | Winding: " + w_str
+        godot::String("  V: ") + String::num_int64(n_verts) +
+        godot::String(" | Tris: ") + String::num_int64(n_tris) +
+        godot::String(" | Area: ") + String::num(static_cast<double>(area), 3) +
+        godot::String(" | Perim: ") + String::num(static_cast<double>(perim), 3) +
+        godot::String(" | Winding: ") + w_str
     );
 }
 

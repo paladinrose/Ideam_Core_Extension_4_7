@@ -124,7 +124,7 @@ void ParametricAssemblyRecipeResource::commit_set_parameter_value(
         : IdeamDesignPlugin::create_undo_redo_wrapper();
     if (ur.is_valid()) {
         const godot::Dictionary old_dict = parameter_overrides_.duplicate();
-        ur->create_action("Adjust Assembly Parameter: " + p_param_name);
+        ur->create_action(godot::String("Adjust Assembly Parameter: ") + p_param_name);
         ur->add_do_property(this, "parameter_overrides", next_dict);
         ur->add_undo_property(this, "parameter_overrides", old_dict);
         ur->commit_action();
@@ -263,7 +263,7 @@ void ParametricAssemblyNode3D::rebuild_assembly() {
         const auto &pod = nodes[i];
         SemanticStructure3D *part = memnew(SemanticStructure3D);
         part->set_meta("_ideam_generated_part", true);
-        part->set_name("Part_" + String::num_int64(pod.node_id));
+        part->set_name(godot::String("Part_") + String::num_int64(pod.node_id));
         part->set_semantic_role_id(static_cast<int>(pod.semantic_tag_id));
         part->set_rest_obb_extents(Vector3(pod.rest_obb_extents.x, pod.rest_obb_extents.y, pod.rest_obb_extents.z));
         part->set_position(Vector3(pod.fitted_transform[3][0], pod.fitted_transform[3][1], pod.fitted_transform[3][2]));

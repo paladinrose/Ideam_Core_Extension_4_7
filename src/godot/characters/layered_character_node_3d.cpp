@@ -135,7 +135,7 @@ godot::Skeleton3D *LayeredCharacterNode3D::build_skeleton_3d() const {
     auto *skel = memnew(godot::Skeleton3D);
     if (!character_instance_.is_valid()) return skel;
 
-    skel->set_name(character_instance_->get_character_name().replace(" ", "_") + "_Skeleton3D");
+    skel->set_name(character_instance_->get_character_name().replace(" ", "_") + godot::String("_Skeleton3D"));
     const godot::TypedArray<godot::Dictionary> plan = character_instance_->build_skeleton_export_plan();
     for (int64_t i = 0; i < plan.size(); ++i) {
         const godot::Dictionary b = plan[i];

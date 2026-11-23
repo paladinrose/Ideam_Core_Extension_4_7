@@ -136,63 +136,63 @@ void NarrativesInspector::_refresh_summary_panel() {
 
     auto format_sem_tags = [](const godot::Ref<SemanticTagSetResource> &p_tags) -> godot::String {
         if (!p_tags.is_valid()) return "Untagged";
-        return godot::String::num_int64(p_tags->get_nuclear_popcount()) + " nuclear / " +
-               godot::String::num_int64(p_tags->get_peripheral_popcount()) + " peripheral semes";
+        return godot::String::num_int64(p_tags->get_nuclear_popcount()) + godot::String(" nuclear / ") +
+               godot::String::num_int64(p_tags->get_peripheral_popcount()) + godot::String(" peripheral semes");
     };
 
     if (const auto *loc = godot::Object::cast_to<Location>(obj)) {
         lbl->set_text(
-            "Location: " + (loc->get_official_name().is_empty() ? godot::String("<Unnamed>") : loc->get_official_name()) +
-            "  |  Connections: " + godot::String::num_int64(loc->get_connection_count()) +
-            "  |  Characters: " + godot::String::num_int64(loc->get_characters().size()) +
-            "  |  Props: " + godot::String::num_int64(loc->get_props().size()) +
-            "  |  Semantics: " + format_sem_tags(loc->get_semantic_tags())
+            godot::String("Location: ") + (loc->get_official_name().is_empty() ? godot::String("<Unnamed>") : loc->get_official_name()) +
+            godot::String("  |  Connections: ") + godot::String::num_int64(loc->get_connection_count()) +
+            godot::String("  |  Characters: ") + godot::String::num_int64(loc->get_characters().size()) +
+            godot::String("  |  Props: ") + godot::String::num_int64(loc->get_props().size()) +
+            godot::String("  |  Semantics: ") + format_sem_tags(loc->get_semantic_tags())
         );
     } else if (const auto *ch = godot::Object::cast_to<Character>(obj)) {
         lbl->set_text(
-            "Character: " + (ch->get_official_name().is_empty() ? godot::String("<Unnamed>") : ch->get_official_name()) +
-            "  |  Relationships: " + godot::String::num_int64(ch->get_relationships().size()) +
-            "  |  Goals: " + godot::String::num_int64(ch->get_goals().size()) +
-            "  |  Semantics: " + format_sem_tags(ch->get_semantic_tags())
+            godot::String("Character: ") + (ch->get_official_name().is_empty() ? godot::String("<Unnamed>") : ch->get_official_name()) +
+            godot::String("  |  Relationships: ") + godot::String::num_int64(ch->get_relationships().size()) +
+            godot::String("  |  Goals: ") + godot::String::num_int64(ch->get_goals().size()) +
+            godot::String("  |  Semantics: ") + format_sem_tags(ch->get_semantic_tags())
         );
     } else if (const auto *inc = godot::Object::cast_to<Incident>(obj)) {
         const godot::String frame_str = inc->get_semantic_frame().is_valid()
             ? godot::String(inc->get_semantic_frame()->get_frame_name())
             : godot::String("None");
         lbl->set_text(
-            "Incident: " + (inc->get_official_name().is_empty() ? godot::String("<Unnamed>") : inc->get_official_name()) +
-            "  |  Conditions: " + godot::String::num_int64(inc->get_conditions().size()) +
-            "  |  FrameNet: " + frame_str +
-            "  |  Semantics: " + format_sem_tags(inc->get_semantic_tags())
+            godot::String("Incident: ") + (inc->get_official_name().is_empty() ? godot::String("<Unnamed>") : inc->get_official_name()) +
+            godot::String("  |  Conditions: ") + godot::String::num_int64(inc->get_conditions().size()) +
+            godot::String("  |  FrameNet: ") + frame_str +
+            godot::String("  |  Semantics: ") + format_sem_tags(inc->get_semantic_tags())
         );
     } else if (const auto *nar = godot::Object::cast_to<Narrative>(obj)) {
         lbl->set_text(
-            "Narrative: " + (nar->get_official_name().is_empty() ? godot::String("<Unnamed>") : nar->get_official_name()) +
-            "  |  Chars/Roles: " + godot::String::num_int64(nar->get_characters().size()) + "/" + godot::String::num_int64(nar->get_roles().size()) +
-            "  |  Locs/Places: " + godot::String::num_int64(nar->get_locations().size()) + "/" + godot::String::num_int64(nar->get_places().size()) +
-            "  |  Plots/Stories: " + godot::String::num_int64(nar->get_plots().size()) + "/" + godot::String::num_int64(nar->get_stories().size())
+            godot::String("Narrative: ") + (nar->get_official_name().is_empty() ? godot::String("<Unnamed>") : nar->get_official_name()) +
+            godot::String("  |  Chars/Roles: ") + godot::String::num_int64(nar->get_characters().size()) + godot::String("/") + godot::String::num_int64(nar->get_roles().size()) +
+            godot::String("  |  Locs/Places: ") + godot::String::num_int64(nar->get_locations().size()) + godot::String("/") + godot::String::num_int64(nar->get_places().size()) +
+            godot::String("  |  Plots/Stories: ") + godot::String::num_int64(nar->get_plots().size()) + godot::String("/") + godot::String::num_int64(nar->get_stories().size())
         );
     } else if (const auto *narreme = godot::Object::cast_to<Narreme>(obj)) {
         lbl->set_text(
-            narreme->get_class_name_str() + ": " +
+            narreme->get_class_name_str() + godot::String(": ") +
             (narreme->get_official_name().is_empty() ? godot::String("<Unnamed>") : narreme->get_official_name()) +
-            "  |  Semantics: " + format_sem_tags(narreme->get_semantic_tags())
+            godot::String("  |  Semantics: ") + format_sem_tags(narreme->get_semantic_tags())
         );
     } else if (const auto *narcon = godot::Object::cast_to<Narrative_Condition>(obj)) {
         const godot::String key_str = narcon->get_semantic_predicate_key() != godot::StringName()
             ? godot::String(narcon->get_semantic_predicate_key())
             : godot::String("Unbound");
         lbl->set_text(
-            "Condition: \"" + narcon->format_sentence() + "\"  |  Key: " + key_str
+            godot::String("Condition: \"") + narcon->format_sentence() + godot::String("\"  |  Key: ") + key_str
         );
     } else if (const auto *rel = godot::Object::cast_to<Relationship>(obj)) {
         lbl->set_text(
-            "Relationship: " + (rel->get_title().is_empty() ? godot::String("<Untitled>") : rel->get_title()) +
-            "  |  Semantics: " + format_sem_tags(rel->get_semantic_tags())
+            godot::String("Relationship: ") + (rel->get_title().is_empty() ? godot::String("<Untitled>") : rel->get_title()) +
+            godot::String("  |  Semantics: ") + format_sem_tags(rel->get_semantic_tags())
         );
     } else if (const auto *pe = godot::Object::cast_to<Plot_Event>(obj)) {
         lbl->set_text(
-            "Plot Event: " + (pe->get_title().is_empty() ? godot::String("<Untitled>") : pe->get_title())
+            godot::String("Plot Event: ") + (pe->get_title().is_empty() ? godot::String("<Untitled>") : pe->get_title())
         );
     }
 }

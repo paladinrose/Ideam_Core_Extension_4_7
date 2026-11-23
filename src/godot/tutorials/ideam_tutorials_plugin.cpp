@@ -128,7 +128,7 @@ bool IdeamTutorialsPlugin::handle_tool_help_request(
     if (tool_dispatcher_.is_valid() && !p_ui_selector.is_empty()) {
         return tool_dispatcher_->point_to_control(
             p_ui_selector,
-            String("Help requested for [b]") + String(p_tool_id) + "[/b]."
+            String("Help requested for [b]") + String(p_tool_id) + String("[/b].")
         );
     }
     return true;

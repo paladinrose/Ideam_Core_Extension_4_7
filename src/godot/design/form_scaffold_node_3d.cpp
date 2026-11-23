@@ -181,7 +181,7 @@ godot::Skeleton3D *FormScaffoldNode3D::build_skeleton_3d() const {
     auto *skel = memnew(godot::Skeleton3D);
     if (!scaffold_.is_valid()) return skel;
 
-    skel->set_name(scaffold_->get_scaffold_name().replace(" ", "_") + "_Skeleton3D");
+    skel->set_name(scaffold_->get_scaffold_name().replace(" ", "_") + godot::String("_Skeleton3D"));
     const godot::TypedArray<godot::Dictionary> plan = scaffold_->build_skeleton_export_plan();
 
     for (int64_t i = 0; i < plan.size(); ++i) {

@@ -436,7 +436,7 @@ void CharacterBlueprintResource::commit_set_morph_channel_weight(
         ? p_undo_redo
         : IdeamCharactersPlugin::create_undo_redo_wrapper();
     if (ur.is_valid()) {
-        ur->create_action("Adjust Character Morph Slider: " + get_morph_channel_name(p_channel));
+        ur->create_action(godot::String("Adjust Character Morph Slider: ") + get_morph_channel_name(p_channel));
         ur->add_do_property(this, "morph_weights", next_weights);
         ur->add_undo_property(this, "morph_weights", old_weights);
         ur->commit_action();

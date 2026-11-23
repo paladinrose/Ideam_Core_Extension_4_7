@@ -253,16 +253,16 @@ ToolWorkspace::~ToolWorkspace() {
 }
 
 void ToolWorkspace::_stamp_ui_selectors() {
-    const String prefix = String(workspace_id_) + "/";
+    const String prefix = String(workspace_id_) + String("/");
     set_meta("ideam_ui_selector", String(workspace_id_));
-    if (command_bar_) command_bar_->set_meta("ideam_ui_selector", prefix + "command_bar");
-    if (save_btn_) save_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/save_btn");
-    if (save_all_btn_) save_all_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/save_all_btn");
-    if (update_policy_btn_) update_policy_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/update_policy_btn");
-    if (help_btn_) help_btn_->set_meta("ideam_ui_selector", prefix + "command_bar/help_btn");
-    if (sidebar_tabs_) sidebar_tabs_->set_meta("ideam_ui_selector", prefix + "sidebar");
-    if (center_host_) center_host_->set_meta("ideam_ui_selector", prefix + "center_host");
-    if (inspector_panel_) inspector_panel_->set_meta("ideam_ui_selector", prefix + "inspector");
+    if (command_bar_) command_bar_->set_meta("ideam_ui_selector", prefix + String("command_bar"));
+    if (save_btn_) save_btn_->set_meta("ideam_ui_selector", prefix + String("command_bar/save_btn"));
+    if (save_all_btn_) save_all_btn_->set_meta("ideam_ui_selector", prefix + String("command_bar/save_all_btn"));
+    if (update_policy_btn_) update_policy_btn_->set_meta("ideam_ui_selector", prefix + String("command_bar/update_policy_btn"));
+    if (help_btn_) help_btn_->set_meta("ideam_ui_selector", prefix + String("command_bar/help_btn"));
+    if (sidebar_tabs_) sidebar_tabs_->set_meta("ideam_ui_selector", prefix + String("sidebar"));
+    if (center_host_) center_host_->set_meta("ideam_ui_selector", prefix + String("center_host"));
+    if (inspector_panel_) inspector_panel_->set_meta("ideam_ui_selector", prefix + String("inspector"));
 }
 
 void ToolWorkspace::_connect_context_signals() {
@@ -437,7 +437,7 @@ ToolWorkspace::SidebarTabBucket *ToolWorkspace::_get_or_create_sidebar_bucket(co
     list->set_h_size_flags(SIZE_EXPAND_FILL);
     list->set_v_size_flags(SIZE_EXPAND_FILL);
     list->set_focus_mode(FOCUS_ALL);
-    list->set_meta("ideam_ui_selector", String(workspace_id_) + "/sidebar/" + p_tab_name);
+    list->set_meta("ideam_ui_selector", String(workspace_id_) + String("/sidebar/") + p_tab_name);
     sidebar_tabs_->add_child(list);
 
     list->connect("item_selected", Callable(this, "_on_sidebar_item_selected").bind(p_tab_name));
@@ -457,7 +457,7 @@ String ToolWorkspace::_resolve_asset_display_name(const Ref<Resource> &p_asset) 
     } else if (!p_asset->get_path().is_empty()) {
         label = p_asset->get_path().get_file();
     } else {
-        label = String(p_asset->get_class()) + " #" + String::num_int64(p_asset->get_instance_id() % 10000);
+        label = String(p_asset->get_class()) + String(" #") + String::num_int64(p_asset->get_instance_id() % 10000);
     }
     if (tool_context_.is_valid() && tool_context_->is_asset_dirty(p_asset)) {
         label += " *";
@@ -535,7 +535,7 @@ void ToolWorkspace::_show_asset_in_center(OpenAssetEntry &p_entry) {
             if (!p_entry.domain_control->has_meta("ideam_ui_selector")) {
                 p_entry.domain_control->set_meta(
                     "ideam_ui_selector",
-                    String(workspace_id_) + "/center_host/" + String(p_entry.asset->get_class())
+                    String(workspace_id_) + String("/center_host/") + String(p_entry.asset->get_class())
                 );
             }
             center_host_->add_child(p_entry.domain_control);
@@ -562,7 +562,7 @@ void ToolWorkspace::_show_asset_in_center(OpenAssetEntry &p_entry) {
         }
     } else if (empty_state_label_) {
         empty_state_label_->set_text(
-            String("No DomainTool editor registered for ") + String(p_entry.asset->get_class()) + "."
+            String("No DomainTool editor registered for ") + String(p_entry.asset->get_class()) + String(".")
         );
         empty_state_label_->set_visible(true);
     }
@@ -704,14 +704,14 @@ bool ToolWorkspace::save_asset(const Ref<Resource> &p_asset) {
         const String res_path = p_asset->get_path();
         if (res_path.is_empty() || res_path.contains("::")) {
             UtilityFunctions::printerr(
-                String(workspace_id_) + ": Cannot save asset without a standalone resource path."
+                String(workspace_id_) + String(": Cannot save asset without a standalone resource path.")
             );
             return false;
         }
         const Error err = ResourceSaver::get_singleton()->save(p_asset, res_path);
         if (err != OK) {
             UtilityFunctions::printerr(
-                String(workspace_id_) + ": Failed to save resource '" + res_path + "' (err=" + String::num_int64(err) + ")."
+                String(workspace_id_) + String(": Failed to save resource '") + res_path + String("' (err=") + String::num_int64(err) + String(").")
             );
             return false;
         }
