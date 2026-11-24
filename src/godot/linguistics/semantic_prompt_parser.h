@@ -15,7 +15,7 @@
  *        * `IdeamGames`: `GameplayMode`, `GameplayPerspective`, `GameplayControlMap`, `GameplayStyle`
  *        * `IdeamNarratives`: `Plot` and `Role` archetypes
  *        * `IdeamProceduralGeneration` & `IdeamWaveFunctionCollapse`: `ProceduralPattern` selection
- *        * `IdeamDesign` & `IdeamCharacters`: `Style3DResource` and `CharacterBlueprintResource` cues
+ *        * `IdeamDesign` & `IdeamCharacters`: `Style3DResource` and `LoomisCharacter3DResource` cues
  *
  * 2. FRAMENET & UNIVERSAL DEPENDENCIES (`UPOS` / `DepRel`) CLAUSE PARSING:
  *    - `parse_prompt_to_semantic_frame()` extracts `Agent` (`DEP_NSUBJ`), `Predicate` (`DEP_ROOT`),

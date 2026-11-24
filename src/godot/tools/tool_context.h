@@ -8,7 +8,8 @@
  *   - `UpdateCommitPolicy`: Global or per-session data update cadence
  *     (`UPDATE_IMMEDIATE`, `UPDATE_ON_COMMIT` [default], `UPDATE_EXPLICIT_TRIGGER`).
  *   - Shared `IdeamUndoRedo` bridge (EditorUndoRedoManager + runtime UndoRedo).
- *   - Active `Theme` and theme dropdown index for synchronized reskinning across embedded workspaces.
+ *   - Active 2D `Theme` + active 3D `Theme3DResource` (opaque `Resource`) for synchronized
+ *     2D UI and 3D diegetic gizmo reskinning across Editor & Runtime contexts.
  *   - Open/active asset tracking and dirty-state flags for Bridge/Workflow orchestration.
  *   - Scoped `SmartToolProfile` override stack so `WorkflowTool`s can temporarily override
  *     `SmartTool` user preferences without mutating global user settings.
@@ -58,6 +59,7 @@ private:
     godot::Ref<IdeamUndoRedo> undo_redo_;
     godot::Ref<godot::Theme> active_theme_;
     int active_theme_index_                  = 0;
+    godot::Ref<godot::Resource> active_theme_3d_; ///< Opaque `Theme3DResource` for diegetic 3D gizmo/stage reskinning
     UpdateCommitPolicy update_commit_policy_ = UPDATE_ON_COMMIT;
     godot::Ref<godot::Resource> active_asset_;
     std::unordered_set<uint64_t> dirty_asset_ids_;
@@ -84,10 +86,13 @@ public:
     void set_editor_undo_redo(godot::EditorUndoRedoManager *p_manager);
 #endif
 
-    // --- Theme Synchronization ---
+    // --- 2D & 3D Theme Synchronization ---
     void set_active_theme(const godot::Ref<godot::Theme> &p_theme, int p_index = 0);
     [[nodiscard]] godot::Ref<godot::Theme> get_active_theme() const { return active_theme_; }
     [[nodiscard]] int get_active_theme_index() const noexcept { return active_theme_index_; }
+
+    void set_active_theme_3d(const godot::Ref<godot::Resource> &p_theme_3d);
+    [[nodiscard]] godot::Ref<godot::Resource> get_active_theme_3d() const { return active_theme_3d_; }
 
     // --- Update Commit Policy ---
     void set_update_commit_policy(UpdateCommitPolicy p_policy);

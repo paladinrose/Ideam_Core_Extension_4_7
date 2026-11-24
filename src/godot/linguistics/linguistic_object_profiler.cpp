@@ -98,7 +98,7 @@ void map_godot_class_to_structural_semes(
 
     if (p_class_name == "CharacterBody3D" || p_class_name == "CharacterBody2D" ||
         p_class_name == "GameAgent" || p_class_name == "MindAgentNode" ||
-        p_class_name == "Character" || p_class_name == "ParametricCharacterNode3D") {
+        p_class_name == "Character" || p_class_name == "LoomisCharacterNode3D") {
         r_tag_set->add_nuclear_tag("agent");
         r_tag_set->add_nuclear_tag("movable");
     } else if (p_class_name == "RigidBody3D" || p_class_name == "RigidBody2D" ||

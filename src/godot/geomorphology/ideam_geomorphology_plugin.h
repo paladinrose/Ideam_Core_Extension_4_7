@@ -2,31 +2,36 @@
 
 /**
  * @file ideam_geomorphology_plugin.h
- * @brief EditorPlugin entry point for IdeamGeomorphology.
+ * @brief IdeamEditorPlugin entry point for IdeamGeomorphology.
  *
- * Registers the GeomorphologyInspector and verifies the IdeamTasks domain handshake.
- * Note: Cross-plugin bridges outside of IdeamTasks are intentionally held off per plan.
+ * Upgraded to inherit `IdeamEditorPlugin` for `.ideam_registry.cfg` handshakes,
+ * shared `ToolContext` / `IdeamUndoRedo` wiring, and trans-environment gizmo support.
  */
 
-#include <godot_cpp/classes/editor_plugin.hpp>
-#include <godot_cpp/core/class_db.hpp>
-
+#include "godot/editor/ideam_editor_plugin.h"
 #include "godot/geomorphology/editor/geomorphology_inspector.h"
+#include "godot/geomorphology/geomorphology_terrain_gizmo.h"
+
+#include <godot_cpp/core/class_db.hpp>
 
 namespace ideam::godot_ext {
 
-class IdeamGeomorphologyPlugin : public godot::EditorPlugin {
-    GDCLASS(IdeamGeomorphologyPlugin, godot::EditorPlugin)
+class IdeamGeomorphologyPlugin : public IdeamEditorPlugin {
+    GDCLASS(IdeamGeomorphologyPlugin, IdeamEditorPlugin)
 
 private:
+    static IdeamGeomorphologyPlugin *singleton;
     godot::Ref<GeomorphologyInspector> inspector_plugin_;
+    godot::Ref<GeomorphologyTerrainGizmo> terrain_gizmo_;
 
 protected:
     static void _bind_methods();
 
 public:
-    IdeamGeomorphologyPlugin() = default;
-    ~IdeamGeomorphologyPlugin() override = default;
+    IdeamGeomorphologyPlugin();
+    ~IdeamGeomorphologyPlugin() override;
+
+    [[nodiscard]] static IdeamGeomorphologyPlugin *get_singleton() noexcept { return singleton; }
 
     void _enter_tree() override;
     void _exit_tree() override;
@@ -35,6 +40,10 @@ public:
         return godot::ClassDB::class_exists("GeomorphologyTaskHost") &&
                godot::ClassDB::class_exists("DataOrientedGeomorphology");
     }
+
+#ifdef TOOLS_ENABLED
+    static godot::EditorUndoRedoManager *get_static_undo_redo();
+#endif
 };
 
 } // namespace ideam::godot_ext

@@ -75,6 +75,9 @@ void IdeamGeometryPlugin::_enter_tree() {
 
     tensor_field_2d_inspector.instantiate();
     add_inspector_plugin(tensor_field_2d_inspector);
+    projector_gizmo_.instantiate();
+    projector_gizmo_->set_tool_context(get_or_create_plugin_tool_context());
+    register_ideam_gizmo(projector_gizmo_);
 
     // 3. Register Geometry Tier 1 Controls with GeometryComposer ("General" tab)
     auto &reg = ToolRegistry::get_singleton();
@@ -153,6 +156,8 @@ void IdeamGeometryPlugin::_exit_tree() {
     reg.unregister_class(ws_id, "SDFGrid2DResource");
     reg.unregister_class(ws_id, "TensorField2DResource");
     reg.unregister_workspace_launcher(ws_id);
+    cleanup_ideam_spatial_registrations();
+    projector_gizmo_.unref();
     if (tensor_field_2d_inspector.is_valid()) {
         remove_inspector_plugin(tensor_field_2d_inspector);
         tensor_field_2d_inspector.unref();

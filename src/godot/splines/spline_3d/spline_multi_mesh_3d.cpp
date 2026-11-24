@@ -390,118 +390,126 @@ void SplineMultiMesh3D::rebuild_instances() {
 // SplineScatterGizmo Implementation
 // ============================================================================
 
-SplineScatterGizmo::SplineScatterGizmo() {
-    create_material("scatter_wire", godot::Color(0.46f, 0.94f, 0.58f, 0.85f), false, false, true);
-    create_handle_material("scatter_handles");
+bool SplineScatterGizmo::can_handle(godot::Node3D *p_target) const {
+    return p_target != nullptr && godot::Object::cast_to<SplineMultiMesh3D>(p_target) != nullptr;
 }
 
-bool SplineScatterGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return p_for_node_3d != nullptr && godot::Object::cast_to<SplineMultiMesh3D>(p_for_node_3d) != nullptr;
-}
-
-godot::String SplineScatterGizmo::_get_gizmo_name() const {
+godot::String SplineScatterGizmo::get_gizmo_name() const {
     return "SplineScatterGizmo";
 }
 
-int32_t SplineScatterGizmo::_get_priority() const {
+int32_t SplineScatterGizmo::get_priority() const {
     return 10;
 }
 
-void SplineScatterGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
+void SplineScatterGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
     using namespace godot;
-    if (p_gizmo.is_null()) return;
-    p_gizmo->clear();
-
-    SplineMultiMesh3D *node = Object::cast_to<SplineMultiMesh3D>(p_gizmo->get_node_3d());
+    (void)p_view;
+    auto *node = Object::cast_to<SplineMultiMesh3D>(p_target);
     if (!node) return;
-
-    PackedVector3Array lines;
-    PackedVector3Array handles;
-    PackedInt32Array handle_ids;
 
     const Ref<Spline3DResource> s3 = node->get_path_spline_3d();
     if (s3.is_valid() && s3->get_point_count() >= 2) {
         const PackedVector3Array smoothed = s3->get_smoothed_points(10);
-        for (int64_t i = 0; i + 1 < smoothed.size(); ++i) {
-            lines.push_back(smoothed[i]);
-            lines.push_back(smoothed[i + 1]);
-        }
+        r_out.add_polyline(smoothed, false, GIZMO_PLUMB_BALANCED);
 
         const float hw = static_cast<float>(node->get_scatter_width() * 0.5);
         if (hw > 0.01f) {
+            PackedVector3Array rails;
             const TypedArray<Transform3D> frames = s3->compute_bishop_transforms(6);
             for (int64_t i = 0; i + 1 < frames.size(); ++i) {
                 const Transform3D f0 = frames[i];
                 const Transform3D f1 = frames[i + 1];
-                const Vector3 r0     = f0.basis.get_column(0) * hw;
-                const Vector3 r1     = f1.basis.get_column(0) * hw;
-                lines.push_back(f0.origin - r0);
-                lines.push_back(f1.origin - r1);
-                lines.push_back(f0.origin + r0);
-                lines.push_back(f1.origin + r1);
+                const Vector3 r0 = f0.basis.get_column(0) * hw;
+                const Vector3 r1 = f1.basis.get_column(0) * hw;
+                rails.push_back(f0.origin - r0); rails.push_back(f1.origin - r1);
+                rails.push_back(f0.origin + r0); rails.push_back(f1.origin + r1);
             }
+            if (!rails.is_empty()) r_out.add_lines(rails, GIZMO_LINE_CLEARANCE);
         }
 
         for (int i = 0; i < s3->get_point_count(); ++i) {
-            handles.push_back(s3->get_point_position(i));
-            handle_ids.push_back(HANDLE_ANCHOR_BASE + i);
+            r_out.add_handle(
+                HANDLE_ANCHOR_BASE + i,
+                s3->get_point_position(i),
+                GIZMO_HANDLE_SPLINE_ANCHOR,
+                HANDLE_SHAPE_SPHERE,
+                static_cast<real_t>(0.05),
+                GIZMO_STATE_NONE,
+                String("Scatter Path Point ") + String::num_int64(i)
+            );
         }
         const Transform3D xf0 = s3->get_transform_at_percent(0.0f);
-        handles.push_back(xf0.origin + xf0.basis.get_column(0) * std::max(0.25f, hw));
-        handle_ids.push_back(HANDLE_SCATTER_WIDTH);
-    }
-
-    if (!lines.is_empty()) {
-        p_gizmo->add_lines(lines, get_material("scatter_wire", p_gizmo));
-    }
-    if (!handles.is_empty()) {
-        p_gizmo->add_handles(handles, get_material("scatter_handles", p_gizmo), handle_ids);
+        r_out.add_handle(
+            HANDLE_SCATTER_WIDTH,
+            xf0.origin + xf0.basis.get_column(0) * std::max(0.25f, hw),
+            GIZMO_LINE_RULER,
+            HANDLE_SHAPE_DIAMOND,
+            static_cast<real_t>(0.05),
+            GIZMO_STATE_NONE,
+            "Scatter Ribbon Width"
+        );
     }
 }
 
-godot::String SplineScatterGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String SplineScatterGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
-    (void)p_gizmo;
+    (void)p_target;
     (void)p_secondary;
     if (p_handle_id == HANDLE_SCATTER_WIDTH) return "Scatter Ribbon Width";
-    return "Scatter Path Point " + godot::String::num_int64(p_handle_id);
+    return godot::String("Scatter Path Point ") + godot::String::num_int64(p_handle_id);
 }
 
-godot::Variant SplineScatterGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant SplineScatterGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    if (p_gizmo.is_null()) return godot::Variant();
-    SplineMultiMesh3D *node = godot::Object::cast_to<SplineMultiMesh3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SplineMultiMesh3D>(p_target);
     if (!node) return godot::Variant();
     if (p_handle_id == HANDLE_SCATTER_WIDTH) return node->get_scatter_width();
-    if (node->get_path_spline_3d().is_valid() && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
+    if (node->get_path_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
         return node->get_path_spline_3d()->get_point_position(p_handle_id);
     }
     return godot::Variant();
 }
 
-void SplineScatterGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineScatterGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
+) {
+    (void)p_ray;
+    if (!p_target) return;
+    drag_restore_[p_target->get_instance_id()] = get_handle_value(p_target, p_handle_id, false);
+}
+
+void SplineScatterGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null() || !p_camera) return;
-    SplineMultiMesh3D *node = Object::cast_to<SplineMultiMesh3D>(p_gizmo->get_node_3d());
-    if (!node || node->get_path_spline_3d().is_null()) return;
+    (void)p_modifiers;
+    auto *node = Object::cast_to<SplineMultiMesh3D>(p_target);
+    if (!node || node->get_path_spline_3d().is_null() || !p_ray.is_valid()) return;
+
+    if (!drag_restore_.has(node->get_instance_id())) {
+        on_handle_drag_begin(p_target, p_handle_id, p_ray);
+    }
 
     const Transform3D inv_gxf = node->get_global_transform().affine_inverse();
-    const Vector3 ray_from    = inv_gxf.xform(p_camera->project_ray_origin(p_screen_pos));
-    const Vector3 ray_dir     = inv_gxf.basis.xform(p_camera->project_ray_normal(p_screen_pos)).normalized();
+    const Vector3 ray_from    = inv_gxf.xform(p_ray.origin);
+    const Vector3 ray_dir     = inv_gxf.basis.xform(p_ray.normal).normalized();
 
     if (p_handle_id == HANDLE_SCATTER_WIDTH) {
         const Vector3 p0  = node->get_path_spline_3d()->get_point_position(0);
@@ -512,41 +520,43 @@ void SplineScatterGizmo::_set_handle(
     }
 
     if (p_handle_id >= 0 && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
-        const Vector3 cur  = node->get_path_spline_3d()->get_point_position(p_handle_id);
-        const float dist   = std::max(0.1f, (cur - ray_from).dot(ray_dir));
+        const Vector3 cur = node->get_path_spline_3d()->get_point_position(p_handle_id);
+        const float dist  = std::max(0.1f, (cur - ray_from).dot(ray_dir));
         node->get_path_spline_3d()->set_point_position(p_handle_id, ray_from + ray_dir * dist);
+        node->update_gizmos();
     }
 }
 
-void SplineScatterGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineScatterGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null()) return;
-    SplineMultiMesh3D *node = Object::cast_to<SplineMultiMesh3D>(p_gizmo->get_node_3d());
+    auto *node = Object::cast_to<SplineMultiMesh3D>(p_target);
     if (!node) return;
+    const uint64_t nid = node->get_instance_id();
+    if (!drag_restore_.has(nid)) return;
+    const Variant restore = drag_restore_[nid];
+    drag_restore_.erase(nid);
 
     if (p_handle_id == HANDLE_SCATTER_WIDTH) {
         if (p_cancel) {
-            node->set_scatter_width(p_restore);
+            node->set_scatter_width(restore);
             return;
         }
-        Ref<IdeamUndoRedo> ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
+        Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+        if (ur.is_null()) ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
         ur->create_action("Adjust Scatter Ribbon Width", UndoRedo::MERGE_DISABLE, node);
         ur->add_do_method(Callable(node, "set_scatter_width").bind(node->get_scatter_width()));
-        ur->add_undo_method(Callable(node, "set_scatter_width").bind(p_restore));
+        ur->add_undo_method(Callable(node, "set_scatter_width").bind(restore));
         ur->commit_action(false);
         return;
     }
 
     if (node->get_path_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
         const Vector3 final_pos = node->get_path_spline_3d()->get_point_position(p_handle_id);
-        node->get_path_spline_3d()->set_point_position(p_handle_id, p_restore);
+        node->get_path_spline_3d()->set_point_position(p_handle_id, restore);
         if (!p_cancel) {
             node->get_path_spline_3d()->commit_set_point_position(p_handle_id, final_pos);
         }

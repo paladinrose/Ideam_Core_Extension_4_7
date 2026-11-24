@@ -17,8 +17,8 @@ void DataOrientedCharacters::set_task_graph_resource(const godot::Ref<TaskGraphR
     emit_changed();
 }
 
-void DataOrientedCharacters::set_active_blueprint(const godot::Ref<CharacterBlueprintResource> &p_blueprint) {
-    active_blueprint_ = p_blueprint;
+void DataOrientedCharacters::set_active_character(const godot::Ref<LoomisCharacter3DResource> &p_character) {
+    active_character_ = p_character;
     emit_changed();
 }
 
@@ -67,12 +67,12 @@ bool DataOrientedCharacters::initialize_dod_buffers() {
 bool DataOrientedCharacters::stage_active_sources_to_dod() {
     if (!dod_engine_) return false;
 
-    if (active_blueprint_.is_valid()) {
-        dod_engine_->character_mesh() = active_blueprint_->get_core_mesh();
-        dod_engine_->set_target_lod_level(static_cast<uint32_t>(active_blueprint_->get_subdivision_lod_level()));
-        dod_engine_->set_active_partition_mask(static_cast<uint32_t>(active_blueprint_->get_active_partition_mask()));
+    if (active_character_.is_valid()) {
+        dod_engine_->character_mesh() = active_character_->get_core_mesh();
+        dod_engine_->set_target_lod_level(static_cast<uint32_t>(active_character_->get_subdivision_lod_level()));
+        dod_engine_->set_active_partition_mask(static_cast<uint32_t>(active_character_->get_active_partition_mask()));
 
-        const godot::PackedFloat32Array gd_w = active_blueprint_->get_morph_weights();
+        const godot::PackedFloat32Array gd_w = active_character_->get_morph_weights();
         std::vector<float> w(static_cast<size_t>(gd_w.size()), 0.0f);
         for (int i = 0; i < gd_w.size(); ++i) {
             w[static_cast<size_t>(i)] = gd_w[i];
@@ -81,8 +81,8 @@ bool DataOrientedCharacters::stage_active_sources_to_dod() {
     }
 
     if (active_apparel_.is_valid()) {
-        if (active_apparel_->get_garment_vertex_count() == 0 && active_blueprint_.is_valid()) {
-            active_apparel_->generate_default_bindings_for_blueprint(active_blueprint_);
+        if (active_apparel_->get_garment_vertex_count() == 0 && active_character_.is_valid()) {
+            active_apparel_->generate_default_bindings_for_character(active_character_);
         }
         dod_engine_->set_garment_bindings(
             std::span<const core::SurfaceGarmentBindPod>(active_apparel_->get_garment_bindings())
@@ -156,8 +156,8 @@ void DataOrientedCharacters::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_task_graph_resource", "graph"), &DataOrientedCharacters::set_task_graph_resource);
     ClassDB::bind_method(D_METHOD("get_task_graph_resource"), &DataOrientedCharacters::get_task_graph_resource);
 
-    ClassDB::bind_method(D_METHOD("set_active_blueprint", "blueprint"), &DataOrientedCharacters::set_active_blueprint);
-    ClassDB::bind_method(D_METHOD("get_active_blueprint"), &DataOrientedCharacters::get_active_blueprint);
+    ClassDB::bind_method(D_METHOD("set_active_character", "character"), &DataOrientedCharacters::set_active_character);
+    ClassDB::bind_method(D_METHOD("get_active_character"), &DataOrientedCharacters::get_active_character);
 
     ClassDB::bind_method(D_METHOD("set_active_apparel", "apparel"), &DataOrientedCharacters::set_active_apparel);
     ClassDB::bind_method(D_METHOD("get_active_apparel"), &DataOrientedCharacters::get_active_apparel);
@@ -183,7 +183,7 @@ void DataOrientedCharacters::_bind_methods() {
 
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "memory_manager_resource", PROPERTY_HINT_RESOURCE_TYPE, "MemoryManagerResource"), "set_memory_manager_resource", "get_memory_manager_resource");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "task_graph_resource", PROPERTY_HINT_RESOURCE_TYPE, "TaskGraphResource"), "set_task_graph_resource", "get_task_graph_resource");
-    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_blueprint", PROPERTY_HINT_RESOURCE_TYPE, "CharacterBlueprintResource"), "set_active_blueprint", "get_active_blueprint");
+    ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_character", PROPERTY_HINT_RESOURCE_TYPE, "LoomisCharacter3DResource"), "set_active_character", "get_active_character");
     ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "active_apparel", PROPERTY_HINT_RESOURCE_TYPE, "CharacterApparelResource"), "set_active_apparel", "get_active_apparel");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "max_vertices", PROPERTY_HINT_RANGE, "16,65536,1"), "set_max_vertices", "get_max_vertices");
     ADD_PROPERTY(PropertyInfo(Variant::INT, "max_garment_vertices", PROPERTY_HINT_RANGE, "16,65536,1"), "set_max_garment_vertices", "get_max_garment_vertices");

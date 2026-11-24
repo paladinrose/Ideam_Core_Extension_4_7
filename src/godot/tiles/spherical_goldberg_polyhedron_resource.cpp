@@ -919,46 +919,44 @@ void GeodesicPlanetNode3D::rebuild_mesh() {
 // GeodesicPlanetGizmo
 // ============================================================================
 
-GeodesicPlanetGizmo::GeodesicPlanetGizmo() {
-    create_material("planet_wire_material", godot::Color(0.32f, 0.84f, 0.98f, 0.85f));
-    create_material("pentagon_hub_material", godot::Color(0.98f, 0.64f, 0.22f, 0.95f));
-    create_handle_material("handles");
-}
-
 void GeodesicPlanetGizmo::_bind_methods() {}
 
-bool GeodesicPlanetGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return godot::Object::cast_to<GeodesicPlanetNode3D>(p_for_node_3d) != nullptr;
+bool GeodesicPlanetGizmo::can_handle(godot::Node3D *p_target) const {
+    return godot::Object::cast_to<GeodesicPlanetNode3D>(p_target) != nullptr;
 }
 
-godot::String GeodesicPlanetGizmo::_get_gizmo_name() const {
+godot::String GeodesicPlanetGizmo::get_gizmo_name() const {
     return "GeodesicPlanetGizmo";
 }
 
-int32_t GeodesicPlanetGizmo::_get_priority() const {
+int32_t GeodesicPlanetGizmo::get_priority() const {
     return -1;
 }
 
-void GeodesicPlanetGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
+void GeodesicPlanetGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
     using namespace godot;
-    if (p_gizmo.is_null()) {
-        return;
-    }
-    p_gizmo->clear();
-
-    auto *planet = Object::cast_to<GeodesicPlanetNode3D>(p_gizmo->get_node_3d());
-    if (planet == nullptr || planet->get_goldberg_resource().is_null()) {
-        return;
-    }
+    (void)p_view;
+    auto *planet = Object::cast_to<GeodesicPlanetNode3D>(p_target);
+    if (planet == nullptr || planet->get_goldberg_resource().is_null()) return;
 
     const Ref<SphericalGoldbergPolyhedronResource> res = planet->get_goldberg_resource();
     const float radius = static_cast<float>(res->get_planet_radius());
 
-    // Highlight the 12 pentagon hubs and expose radial handles
-    PackedVector3Array hub_lines;
-    PackedVector3Array handles;
-    handles.push_back(Vector3(radius, 0.0f, 0.0f)); // Handle 0 = Planet Radius
+    r_out.add_handle(
+        0,
+        Vector3(radius, 0.0f, 0.0f),
+        GIZMO_LINE_RULER,
+        HANDLE_SHAPE_RING,
+        static_cast<real_t>(0.08),
+        GIZMO_STATE_NONE,
+        "Planet Radius"
+    );
 
+    PackedVector3Array hub_lines;
     const PackedInt32Array pentagons = res->get_pentagon_cell_ids();
     for (int64_t i = 0; i < pentagons.size(); ++i) {
         const int cid = pentagons[i];
@@ -967,86 +965,78 @@ void GeodesicPlanetGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
             hub_lines.push_back(poly[k]);
             hub_lines.push_back(poly[(k + 1) % poly.size()]);
         }
-        handles.push_back(res->get_cell_surface_center_3d(cid));
+        r_out.add_handle(
+            static_cast<int32_t>(i + 1),
+            res->get_cell_surface_center_3d(cid),
+            GIZMO_HANDLE_FEATURE_MAJOR,
+            HANDLE_SHAPE_DIAMOND,
+            static_cast<real_t>(0.065),
+            GIZMO_STATE_NONE,
+            String("Pentagon Hub #") + String::num_int64(i) + String(" Elevation")
+        );
     }
-
     if (!hub_lines.is_empty()) {
-        p_gizmo->add_lines(hub_lines, get_material("pentagon_hub_material", p_gizmo));
-    }
-    if (!handles.is_empty()) {
-        p_gizmo->add_handles(handles, get_material("handles", p_gizmo), PackedInt32Array());
+        r_out.add_lines(hub_lines, GIZMO_HANDLE_SPLINE_TANGENT);
     }
 }
 
-godot::String GeodesicPlanetGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String GeodesicPlanetGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
-    (void)p_gizmo;
+    (void)p_target;
     (void)p_secondary;
-    if (p_handle_id == 0) {
-        return "Planet Radius";
-    }
-    return godot::String("Pentagon Hub #") + godot::String::num_int64(p_handle_id - 1) + " Elevation";
+    if (p_handle_id == 0) return "Planet Radius";
+    return godot::String("Pentagon Hub #") + godot::String::num_int64(p_handle_id - 1) + godot::String(" Elevation");
 }
 
-godot::Variant GeodesicPlanetGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant GeodesicPlanetGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    auto *planet = (p_gizmo.is_valid()) ? godot::Object::cast_to<GeodesicPlanetNode3D>(p_gizmo->get_node_3d()) : nullptr;
-    if (planet == nullptr || planet->get_goldberg_resource().is_null()) {
-        return 0.0f;
-    }
+    auto *planet = godot::Object::cast_to<GeodesicPlanetNode3D>(p_target);
+    if (planet == nullptr || planet->get_goldberg_resource().is_null()) return 0.0f;
     const auto res = planet->get_goldberg_resource();
-    if (p_handle_id == 0) {
-        return res->get_planet_radius();
-    }
+    if (p_handle_id == 0) return res->get_planet_radius();
     const auto pentagons = res->get_pentagon_cell_ids();
     const int idx = p_handle_id - 1;
-    if (idx >= 0 && idx < pentagons.size()) {
-        return res->get_cell_elevation(pentagons[idx]);
-    }
+    if (idx >= 0 && idx < pentagons.size()) return res->get_cell_elevation(pentagons[idx]);
     return 0.0f;
 }
 
-void GeodesicPlanetGizmo::_begin_handle_action(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void GeodesicPlanetGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary
+    const GizmoRay &p_ray
 ) {
-    drag_initial_value_ = static_cast<real_t>(_get_handle_value(p_gizmo, p_handle_id, p_secondary));
+    (void)p_ray;
+    drag_initial_value_ = static_cast<real_t>(get_handle_value(p_target, p_handle_id, false));
 }
 
-void GeodesicPlanetGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void GeodesicPlanetGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
 ) {
-    (void)p_secondary;
-    if (p_gizmo.is_null() || p_camera == nullptr) {
-        return;
-    }
-    auto *planet = godot::Object::cast_to<GeodesicPlanetNode3D>(p_gizmo->get_node_3d());
-    if (planet == nullptr || planet->get_goldberg_resource().is_null()) {
-        return;
-    }
+    (void)p_modifiers;
+    auto *planet = godot::Object::cast_to<GeodesicPlanetNode3D>(p_target);
+    if (planet == nullptr || planet->get_goldberg_resource().is_null() || !p_ray.is_valid()) return;
     const auto res = planet->get_goldberg_resource();
 
     const godot::Transform3D inv_xform = planet->get_global_transform().affine_inverse();
-    const godot::Vector3 ray_from      = inv_xform.xform(p_camera->project_ray_origin(p_screen_pos));
-    const godot::Vector3 ray_dir       = inv_xform.basis.xform(p_camera->project_ray_normal(p_screen_pos)).normalized();
+    const godot::Vector3 ray_from      = inv_xform.xform(p_ray.origin);
+    const godot::Vector3 ray_dir       = inv_xform.basis.xform(p_ray.normal).normalized();
 
-    const godot::Vector3 axis = (p_handle_id == 0)
-        ? godot::Vector3(1.0f, 0.0f, 0.0f)
-        : res->get_cell_unit_normal(res->get_pentagon_cell_ids()[p_handle_id - 1]);
+    const auto pentagons = res->get_pentagon_cell_ids();
+    godot::Vector3 axis(1.0f, 0.0f, 0.0f);
+    if (p_handle_id > 0 && (p_handle_id - 1) < pentagons.size()) {
+        axis = res->get_cell_unit_normal(pentagons[p_handle_id - 1]);
+    }
 
-    // Closest distance along radial axis from origin to camera ray
     const real_t d_dot_a = ray_dir.dot(axis);
     const real_t denom   = static_cast<real_t>(1.0) - d_dot_a * d_dot_a;
     real_t s = res->get_planet_radius();
@@ -1057,58 +1047,40 @@ void GeodesicPlanetGizmo::_set_handle(
     if (p_handle_id == 0) {
         res->set_planet_radius(std::max(static_cast<real_t>(0.2), s));
     } else {
-        const auto pentagons = res->get_pentagon_cell_ids();
         const int idx = p_handle_id - 1;
         if (idx >= 0 && idx < pentagons.size()) {
             res->set_cell_elevation(pentagons[idx], s - res->get_planet_radius());
         }
     }
-    p_gizmo->get_node_3d()->update_gizmos();
+    planet->update_gizmos();
 }
 
-void GeodesicPlanetGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void GeodesicPlanetGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
-    (void)p_secondary;
-    if (p_gizmo.is_null()) {
-        return;
-    }
-    auto *planet = godot::Object::cast_to<GeodesicPlanetNode3D>(p_gizmo->get_node_3d());
-    if (planet == nullptr || planet->get_goldberg_resource().is_null()) {
-        return;
-    }
+    auto *planet = godot::Object::cast_to<GeodesicPlanetNode3D>(p_target);
+    if (planet == nullptr || planet->get_goldberg_resource().is_null()) return;
     const auto res = planet->get_goldberg_resource();
-    const real_t restore_val = p_restore.get_type() == godot::Variant::NIL
-        ? drag_initial_value_
-        : static_cast<real_t>(p_restore);
 
     if (p_handle_id == 0) {
         const real_t final_r = res->get_planet_radius();
-        res->set_planet_radius(restore_val);
-        if (!p_cancel) {
-            res->commit_set_planet_radius(final_r);
-        }
+        res->set_planet_radius(drag_initial_value_);
+        if (!p_cancel) res->commit_set_planet_radius(final_r);
     } else {
         const auto pentagons = res->get_pentagon_cell_ids();
         const int idx = p_handle_id - 1;
         if (idx >= 0 && idx < pentagons.size()) {
             const int cid = pentagons[idx];
             const real_t final_elev = res->get_cell_elevation(cid);
-            res->set_cell_elevation(cid, restore_val);
-            if (!p_cancel) {
-                res->commit_set_cell_elevation(cid, final_elev);
-            }
+            res->set_cell_elevation(cid, drag_initial_value_);
+            if (!p_cancel) res->commit_set_cell_elevation(cid, final_elev);
         }
     }
     planet->update_gizmos();
 }
 
-// ============================================================================
-// SphericalGoldbergPreviewCanvas & SphericalGoldbergControl & Inspector
 // ============================================================================
 
 SphericalGoldbergPreviewCanvas::SphericalGoldbergPreviewCanvas() {
@@ -1336,8 +1308,8 @@ void SphericalGoldbergControl::_sync_from_resource() {
     if (summary_label_ != nullptr) {
         summary_label_->set_text(
             godot::String("Goldberg GP(") + godot::String::num_int64(resource_->get_subdivision_frequency()) +
-            ", 0) | Total Cells: " + godot::String::num_int64(resource_->get_cell_count()) +
-            " (12 Pentagons + " + godot::String::num_int64(resource_->get_hexagon_count()) +
+            godot::String(", 0) | Total Cells: ") + godot::String::num_int64(resource_->get_cell_count()) +
+            godot::String(" (12 Pentagons + ") + godot::String::num_int64(resource_->get_hexagon_count()) +
             " Hexagons) | LMB Drag: Orbit"
         );
     }

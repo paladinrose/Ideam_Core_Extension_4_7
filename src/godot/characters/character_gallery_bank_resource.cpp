@@ -289,7 +289,7 @@ bool CharacterGalleryBankResource::apply_preset_to_body_plan(
 
 bool CharacterGalleryBankResource::apply_preset_to_character_instance(
     const godot::String &p_preset_id,
-    const godot::Ref<CharacterInstanceResource> &p_instance
+    const godot::Ref<LoomisCharacter3DResource> &p_instance
 ) const {
     if (!p_instance.is_valid()) return false;
     const godot::Dictionary preset = find_preset_by_id(p_preset_id);

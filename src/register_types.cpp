@@ -186,8 +186,6 @@
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 #include "godot/characters/ui/character_modeler.h"
 #include "godot/characters/body_plan_resource.h"
-#include "godot/characters/character_instance_resource.h"
-#include "godot/characters/layered_character_node_3d.h"
 #include "godot/characters/character_gallery_bank_resource.h"
 #include "godot/characters/ui/body_plan_authoring_control.h"
 #include "godot/characters/ui/character_generator_control.h"
@@ -329,7 +327,9 @@
 #include "godot/tasks/domains/design/design_task_host.h"
 
 // --- Characters (Parametric Character Blueprints, Apparel, Nodes, UI, DOD Bridge & Plugin) ---
-#include "godot/characters/character_blueprint_resource.h"
+#include "godot/characters/character_apparel_resource.h"
+#include "godot/characters/loomis_character_3d_resource.h"
+#include "godot/characters/loomis_character_node_3d.h"
 #include "godot/characters/ui/character_morph_slider_panel.h"
 #include "godot/characters/editor/characters_inspector.h"
 #include "godot/characters/ideam_characters_plugin.h"
@@ -471,6 +471,23 @@
 #include "godot/games/editor/gameplay_rule_editor_inspector_plugin.h"
 #include "godot/games/editor/gameplay_style_cascade_dock.h"
 
+// --- Trans-Environment Gizmos (Phase 1) ---
+#include "godot/gizmos/ideam_gizmo.h"
+#include "godot/gizmos/ideam_gizmo_style_resolver.h"
+#include "godot/gizmos/ideam_gizmo_backend.h"
+#include "godot/gizmos/ideam_spatial_toolbar.h"
+#include "godot/gizmos/ideam_viewport_3d_host.h"
+
+// --- Characters Scaffolding Gizmo (Phase 2) ---
+#include "godot/characters/character_feature_gizmo.h"
+#include "godot/characters/character_scaffold_gizmo.h"
+#include "godot/characters/character_topology_gizmo.h"
+#include "godot/climatology/climatology_weather_gizmo.h"
+#include "godot/cymatics/music_zone_gizmo.h"
+#include "godot/ecology/ecology_biosphere_gizmo.h"
+#include "godot/geometry/geometry_projector_gizmo.h"
+#include "godot/geomorphology/geomorphology_terrain_gizmo.h"
+
 using namespace godot;
 using namespace ideam::core;
 
@@ -487,6 +504,14 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::IdeamUndoRedo);
         GDREGISTER_CLASS(ideam::godot_ext::NodeRetargeter);
         GDREGISTER_CLASS(ideam::godot_ext::SignalConnector);
+
+        // --- Trans-Environment Gizmos & Spatial Toolbars (Phase 1) ---
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamGizmoStyleResolver);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamViewportGizmoBackend);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamGizmoSession);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamSpatialToolbar);
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamViewport3DHost);
 
         // --- Controls ---
         GDREGISTER_CLASS(ideam::godot_ext::RuntimeResourcePicker);
@@ -640,8 +665,8 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::PlanetarySystemsModeler);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterModeler);
         GDREGISTER_CLASS(ideam::godot_ext::BodyPlanResource);
-        GDREGISTER_CLASS(ideam::godot_ext::CharacterInstanceResource);
-        GDREGISTER_CLASS(ideam::godot_ext::LayeredCharacterNode3D);
+        GDREGISTER_CLASS(ideam::godot_ext::LoomisCharacter3DResource);
+        GDREGISTER_CLASS(ideam::godot_ext::LoomisCharacterNode3D);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterGalleryBankResource);
         GDREGISTER_CLASS(ideam::godot_ext::BodyPlanAuthoringControl);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterGeneratorControl);
@@ -775,6 +800,24 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::GridContainer3D);
         GDREGISTER_CLASS(ideam::godot_ext::RadialContainer3D);
         GDREGISTER_CLASS(ideam::godot_ext::SplineContainer3D);
+        GDREGISTER_CLASS(ideam::godot_ext::ProportionContainer3D);
+        GDREGISTER_CLASS(ideam::godot_ext::Socket3DGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterScaffoldGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterTopologyGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::CharacterFeatureGizmo);
+        // Trans-Environment Migrated & Domain IdeamGizmos (Runtime + Editor)
+        GDREGISTER_CLASS(ideam::godot_ext::Spline3DGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::Spline4DGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineExtrudeGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineScatterGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::SplineCorridorGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::SurfacePatchGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::GeodesicPlanetGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::GeomorphologyTerrainGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::GeometryProjectorGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::EcologyBiosphereGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::ClimatologyWeatherGizmo);
+        GDREGISTER_CLASS(ideam::godot_ext::MusicZoneGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::SemanticStructure3D);
         GDREGISTER_CLASS(ideam::godot_ext::ParametricAssemblyRecipeResource);
         GDREGISTER_CLASS(ideam::godot_ext::ParametricAssemblyNode3D);
@@ -784,9 +827,7 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::DesignTaskHost);
 
         // --- Characters (Section 1.1 & Section 2.2) ---
-        GDREGISTER_CLASS(ideam::godot_ext::CharacterBlueprintResource);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterApparelResource);
-        GDREGISTER_CLASS(ideam::godot_ext::ParametricCharacterNode3D);
         GDREGISTER_CLASS(ideam::godot_ext::CharacterMorphSliderPanel);
         GDREGISTER_CLASS(ideam::godot_ext::DataOrientedCharacters);
         GDREGISTER_CLASS(ideam::godot_ext::CharactersTaskHost);
@@ -952,6 +993,9 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         // Ecosystem Base Classes - Registered as Abstract to expose API but block direct instantiation
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::IdeamEditorPlugin);
         GDREGISTER_ABSTRACT_CLASS(ideam::godot_ext::IdeamEditorInspectorPlugin);
+#ifdef TOOLS_ENABLED
+        GDREGISTER_CLASS(ideam::godot_ext::IdeamEditorGizmoAdapter);
+#endif
         
         // Graph tooling
         GDREGISTER_CLASS(ideam::godot_ext::IdeamGraphInspector);
@@ -981,17 +1025,11 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::Spline3DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::Spline4DResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::SplineTweenResourceInspector);
-        GDREGISTER_CLASS(ideam::godot_ext::Spline3DGizmo);
-        GDREGISTER_CLASS(ideam::godot_ext::Spline4DGizmo);
-        GDREGISTER_CLASS(ideam::godot_ext::SplineExtrudeGizmo);
-        GDREGISTER_CLASS(ideam::godot_ext::SplineScatterGizmo);
-        GDREGISTER_CLASS(ideam::godot_ext::SplineCorridorGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::Spline2DViewportEditor);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamSplinesPlugin);
 
         // Surfaces tooling
         GDREGISTER_CLASS(ideam::godot_ext::SurfacesInspector);
-        GDREGISTER_CLASS(ideam::godot_ext::SurfacePatchGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamSurfacesPlugin);
 
         // Tiles tooling
@@ -1000,7 +1038,6 @@ void initialize_ideam_core_module(ModuleInitializationLevel p_level) {
         GDREGISTER_CLASS(ideam::godot_ext::CompositeTilingResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::HyperbolicPoincareTilingResourceInspector);
         GDREGISTER_CLASS(ideam::godot_ext::SphericalGoldbergResourceInspector);
-        GDREGISTER_CLASS(ideam::godot_ext::GeodesicPlanetGizmo);
         GDREGISTER_CLASS(ideam::godot_ext::IdeamTilesPlugin);
 
         // Narratives tooling

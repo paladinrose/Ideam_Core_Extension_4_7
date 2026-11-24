@@ -2,20 +2,20 @@
 
 /**
  * @file ecology_inspector.h
- * @brief Thin EditorInspectorPlugin launcher for EcologyBiosphereResource and
+ * @brief IdeamEditorInspectorPlugin launcher for EcologyBiosphereResource and
  * EcologyBiosphereNode3D -> opens the full studio in Tier 2 `PlanetarySystemsModeler`.
  */
 
-#include <godot_cpp/classes/editor_inspector_plugin.hpp>
+#include "godot/ecology/ecology_biosphere_resource.h"
+#include "godot/editor/ideam_editor_inspector_plugin.h"
+
 #include <godot_cpp/classes/object.hpp>
 #include <godot_cpp/classes/resource.hpp>
 
-#include "godot/ecology/ecology_biosphere_resource.h"
-
 namespace ideam::godot_ext {
 
-class EcologyInspector : public godot::EditorInspectorPlugin {
-    GDCLASS(EcologyInspector, godot::EditorInspectorPlugin)
+class EcologyInspector : public IdeamEditorInspectorPlugin {
+    GDCLASS(EcologyInspector, IdeamEditorInspectorPlugin)
 
 protected:
     static void _bind_methods();
@@ -25,6 +25,10 @@ public:
     ~EcologyInspector() override = default;
 
     void _on_open_in_planetary_modeler(const godot::Ref<godot::Resource> &p_resource);
+
+#ifdef TOOLS_ENABLED
+    godot::EditorUndoRedoManager *get_undo_redo() const override;
+#endif
 
     bool _can_handle(godot::Object* p_object) const override;
     void _parse_begin(godot::Object* p_object) override;

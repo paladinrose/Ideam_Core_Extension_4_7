@@ -1,5 +1,9 @@
 #include "container_3d.h"
+#include "form_scaffold_node_3d.h"
+
 #include <godot_cpp/classes/mesh_instance3d.hpp>
+#include <godot_cpp/variant/callable.hpp>
+
 #include <algorithm>
 #include <cmath>
 
@@ -278,6 +282,198 @@ void SplineContainer3D::refit_children_3d() {
         const float taper        = taper_scale_start_ * (1.0f - t) + taper_scale_end_ * t;
         child->set_position(pos);
         child->set_scale(godot::Vector3(taper, taper, taper));
+    }
+}
+
+// ============================================================================
+// ProportionContainer3D
+// ============================================================================
+
+void ProportionContainer3D::_bind_methods() {
+    using namespace godot;
+
+    ClassDB::bind_method(D_METHOD("set_ruler_graph", "ruler_graph"), &ProportionContainer3D::set_ruler_graph);
+    ClassDB::bind_method(D_METHOD("get_ruler_graph"), &ProportionContainer3D::get_ruler_graph);
+    ADD_PROPERTY(
+        PropertyInfo(Variant::OBJECT, "ruler_graph", PROPERTY_HINT_RESOURCE_TYPE, "ProportionRulerGraphResource"),
+        "set_ruler_graph",
+        "get_ruler_graph"
+    );
+
+    ClassDB::bind_method(D_METHOD("set_child_bindings", "bindings"), &ProportionContainer3D::set_child_bindings);
+    ClassDB::bind_method(D_METHOD("get_child_bindings"), &ProportionContainer3D::get_child_bindings);
+    ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "child_bindings"), "set_child_bindings", "get_child_bindings");
+
+    ClassDB::bind_method(D_METHOD("set_sync_child_scaffolds", "sync"), &ProportionContainer3D::set_sync_child_scaffolds);
+    ClassDB::bind_method(D_METHOD("get_sync_child_scaffolds"), &ProportionContainer3D::get_sync_child_scaffolds);
+    ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sync_child_scaffolds"), "set_sync_child_scaffolds", "get_sync_child_scaffolds");
+
+    ClassDB::bind_method(
+        D_METHOD(
+            "set_child_ruler_binding",
+            "child_name",
+            "pos_x_node",
+            "pos_y_node",
+            "pos_z_node",
+            "scale_x_node",
+            "scale_y_node",
+            "scale_z_node",
+            "anchor_mode"
+        ),
+        &ProportionContainer3D::set_child_ruler_binding,
+        DEFVAL(String()),
+        DEFVAL(String()),
+        DEFVAL(String()),
+        DEFVAL(String()),
+        DEFVAL(String()),
+        DEFVAL(String()),
+        DEFVAL(static_cast<int>(ANCHOR_CENTER))
+    );
+    ClassDB::bind_method(
+        D_METHOD("clear_child_ruler_binding", "child_name"),
+        &ProportionContainer3D::clear_child_ruler_binding
+    );
+    ClassDB::bind_method(D_METHOD("_on_ruler_graph_changed"), &ProportionContainer3D::_on_ruler_graph_changed);
+}
+
+ProportionContainer3D::~ProportionContainer3D() {
+    if (ruler_graph_.is_valid()) {
+        const godot::Callable cb(this, "_on_ruler_graph_changed");
+        if (ruler_graph_->is_connected("changed", cb)) {
+            ruler_graph_->disconnect("changed", cb);
+        }
+    }
+}
+
+void ProportionContainer3D::_on_ruler_graph_changed() {
+    if (get_auto_refit_children()) {
+        refit_children_3d();
+    }
+}
+
+void ProportionContainer3D::set_ruler_graph(const godot::Ref<ProportionRulerGraphResource> &p_graph) {
+    const godot::Callable cb(this, "_on_ruler_graph_changed");
+    if (ruler_graph_.is_valid() && ruler_graph_->is_connected("changed", cb)) {
+        ruler_graph_->disconnect("changed", cb);
+    }
+    ruler_graph_ = p_graph;
+    if (ruler_graph_.is_valid() && !ruler_graph_->is_connected("changed", cb)) {
+        ruler_graph_->connect("changed", cb);
+    }
+    if (get_auto_refit_children()) {
+        refit_children_3d();
+    }
+}
+
+void ProportionContainer3D::set_child_bindings(const godot::Dictionary &p_bindings) {
+    child_bindings_ = p_bindings;
+    if (get_auto_refit_children()) {
+        refit_children_3d();
+    }
+}
+
+void ProportionContainer3D::set_sync_child_scaffolds(bool p_sync) {
+    sync_child_scaffolds_ = p_sync;
+    if (get_auto_refit_children()) {
+        refit_children_3d();
+    }
+}
+
+void ProportionContainer3D::set_child_ruler_binding(
+    const godot::String &p_child_name,
+    const godot::String &p_pos_x_node,
+    const godot::String &p_pos_y_node,
+    const godot::String &p_pos_z_node,
+    const godot::String &p_scale_x_node,
+    const godot::String &p_scale_y_node,
+    const godot::String &p_scale_z_node,
+    int p_anchor_mode
+) {
+    if (p_child_name.is_empty()) return;
+    godot::Dictionary spec;
+    spec["ruler_position_x"]        = p_pos_x_node;
+    spec["ruler_position_y"]        = p_pos_y_node;
+    spec["ruler_position_z"]        = p_pos_z_node;
+    spec["ruler_scale_x"]           = p_scale_x_node;
+    spec["ruler_scale_y"]           = p_scale_y_node;
+    spec["ruler_scale_z"]           = p_scale_z_node;
+    spec["proportional_anchor_mode"] = std::clamp(p_anchor_mode, 0, 2);
+    spec["position_multiplier"]     = godot::Vector3(1.0f, 1.0f, 1.0f);
+    spec["scale_multiplier"]        = godot::Vector3(1.0f, 1.0f, 1.0f);
+    child_bindings_[p_child_name] = spec;
+
+    if (get_auto_refit_children()) {
+        refit_children_3d();
+    }
+}
+
+void ProportionContainer3D::clear_child_ruler_binding(const godot::String &p_child_name) {
+    if (child_bindings_.has(p_child_name)) {
+        child_bindings_.erase(p_child_name);
+    }
+}
+
+void ProportionContainer3D::refit_children_3d() {
+    if (ruler_graph_.is_null()) {
+        return;
+    }
+
+    ruler_graph_->evaluate();
+
+    const int n = get_child_count();
+    for (int i = 0; i < n; ++i) {
+        auto *child = godot::Object::cast_to<godot::Node3D>(get_child(i));
+        if (!child) continue;
+
+        // Propagate live ProportionRulerGraphResource to child FormScaffoldNode3D instances if enabled
+        if (sync_child_scaffolds_) {
+            if (auto *scaffold_node = godot::Object::cast_to<FormScaffoldNode3D>(child)) {
+                if (scaffold_node->get_scaffold().is_valid() &&
+                    scaffold_node->get_scaffold()->get_ruler_graph() != ruler_graph_) {
+                    scaffold_node->get_scaffold()->set_ruler_graph(ruler_graph_);
+                }
+            }
+        }
+
+        const godot::String cname = child->get_name();
+        godot::Dictionary spec;
+        if (child_bindings_.has(cname)) {
+            spec = child_bindings_[cname];
+        } else if (child->has_meta("ideam_ruler_binding")) {
+            spec = child->get_meta("ideam_ruler_binding");
+        } else {
+            continue;
+        }
+
+        const godot::Vector3 pos_mult   = spec.get("position_multiplier", godot::Vector3(1.0f, 1.0f, 1.0f));
+        const godot::Vector3 scale_mult = spec.get("scale_multiplier", godot::Vector3(1.0f, 1.0f, 1.0f));
+        const int anchor_mode           = int(spec.get("proportional_anchor_mode", static_cast<int>(ANCHOR_CENTER)));
+
+        godot::Vector3 pos = child->get_position();
+        godot::Vector3 scl = child->get_scale();
+
+        const godot::String sx = spec.get("ruler_scale_x", godot::String());
+        const godot::String sy = spec.get("ruler_scale_y", godot::String());
+        const godot::String sz = spec.get("ruler_scale_z", godot::String());
+        if (!sx.is_empty()) scl.x = std::max(static_cast<real_t>(0.01), ruler_graph_->get_value_by_name(sx, scl.x) * scale_mult.x);
+        if (!sy.is_empty()) scl.y = std::max(static_cast<real_t>(0.01), ruler_graph_->get_value_by_name(sy, scl.y) * scale_mult.y);
+        if (!sz.is_empty()) scl.z = std::max(static_cast<real_t>(0.01), ruler_graph_->get_value_by_name(sz, scl.z) * scale_mult.z);
+
+        const godot::String px = spec.get("ruler_position_x", godot::String());
+        const godot::String py = spec.get("ruler_position_y", godot::String());
+        const godot::String pz = spec.get("ruler_position_z", godot::String());
+        if (!px.is_empty()) pos.x = ruler_graph_->get_value_by_name(px, pos.x) * pos_mult.x;
+        if (!py.is_empty()) pos.y = ruler_graph_->get_value_by_name(py, pos.y) * pos_mult.y;
+        if (!pz.is_empty()) pos.z = ruler_graph_->get_value_by_name(pz, pos.z) * pos_mult.z;
+
+        if (anchor_mode == ANCHOR_BASE) {
+            pos.y += scl.y * static_cast<real_t>(0.5);
+        } else if (anchor_mode == ANCHOR_TOP) {
+            pos.y -= scl.y * static_cast<real_t>(0.5);
+        }
+
+        child->set_position(pos);
+        child->set_scale(scl);
     }
 }
 

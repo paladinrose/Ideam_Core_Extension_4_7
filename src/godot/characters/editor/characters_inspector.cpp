@@ -48,12 +48,10 @@ godot::EditorUndoRedoManager *CharactersInspector::get_undo_redo() const {
 bool CharactersInspector::_can_handle(godot::Object *p_object) const {
     if (!p_object) return false;
     return p_object->is_class("BodyPlanResource") ||
-           p_object->is_class("CharacterInstanceResource") ||
+           p_object->is_class("LoomisCharacter3DResource") ||
            p_object->is_class("CharacterGalleryBankResource") ||
-           p_object->is_class("LayeredCharacterNode3D") ||
-           p_object->is_class("CharacterBlueprintResource") ||
+           p_object->is_class("LoomisCharacterNode3D") ||
            p_object->is_class("CharacterApparelResource") ||
-           p_object->is_class("ParametricCharacterNode3D") ||
            p_object->is_class("DataOrientedCharacters");
 }
 
@@ -63,22 +61,20 @@ void CharactersInspector::_parse_begin(godot::Object *p_object) {
 
     IdeamEditorInspectorPlugin::_parse_begin(p_object);
 
-    Ref<IdeamUndoRedo> ur = IdeamCharactersPlugin::create_undo_redo_wrapper();
+    Ref<IdeamUndoRedo> ur = resolve_shared_undo_redo();
     if (auto *bp = Object::cast_to<BodyPlanResource>(p_object)) {
         bp->set_undo_redo(ur);
-    } else if (auto *ci = Object::cast_to<CharacterInstanceResource>(p_object)) {
+    } else if (auto *ci = Object::cast_to<LoomisCharacter3DResource>(p_object)) {
         ci->set_undo_redo(ur);
     }
 
     Ref<Resource> target_res;
     if (auto *direct_res = Object::cast_to<Resource>(p_object)) {
         target_res = Ref<Resource>(direct_res);
-    } else if (auto *layered_node = Object::cast_to<LayeredCharacterNode3D>(p_object)) {
-        target_res = layered_node->get_character_instance();
-    } else if (auto *char_node = Object::cast_to<ParametricCharacterNode3D>(p_object)) {
-        target_res = char_node->get_blueprint();
+    } else if (auto *char_node = Object::cast_to<LoomisCharacterNode3D>(p_object)) {
+        target_res = char_node->get_character_resource();
     } else if (auto *dod_char = Object::cast_to<DataOrientedCharacters>(p_object)) {
-        target_res = dod_char->get_active_blueprint();
+        target_res = dod_char->get_active_character();
     }
 
     auto *bar = memnew(HBoxContainer);

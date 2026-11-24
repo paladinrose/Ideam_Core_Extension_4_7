@@ -2,10 +2,7 @@
 
 #include "../ideam_splines_plugin.h"
 
-#include <godot_cpp/variant/aabb.hpp>
 #include <godot_cpp/variant/basis.hpp>
-#include <godot_cpp/variant/color.hpp>
-#include <godot_cpp/variant/packed_int32_array.hpp>
 #include <godot_cpp/variant/packed_vector3_array.hpp>
 #include <godot_cpp/variant/plane.hpp>
 #include <godot_cpp/variant/transform3d.hpp>
@@ -15,105 +12,71 @@
 
 namespace ideam::godot_ext {
 
-void Spline3DGizmo::_bind_methods() {
+void Spline3DGizmo::_bind_methods() {}
+
+bool Spline3DGizmo::can_handle(godot::Node3D *p_target) const {
+    return p_target != nullptr && godot::Object::cast_to<SplineNode3D>(p_target) != nullptr;
 }
 
-Spline3DGizmo::Spline3DGizmo() {
-    _init_gizmo_materials();
-}
-
-Spline3DGizmo::~Spline3DGizmo() = default;
-
-void Spline3DGizmo::_init_gizmo_materials() {
-    // Curve-type color coding matching 2D SplineCanvasBase palette
-    create_material("curve_linear", godot::Color(0.32f, 0.75f, 0.98f, 0.95f), false, true, false);
-    create_material("curve_catmull_rom", godot::Color(0.35f, 0.92f, 0.55f, 0.95f), false, true, false);
-    create_material("curve_cubic_bezier", godot::Color(0.98f, 0.72f, 0.25f, 0.95f), false, true, false);
-    create_material("curve_step", godot::Color(0.85f, 0.45f, 0.98f, 0.95f), false, true, false);
-    create_material("curve_selected", godot::Color(1.0f, 0.94f, 0.35f, 1.0f), false, true, false);
-
-    // Tangent stalk, Bishop frame triad, and AABB cage materials
-    create_material("handle_stalk", godot::Color(0.98f, 0.52f, 0.32f, 0.85f), false, true, false);
-    create_material("aabb_box", godot::Color(0.55f, 0.78f, 0.88f, 0.42f), false, true, false);
-    create_material("frame_x", godot::Color(0.96f, 0.32f, 0.32f, 0.85f), false, true, false);
-    create_material("frame_y", godot::Color(0.32f, 0.94f, 0.42f, 0.85f), false, true, false);
-    create_material("frame_z", godot::Color(0.34f, 0.62f, 0.98f, 0.85f), false, true, false);
-    create_material("playhead", godot::Color(1.0f, 0.85f, 0.20f, 0.98f), false, true, false);
-
-    create_handle_material("handles");
-    create_handle_material("secondary_handles");
-}
-
-bool Spline3DGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return p_for_node_3d != nullptr && godot::Object::cast_to<SplineNode3D>(p_for_node_3d) != nullptr;
-}
-
-godot::String Spline3DGizmo::_get_gizmo_name() const {
+godot::String Spline3DGizmo::get_gizmo_name() const {
     return "SplineNode3D";
 }
 
-int32_t Spline3DGizmo::_get_priority() const {
+int32_t Spline3DGizmo::get_priority() const {
     return -1;
 }
 
-godot::Ref<godot::StandardMaterial3D> Spline3DGizmo::_get_curve_material(
-    SplineCurveType p_type,
-    bool p_selected,
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo
-) {
+GizmoSemanticRole Spline3DGizmo::_role_for_curve_type(SplineCurveType p_type, bool p_selected) noexcept {
     if (p_selected) {
-        return get_material("curve_selected", p_gizmo);
+        return GIZMO_SNAP_PREVIEW;
     }
     switch (p_type) {
         case CURVE_LINEAR:
-            return get_material("curve_linear", p_gizmo);
+            return GIZMO_LINE_AXIS_NORMAL;
         case CURVE_CUBIC_BEZIER:
-            return get_material("curve_cubic_bezier", p_gizmo);
+            return GIZMO_HANDLE_SPLINE_TANGENT;
         case CURVE_STEP:
-            return get_material("curve_step", p_gizmo);
+            return GIZMO_HANDLE_FEATURE_MAJOR;
         case CURVE_CATMULL_ROM:
         default:
-            return get_material("curve_catmull_rom", p_gizmo);
+            return GIZMO_HANDLE_SPLINE_ANCHOR;
     }
 }
 
-godot::Vector3 Spline3DGizmo::_project_screen_to_local_plane(
+godot::Vector3 Spline3DGizmo::_project_ray_to_local_plane(
     const SplineNode3D *p_node,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos,
+    const GizmoRay &p_ray,
     const godot::Vector3 &p_plane_origin_local
 ) {
-    if (!p_node || !p_camera) {
+    if (!p_node || !p_ray.is_valid()) {
         return p_plane_origin_local;
     }
 
     const godot::Transform3D node_xform = p_node->get_global_transform();
     const godot::Transform3D inv_xform  = node_xform.affine_inverse();
 
-    const godot::Vector3 ray_origin_world = p_camera->project_ray_origin(p_screen_pos);
-    const godot::Vector3 ray_dir_world    = p_camera->project_ray_normal(p_screen_pos);
-
     const godot::Vector3 plane_origin_world = node_xform.xform(p_plane_origin_local);
-    const godot::Vector3 cam_forward_world  = -p_camera->get_global_transform().basis.get_column(2).normalized();
+    godot::Vector3 plane_normal_world = -p_ray.normal.normalized();
+    if (p_ray.camera) {
+        plane_normal_world = -p_ray.camera->get_global_transform().basis.get_column(2).normalized();
+    }
 
-    const godot::Plane view_plane(cam_forward_world, plane_origin_world);
+    const godot::Plane view_plane(plane_normal_world, plane_origin_world);
     godot::Vector3 hit_world = plane_origin_world;
-    if (view_plane.intersects_ray(ray_origin_world, ray_dir_world, &hit_world)) {
+    if (view_plane.intersects_ray(p_ray.origin, p_ray.normal, &hit_world)) {
         return inv_xform.xform(hit_world);
     }
     return p_plane_origin_local;
 }
 
-void Spline3DGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
-    if (p_gizmo.is_null()) {
-        return;
-    }
-    p_gizmo->clear();
-
-    SplineNode3D *node = godot::Object::cast_to<SplineNode3D>(p_gizmo->get_node_3d());
-    if (!node) {
-        return;
-    }
+void Spline3DGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
+    (void)p_view;
+    auto *node = godot::Object::cast_to<SplineNode3D>(p_target);
+    if (!node) return;
 
     godot::Ref<Spline3DResource> spline = node->get_spline();
     if (spline.is_null() || spline->get_point_count() <= 0) {
@@ -124,150 +87,140 @@ void Spline3DGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo)
     const int sec_count = spline->get_section_count();
     const int subdivs   = std::clamp(node->get_gizmo_subdivisions(), 2, 64);
     const int sel_sec   = node->get_selected_gizmo_section_index();
+    const godot::StringName mode = get_active_tool_mode();
 
-    // 1. Draw each section with curve-type color coding
+    // 1. Draw each section with semantic curve-type roles
     for (int s = 0; s < sec_count; ++s) {
         const SplineCurveType ctype = spline->get_section_curve_type(s);
-        if (ctype == CURVE_NONE) {
-            continue;
-        }
+        if (ctype == CURVE_NONE) continue;
 
-        godot::PackedVector3Array sec_lines;
-        sec_lines.resize(subdivs * 2);
-        godot::Vector3 prev_pt = spline->sample_section(s, static_cast<real_t>(0.0));
-        for (int step = 1; step <= subdivs; ++step) {
+        godot::PackedVector3Array sec_pts;
+        sec_pts.resize(subdivs + 1);
+        for (int step = 0; step <= subdivs; ++step) {
             const real_t local_t = static_cast<real_t>(step) / static_cast<real_t>(subdivs);
-            const godot::Vector3 next_pt = spline->sample_section(s, local_t);
-            sec_lines.set((step - 1) * 2, prev_pt);
-            sec_lines.set((step - 1) * 2 + 1, next_pt);
-            prev_pt = next_pt;
+            sec_pts.set(step, spline->sample_section(s, local_t));
         }
-
-        p_gizmo->add_lines(
-            sec_lines,
-            _get_curve_material(ctype, s == sel_sec, p_gizmo),
-            false
-        );
+        r_out.add_polyline(sec_pts, false, _role_for_curve_type(ctype, s == sel_sec));
     }
 
-    // 2. Collect primary anchor handles, tangent stalks, and section midpoint handles
-    godot::PackedVector3Array primary_handles;
-    godot::PackedInt32Array primary_ids;
-
-    godot::PackedVector3Array secondary_handles;
-    godot::PackedInt32Array secondary_ids;
-
-    godot::PackedVector3Array stalk_lines;
+    // 2. Anchor handles, tangent stalks, and section midpoint split handles
+    const bool show_tangents = (mode == godot::StringName() || mode == godot::StringName("edit") || mode == godot::StringName("tangents"));
+    const bool show_splits   = (mode == godot::StringName() || mode == godot::StringName("edit") || mode == godot::StringName("split"));
 
     for (int i = 0; i < pt_count; ++i) {
         const godot::Vector3 anchor = spline->get_point_position(i);
-        primary_handles.push_back(anchor);
-        primary_ids.push_back(HANDLE_ANCHOR_BASE + i);
+        r_out.add_handle(
+            HANDLE_ANCHOR_BASE + i,
+            anchor,
+            GIZMO_HANDLE_SPLINE_ANCHOR,
+            HANDLE_SHAPE_SPHERE,
+            static_cast<real_t>(0.055),
+            GIZMO_STATE_NONE,
+            godot::String("Point #") + godot::String::num_int64(i),
+            false
+        );
 
-        if (spline->get_point_use_back_handle(i)) {
+        if (show_tangents && spline->get_point_use_back_handle(i)) {
             const godot::Vector3 bh_world = anchor + spline->get_point_back_handle(i);
-            stalk_lines.push_back(anchor);
-            stalk_lines.push_back(bh_world);
-            secondary_handles.push_back(bh_world);
-            secondary_ids.push_back(HANDLE_BACK_OFFSET + i);
+            r_out.add_segment(anchor, bh_world, GIZMO_HANDLE_SPLINE_TANGENT);
+            r_out.add_handle(
+                HANDLE_BACK_OFFSET + i,
+                bh_world,
+                GIZMO_HANDLE_SPLINE_TANGENT,
+                HANDLE_SHAPE_DIAMOND,
+                static_cast<real_t>(0.04),
+                GIZMO_STATE_NONE,
+                godot::String("Back Tangent #") + godot::String::num_int64(i),
+                true
+            );
         }
 
-        if (spline->get_point_use_fore_handle(i)) {
+        if (show_tangents && spline->get_point_use_fore_handle(i)) {
             const godot::Vector3 fh_world = anchor + spline->get_point_fore_handle(i);
-            stalk_lines.push_back(anchor);
-            stalk_lines.push_back(fh_world);
-            secondary_handles.push_back(fh_world);
-            secondary_ids.push_back(HANDLE_FORE_OFFSET + i);
+            r_out.add_segment(anchor, fh_world, GIZMO_HANDLE_SPLINE_TANGENT);
+            r_out.add_handle(
+                HANDLE_FORE_OFFSET + i,
+                fh_world,
+                GIZMO_HANDLE_SPLINE_TANGENT,
+                HANDLE_SHAPE_DIAMOND,
+                static_cast<real_t>(0.04),
+                GIZMO_STATE_NONE,
+                godot::String("Fore Tangent #") + godot::String::num_int64(i),
+                true
+            );
         }
     }
 
-    // Section midpoint split handles
-    for (int s = 0; s < sec_count; ++s) {
-        if (spline->get_section_curve_type(s) == CURVE_NONE) {
-            continue;
+    if (show_splits) {
+        for (int s = 0; s < sec_count; ++s) {
+            if (spline->get_section_curve_type(s) == CURVE_NONE) continue;
+            const godot::Vector3 mid_pt = spline->sample_section(s, static_cast<real_t>(0.5));
+            r_out.add_handle(
+                HANDLE_SECTION_SPLIT_OFFSET + s,
+                mid_pt,
+                GIZMO_SNAP_PREVIEW,
+                HANDLE_SHAPE_CUBE,
+                static_cast<real_t>(0.035),
+                GIZMO_STATE_NONE,
+                godot::String("Split Section #") + godot::String::num_int64(s),
+                true
+            );
         }
-        const godot::Vector3 mid_pt = spline->sample_section(s, static_cast<real_t>(0.5));
-        secondary_handles.push_back(mid_pt);
-        secondary_ids.push_back(HANDLE_SECTION_SPLIT_OFFSET + s);
-    }
-
-    if (!stalk_lines.is_empty()) {
-        p_gizmo->add_lines(stalk_lines, get_material("handle_stalk", p_gizmo), false);
     }
 
     // 3. Optional Bishop / Up-Vector Coordinate Frame Triads
-    if (node->get_show_gizmo_frames() && sec_count > 0) {
+    if ((node->get_show_gizmo_frames() || mode == godot::StringName("frames")) && sec_count > 0) {
         const godot::TypedArray<godot::Transform3D> frames = spline->compute_bishop_transforms(
             std::max(2, subdivs / 2),
             node->get_up_vector()
         );
-        godot::PackedVector3Array x_lines;
-        godot::PackedVector3Array y_lines;
-        godot::PackedVector3Array z_lines;
         constexpr float AXIS_LEN = 0.35f;
-
         for (int i = 0; i < frames.size(); ++i) {
             const godot::Transform3D xf = frames[i];
-            x_lines.push_back(xf.origin);
-            x_lines.push_back(xf.origin + xf.basis.get_column(0).normalized() * AXIS_LEN);
-            y_lines.push_back(xf.origin);
-            y_lines.push_back(xf.origin + xf.basis.get_column(1).normalized() * AXIS_LEN);
-            z_lines.push_back(xf.origin);
-            z_lines.push_back(xf.origin + xf.basis.get_column(2).normalized() * AXIS_LEN);
+            r_out.add_segment(xf.origin, xf.origin + xf.basis.get_column(0).normalized() * AXIS_LEN, GIZMO_LINE_AXIS_TANGENT);
+            r_out.add_segment(xf.origin, xf.origin + xf.basis.get_column(1).normalized() * AXIS_LEN, GIZMO_PLUMB_BALANCED);
+            r_out.add_segment(xf.origin, xf.origin + xf.basis.get_column(2).normalized() * AXIS_LEN, GIZMO_LINE_AXIS_NORMAL);
         }
-
-        if (!x_lines.is_empty()) p_gizmo->add_lines(x_lines, get_material("frame_x", p_gizmo), false);
-        if (!y_lines.is_empty()) p_gizmo->add_lines(y_lines, get_material("frame_y", p_gizmo), false);
-        if (!z_lines.is_empty()) p_gizmo->add_lines(z_lines, get_material("frame_z", p_gizmo), false);
     }
 
-    // 4. Draw AABB Rotate/Scale Cage when 2+ points exist
+    // 4. AABB Rotate/Scale Cage when 2+ points exist
     if (pt_count >= 2) {
         const godot::AABB box = spline->get_aabb(false);
         if (box.size.length_squared() > 1e-5f) {
-            const godot::Vector3 p0 = box.position;
+            r_out.add_wire_box(box.get_center(), box.size * 0.5f, godot::Basis(), GIZMO_LINE_CLEARANCE);
+
             const godot::Vector3 p1 = box.position + box.size;
+            r_out.add_handle(
+                HANDLE_AABB_SCALE_ID,
+                p1,
+                GIZMO_HANDLE_SCAFFOLD,
+                HANDLE_SHAPE_CUBE,
+                static_cast<real_t>(0.05),
+                GIZMO_STATE_NONE,
+                "Scale Spline3D AABB",
+                true
+            );
 
-            const godot::Vector3 c[8] = {
-                godot::Vector3(p0.x, p0.y, p0.z),
-                godot::Vector3(p1.x, p0.y, p0.z),
-                godot::Vector3(p1.x, p1.y, p0.z),
-                godot::Vector3(p0.x, p1.y, p0.z),
-                godot::Vector3(p0.x, p0.y, p1.z),
-                godot::Vector3(p1.x, p0.y, p1.z),
-                godot::Vector3(p1.x, p1.y, p1.z),
-                godot::Vector3(p0.x, p1.y, p1.z)
-            };
-            static constexpr int EDGES[12][2] = {
-                {0,1}, {1,2}, {2,3}, {3,0},
-                {4,5}, {5,6}, {6,7}, {7,4},
-                {0,4}, {1,5}, {2,6}, {3,7}
-            };
-            godot::PackedVector3Array box_lines;
-            box_lines.resize(24);
-            for (int e = 0; e < 12; ++e) {
-                box_lines.set(e * 2, c[EDGES[e][0]]);
-                box_lines.set(e * 2 + 1, c[EDGES[e][1]]);
-            }
-            p_gizmo->add_lines(box_lines, get_material("aabb_box", p_gizmo), false);
-
-            // AABB Scale Handle at max corner (p1)
-            secondary_handles.push_back(p1);
-            secondary_ids.push_back(HANDLE_AABB_SCALE_ID);
-
-            // AABB Y-Rotation Handle slightly outside top-Z edge
             const godot::Vector3 center = box.get_center();
             const godot::Vector3 rot_handle(
                 center.x + std::max(0.5f, box.size.x * 0.5f + 0.35f),
                 center.y,
                 center.z
             );
-            secondary_handles.push_back(rot_handle);
-            secondary_ids.push_back(HANDLE_AABB_ROTATE_Y_ID);
+            r_out.add_handle(
+                HANDLE_AABB_ROTATE_Y_ID,
+                rot_handle,
+                GIZMO_LINE_RULER,
+                HANDLE_SHAPE_RING,
+                static_cast<real_t>(0.05),
+                GIZMO_STATE_NONE,
+                "Rotate Spline3D Y-Axis",
+                true
+            );
         }
     }
 
-    // 5. Draw Current Playback Pose Diamond
+    // 5. Current Playback Pose Diamond
     if (sec_count > 0) {
         const godot::Transform3D play_xf = node->get_current_transform_on_spline();
         constexpr float R = 0.16f;
@@ -285,42 +238,19 @@ void Spline3DGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo)
         play_lines.push_back(o - x); play_lines.push_back(o + z);
         play_lines.push_back(o + y); play_lines.push_back(o + z);
         play_lines.push_back(o - y); play_lines.push_back(o + z);
-        p_gizmo->add_lines(play_lines, get_material("playhead", p_gizmo), false);
-    }
-
-    if (!primary_handles.is_empty()) {
-        p_gizmo->add_handles(
-            primary_handles,
-            get_material("handles", p_gizmo),
-            primary_ids,
-            false,
-            false
-        );
-    }
-    if (!secondary_handles.is_empty()) {
-        p_gizmo->add_handles(
-            secondary_handles,
-            get_material("secondary_handles", p_gizmo),
-            secondary_ids,
-            false,
-            true
-        );
+        r_out.add_lines(play_lines, GIZMO_SNAP_PREVIEW);
     }
 }
 
-godot::String Spline3DGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String Spline3DGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
-    (void)p_gizmo;
+    (void)p_target;
     (void)p_secondary;
-    if (p_handle_id == HANDLE_AABB_SCALE_ID) {
-        return "Scale Spline3D AABB";
-    }
-    if (p_handle_id == HANDLE_AABB_ROTATE_Y_ID) {
-        return "Rotate Spline3D Y-Axis";
-    }
+    if (p_handle_id == HANDLE_AABB_SCALE_ID) return "Scale Spline3D AABB";
+    if (p_handle_id == HANDLE_AABB_ROTATE_Y_ID) return "Rotate Spline3D Y-Axis";
     if (p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
         return godot::String("Split Section #") + godot::String::num_int64(p_handle_id - HANDLE_SECTION_SPLIT_OFFSET);
     }
@@ -333,52 +263,26 @@ godot::String Spline3DGizmo::_get_handle_name(
     return godot::String("Spline3D Point #") + godot::String::num_int64(p_handle_id);
 }
 
-godot::Variant Spline3DGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant Spline3DGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    if (p_gizmo.is_null()) {
-        return godot::Variant();
-    }
-    SplineNode3D *node = godot::Object::cast_to<SplineNode3D>(p_gizmo->get_node_3d());
-    if (!node || node->get_spline().is_null()) {
-        return godot::Variant();
-    }
-    godot::Ref<Spline3DResource> spline = node->get_spline();
-
-    const uint64_t nid = node->get_instance_id();
-    if (!active_drags.has(nid) || !active_drags[nid].active) {
-        DragState st;
-        st.initial_snapshot = spline->get_snapshot_state();
-        st.initial_aabb     = spline->get_aabb(false);
-        st.active           = true;
-
-        if (p_handle_id == HANDLE_AABB_SCALE_ID) {
-            st.initial_handle_pos = st.initial_aabb.position + st.initial_aabb.size;
-        } else if (p_handle_id == HANDLE_AABB_ROTATE_Y_ID) {
-            const godot::Vector3 c = st.initial_aabb.get_center();
-            st.initial_handle_pos = godot::Vector3(c.x + std::max(0.5f, st.initial_aabb.size.x * 0.5f + 0.35f), c.y, c.z);
-        } else if (p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
-            const int sec_idx = p_handle_id - HANDLE_SECTION_SPLIT_OFFSET;
-            st.initial_handle_pos = spline->sample_section(sec_idx, static_cast<real_t>(0.5));
-        }
-        active_drags[nid] = st;
-    }
+    auto *node = godot::Object::cast_to<SplineNode3D>(p_target);
+    if (!node || node->get_spline().is_null()) return godot::Variant();
+    auto spline = node->get_spline();
 
     if (p_handle_id == HANDLE_AABB_SCALE_ID ||
         p_handle_id == HANDLE_AABB_ROTATE_Y_ID ||
         p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
-        return active_drags[nid].initial_snapshot;
+        return spline->get_snapshot_state();
     }
     if (p_handle_id >= HANDLE_FORE_OFFSET) {
-        const int idx = p_handle_id - HANDLE_FORE_OFFSET;
-        return spline->get_point_fore_handle(idx);
+        return spline->get_point_fore_handle(p_handle_id - HANDLE_FORE_OFFSET);
     }
     if (p_handle_id >= HANDLE_BACK_OFFSET) {
-        const int idx = p_handle_id - HANDLE_BACK_OFFSET;
-        return spline->get_point_back_handle(idx);
+        return spline->get_point_back_handle(p_handle_id - HANDLE_BACK_OFFSET);
     }
     if (p_handle_id >= 0 && p_handle_id < spline->get_point_count()) {
         return spline->get_point_position(p_handle_id);
@@ -386,30 +290,54 @@ godot::Variant Spline3DGizmo::_get_handle_value(
     return godot::Variant();
 }
 
-void Spline3DGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void Spline3DGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
 ) {
-    (void)p_secondary;
-    if (p_gizmo.is_null() || !p_camera) {
-        return;
-    }
-    SplineNode3D *node = godot::Object::cast_to<SplineNode3D>(p_gizmo->get_node_3d());
-    if (!node || node->get_spline().is_null()) {
-        return;
-    }
-    godot::Ref<Spline3DResource> spline = node->get_spline();
-    const uint64_t nid = node->get_instance_id();
+    (void)p_ray;
+    auto *node = godot::Object::cast_to<SplineNode3D>(p_target);
+    if (!node || node->get_spline().is_null()) return;
+    auto spline = node->get_spline();
+
+    DragState st{};
+    st.initial_snapshot = spline->get_snapshot_state();
+    st.initial_aabb     = spline->get_aabb(false);
+    st.initial_value    = get_handle_value(p_target, p_handle_id, false);
+    st.active           = true;
 
     if (p_handle_id == HANDLE_AABB_SCALE_ID) {
-        if (!active_drags.has(nid)) return;
-        const DragState &st = active_drags[nid];
+        st.initial_handle_pos = st.initial_aabb.position + st.initial_aabb.size;
+    } else if (p_handle_id == HANDLE_AABB_ROTATE_Y_ID) {
+        const godot::Vector3 c = st.initial_aabb.get_center();
+        st.initial_handle_pos = godot::Vector3(c.x + std::max(0.5f, st.initial_aabb.size.x * 0.5f + 0.35f), c.y, c.z);
+    } else if (p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
+        st.initial_handle_pos = spline->sample_section(p_handle_id - HANDLE_SECTION_SPLIT_OFFSET, static_cast<real_t>(0.5));
+    }
+    active_drags_[node->get_instance_id()] = st;
+}
+
+void Spline3DGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
+) {
+    (void)p_modifiers;
+    auto *node = godot::Object::cast_to<SplineNode3D>(p_target);
+    if (!node || node->get_spline().is_null() || !p_ray.is_valid()) return;
+    auto spline = node->get_spline();
+    const uint64_t nid = node->get_instance_id();
+
+    if (!active_drags_.has(nid)) {
+        on_handle_drag_begin(p_target, p_handle_id, p_ray);
+    }
+
+    if (p_handle_id == HANDLE_AABB_SCALE_ID) {
+        const DragState &st = active_drags_[nid];
         spline->apply_snapshot_state(st.initial_snapshot);
         const godot::Vector3 center = st.initial_aabb.get_center();
-        const godot::Vector3 hit    = _project_screen_to_local_plane(node, p_camera, p_screen_pos, st.initial_handle_pos);
+        const godot::Vector3 hit    = _project_ray_to_local_plane(node, p_ray, st.initial_handle_pos);
         const godot::Vector3 half0  = (st.initial_handle_pos - center);
         const godot::Vector3 half1  = (hit - center);
 
@@ -424,11 +352,10 @@ void Spline3DGizmo::_set_handle(
     }
 
     if (p_handle_id == HANDLE_AABB_ROTATE_Y_ID) {
-        if (!active_drags.has(nid)) return;
-        const DragState &st = active_drags[nid];
+        const DragState &st = active_drags_[nid];
         spline->apply_snapshot_state(st.initial_snapshot);
         const godot::Vector3 center = st.initial_aabb.get_center();
-        const godot::Vector3 hit    = _project_screen_to_local_plane(node, p_camera, p_screen_pos, st.initial_handle_pos);
+        const godot::Vector3 hit    = _project_ray_to_local_plane(node, p_ray, st.initial_handle_pos);
         const godot::Vector3 rel    = hit - center;
         const float yaw_rad         = std::atan2(-rel.z, rel.x);
         spline->rotate_spline(godot::Vector3(0.0f, yaw_rad, 0.0f));
@@ -437,8 +364,7 @@ void Spline3DGizmo::_set_handle(
     }
 
     if (p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
-        const int sec_idx = p_handle_id - HANDLE_SECTION_SPLIT_OFFSET;
-        node->set_selected_gizmo_section_index(sec_idx);
+        node->set_selected_gizmo_section_index(p_handle_id - HANDLE_SECTION_SPLIT_OFFSET);
         return;
     }
 
@@ -447,9 +373,9 @@ void Spline3DGizmo::_set_handle(
         if (idx < 0 || idx >= spline->get_point_count()) return;
         node->set_selected_gizmo_point_index(idx);
         const godot::Vector3 anchor = spline->get_point_position(idx);
-        const godot::Vector3 cur_world = anchor + spline->get_point_fore_handle(idx);
-        const godot::Vector3 new_world = _project_screen_to_local_plane(node, p_camera, p_screen_pos, cur_world);
-        spline->set_point_fore_handle(idx, new_world - anchor, true);
+        const godot::Vector3 cur_w  = anchor + spline->get_point_fore_handle(idx);
+        const godot::Vector3 new_w  = _project_ray_to_local_plane(node, p_ray, cur_w);
+        spline->set_point_fore_handle(idx, new_w - anchor, true);
         node->update_gizmos();
         return;
     }
@@ -459,9 +385,9 @@ void Spline3DGizmo::_set_handle(
         if (idx < 0 || idx >= spline->get_point_count()) return;
         node->set_selected_gizmo_point_index(idx);
         const godot::Vector3 anchor = spline->get_point_position(idx);
-        const godot::Vector3 cur_world = anchor + spline->get_point_back_handle(idx);
-        const godot::Vector3 new_world = _project_screen_to_local_plane(node, p_camera, p_screen_pos, cur_world);
-        spline->set_point_back_handle(idx, new_world - anchor, true);
+        const godot::Vector3 cur_w  = anchor + spline->get_point_back_handle(idx);
+        const godot::Vector3 new_w  = _project_ray_to_local_plane(node, p_ray, cur_w);
+        spline->set_point_back_handle(idx, new_w - anchor, true);
         node->update_gizmos();
         return;
     }
@@ -469,47 +395,45 @@ void Spline3DGizmo::_set_handle(
     if (p_handle_id >= 0 && p_handle_id < spline->get_point_count()) {
         node->set_selected_gizmo_point_index(p_handle_id);
         const godot::Vector3 cur_pos = spline->get_point_position(p_handle_id);
-        const godot::Vector3 new_pos = _project_screen_to_local_plane(node, p_camera, p_screen_pos, cur_pos);
+        const godot::Vector3 new_pos = _project_ray_to_local_plane(node, p_ray, cur_pos);
         spline->set_point_position(p_handle_id, new_pos);
         node->update_gizmos();
     }
 }
 
-void Spline3DGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void Spline3DGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
-    (void)p_secondary;
-    if (p_gizmo.is_null()) {
-        return;
-    }
-    SplineNode3D *node = godot::Object::cast_to<SplineNode3D>(p_gizmo->get_node_3d());
-    if (!node || node->get_spline().is_null()) {
-        return;
-    }
-    godot::Ref<Spline3DResource> spline = node->get_spline();
+    auto *node = godot::Object::cast_to<SplineNode3D>(p_target);
+    if (!node || node->get_spline().is_null()) return;
+    auto spline = node->get_spline();
     const uint64_t nid = node->get_instance_id();
 
+    DragState st{};
+    const bool had_state = active_drags_.has(nid);
+    if (had_state) {
+        st = active_drags_[nid];
+        active_drags_.erase(nid);
+    }
+
     if (spline->get_undo_redo().is_null()) {
-        spline->set_undo_redo(IdeamSplinesPlugin::create_undo_redo_wrapper());
+        godot::Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+        if (ur.is_null()) ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
+        spline->set_undo_redo(ur);
     }
 
     if (p_handle_id == HANDLE_AABB_SCALE_ID || p_handle_id == HANDLE_AABB_ROTATE_Y_ID) {
-        const godot::Dictionary before = p_restore;
-        if (p_cancel) {
-            spline->apply_snapshot_state(before);
-        } else {
-            const godot::Dictionary after = spline->get_snapshot_state();
+        if (p_cancel && had_state) {
+            spline->apply_snapshot_state(st.initial_snapshot);
+        } else if (had_state) {
             spline->commit_snapshot_action(
                 (p_handle_id == HANDLE_AABB_SCALE_ID) ? "Scale Spline3D via Gizmo" : "Rotate Spline3D via Gizmo",
-                before,
-                after
+                st.initial_snapshot,
+                spline->get_snapshot_state()
             );
         }
-        active_drags.erase(nid);
         node->update_gizmos();
         return;
     }
@@ -517,9 +441,9 @@ void Spline3DGizmo::_commit_handle(
     if (p_handle_id >= HANDLE_SECTION_SPLIT_OFFSET) {
         const int sec_idx = p_handle_id - HANDLE_SECTION_SPLIT_OFFSET;
         if (!p_cancel && sec_idx >= 0 && sec_idx < spline->get_section_count()) {
-            const godot::Vector3 mid_pt   = spline->sample_section(sec_idx, static_cast<real_t>(0.5));
-            const SplineCurveType ctype   = spline->get_section_curve_type(sec_idx);
-            const real_t half_weight      = std::max(static_cast<real_t>(0.01), spline->get_section_weight(sec_idx) * static_cast<real_t>(0.5));
+            const godot::Vector3 mid_pt    = spline->sample_section(sec_idx, static_cast<real_t>(0.5));
+            const SplineCurveType ctype    = spline->get_section_curve_type(sec_idx);
+            const real_t half_weight       = std::max(static_cast<real_t>(0.01), spline->get_section_weight(sec_idx) * static_cast<real_t>(0.5));
             const godot::Dictionary before = spline->get_snapshot_state();
 
             spline->set_section_weight(sec_idx, half_weight);
@@ -532,51 +456,41 @@ void Spline3DGizmo::_commit_handle(
             }
             spline->commit_snapshot_action("Split Spline3D Section via Gizmo", before, spline->get_snapshot_state());
         }
-        active_drags.erase(nid);
         node->update_gizmos();
         return;
     }
 
     if (p_handle_id >= HANDLE_FORE_OFFSET) {
         const int idx = p_handle_id - HANDLE_FORE_OFFSET;
-        if (idx >= 0 && idx < spline->get_point_count()) {
-            const godot::Vector3 prev_h = p_restore;
+        if (idx >= 0 && idx < spline->get_point_count() && had_state) {
+            const godot::Vector3 prev_h = st.initial_value;
             const godot::Vector3 cur_h  = spline->get_point_fore_handle(idx);
             spline->set_point_fore_handle(idx, prev_h, true);
-            if (!p_cancel) {
-                spline->commit_set_point_fore_handle(idx, cur_h, true);
-            }
+            if (!p_cancel) spline->commit_set_point_fore_handle(idx, cur_h, true);
         }
-        active_drags.erase(nid);
         node->update_gizmos();
         return;
     }
 
     if (p_handle_id >= HANDLE_BACK_OFFSET) {
         const int idx = p_handle_id - HANDLE_BACK_OFFSET;
-        if (idx >= 0 && idx < spline->get_point_count()) {
-            const godot::Vector3 prev_h = p_restore;
+        if (idx >= 0 && idx < spline->get_point_count() && had_state) {
+            const godot::Vector3 prev_h = st.initial_value;
             const godot::Vector3 cur_h  = spline->get_point_back_handle(idx);
             spline->set_point_back_handle(idx, prev_h, true);
-            if (!p_cancel) {
-                spline->commit_set_point_back_handle(idx, cur_h, true);
-            }
+            if (!p_cancel) spline->commit_set_point_back_handle(idx, cur_h, true);
         }
-        active_drags.erase(nid);
         node->update_gizmos();
         return;
     }
 
-    if (p_handle_id >= 0 && p_handle_id < spline->get_point_count()) {
-        const godot::Vector3 prev_pos = p_restore;
+    if (p_handle_id >= 0 && p_handle_id < spline->get_point_count() && had_state) {
+        const godot::Vector3 prev_pos = st.initial_value;
         const godot::Vector3 cur_pos  = spline->get_point_position(p_handle_id);
         spline->set_point_position(p_handle_id, prev_pos);
-        if (!p_cancel) {
-            spline->commit_set_point_position(p_handle_id, cur_pos);
-        }
+        if (!p_cancel) spline->commit_set_point_position(p_handle_id, cur_pos);
     }
 
-    active_drags.erase(nid);
     node->update_gizmos();
 }
 

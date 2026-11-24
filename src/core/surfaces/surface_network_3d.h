@@ -18,6 +18,7 @@
 #include "coons_patch_3d.h"
 #include "nurbs_patch_3d.h"
 #include "surface_common.h"
+#include "../splines/spline_3d.h"
 
 #include <cstdint>
 #include <string>
@@ -155,6 +156,90 @@ public:
      * Computes manifold edge-valence diagnostics for any quad mesh.
      */
     [[nodiscard]] static SurfaceManifoldStats compute_manifold_stats(const SurfaceQuadMesh3D<T> &p_mesh);
+};
+
+
+/**
+ * `PartSeamLoopSpec<T>` & `PartSeamContract<T>`:
+ * Cross-part topological hole contract connecting two separable body-part meshes
+ * (e.g., `Chest.ArmHole_L <-> LeftShoulder.ChestHole`) via a shared boundary spline
+ * with a locked canonical ring vertex count and cross-part averaged boundary normals.
+ */
+template <FloatingPointScalar T = float>
+struct PartSeamLoopSpec {
+    uint32_t seam_id             = 0u;
+    std::string seam_name;
+    uint32_t part_a_id           = 0u;
+    uint32_t part_b_id           = 0u;
+    uint32_t canonical_ring_count = 12u; ///< Locked even ring vertex count shared by both mating holes
+    Spline3D<T> shared_seam_spline;
+    T start_t_offset             = static_cast<T>(0);
+    bool reverse_on_part_b       = false;
+};
+
+template <FloatingPointScalar T = float>
+struct PartSeamContract {
+    using Vec3 = glm::vec<3, T>;
+
+    /**
+     * Samples the locked canonical boundary ring positions along `p_spec.shared_seam_spline`
+     * so both adjacent part networks tessellate identical perimeter vertices.
+     */
+    [[nodiscard]] static std::vector<Vec3> sample_canonical_ring(
+        const PartSeamLoopSpec<T> &p_spec,
+        bool p_for_part_b = false
+    ) {
+        const uint32_t count = std::max<uint32_t>(4u, p_spec.canonical_ring_count);
+        std::vector<Vec3> ring;
+        ring.reserve(count);
+        if (p_spec.shared_seam_spline.get_point_count() < 2u) {
+            return ring;
+        }
+        for (uint32_t i = 0u; i < count; ++i) {
+            T t = static_cast<T>(i) / static_cast<T>(count) + p_spec.start_t_offset;
+            t = t - std::floor(t);
+            if (p_for_part_b && p_spec.reverse_on_part_b) {
+                t = static_cast<T>(1) - t;
+                if (t >= static_cast<T>(1)) t = static_cast<T>(0);
+            }
+            ring.push_back(p_spec.shared_seam_spline.get_point(t, false));
+        }
+        return ring;
+    }
+
+    /**
+     * Averages boundary vertex normals across two separable part meshes wherever vertices
+     * coincide within `p_epsilon`, guaranteeing zero shading seam when assembled while
+     * keeping the meshes cleanly separable at runtime (dismemberment / swappable limbs).
+     * Returns the count of synchronized seam vertex pairs.
+     */
+    static uint32_t synchronize_seam_boundary_normals(
+        SurfaceQuadMesh3D<T> &r_mesh_a,
+        SurfaceQuadMesh3D<T> &r_mesh_b,
+        T p_epsilon = static_cast<T>(2e-3)
+    ) {
+        const T eps2 = p_epsilon * p_epsilon;
+        uint32_t synced = 0u;
+        const size_t na = std::min(r_mesh_a.positions.size(), r_mesh_a.normals.size());
+        const size_t nb = std::min(r_mesh_b.positions.size(), r_mesh_b.normals.size());
+        for (size_t ia = 0; ia < na; ++ia) {
+            const Vec3 &pa = r_mesh_a.positions[ia];
+            for (size_t ib = 0; ib < nb; ++ib) {
+                const Vec3 d = pa - r_mesh_b.positions[ib];
+                if (glm::dot(d, d) <= eps2) {
+                    const Vec3 avg = r_mesh_a.normals[ia] + r_mesh_b.normals[ib];
+                    const T len = glm::length(avg);
+                    if (len > static_cast<T>(1e-6)) {
+                        const Vec3 n = avg / len;
+                        r_mesh_a.normals[ia] = n;
+                        r_mesh_b.normals[ib] = n;
+                        ++synced;
+                    }
+                }
+            }
+        }
+        return synced;
+    }
 };
 
 } // namespace ideam::core

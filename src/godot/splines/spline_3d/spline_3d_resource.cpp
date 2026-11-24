@@ -165,6 +165,17 @@ void Spline3DResource::_bind_methods() {
         DEFVAL(5.0),
         DEFVAL(8)
     );
+    ClassDB::bind_method(D_METHOD("set_scaffold_anchors", "anchors"), &Spline3DResource::set_scaffold_anchors);
+    ClassDB::bind_method(D_METHOD("get_scaffold_anchors"), &Spline3DResource::get_scaffold_anchors);
+    ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "scaffold_anchors"), "set_scaffold_anchors", "get_scaffold_anchors");
+    ClassDB::bind_method(
+        D_METHOD("bind_point_to_scaffold", "point_index", "scaffold_node_id", "local_offset", "attach_mode"),
+        &Spline3DResource::bind_point_to_scaffold,
+        DEFVAL(Vector3()),
+        DEFVAL(0)
+    );
+    ClassDB::bind_method(D_METHOD("clear_scaffold_anchors"), &Spline3DResource::clear_scaffold_anchors);
+
     ClassDB::bind_method(
         D_METHOD("setup_helix", "radius", "height", "turns", "points_per_turn"),
         &Spline3DResource::setup_helix,
@@ -988,6 +999,40 @@ godot::Ref<Spline3DResource> Spline3DResource::create_helix(
     res.instantiate();
     res->setup_helix(p_radius, p_height, p_turns, p_points_per_turn);
     return res;
+}
+
+
+void Spline3DResource::set_scaffold_anchors(const godot::TypedArray<godot::Dictionary> &p_anchors) {
+    scaffold_anchors_ = p_anchors;
+    emit_changed();
+}
+
+void Spline3DResource::bind_point_to_scaffold(
+    int p_point_index,
+    int p_scaffold_node_id,
+    const godot::Vector3 &p_local_offset,
+    int p_attach_mode
+) {
+    godot::Dictionary d;
+    d["point_index"]      = p_point_index;
+    d["scaffold_node_id"] = p_scaffold_node_id;
+    d["local_offset"]     = p_local_offset;
+    d["attach_mode"]      = p_attach_mode;
+    for (int64_t i = 0; i < scaffold_anchors_.size(); ++i) {
+        const godot::Dictionary existing = scaffold_anchors_[i];
+        if (int(existing.get("point_index", -1)) == p_point_index) {
+            scaffold_anchors_[i] = d;
+            emit_changed();
+            return;
+        }
+    }
+    scaffold_anchors_.append(d);
+    emit_changed();
+}
+
+void Spline3DResource::clear_scaffold_anchors() {
+    scaffold_anchors_.clear();
+    emit_changed();
 }
 
 } // namespace ideam::godot_ext

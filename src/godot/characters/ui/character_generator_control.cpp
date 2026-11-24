@@ -18,15 +18,19 @@ void CharacterGeneratorControl::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_gallery_bank"), &CharacterGeneratorControl::get_gallery_bank);
     ClassDB::bind_method(D_METHOD("set_tool_context", "context"), &CharacterGeneratorControl::set_tool_context);
     ClassDB::bind_method(D_METHOD("get_tool_context"), &CharacterGeneratorControl::get_tool_context);
+    ClassDB::bind_method(D_METHOD("get_active_lod"), &CharacterGeneratorControl::get_active_lod);
 
     ClassDB::bind_method(D_METHOD("_on_slider_changed", "value", "param_name"), &CharacterGeneratorControl::_on_slider_changed);
     ClassDB::bind_method(D_METHOD("_on_randomize_pressed"), &CharacterGeneratorControl::_on_randomize_pressed);
     ClassDB::bind_method(D_METHOD("_on_reset_defaults_pressed"), &CharacterGeneratorControl::_on_reset_defaults_pressed);
     ClassDB::bind_method(D_METHOD("_on_lod_selected", "index"), &CharacterGeneratorControl::_on_lod_selected);
+    ClassDB::bind_method(D_METHOD("_on_details_toggled", "pressed"), &CharacterGeneratorControl::_on_details_toggled);
     ClassDB::bind_method(D_METHOD("_on_clear_details_pressed"), &CharacterGeneratorControl::_on_clear_details_pressed);
     ClassDB::bind_method(D_METHOD("_on_apply_detail_preset_pressed", "preset_id"), &CharacterGeneratorControl::_on_apply_detail_preset_pressed);
     ClassDB::bind_method(D_METHOD("_on_help_pressed"), &CharacterGeneratorControl::_on_help_pressed);
     ClassDB::bind_method(D_METHOD("_on_instance_changed"), &CharacterGeneratorControl::_on_instance_changed);
+
+    ADD_SIGNAL(MethodInfo("lod_changed", PropertyInfo(Variant::INT, "lod_level")));
 }
 
 CharacterGeneratorControl::CharacterGeneratorControl() {
@@ -99,7 +103,7 @@ void CharacterGeneratorControl::_build_ui() {
     auto *scroll = memnew(ScrollContainer);
     scroll->set_h_size_flags(SIZE_EXPAND_FILL);
     scroll->set_v_size_flags(SIZE_EXPAND_FILL);
-    scroll->set_custom_minimum_size(Vector2(300.0f, 180.0f));
+    scroll->set_custom_minimum_size(Vector2(260.0f, 160.0f));
     add_child(scroll);
 
     sliders_vbox_ = memnew(VBoxContainer);
@@ -107,14 +111,18 @@ void CharacterGeneratorControl::_build_ui() {
     sliders_vbox_->add_theme_constant_override("separation", 4);
     scroll->add_child(sliders_vbox_);
 
-    // Quick Layer 4 Asymmetric Detail Bank Strip
+    // Quick Layer 4 Non-Destructive Details Strip
     auto *detail_bar = memnew(HBoxContainer);
     detail_bar->add_theme_constant_override("separation", 6);
     add_child(detail_bar);
 
-    auto *dlbl = memnew(Label);
-    dlbl->set_text("Layer 4 Details:");
-    detail_bar->add_child(dlbl);
+    details_toggle_ = memnew(CheckButton);
+    details_toggle_->set_text("Details");
+    details_toggle_->set_pressed(true);
+    details_toggle_->set_tooltip_text("Non-destructively toggle asymmetric detail overrides and surface deltas.");
+    domain_tool::stamp_ui_selector(details_toggle_, "characters.generator.details_toggle");
+    details_toggle_->connect("toggled", Callable(this, "_on_details_toggled"));
+    detail_bar->add_child(details_toggle_);
 
     const TypedArray<Dictionary> details = gallery_bank_->get_presets_for_bank(BANK_DETAIL);
     for (int64_t i = 0; i < details.size(); ++i) {
@@ -126,7 +134,7 @@ void CharacterGeneratorControl::_build_ui() {
     }
 
     auto *clear_btn = memnew(Button);
-    clear_btn->set_text("Clear Layer 4");
+    clear_btn->set_text("Clear Details");
     domain_tool::stamp_ui_selector(clear_btn, "characters.generator.clear_details_btn");
     clear_btn->connect("pressed", Callable(this, "_on_clear_details_pressed"));
     detail_bar->add_child(clear_btn);
@@ -143,7 +151,7 @@ void CharacterGeneratorControl::_build_ui() {
 
 void CharacterGeneratorControl::bind_domain_asset(const Ref<Resource> &p_asset, const Ref<ToolContext> &p_context) {
     set_tool_context(p_context);
-    if (Ref<CharacterInstanceResource> ci = p_asset; ci.is_valid()) {
+    if (Ref<LoomisCharacter3DResource> ci = p_asset; ci.is_valid()) {
         set_character_instance(ci);
     }
 }
@@ -155,7 +163,7 @@ void CharacterGeneratorControl::set_tool_context(const Ref<ToolContext> &p_conte
     }
 }
 
-void CharacterGeneratorControl::set_character_instance(const Ref<CharacterInstanceResource> &p_instance) {
+void CharacterGeneratorControl::set_character_instance(const Ref<LoomisCharacter3DResource> &p_instance) {
     const Callable cb(this, "_on_instance_changed");
     if (instance_.is_valid() && instance_->is_connected("changed", cb)) instance_->disconnect("changed", cb);
     instance_ = p_instance;
@@ -181,7 +189,7 @@ void CharacterGeneratorControl::_rebuild_parameter_sliders() {
 
     if (!instance_.is_valid() || !instance_->get_body_plan().is_valid()) {
         auto *lbl = memnew(Label);
-        lbl->set_text("Bind a CharacterInstanceResource with a BodyPlanResource to edit bounded parameters.");
+        lbl->set_text("Bind a LoomisCharacter3DResource with a BodyPlanResource to edit bounded parameters.");
         sliders_vbox_->add_child(lbl);
         rebuilding_sliders_ = false;
         return;
@@ -225,13 +233,19 @@ void CharacterGeneratorControl::_rebuild_parameter_sliders() {
 void CharacterGeneratorControl::_refresh_telemetry() {
     if (!instance_.is_valid() || !instance_->get_body_plan().is_valid()) return;
 
+    if (details_toggle_) {
+        syncing_details_toggle_ = true;
+        details_toggle_->set_pressed(instance_->get_details_enabled());
+        syncing_details_toggle_ = false;
+    }
+
     const TypedArray<Dictionary> regimes = instance_->get_evaluated_bridge_regimes();
     String br_text = "Topological Bridges: ";
     for (int64_t i = 0; i < regimes.size(); ++i) {
         const Dictionary d = regimes[i];
         const int r = int(d.get("active_regime", 0));
         const char *r_str = (r == 2) ? "DEEP_FOLD" : ((r == 1) ? "CREASE" : "SMOOTH");
-        if (i > 0) br_text += "  |  ";
+        if (i > 0) br_text += String("  |  ");
         br_text += String(d.get("name", "Bridge")) + String(": ") + String(r_str) +
                    String(" (") + String::num(double(d.get("evaluated_metric", 0.0)), 2) + String(")");
     }
@@ -242,7 +256,8 @@ void CharacterGeneratorControl::_refresh_telemetry() {
         balance_telemetry_lbl_->set_text(
             String("Character: ") + instance_->get_character_name() +
             String("  |  LOD ") + String::num_int64(active_lod_) +
-            String("  |  Layer 4 Deltas: ") + String::num_int64(instance_->get_detail_deltas().size()) +
+            String("  |  Details: ") + (instance_->get_details_enabled() ? String("ON") : String("OFF")) +
+            String(" (") + String::num_int64(instance_->get_detail_override_count()) + String(" overrides)") +
             String("  |  Loomis Balance: ") + (bool(bal.get("is_balanced", true)) ? String("Balanced") : String("Off-Balance"))
         );
     }
@@ -274,10 +289,29 @@ void CharacterGeneratorControl::_on_reset_defaults_pressed() {
 void CharacterGeneratorControl::_on_lod_selected(int p_index) {
     active_lod_ = std::clamp(p_index, 0, 3);
     _refresh_telemetry();
+    emit_signal("lod_changed", active_lod_);
+}
+
+void CharacterGeneratorControl::_on_details_toggled(bool p_pressed) {
+    if (syncing_details_toggle_ || !instance_.is_valid()) return;
+    if (tool_context_.is_valid() && tool_context_->get_undo_redo().is_valid()) {
+        auto ur = tool_context_->get_undo_redo();
+        const bool old_val = instance_->get_details_enabled();
+        if (old_val != p_pressed) {
+            ur->create_action(p_pressed ? "Enable Character Details" : "Disable Character Details");
+            ur->add_do_method(instance_.ptr(), "set_details_enabled", p_pressed);
+            ur->add_undo_method(instance_.ptr(), "set_details_enabled", old_val);
+            ur->commit_action();
+        }
+    } else {
+        instance_->set_details_enabled(p_pressed);
+    }
 }
 
 void CharacterGeneratorControl::_on_clear_details_pressed() {
-    if (instance_.is_valid()) instance_->clear_detail_deltas();
+    if (instance_.is_valid()) {
+        instance_->clear_all_detail_overrides();
+    }
 }
 
 void CharacterGeneratorControl::_on_apply_detail_preset_pressed(const String &p_preset_id) {

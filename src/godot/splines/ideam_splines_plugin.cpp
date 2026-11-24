@@ -24,6 +24,7 @@ void IdeamSplinesPlugin::_bind_methods() {
     godot::ClassDB::bind_method(godot::D_METHOD("is_geometry_handshake_available"), &IdeamSplinesPlugin::is_geometry_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tiles_handshake_available"), &IdeamSplinesPlugin::is_tiles_handshake_available);
     godot::ClassDB::bind_method(godot::D_METHOD("is_tasks_handshake_available"), &IdeamSplinesPlugin::is_tasks_handshake_available);
+    godot::ClassDB::bind_method(godot::D_METHOD("_on_spline_3d_mode_changed", "mode_id"), &IdeamSplinesPlugin::_on_spline_3d_mode_changed);
 
 #ifdef TOOLS_ENABLED
     godot::ClassDB::bind_static_method(
@@ -78,21 +79,40 @@ void IdeamSplinesPlugin::_enter_tree() {
     spline_tween_inspector.instantiate();
     add_inspector_plugin(spline_tween_inspector);
 
-    // 3. Instantiate and register 3D, 4D, Extrude, Scatter & Corridor Viewport Gizmo Plugins
+    // 3. Instantiate and register trans-environment 3D, 4D, Extrude, Scatter & Corridor IdeamGizmos
+    godot::Ref<ToolContext> ctx = get_or_create_plugin_tool_context();
+
     spline_3d_gizmo.instantiate();
-    add_node_3d_gizmo_plugin(spline_3d_gizmo);
+    spline_3d_gizmo->set_tool_context(ctx);
+    register_ideam_gizmo(spline_3d_gizmo);
 
     spline_4d_gizmo.instantiate();
-    add_node_3d_gizmo_plugin(spline_4d_gizmo);
+    spline_4d_gizmo->set_tool_context(ctx);
+    register_ideam_gizmo(spline_4d_gizmo);
 
     spline_extrude_gizmo.instantiate();
-    add_node_3d_gizmo_plugin(spline_extrude_gizmo);
+    spline_extrude_gizmo->set_tool_context(ctx);
+    register_ideam_gizmo(spline_extrude_gizmo);
 
     spline_scatter_gizmo.instantiate();
-    add_node_3d_gizmo_plugin(spline_scatter_gizmo);
+    spline_scatter_gizmo->set_tool_context(ctx);
+    register_ideam_gizmo(spline_scatter_gizmo);
 
     spline_corridor_gizmo.instantiate();
-    add_node_3d_gizmo_plugin(spline_corridor_gizmo);
+    spline_corridor_gizmo->set_tool_context(ctx);
+    register_ideam_gizmo(spline_corridor_gizmo);
+
+    // 3b. Mount 3D Spline Spatial Toolbar (Spline3DViewportEditor)
+    spline_3d_toolbar_ = memnew(IdeamSpatialToolbar);
+    spline_3d_toolbar_->set_tool_context(ctx);
+    spline_3d_toolbar_->add_mode_button(godot::StringName("edit"), "Edit", "Edit 3D/4D spline anchors, tangents, and splits.", "splines.spatial_toolbar.edit");
+    spline_3d_toolbar_->add_mode_button(godot::StringName("tangents"), "Tangents", "Focus on Bezier/Catmull-Rom tangent handles.", "splines.spatial_toolbar.tangents");
+    spline_3d_toolbar_->add_mode_button(godot::StringName("split"), "Split", "Focus on section midpoint subdivision handles.", "splines.spatial_toolbar.split");
+    spline_3d_toolbar_->add_mode_button(godot::StringName("frames"), "Bishop Frames", "Overlay rotation-minimizing Bishop frame triads.", "splines.spatial_toolbar.frames");
+    spline_3d_toolbar_->set_active_mode(godot::StringName("edit"), false);
+    spline_3d_toolbar_->connect("mode_changed", godot::Callable(this, "_on_spline_3d_mode_changed"));
+    spline_3d_toolbar_->set_visible(false);
+    register_spatial_toolbar(spline_3d_toolbar_);
 
     // 4. Mount 2D Scene-Space Viewport Editor Toolbar for SplineNode2D & SplinePolygon2D
     spline_2d_viewport_editor = memnew(Spline2DViewportEditor);
@@ -193,26 +213,14 @@ void IdeamSplinesPlugin::_exit_tree() {
         memdelete(spline_2d_viewport_editor);
         spline_2d_viewport_editor = nullptr;
     }
-    if (spline_corridor_gizmo.is_valid()) {
-        remove_node_3d_gizmo_plugin(spline_corridor_gizmo);
-        spline_corridor_gizmo.unref();
-    }
-    if (spline_scatter_gizmo.is_valid()) {
-        remove_node_3d_gizmo_plugin(spline_scatter_gizmo);
-        spline_scatter_gizmo.unref();
-    }
-    if (spline_extrude_gizmo.is_valid()) {
-        remove_node_3d_gizmo_plugin(spline_extrude_gizmo);
-        spline_extrude_gizmo.unref();
-    }
-    if (spline_4d_gizmo.is_valid()) {
-        remove_node_3d_gizmo_plugin(spline_4d_gizmo);
-        spline_4d_gizmo.unref();
-    }
-    if (spline_3d_gizmo.is_valid()) {
-        remove_node_3d_gizmo_plugin(spline_3d_gizmo);
-        spline_3d_gizmo.unref();
-    }
+    cleanup_ideam_spatial_registrations();
+    spline_3d_toolbar_ = nullptr;
+    selected_spatial_node_id_ = 0u;
+    spline_corridor_gizmo.unref();
+    spline_scatter_gizmo.unref();
+    spline_extrude_gizmo.unref();
+    spline_4d_gizmo.unref();
+    spline_3d_gizmo.unref();
 
     if (spline_tween_inspector.is_valid()) {
         remove_inspector_plugin(spline_tween_inspector);
@@ -241,20 +249,55 @@ void IdeamSplinesPlugin::_exit_tree() {
     }
 }
 
+void IdeamSplinesPlugin::_on_spline_3d_mode_changed(const godot::StringName &p_mode_id) {
+    if (spline_3d_gizmo.is_valid()) spline_3d_gizmo->set_active_tool_mode(p_mode_id);
+    if (spline_4d_gizmo.is_valid()) spline_4d_gizmo->set_active_tool_mode(p_mode_id);
+    if (selected_spatial_node_id_ != 0u) {
+        if (auto *n3d = godot::Object::cast_to<godot::Node3D>(godot::ObjectDB::get_instance(selected_spatial_node_id_))) {
+            n3d->update_gizmos();
+        }
+    }
+}
+
 bool IdeamSplinesPlugin::_handles(godot::Object *p_object) const {
-    return spline_2d_viewport_editor && spline_2d_viewport_editor->handles_object(p_object);
+    if (spline_2d_viewport_editor && spline_2d_viewport_editor->handles_object(p_object)) {
+        return true;
+    }
+    return godot::Object::cast_to<SplineNode3D>(p_object) != nullptr ||
+           godot::Object::cast_to<SplineNode4D>(p_object) != nullptr ||
+           godot::Object::cast_to<SplineExtrudeMesh3D>(p_object) != nullptr ||
+           godot::Object::cast_to<SplineMultiMesh3D>(p_object) != nullptr ||
+           godot::Object::cast_to<SplineZone3D>(p_object) != nullptr;
 }
 
 void IdeamSplinesPlugin::_edit(godot::Object *p_object) {
-    if (spline_2d_viewport_editor) {
+    if (spline_2d_viewport_editor && spline_2d_viewport_editor->handles_object(p_object)) {
         spline_2d_viewport_editor->edit_object(p_object);
+        selected_spatial_node_id_ = 0u;
+    } else if (auto *n3d = godot::Object::cast_to<godot::Node3D>(p_object)) {
+        selected_spatial_node_id_ = n3d->get_instance_id();
+    } else {
+        selected_spatial_node_id_ = 0u;
     }
 }
 
 void IdeamSplinesPlugin::_make_visible(bool p_visible) {
     if (spline_2d_viewport_editor) {
-        spline_2d_viewport_editor->set_editor_visible(p_visible);
+        spline_2d_viewport_editor->set_editor_visible(p_visible && selected_spatial_node_id_ == 0u);
     }
+    if (spline_3d_toolbar_) {
+        spline_3d_toolbar_->set_visible(p_visible && selected_spatial_node_id_ != 0u);
+    }
+}
+
+int32_t IdeamSplinesPlugin::_forward_3d_gui_input(
+    godot::Camera3D *p_viewport_camera,
+    const godot::Ref<godot::InputEvent> &p_event
+) {
+    godot::Node3D *target = (selected_spatial_node_id_ != 0u)
+        ? godot::Object::cast_to<godot::Node3D>(godot::ObjectDB::get_instance(selected_spatial_node_id_))
+        : nullptr;
+    return forward_gizmos_3d_gui_input(p_viewport_camera, p_event, target);
 }
 
 bool IdeamSplinesPlugin::_forward_canvas_gui_input(const godot::Ref<godot::InputEvent> &p_event) {

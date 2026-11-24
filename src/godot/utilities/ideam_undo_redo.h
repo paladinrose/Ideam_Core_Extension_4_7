@@ -42,13 +42,16 @@ public:
 
 #ifdef TOOLS_ENABLED
     void set_editor_undo_redo(EditorUndoRedoManager *p_manager);
+    [[nodiscard]] EditorUndoRedoManager *get_editor_undo_redo() const noexcept { return editor_undo_redo; }
 #endif
+
+    [[nodiscard]] bool is_using_editor_undo_redo() const;
 
     // Global observer hooks (used by IdeamTutorials validator & macro recorder in Editor and Runtime)
     static void register_commit_observer(UndoRedoCommitObserver p_observer);
     static void unregister_commit_observer(const godot::StringName &p_observer_id);
 
-    // Unified API
+    // Unified Action Recording API
     void create_action(const String &name, UndoRedo::MergeMode merge_mode = UndoRedo::MERGE_DISABLE, Object *custom_context = nullptr);
     void add_do_method(const Callable &callable);
     void add_undo_method(const Callable &callable);
@@ -75,5 +78,13 @@ public:
     void add_do_property(Object *object, const StringName &property, const Variant &value);
     void add_undo_property(Object *object, const StringName &property, const Variant &value);
     void commit_action(bool execute = true);
+
+    // Runtime & Trans-Environment Stack Controls
+    bool undo();
+    bool redo();
+    [[nodiscard]] bool has_undo() const;
+    [[nodiscard]] bool has_redo() const;
+    void clear_history(bool p_increase_version = true);
+    [[nodiscard]] String get_current_action_name() const;
 };
 } // namespace ideam::godot_ext

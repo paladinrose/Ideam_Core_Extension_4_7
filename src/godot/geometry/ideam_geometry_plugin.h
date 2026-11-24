@@ -17,6 +17,7 @@
 #include "../editor/ideam_editor_plugin.h"
 #include "../utilities/ideam_undo_redo.h"
 #include "editor/geometry_editor_inspector_base.h"
+#include "geometry_projector_gizmo.h"
 
 #ifdef TOOLS_ENABLED
 #include <godot_cpp/classes/editor_undo_redo_manager.hpp>
@@ -43,6 +44,7 @@ private:
     godot::Ref<VoronoiDiagram2DResourceInspector> voronoi_2d_inspector;
     godot::Ref<SDFGrid2DResourceInspector> sdf_grid_2d_inspector;
     godot::Ref<TensorField2DResourceInspector> tensor_field_2d_inspector;
+    godot::Ref<GeometryProjectorGizmo> projector_gizmo_;
 
 public:
     IdeamGeometryPlugin();

@@ -72,9 +72,10 @@ void IdeamTilesPlugin::_enter_tree() {
     spherical_goldberg_inspector_.instantiate();
     add_inspector_plugin(spherical_goldberg_inspector_);
 
-    // 3. Instantiate and register 3D Viewport Gizmos (GeodesicPlanetGizmo)
+    // 3. Instantiate and register trans-environment GeodesicPlanetGizmo
     geodesic_planet_gizmo_.instantiate();
-    add_node_3d_gizmo_plugin(geodesic_planet_gizmo_);
+    geodesic_planet_gizmo_->set_tool_context(get_or_create_plugin_tool_context());
+    register_ideam_gizmo(geodesic_planet_gizmo_);
 
     // 4. Register Tiles Tier 1 Controls with GeometryComposer ("Tiles" tab)
     auto &reg = ToolRegistry::get_singleton();
@@ -148,10 +149,8 @@ void IdeamTilesPlugin::_exit_tree() {
     reg.unregister_class(ws_id, "CompositeTilingResource");
     reg.unregister_class(ws_id, "HyperbolicPoincareTilingResource");
     reg.unregister_class(ws_id, "SphericalGoldbergPolyhedronResource");
-    if (geodesic_planet_gizmo_.is_valid()) {
-        remove_node_3d_gizmo_plugin(geodesic_planet_gizmo_);
-        geodesic_planet_gizmo_.unref();
-    }
+    cleanup_ideam_spatial_registrations();
+    geodesic_planet_gizmo_.unref();
     if (spherical_goldberg_inspector_.is_valid()) {
         remove_inspector_plugin(spherical_goldberg_inspector_);
         spherical_goldberg_inspector_.unref();

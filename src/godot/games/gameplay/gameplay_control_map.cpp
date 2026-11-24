@@ -1595,7 +1595,7 @@ bool GameplayControlMap::feed_custom_serial_line(const godot::String &p_line) {
             if (token.is_valid_float() || token.is_valid_int()) {
                 float val = token.to_float();
                 bool is_raw = std::abs(val) > 1.001f;
-                godot::String ch_name = "ch" + godot::String::num_int64(i);
+                godot::String ch_name = godot::String("ch") + godot::String::num_int64(i);
                 set_custom_channel_value(godot::StringName(ch_name), val, is_raw);
                 parsed_any = true;
             }
@@ -1618,13 +1618,13 @@ bool GameplayControlMap::feed_custom_hid_bytes(const godot::PackedByteArray &p_b
         for (int i = 0; i < channel_count; ++i) {
             uint16_t raw = static_cast<uint16_t>(p_bytes[i * 2]) |
                            (static_cast<uint16_t>(p_bytes[i * 2 + 1]) << 8);
-            godot::String ch_name = "ch" + godot::String::num_int64(i);
+            godot::String ch_name = godot::String("ch") + godot::String::num_int64(i);
             set_custom_channel_value(godot::StringName(ch_name), static_cast<float>(raw), true);
         }
     } else {
         for (int i = 0; i < p_bytes.size(); ++i) {
             uint8_t raw = p_bytes[i];
-            godot::String ch_name = "ch" + godot::String::num_int64(i);
+            godot::String ch_name = godot::String("ch") + godot::String::num_int64(i);
             set_custom_channel_value(godot::StringName(ch_name), static_cast<float>(raw), true);
         }
     }
@@ -1748,7 +1748,7 @@ void GameplayControlMap::apply_vr_analog_to_animation_target(godot::Node *p_targ
     const float trig = _vr_triggers[idx];
     const float grip = _vr_grips[idx];
 
-    // If the target is a ParametricCharacterNode3D (IdeamCharacters), invoke its native morph method directly
+    // If the target is a LoomisCharacterNode3D (IdeamCharacters), invoke its native morph method directly
     if (p_target->has_method("apply_xr_trigger_grip_morphs")) {
         p_target->call("apply_xr_trigger_grip_morphs", idx, trig, grip);
         return;

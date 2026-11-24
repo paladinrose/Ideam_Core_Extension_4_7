@@ -3,14 +3,18 @@
 /**
  * container_3d.h
  * 3D Layout Objects (`Container3D`, `BoxContainer3D`, `GridContainer3D`,
- * `RadialContainer3D`, `SplineContainer3D`) and the Functional Shell Node
- * (`SemanticStructure3D`) in `src/godot/design/`.
+ * `RadialContainer3D`, `SplineContainer3D`, `ProportionContainer3D`) and the
+ * Functional Shell Node (`SemanticStructure3D`) in `src/godot/design/`.
  */
 
+#include "proportion_ruler_resource.h"
 #include "style_3d_resource.h"
+
 #include <godot_cpp/classes/node3d.hpp>
 #include <godot_cpp/core/class_db.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
 #include <godot_cpp/variant/packed_vector3_array.hpp>
+#include <godot_cpp/variant/string.hpp>
 #include <godot_cpp/variant/vector3.hpp>
 
 namespace ideam::godot_ext {
@@ -38,11 +42,6 @@ public:
     virtual void refit_children_3d();
 };
 
-/**
- * `BoxContainer3D`:
- * Stacks child `Node3D` / `SemanticStructure3D` nodes along a primary axis (`0 = X, 1 = Y, 2 = Z`),
- * honoring each child's `rest_obb_extents`, `margin_extents`, and `size_flags`.
- */
 class BoxContainer3D : public Container3D {
     GDCLASS(BoxContainer3D, Container3D)
 
@@ -66,10 +65,6 @@ public:
     void refit_children_3d() override;
 };
 
-/**
- * `GridContainer3D`:
- * Arranges child `Node3D` / `SemanticStructure3D` nodes in a 3D `(columns_x, rows_y, layers_z)` lattice.
- */
 class GridContainer3D : public Container3D {
     GDCLASS(GridContainer3D, Container3D)
 
@@ -93,11 +88,6 @@ public:
     void refit_children_3d() override;
 };
 
-/**
- * `RadialContainer3D`:
- * Arranges children around a circle or helix of `radius_` (e.g., 3..6 chair legs,
- * chandelier arms, or spiral staircase treads).
- */
 class RadialContainer3D : public Container3D {
     GDCLASS(RadialContainer3D, Container3D)
 
@@ -125,11 +115,6 @@ public:
     void refit_children_3d() override;
 };
 
-/**
- * `SplineContainer3D`:
- * Organic / botanical / architectural path container that distributes and tapers children
- * along a 3D polyline / spline curve (`curve_points_3d_`).
- */
 class SplineContainer3D : public Container3D {
     GDCLASS(SplineContainer3D, Container3D)
 
@@ -158,13 +143,63 @@ public:
 };
 
 /**
- * `SemanticStructure3D`:
- * The 3D `Control` Functional Shell Node (`Surface -> Wall/Floor/Seat -> Chair`,
- * `Aperture -> Door/Window`, `Organic -> Trunk/Branch`).
- * Holds a 3D Box-Model (`rest_obb_extents`, `margin_extents`, `size_flags`),
- * `SemanticRoleID`, `SemanticTagSetResource`, and `Theme3DResource`, and smartly
- * applies resolved styles and bounds to its Godot children.
+ * `ProportionContainer3D`:
+ * Specialized `Container3D` bound to a live `ProportionRulerGraphResource`.
+ * Evaluates the `ProportionRulerGraph` DAG whenever `ruler_graph_` changes and automatically
+ * repositions/rescales child `FormScaffoldNode3D`, `Socket3D`, and `Node3D` children using
+ * per-child binding metadata (`set_child_ruler_binding()` or `child_bindings` dictionary):
+ *   - `ruler_position_x`, `ruler_position_y`, `ruler_position_z` (ruler node names)
+ *   - `ruler_scale_x`, `ruler_scale_y`, `ruler_scale_z` (ruler node names)
+ *   - `position_multiplier` (`Vector3`), `scale_multiplier` (`Vector3`), `proportional_anchor_mode` (`int`: 0=Center, 1=Base, 2=Top)
  */
+class ProportionContainer3D : public Container3D {
+    GDCLASS(ProportionContainer3D, Container3D)
+
+public:
+    enum ProportionalAnchorMode : int32_t {
+        ANCHOR_CENTER = 0,
+        ANCHOR_BASE   = 1,
+        ANCHOR_TOP    = 2
+    };
+
+private:
+    godot::Ref<ProportionRulerGraphResource> ruler_graph_;
+    godot::Dictionary child_bindings_; ///< `String(child_name) -> Dictionary` binding spec
+    bool sync_child_scaffolds_ = true;
+
+    void _on_ruler_graph_changed();
+
+protected:
+    static void _bind_methods();
+
+public:
+    ProportionContainer3D() = default;
+    ~ProportionContainer3D() override;
+
+    void set_ruler_graph(const godot::Ref<ProportionRulerGraphResource> &p_graph);
+    [[nodiscard]] godot::Ref<ProportionRulerGraphResource> get_ruler_graph() const { return ruler_graph_; }
+
+    void set_child_bindings(const godot::Dictionary &p_bindings);
+    [[nodiscard]] godot::Dictionary get_child_bindings() const { return child_bindings_; }
+
+    void set_sync_child_scaffolds(bool p_sync);
+    [[nodiscard]] bool get_sync_child_scaffolds() const noexcept { return sync_child_scaffolds_; }
+
+    void set_child_ruler_binding(
+        const godot::String &p_child_name,
+        const godot::String &p_pos_x_node = godot::String(),
+        const godot::String &p_pos_y_node = godot::String(),
+        const godot::String &p_pos_z_node = godot::String(),
+        const godot::String &p_scale_x_node = godot::String(),
+        const godot::String &p_scale_y_node = godot::String(),
+        const godot::String &p_scale_z_node = godot::String(),
+        int p_anchor_mode = ANCHOR_CENTER
+    );
+    void clear_child_ruler_binding(const godot::String &p_child_name);
+
+    void refit_children_3d() override;
+};
+
 class SemanticStructure3D : public godot::Node3D {
     GDCLASS(SemanticStructure3D, godot::Node3D)
 

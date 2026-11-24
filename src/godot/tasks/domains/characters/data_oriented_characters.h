@@ -6,7 +6,8 @@
  */
 
 #include "../../../../core/tasks/domains/characters/characters_dod.h"
-#include "../../../characters/character_blueprint_resource.h"
+#include "../../../characters/character_apparel_resource.h"
+#include "../../../characters/loomis_character_3d_resource.h"
 #include "../../../memory/memory_manager_resource.h"
 #include "../../../tasks/task_graph_resource.h"
 
@@ -26,7 +27,7 @@ private:
 
     godot::Ref<MemoryManagerResource> memory_manager_resource_;
     godot::Ref<TaskGraphResource> task_graph_resource_;
-    godot::Ref<CharacterBlueprintResource> active_blueprint_;
+    godot::Ref<LoomisCharacter3DResource> active_character_;
     godot::Ref<CharacterApparelResource> active_apparel_;
 
     int max_vertices_         = 1024;
@@ -47,8 +48,8 @@ public:
     void set_task_graph_resource(const godot::Ref<TaskGraphResource> &p_graph);
     [[nodiscard]] godot::Ref<TaskGraphResource> get_task_graph_resource() const { return task_graph_resource_; }
 
-    void set_active_blueprint(const godot::Ref<CharacterBlueprintResource> &p_blueprint);
-    [[nodiscard]] godot::Ref<CharacterBlueprintResource> get_active_blueprint() const { return active_blueprint_; }
+    void set_active_character(const godot::Ref<LoomisCharacter3DResource> &p_character);
+    [[nodiscard]] godot::Ref<LoomisCharacter3DResource> get_active_character() const { return active_character_; }
 
     void set_active_apparel(const godot::Ref<CharacterApparelResource> &p_apparel);
     [[nodiscard]] godot::Ref<CharacterApparelResource> get_active_apparel() const { return active_apparel_; }

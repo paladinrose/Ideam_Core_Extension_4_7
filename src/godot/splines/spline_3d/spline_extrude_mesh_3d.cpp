@@ -463,35 +463,32 @@ godot::Ref<godot::ConcavePolygonShape3D> SplineExtrudeMesh3D::bake_concave_colli
 // SplineExtrudeGizmo Implementation
 // ============================================================================
 
-SplineExtrudeGizmo::SplineExtrudeGizmo() {
-    create_material("extrude_wire", godot::Color(0.38f, 0.86f, 1.0f, 0.85f), false, false, true);
-    create_handle_material("extrude_handles");
+bool SplineExtrudeGizmo::can_handle(godot::Node3D *p_target) const {
+    return p_target != nullptr && godot::Object::cast_to<SplineExtrudeMesh3D>(p_target) != nullptr;
 }
 
-bool SplineExtrudeGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return p_for_node_3d != nullptr && godot::Object::cast_to<SplineExtrudeMesh3D>(p_for_node_3d) != nullptr;
-}
-
-godot::String SplineExtrudeGizmo::_get_gizmo_name() const {
+godot::String SplineExtrudeGizmo::get_gizmo_name() const {
     return "SplineExtrudeGizmo";
 }
 
-int32_t SplineExtrudeGizmo::_get_priority() const {
+int32_t SplineExtrudeGizmo::get_priority() const {
     return 10;
 }
 
-void SplineExtrudeGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
+void SplineExtrudeGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
     using namespace godot;
-    if (p_gizmo.is_null()) return;
-    p_gizmo->clear();
-
-    SplineExtrudeMesh3D *node = Object::cast_to<SplineExtrudeMesh3D>(p_gizmo->get_node_3d());
+    (void)p_view;
+    auto *node = Object::cast_to<SplineExtrudeMesh3D>(p_target);
     if (!node) return;
 
     const Ref<Spline4DResource> s4 = node->get_path_spline_4d();
     const Ref<Spline3DResource> s3 = node->get_path_spline_3d();
-    const bool use_4d              = s4.is_valid() && s4->get_point_count() >= 2;
-    const bool use_3d              = !use_4d && s3.is_valid() && s3->get_point_count() >= 2;
+    const bool use_4d = s4.is_valid() && s4->get_point_count() >= 2;
+    const bool use_3d = !use_4d && s3.is_valid() && s3->get_point_count() >= 2;
     if (!use_4d && !use_3d) return;
 
     PackedVector3Array lines;
@@ -506,101 +503,113 @@ void SplineExtrudeGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_g
             lines.push_back(xf.origin);
             lines.push_back(next_xf.origin);
         }
-        // Draw cross-section profile ring every 2 samples
         if (i % 2 == 0) {
             constexpr int RING_SEG = 16;
-            const Vector2 sc       = node->get_profile_scale();
+            const Vector2 sc = node->get_profile_scale();
             for (int k = 0; k < RING_SEG; ++k) {
                 const float a0 = (static_cast<float>(k) / static_cast<float>(RING_SEG)) * 6.283185307179586f;
                 const float a1 = (static_cast<float>(k + 1) / static_cast<float>(RING_SEG)) * 6.283185307179586f;
-                const Vector3 p0 = xf.xform(Vector3(std::cos(a0) * sc.x, std::sin(a0) * sc.y, 0.0f));
-                const Vector3 p1 = xf.xform(Vector3(std::cos(a1) * sc.x, std::sin(a1) * sc.y, 0.0f));
-                lines.push_back(p0);
-                lines.push_back(p1);
+                lines.push_back(xf.xform(Vector3(std::cos(a0) * sc.x, std::sin(a0) * sc.y, 0.0f)));
+                lines.push_back(xf.xform(Vector3(std::cos(a1) * sc.x, std::sin(a1) * sc.y, 0.0f)));
             }
         }
     }
-
     if (!lines.is_empty()) {
-        p_gizmo->add_lines(lines, get_material("extrude_wire", p_gizmo));
-    }
-    if (node->get_extruded_mesh().is_valid() && node->get_extruded_mesh()->get_surface_count() > 0) {
-        p_gizmo->add_collision_triangles(node->get_extruded_mesh()->generate_triangle_mesh());
+        r_out.add_lines(lines, GIZMO_LINE_AXIS_NORMAL);
     }
 
-    PackedVector3Array handles;
-    PackedInt32Array handle_ids;
     const int n_pts = use_4d ? s4->get_point_count() : s3->get_point_count();
     for (int i = 0; i < n_pts; ++i) {
-        handles.push_back(use_4d ? s4->get_point_position_3d(i) : s3->get_point_position(i));
-        handle_ids.push_back(HANDLE_ANCHOR_BASE + i);
+        r_out.add_handle(
+            HANDLE_ANCHOR_BASE + i,
+            use_4d ? s4->get_point_position_3d(i) : s3->get_point_position(i),
+            GIZMO_HANDLE_SPLINE_ANCHOR,
+            HANDLE_SHAPE_SPHERE,
+            static_cast<real_t>(0.05),
+            GIZMO_STATE_NONE,
+            String("Extrude Path Point ") + String::num_int64(i)
+        );
     }
-
     if (!frames.is_empty()) {
         const Transform3D start_xf = frames[0];
-        handles.push_back(start_xf.xform(Vector3(node->get_profile_scale().x, 0.0f, 0.0f)));
-        handle_ids.push_back(HANDLE_PROFILE_RADIUS);
-    }
-
-    if (!handles.is_empty()) {
-        p_gizmo->add_handles(handles, get_material("extrude_handles", p_gizmo), handle_ids);
+        r_out.add_handle(
+            HANDLE_PROFILE_RADIUS,
+            start_xf.xform(Vector3(node->get_profile_scale().x, 0.0f, 0.0f)),
+            GIZMO_LINE_RULER,
+            HANDLE_SHAPE_RING,
+            static_cast<real_t>(0.05),
+            GIZMO_STATE_NONE,
+            "Extrude Profile Scale"
+        );
     }
 }
 
-godot::String SplineExtrudeGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String SplineExtrudeGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
-    (void)p_gizmo;
+    (void)p_target;
     (void)p_secondary;
     if (p_handle_id == HANDLE_PROFILE_RADIUS) return "Extrude Profile Scale";
     if (p_handle_id == HANDLE_TOTAL_TWIST) return "Extrude Total Twist";
-    return "Extrude Path Point " + godot::String::num_int64(p_handle_id);
+    return godot::String("Extrude Path Point ") + godot::String::num_int64(p_handle_id);
 }
 
-godot::Variant SplineExtrudeGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant SplineExtrudeGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    if (p_gizmo.is_null()) return godot::Variant();
-    SplineExtrudeMesh3D *node = godot::Object::cast_to<SplineExtrudeMesh3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SplineExtrudeMesh3D>(p_target);
     if (!node) return godot::Variant();
     if (p_handle_id == HANDLE_PROFILE_RADIUS) return node->get_profile_scale();
-    if (node->get_path_spline_4d().is_valid() && p_handle_id < node->get_path_spline_4d()->get_point_count()) {
+    if (node->get_path_spline_4d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_path_spline_4d()->get_point_count()) {
         return node->get_path_spline_4d()->get_point_position_3d(p_handle_id);
     }
-    if (node->get_path_spline_3d().is_valid() && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
+    if (node->get_path_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
         return node->get_path_spline_3d()->get_point_position(p_handle_id);
     }
     return godot::Variant();
 }
 
-void SplineExtrudeGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineExtrudeGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
+) {
+    (void)p_ray;
+    if (!p_target) return;
+    ExtrudeDragState st{};
+    st.initial_value = get_handle_value(p_target, p_handle_id, false);
+    st.active = true;
+    active_drags_[p_target->get_instance_id()] = st;
+}
+
+void SplineExtrudeGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null() || !p_camera) return;
-    SplineExtrudeMesh3D *node = Object::cast_to<SplineExtrudeMesh3D>(p_gizmo->get_node_3d());
-    if (!node) return;
+    (void)p_modifiers;
+    auto *node = Object::cast_to<SplineExtrudeMesh3D>(p_target);
+    if (!node || !p_ray.is_valid()) return;
+
+    if (!active_drags_.has(node->get_instance_id())) {
+        on_handle_drag_begin(p_target, p_handle_id, p_ray);
+    }
 
     const Transform3D inv_gxf = node->get_global_transform().affine_inverse();
-    const Vector3 ray_from    = inv_gxf.xform(p_camera->project_ray_origin(p_screen_pos));
-    const Vector3 ray_dir     = inv_gxf.basis.xform(p_camera->project_ray_normal(p_screen_pos)).normalized();
+    const Vector3 ray_from    = inv_gxf.xform(p_ray.origin);
+    const Vector3 ray_dir     = inv_gxf.basis.xform(p_ray.normal).normalized();
 
     if (p_handle_id == HANDLE_PROFILE_RADIUS) {
         const Vector3 origin = (node->get_path_spline_3d().is_valid() && node->get_path_spline_3d()->get_point_count() > 0)
             ? node->get_path_spline_3d()->get_point_position(0)
             : Vector3();
-        const float denom = ray_dir.dot(-ray_dir);
-        (void)denom;
         const Vector3 hit = ray_from + ray_dir * std::max(0.1f, (origin - ray_from).length());
         const float r     = std::max(0.02f, hit.distance_to(origin));
         node->set_profile_scale(Vector2(r, r));
@@ -617,37 +626,39 @@ void SplineExtrudeGizmo::_set_handle(
         const float dist  = std::max(0.1f, (cur - ray_from).dot(ray_dir));
         node->get_path_spline_3d()->set_point_position(p_handle_id, ray_from + ray_dir * dist);
     }
+    node->update_gizmos();
 }
 
-void SplineExtrudeGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineExtrudeGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null()) return;
-    SplineExtrudeMesh3D *node = Object::cast_to<SplineExtrudeMesh3D>(p_gizmo->get_node_3d());
+    auto *node = Object::cast_to<SplineExtrudeMesh3D>(p_target);
     if (!node) return;
+    const uint64_t nid = node->get_instance_id();
+    if (!active_drags_.has(nid)) return;
+    const Variant restore = active_drags_[nid].initial_value;
+    active_drags_.erase(nid);
 
     if (p_handle_id == HANDLE_PROFILE_RADIUS) {
         if (p_cancel) {
-            node->set_profile_scale(p_restore);
+            node->set_profile_scale(restore);
             return;
         }
-        Ref<IdeamUndoRedo> ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
+        Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+        if (ur.is_null()) ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
         ur->create_action("Scale Extrude Profile", UndoRedo::MERGE_DISABLE, node);
         ur->add_do_method(Callable(node, "set_profile_scale").bind(node->get_profile_scale()));
-        ur->add_undo_method(Callable(node, "set_profile_scale").bind(p_restore));
+        ur->add_undo_method(Callable(node, "set_profile_scale").bind(restore));
         ur->commit_action(false);
         return;
     }
 
     if (node->get_path_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_path_spline_3d()->get_point_count()) {
         const Vector3 final_pos = node->get_path_spline_3d()->get_point_position(p_handle_id);
-        node->get_path_spline_3d()->set_point_position(p_handle_id, p_restore);
+        node->get_path_spline_3d()->set_point_position(p_handle_id, restore);
         if (!p_cancel) {
             node->get_path_spline_3d()->commit_set_point_position(p_handle_id, final_pos);
         }

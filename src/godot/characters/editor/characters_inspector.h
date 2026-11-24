@@ -2,17 +2,17 @@
 
 /**
  * characters_inspector.h
- * EditorInspectorPlugin for `IdeamCharacters` (`BodyPlanResource`, `CharacterInstanceResource`,
- * `LayeredCharacterNode3D`, `CharacterBlueprintResource`, `CharacterApparelResource`,
- * `ParametricCharacterNode3D`, and `DataOrientedCharacters`) -> opens Tier 2 `CharacterModeler`
+ * EditorInspectorPlugin for `IdeamCharacters` (`BodyPlanResource`, `LoomisCharacter3DResource`,
+ * `LoomisCharacterNode3D`, `LoomisCharacter3DResource`, `CharacterApparelResource`,
+ * `LoomisCharacterNode3D`, and `DataOrientedCharacters`) -> opens Tier 2 `CharacterModeler`
  * and dispatches `IdeamTutorials` help topics.
  */
 
 #include "../../editor/ideam_editor_inspector_plugin.h"
 #include "../body_plan_resource.h"
-#include "../character_blueprint_resource.h"
-#include "../character_instance_resource.h"
-#include "../layered_character_node_3d.h"
+#include "../character_apparel_resource.h"
+#include "../loomis_character_3d_resource.h"
+#include "../loomis_character_node_3d.h"
 #include "../ui/character_morph_slider_panel.h"
 #include "../../tasks/domains/characters/data_oriented_characters.h"
 

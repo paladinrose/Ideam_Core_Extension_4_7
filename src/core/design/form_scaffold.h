@@ -6,19 +6,13 @@
  *
  * Built directly on top of `StructureNodePod`, `SocketPod`, `ProportionRulerGraph`,
  * `Spline3D<float>`, `ParallelTransport3D<float>`, and `SurfaceFrame3DPOD<float>` (from `IdeamSurfaces`):
- *   - 7 low-DoF analytic volumetric primitives:
- *       1. `SPHERE`
- *       2. `SLICED_SPHERE` (Loomis cranium with shaved temporal side planes + jaw/muzzle wedge)
- *       3. `EGG_ELLIPSOID` (Loomis thoracic ribcage / avian keel ovoid)
- *       4. `TAPERED_CAPSULE` (Loomis anti-sausage limb with paired asymmetric rhythm offsets)
- *       5. `WEDGE_BOX` (Loomis pelvis block / hand palm wedge / quadruped hip box / prop seat)
- *       6. `DISC` (Loomis joint disc / scapula / wheel)
- *       7. `GESTURE_SPINE` (`Spline3D` Line of Action swept with Bishop frames)
- *   - Contrapposto counter-tilt & twist along the spine/pelvis/thorax.
- *   - Loomis Center-of-Gravity Plumb Line & Support-Polygon Balance check.
+ *   - 7 low-DoF analytic volumetric primitives
+ *   - Live `ProportionRulerGraph` scale & offset bindings (`ruler_scale_{x,y,z}_id`, `ruler_offset_scale_id`)
+ *   - Live `line_of_action_` gesture-curve evaluation via Bishop frames (`ParallelTransport3D`)
+ *   - Contrapposto counter-tilt & twist along the spine/pelvis/thorax
+ *   - Loomis Center-of-Gravity Plumb Line & Support-Polygon Balance check
  *   - Analytic curvilinear surface frame query `sample_scaffold_frame(node_id, u, v)`
- *     for non-destructive Phase 3 (`IdeamCharacters`) Topology & Feature anchoring.
- *   - Automatic `Skeleton3D` bone tree & ragdoll/joint-limit export derived from `SocketPod`s.
+ *   - Automatic `Skeleton3D` bone tree & ragdoll/joint-limit export derived from `SocketPod`s
  */
 
 #include "design_common.h"
@@ -49,7 +43,7 @@ enum class ScaffoldPrimitiveType : uint8_t {
 /**
  * `ScaffoldNodeEntry`
  * Pairs a `StructureNodePod` & `SocketPod` with low-DoF Loomis volumetric form parameters
- * and optional `ProportionRulerGraph` bindings.
+ * and live `ProportionRulerGraph` bindings.
  */
 struct ScaffoldNodeEntry {
     uint32_t node_id             = 0u;
@@ -68,13 +62,21 @@ struct ScaffoldNodeEntry {
     float mass_weight            = 1.0f; ///< Relative mass for Loomis Center-of-Gravity balance
     bool is_ground_support       = false; ///< True for feet/paws/base pads defining the support polygon
 
-    // Optional ProportionRulerGraph node bindings (`0xFFFFFFFFu` = unbound)
+    // Live ProportionRulerGraph node bindings (`0xFFFFFFFFu` = unbound)
     uint32_t ruler_scale_x_id    = 0xFFFFFFFFu;
     uint32_t ruler_scale_y_id    = 0xFFFFFFFFu;
     uint32_t ruler_scale_z_id    = 0xFFFFFFFFu;
     float ruler_mult_x           = 0.5f; ///< Converts full ruler dimension to half-extent
     float ruler_mult_y           = 0.5f;
     float ruler_mult_z           = 0.5f;
+
+    // Live ruler-proportional offset scaling (`0xFFFFFFFFu` = static local_offset)
+    uint32_t ruler_offset_scale_id = 0xFFFFFFFFu;
+    float ruler_offset_ref_value   = 0.0f;
+
+    // Line-of-Action gesture spine participation
+    bool follows_line_of_action    = false;
+    float line_of_action_t         = 0.0f; ///< Normalized [0..1] parameter along `line_of_action_`
 
     // Loomis Form Shaping Parameters
     float side_shave_ratio       = 0.72f; ///< Sliced Sphere temporal plane distance (fraction of X radius)
@@ -184,39 +186,25 @@ public:
     [[nodiscard]] const std::vector<ScaffoldNodeEntry> &nodes() const noexcept { return nodes_; }
 
     /**
-     * Evaluates `ProportionRulerGraph`, applies Contrapposto & Line of Action, and updates
-     * `local_transform`, `world_transform`, and `StructureNodePod` for every scaffold volume.
+     * Evaluates `ProportionRulerGraph`, applies Contrapposto & Line of Action Bishop frames,
+     * and updates `local_transform`, `world_transform`, and `StructureNodePod` for every volume.
      */
     void evaluate();
 
-    /**
-     * Loomis Center-of-Gravity & Plumb-Line balance evaluation over ground-support nodes.
-     */
     [[nodiscard]] ScaffoldBalanceReport compute_balance_report() const;
 
-    /**
-     * Non-destructive curvilinear anchoring query `sample_scaffold_frame(node_id, u, v)`.
-     * Returns an orthonormal `SurfaceFrame3DPOD<float>` in world space on any scaffold volume.
-     */
     [[nodiscard]] SurfaceFrame3DPOD<float> sample_scaffold_frame(
         uint32_t p_node_id,
         float p_u,
         float p_v
     ) const;
 
-    /**
-     * Tessellates all scaffold primitives into a unified `SurfaceQuadMesh3D<float>` for
-     * live 3D viewport rendering and rough collision hulls.
-     */
     [[nodiscard]] SurfaceQuadMesh3D<float> tessellate_scaffold_mesh(uint32_t p_subdivs = 10u) const;
 
-    /**
-     * Emits the ordered bone hierarchy and ragdoll/joint limits derived from `SocketPod`s.
-     */
     [[nodiscard]] std::vector<ScaffoldBoneExportEntry> build_skeleton_export_plan() const;
 
     // ========================================================================
-    // Universal Andrew Loomis Body-Plan Scaffold Presets
+    // Universal Andrew Loomis Body-Plan Scaffold Presets (Live Ruler-Bound)
     // ========================================================================
 
     [[nodiscard]] static FormScaffoldCore create_loomis_biped_scaffold(

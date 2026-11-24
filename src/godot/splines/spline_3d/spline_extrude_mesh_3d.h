@@ -26,8 +26,7 @@
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/camera3d.hpp>
 #include <godot_cpp/classes/concave_polygon_shape3d.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo_plugin.hpp>
+#include "../../gizmos/ideam_gizmo.h"
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/standard_material3d.hpp>
 #include <godot_cpp/classes/node3d.hpp>
@@ -133,8 +132,8 @@ public:
  * 3D Viewport Gizmo for `SplineExtrudeMesh3D` rendering swept cross-section rings,
  * anchor handles, and interactive profile radius / twist grips.
  */
-class SplineExtrudeGizmo : public godot::EditorNode3DGizmoPlugin {
-    GDCLASS(SplineExtrudeGizmo, godot::EditorNode3DGizmoPlugin)
+class SplineExtrudeGizmo : public IdeamGizmo {
+    GDCLASS(SplineExtrudeGizmo, IdeamGizmo)
 
 public:
     static constexpr int32_t HANDLE_ANCHOR_BASE    = 0;
@@ -143,10 +142,8 @@ public:
 
 private:
     struct ExtrudeDragState {
-        godot::Dictionary initial_snapshot;
-        godot::Vector2 initial_profile_scale;
-        real_t initial_twist = static_cast<real_t>(0.0);
-        bool active          = false;
+        godot::Variant initial_value;
+        bool active = false;
     };
 
     mutable godot::HashMap<uint64_t, ExtrudeDragState> active_drags_;
@@ -155,36 +152,42 @@ protected:
     static void _bind_methods() {}
 
 public:
-    SplineExtrudeGizmo();
+    SplineExtrudeGizmo() = default;
     ~SplineExtrudeGizmo() override = default;
 
-    [[nodiscard]] bool _has_gizmo(godot::Node3D *p_for_node_3d) const override;
-    [[nodiscard]] godot::String _get_gizmo_name() const override;
-    [[nodiscard]] int32_t _get_priority() const override;
+    [[nodiscard]] bool can_handle(godot::Node3D *p_target) const override;
+    [[nodiscard]] godot::String get_gizmo_name() const override;
+    [[nodiscard]] int32_t get_priority() const override;
 
-    void _redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) override;
-    [[nodiscard]] godot::String _get_handle_name(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void build_draw_list(
+        godot::Node3D *p_target,
+        IdeamGizmoDrawList &r_out,
+        const GizmoViewState &p_view
+    ) const override;
+    [[nodiscard]] godot::String get_handle_name(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
-    [[nodiscard]] godot::Variant _get_handle_value(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    [[nodiscard]] godot::Variant get_handle_value(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
-    void _set_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_begin(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        godot::Camera3D *p_camera,
-        const godot::Vector2 &p_screen_pos
+        const GizmoRay &p_ray
     ) override;
-    void _commit_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_update(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        const godot::Variant &p_restore,
+        const GizmoRay &p_ray,
+        godot::BitField<godot::KeyModifierMask> p_modifiers
+    ) override;
+    void on_handle_drag_commit(
+        godot::Node3D *p_target,
+        int32_t p_handle_id,
         bool p_cancel
     ) override;
 };

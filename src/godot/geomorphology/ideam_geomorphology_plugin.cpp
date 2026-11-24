@@ -14,6 +14,26 @@
 
 namespace ideam::godot_ext {
 
+IdeamGeomorphologyPlugin *IdeamGeomorphologyPlugin::singleton = nullptr;
+
+IdeamGeomorphologyPlugin::IdeamGeomorphologyPlugin() {
+    if (singleton == nullptr) {
+        singleton = this;
+    }
+}
+
+IdeamGeomorphologyPlugin::~IdeamGeomorphologyPlugin() {
+    if (singleton == this) {
+        singleton = nullptr;
+    }
+}
+
+#ifdef TOOLS_ENABLED
+godot::EditorUndoRedoManager *IdeamGeomorphologyPlugin::get_static_undo_redo() {
+    return singleton ? singleton->get_undo_redo() : nullptr;
+}
+#endif
+
 void IdeamGeomorphologyPlugin::_bind_methods() {
     using namespace godot;
     ClassDB::bind_static_method(
@@ -23,8 +43,15 @@ void IdeamGeomorphologyPlugin::_bind_methods() {
 }
 
 void IdeamGeomorphologyPlugin::_enter_tree() {
+    validate_script_templates();
+    set_plugin_active("IdeamGeomorphology", true);
+
     inspector_plugin_.instantiate();
+    inspector_plugin_->set_tool_context(get_or_create_plugin_tool_context());
     add_inspector_plugin(inspector_plugin_);
+    terrain_gizmo_.instantiate();
+    terrain_gizmo_->set_tool_context(get_or_create_plugin_tool_context());
+    register_ideam_gizmo(terrain_gizmo_);
 
     auto &reg = ToolRegistry::get_singleton();
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
@@ -114,10 +141,14 @@ void IdeamGeomorphologyPlugin::_exit_tree() {
     const godot::StringName ws_id(PlanetarySystemsModeler::WORKSPACE_ID);
     reg.unregister_class(ws_id, "GeomorphologyTerrainResource");
     reg.unregister_workspace_launcher(ws_id);
+    cleanup_ideam_spatial_registrations();
+    terrain_gizmo_.unref();
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
         inspector_plugin_.unref();
     }
+    cleanup_ideam_spatial_registrations();
+    set_plugin_active("IdeamGeomorphology", false);
 }
 
 } // namespace ideam::godot_ext

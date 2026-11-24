@@ -4,13 +4,10 @@
  * body_plan_resource.h
  * Authoring-Side Species / Body-Plan Schema Resource (`BodyPlanResource`, `src/godot/characters/`).
  *
- * Splits character authoring from character generation:
- *   - References a base Layer 1 `FormScaffoldResource` (from `IdeamDesign`).
- *   - Defines the valid `[min, default, max]` parameter space, symmetry policies, and
- *     cross-parameter coupling rules (QuantumDarwinism-ready).
- *   - Stores Layer 2 relative-anchored Topology Landmarks & Topological Bridge Rules
- *     (armpit / hip / wing-root regime thresholds) and Layer 3 Parametric Feature templates.
- *   - Exposes `IdeamUndoRedo` and `IdeamTutorials` help-topic hooks.
+ * Phase 4 upgrades:
+ *   - Full `.tres` / `.res` serialization of `parameter_bounds`, `coupling_rules`,
+ *     `landmarks`, `bridge_rules`, and `features` as `TypedArray<Dictionary>` properties.
+ *   - Complete non-linear CRUD mutators (`update_*` / `remove_*`) alongside `add_*`.
  */
 
 #include "../../core/characters/character_layered_stack.h"
@@ -75,7 +72,23 @@ public:
     void set_semantic_tags(const godot::PackedStringArray &p_tags);
     [[nodiscard]] godot::PackedStringArray get_semantic_tags() const { return semantic_tags_; }
 
-    // --- Authoring API ---
+    // --- Serialized Schema Properties (.tres persistence) ---
+    void set_parameter_bounds_list(const godot::TypedArray<godot::Dictionary> &p_list);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_parameter_bounds_list() const;
+
+    void set_coupling_rules_list(const godot::TypedArray<godot::Dictionary> &p_list);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_coupling_rules_list() const;
+
+    void set_topology_landmarks_list(const godot::TypedArray<godot::Dictionary> &p_list);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_topology_landmarks_list() const;
+
+    void set_bridge_rules_list(const godot::TypedArray<godot::Dictionary> &p_list);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_bridge_rules_list() const;
+
+    void set_features_list(const godot::TypedArray<godot::Dictionary> &p_list);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_features_list() const;
+
+    // --- Authoring CRUD API ---
     int add_parameter_bound(
         const godot::String &p_name,
         int p_category,
@@ -85,12 +98,14 @@ public:
         real_t p_max_val,
         int p_symmetry = 1
     );
+    bool remove_parameter_bound(int p_index);
 
     void add_coupling_rule(
         const godot::String &p_source_param,
         const godot::String &p_target_param,
         real_t p_weight
     );
+    bool remove_coupling_rule(int p_index);
 
     int add_topology_landmark(
         const godot::String &p_name,
@@ -101,6 +116,8 @@ public:
         int p_symmetry = 1,
         real_t p_planar_sharpness = 0.25f
     );
+    bool update_topology_landmark_offset(int p_id, real_t p_normal_offset, real_t p_planar_sharpness = -1.0f);
+    bool remove_topology_landmark(int p_id);
 
     int add_bridge_rule(
         const godot::String &p_name,
@@ -110,6 +127,7 @@ public:
         real_t p_crease_threshold = 0.50f,
         real_t p_deep_fold_threshold = 0.80f
     );
+    bool remove_bridge_rule(int p_id);
 
     int add_feature(
         const godot::String &p_name,
@@ -119,11 +137,13 @@ public:
         int p_symmetry = 1,
         real_t p_secondary_param = 0.0f
     );
-
-    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_parameter_bounds_list() const;
-    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_topology_landmarks_list() const;
-    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_bridge_rules_list() const;
-    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_features_list() const;
+    bool update_feature_params(
+        int p_id,
+        const godot::Vector3 &p_half_extents,
+        real_t p_secondary_param,
+        const godot::Vector3 &p_local_offset_ntuv = godot::Vector3()
+    );
+    bool remove_feature(int p_id);
 
     // --- Built-In Loomis Starter Plans ---
     void setup_loomis_humanoid_plan();

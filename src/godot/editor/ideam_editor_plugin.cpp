@@ -2,12 +2,19 @@
 
 #include <godot_cpp/variant/utility_functions.hpp>
 
+#include <algorithm>
+
 using namespace godot;
 
 namespace ideam::godot_ext {
 
 void IdeamEditorPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("validate_script_templates"), &IdeamEditorPlugin::validate_script_templates);
+	ClassDB::bind_method(D_METHOD("get_or_create_plugin_tool_context"), &IdeamEditorPlugin::get_or_create_plugin_tool_context);
+	ClassDB::bind_method(D_METHOD("register_ideam_gizmo", "gizmo"), &IdeamEditorPlugin::register_ideam_gizmo);
+	ClassDB::bind_method(D_METHOD("unregister_ideam_gizmo", "gizmo"), &IdeamEditorPlugin::unregister_ideam_gizmo);
+	ClassDB::bind_method(D_METHOD("register_spatial_toolbar", "toolbar"), &IdeamEditorPlugin::register_spatial_toolbar);
+	ClassDB::bind_method(D_METHOD("unregister_spatial_toolbar", "toolbar"), &IdeamEditorPlugin::unregister_spatial_toolbar);
 
 	// Handshake API
 	ClassDB::bind_method(D_METHOD("set_plugin_active", "plugin_name", "active"), &IdeamEditorPlugin::set_plugin_active);
@@ -27,6 +34,122 @@ void IdeamEditorPlugin::_bind_methods() {
 		D_METHOD("register_script_template", "base_class", "template_name", "source_path"),
 		&IdeamEditorPlugin::register_script_template
 	);
+}
+
+void IdeamEditorPlugin::_exit_tree() {
+	cleanup_ideam_spatial_registrations();
+}
+
+Ref<ToolContext> IdeamEditorPlugin::get_or_create_plugin_tool_context() {
+	if (plugin_tool_context_.is_null()) {
+		plugin_tool_context_.instantiate();
+	}
+#ifdef TOOLS_ENABLED
+	if (EditorUndoRedoManager *ed_ur = get_undo_redo()) {
+		plugin_tool_context_->set_editor_undo_redo(ed_ur);
+	}
+#endif
+	return plugin_tool_context_;
+}
+
+void IdeamEditorPlugin::register_ideam_gizmo(const Ref<IdeamGizmo> &p_gizmo) {
+	if (p_gizmo.is_null()) {
+		return;
+	}
+	if (p_gizmo->get_tool_context().is_null()) {
+		p_gizmo->set_tool_context(get_or_create_plugin_tool_context());
+	}
+#ifdef TOOLS_ENABLED
+	for (const auto &adapter : registered_gizmo_adapters_) {
+		if (adapter.is_valid() && adapter->get_ideam_gizmo() == p_gizmo) {
+			return;
+		}
+	}
+	Ref<IdeamEditorGizmoAdapter> adapter;
+	adapter.instantiate();
+	adapter->set_ideam_gizmo(p_gizmo);
+	add_node_3d_gizmo_plugin(adapter);
+	registered_gizmo_adapters_.push_back(adapter);
+#endif
+}
+
+void IdeamEditorPlugin::unregister_ideam_gizmo(const Ref<IdeamGizmo> &p_gizmo) {
+	if (p_gizmo.is_null()) {
+		return;
+	}
+#ifdef TOOLS_ENABLED
+	std::erase_if(registered_gizmo_adapters_, [&](const Ref<IdeamEditorGizmoAdapter> &p_adapter) {
+		if (p_adapter.is_valid() && p_adapter->get_ideam_gizmo() == p_gizmo) {
+			remove_node_3d_gizmo_plugin(p_adapter);
+			return true;
+		}
+		return false;
+	});
+#endif
+}
+
+void IdeamEditorPlugin::register_spatial_toolbar(Control *p_toolbar) {
+	if (!p_toolbar) {
+		return;
+	}
+	for (Control *existing : registered_spatial_toolbars_) {
+		if (existing == p_toolbar) {
+			return;
+		}
+	}
+	add_control_to_container(EditorPlugin::CONTAINER_SPATIAL_EDITOR_MENU, p_toolbar);
+	registered_spatial_toolbars_.push_back(p_toolbar);
+}
+
+void IdeamEditorPlugin::unregister_spatial_toolbar(Control *p_toolbar) {
+	if (!p_toolbar) {
+		return;
+	}
+	auto it = std::find(registered_spatial_toolbars_.begin(), registered_spatial_toolbars_.end(), p_toolbar);
+	if (it != registered_spatial_toolbars_.end()) {
+		remove_control_from_container(EditorPlugin::CONTAINER_SPATIAL_EDITOR_MENU, p_toolbar);
+		registered_spatial_toolbars_.erase(it);
+	}
+}
+
+void IdeamEditorPlugin::cleanup_ideam_spatial_registrations() {
+#ifdef TOOLS_ENABLED
+	for (auto &adapter : registered_gizmo_adapters_) {
+		if (adapter.is_valid()) {
+			remove_node_3d_gizmo_plugin(adapter);
+		}
+	}
+	registered_gizmo_adapters_.clear();
+#endif
+	for (Control *toolbar : registered_spatial_toolbars_) {
+		if (toolbar) {
+			remove_control_from_container(EditorPlugin::CONTAINER_SPATIAL_EDITOR_MENU, toolbar);
+			memdelete(toolbar);
+		}
+	}
+	registered_spatial_toolbars_.clear();
+}
+
+int32_t IdeamEditorPlugin::forward_gizmos_3d_gui_input(
+	Camera3D *p_camera,
+	const Ref<InputEvent> &p_event,
+	Node3D *p_selected_node
+) {
+#ifdef TOOLS_ENABLED
+	for (auto &adapter : registered_gizmo_adapters_) {
+		if (adapter.is_valid()) {
+			const int32_t res = adapter->forward_3d_gui_input(p_camera, p_event, p_selected_node);
+			if (res != EditorPlugin::AFTER_GUI_INPUT_PASS) {
+				return res;
+			}
+		}
+	}
+#else
+	(void)p_camera;
+	(void)p_event;
+	(void)p_selected_node;
+#endif
+	return EditorPlugin::AFTER_GUI_INPUT_PASS;
 }
 
 void IdeamEditorPlugin::validate_script_templates() {

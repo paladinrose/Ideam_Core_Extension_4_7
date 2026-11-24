@@ -7,6 +7,7 @@
 #include "../form_scaffold_resource.h"
 #include "../parametric_assembly_resource.h"
 #include "../proportion_ruler_resource.h"
+#include "../socket_3d.h"
 #include "../style_3d_resource.h"
 
 #include <godot_cpp/classes/resource.hpp>
@@ -26,6 +27,10 @@ public:
 
     void _on_open_in_design_composer(const godot::Ref<godot::Resource> &p_resource);
     void _on_help_pressed(const godot::StringName &p_topic_id);
+
+#ifdef TOOLS_ENABLED
+    godot::EditorUndoRedoManager *get_undo_redo() const override;
+#endif
 
     bool _can_handle(godot::Object *p_object) const override;
     void _parse_begin(godot::Object *p_object) override;

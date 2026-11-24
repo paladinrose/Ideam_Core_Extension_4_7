@@ -13,6 +13,9 @@ void IdeamCymaticsPlugin::_enter_tree() {
 
     inspector_plugin_.instantiate();
     add_inspector_plugin(inspector_plugin_);
+    music_zone_gizmo_.instantiate();
+    music_zone_gizmo_->set_tool_context(get_or_create_plugin_tool_context());
+    register_ideam_gizmo(music_zone_gizmo_);
 
     godot::Ref<ToolDescriptor> desc;
     desc.instantiate();
@@ -38,6 +41,8 @@ void IdeamCymaticsPlugin::_enter_tree() {
 
 void IdeamCymaticsPlugin::_exit_tree() {
     ToolRegistry::get_singleton().unregister_plugin_tools(godot::StringName("IdeamCymatics"));
+    cleanup_ideam_spatial_registrations();
+    music_zone_gizmo_.unref();
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
         inspector_plugin_.unref();

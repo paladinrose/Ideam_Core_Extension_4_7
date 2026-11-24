@@ -4,6 +4,7 @@
 #include "../utilities/ideam_undo_redo.h"
 #include "editor/design_inspector.h"
 #include "form_scaffold_node_3d.h"
+#include "socket_3d.h"
 
 #ifdef TOOLS_ENABLED
 #include <godot_cpp/classes/editor_undo_redo_manager.hpp>
@@ -25,6 +26,7 @@ private:
 
     godot::Ref<DesignInspector> inspector_plugin_;
     godot::Ref<FormScaffoldGizmo> form_scaffold_gizmo_;
+    godot::Ref<Socket3DGizmo> socket_3d_gizmo_;
 
     void _register_tools_and_workspace();
     void _unregister_tools_and_workspace();

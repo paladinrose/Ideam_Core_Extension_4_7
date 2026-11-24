@@ -43,8 +43,7 @@
 
 #include <godot_cpp/classes/array_mesh.hpp>
 #include <godot_cpp/classes/button.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo_plugin.hpp>
+#include "../gizmos/ideam_gizmo.h"
 #include <godot_cpp/classes/label.hpp>
 #include <godot_cpp/classes/material.hpp>
 #include <godot_cpp/classes/node3d.hpp>
@@ -293,8 +292,8 @@ public:
  * Interactive 3D Viewport Gizmo Plugin for `GeodesicPlanetNode3D`.
  * Handle 0 controls `planet_radius`; Handles 1..12 control radial elevation on the 12 pentagon hubs.
  */
-class GeodesicPlanetGizmo : public godot::EditorNode3DGizmoPlugin {
-    GDCLASS(GeodesicPlanetGizmo, godot::EditorNode3DGizmoPlugin)
+class GeodesicPlanetGizmo : public IdeamGizmo {
+    GDCLASS(GeodesicPlanetGizmo, IdeamGizmo)
 
 private:
     real_t drag_initial_value_ = static_cast<real_t>(0.0);
@@ -303,41 +302,42 @@ protected:
     static void _bind_methods();
 
 public:
-    GeodesicPlanetGizmo();
+    GeodesicPlanetGizmo() = default;
     ~GeodesicPlanetGizmo() override = default;
 
-    bool _has_gizmo(godot::Node3D *p_for_node_3d) const override;
-    godot::String _get_gizmo_name() const override;
-    int32_t _get_priority() const override;
+    [[nodiscard]] bool can_handle(godot::Node3D *p_target) const override;
+    [[nodiscard]] godot::String get_gizmo_name() const override;
+    [[nodiscard]] int32_t get_priority() const override;
 
-    void _redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) override;
-    godot::String _get_handle_name(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void build_draw_list(
+        godot::Node3D *p_target,
+        IdeamGizmoDrawList &r_out,
+        const GizmoViewState &p_view
+    ) const override;
+    [[nodiscard]] godot::String get_handle_name(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
-    godot::Variant _get_handle_value(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    [[nodiscard]] godot::Variant get_handle_value(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
-    void _begin_handle_action(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_begin(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary
+        const GizmoRay &p_ray
     ) override;
-    void _set_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_update(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        godot::Camera3D *p_camera,
-        const godot::Vector2 &p_screen_pos
+        const GizmoRay &p_ray,
+        godot::BitField<godot::KeyModifierMask> p_modifiers
     ) override;
-    void _commit_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_commit(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        const godot::Variant &p_restore,
         bool p_cancel
     ) override;
 };

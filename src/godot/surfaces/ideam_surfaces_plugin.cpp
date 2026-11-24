@@ -17,6 +17,7 @@ void IdeamSurfacesPlugin::_bind_methods() {
     using namespace godot;
 
     ClassDB::bind_method(D_METHOD("open_surfaces_composer"), &IdeamSurfacesPlugin::open_surfaces_composer);
+    ClassDB::bind_method(D_METHOD("_on_surface_mode_changed", "mode_id"), &IdeamSurfacesPlugin::_on_surface_mode_changed);
 
     // Cross-Plugin Lateral Handshakes
     ClassDB::bind_method(D_METHOD("get_plugin_domain_name"), &IdeamSurfacesPlugin::get_plugin_domain_name);
@@ -56,10 +57,22 @@ void IdeamSurfacesPlugin::_enter_tree() {
     }
     add_inspector_plugin(surfaces_inspector_);
 
+    godot::Ref<ToolContext> ctx = get_or_create_plugin_tool_context();
     if (!surface_patch_gizmo_.is_valid()) {
         surface_patch_gizmo_.instantiate();
     }
-    add_node_3d_gizmo_plugin(surface_patch_gizmo_);
+    surface_patch_gizmo_->set_tool_context(ctx);
+    register_ideam_gizmo(surface_patch_gizmo_);
+
+    spatial_toolbar_ = memnew(IdeamSpatialToolbar);
+    spatial_toolbar_->set_tool_context(ctx);
+    spatial_toolbar_->add_mode_button(godot::StringName("isoparms"), "Isoparms", "View UV isoparm curves.", "surfaces.spatial_toolbar.isoparms");
+    spatial_toolbar_->add_mode_button(godot::StringName("cage"), "Control Cage", "Edit NURBS control points in 3D.", "surfaces.spatial_toolbar.cage");
+    spatial_toolbar_->add_mode_button(godot::StringName("normals"), "Normals", "Overlay surface normal needles.", "surfaces.spatial_toolbar.normals");
+    spatial_toolbar_->set_active_mode(godot::StringName("cage"), false);
+    spatial_toolbar_->connect("mode_changed", godot::Callable(this, "_on_surface_mode_changed"));
+    spatial_toolbar_->set_visible(false);
+    register_spatial_toolbar(spatial_toolbar_);
 
     _register_tools_and_workspace();
 
@@ -75,10 +88,10 @@ void IdeamSurfacesPlugin::_exit_tree() {
 
     _unregister_tools_and_workspace();
 
-    if (surface_patch_gizmo_.is_valid()) {
-        remove_node_3d_gizmo_plugin(surface_patch_gizmo_);
-        surface_patch_gizmo_.unref();
-    }
+    cleanup_ideam_spatial_registrations();
+    spatial_toolbar_ = nullptr;
+    selected_surface_id_ = 0u;
+    surface_patch_gizmo_.unref();
 
     if (surfaces_inspector_.is_valid()) {
         remove_inspector_plugin(surfaces_inspector_);
@@ -86,6 +99,30 @@ void IdeamSurfacesPlugin::_exit_tree() {
     }
 
     set_plugin_active("IdeamSurfaces", false);
+}
+
+void IdeamSurfacesPlugin::_on_surface_mode_changed(const godot::StringName &p_mode_id) {
+    if (surface_patch_gizmo_.is_valid()) surface_patch_gizmo_->set_active_tool_mode(p_mode_id);
+    if (selected_surface_id_ != 0u) {
+        if (auto *n3d = godot::Object::cast_to<SurfaceMeshNode3D>(godot::ObjectDB::get_instance(selected_surface_id_))) {
+            n3d->update_gizmos();
+        }
+    }
+}
+
+bool IdeamSurfacesPlugin::_handles(godot::Object *p_object) const {
+    return godot::Object::cast_to<SurfaceMeshNode3D>(p_object) != nullptr;
+}
+
+void IdeamSurfacesPlugin::_edit(godot::Object *p_object) {
+    auto *n3d = godot::Object::cast_to<SurfaceMeshNode3D>(p_object);
+    selected_surface_id_ = n3d ? n3d->get_instance_id() : 0u;
+}
+
+void IdeamSurfacesPlugin::_make_visible(bool p_visible) {
+    if (spatial_toolbar_) {
+        spatial_toolbar_->set_visible(p_visible && selected_surface_id_ != 0u);
+    }
 }
 
 void IdeamSurfacesPlugin::open_surfaces_composer() {

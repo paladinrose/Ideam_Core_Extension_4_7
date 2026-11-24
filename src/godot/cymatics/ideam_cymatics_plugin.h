@@ -6,6 +6,7 @@
  */
 
 #include "editor/cymatics_inspector.h"
+#include "music_zone_gizmo.h"
 #include "../editor/ideam_editor_plugin.h"
 
 #include <godot_cpp/core/class_db.hpp>
@@ -17,6 +18,7 @@ class IdeamCymaticsPlugin : public IdeamEditorPlugin {
 
 private:
     godot::Ref<CymaticsEditorInspectorPlugin> inspector_plugin_;
+    godot::Ref<MusicZoneGizmo> music_zone_gizmo_;
 
 protected:
     static void _bind_methods();

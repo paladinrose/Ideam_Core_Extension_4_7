@@ -8,16 +8,16 @@
  * ============================================================================
  * ARCHITECTURAL PLAN & DESIGN NOTES (SECTION 3.2 TIER 2 — `CharacterMorphSliderPanel`)
  * ============================================================================
- * Mirrors a `CharacterBlueprintResource` in real time across:
+ * Mirrors a `LoomisCharacter3DResource` in real time across:
  *   1. Body Archetype Selector (`Biped`, `Quadruped`, `Avian`, `FlyingEye`, `Serpentine`, `Custom`).
  *   2. Subdivision LOD Selector (`0..3`).
  *   3. 12 Anatomical Sparse Morph Sliders (`Stature Height`, `Torso Bulk`, `Head Scale`,
  *      `Upper Limb Reach`, `Lower Limb Stride`, `Digit 0..4 Curl`, `Tail Length`, `Wing Span`),
- *      each wired through `CharacterBlueprintResource::commit_set_morph_channel_weight()`
+ *      each wired through `LoomisCharacter3DResource::commit_set_morph_channel_weight()`
  *      for reversible `IdeamUndoRedo` support.
  */
 
-#include "../character_blueprint_resource.h"
+#include "../loomis_character_3d_resource.h"
 #include "../../utilities/ideam_undo_redo.h"
 
 #include <godot_cpp/classes/h_slider.hpp>
@@ -34,7 +34,7 @@ class CharacterMorphSliderPanel : public godot::VBoxContainer {
     GDCLASS(CharacterMorphSliderPanel, godot::VBoxContainer)
 
 private:
-    godot::Ref<CharacterBlueprintResource> blueprint_;
+    godot::Ref<LoomisCharacter3DResource> blueprint_;
     godot::Ref<IdeamUndoRedo> undo_redo_;
 
     godot::OptionButton *archetype_selector_ = nullptr;
@@ -59,8 +59,8 @@ public:
     CharacterMorphSliderPanel() = default;
     ~CharacterMorphSliderPanel() override = default;
 
-    void set_blueprint(const godot::Ref<CharacterBlueprintResource> &p_blueprint);
-    [[nodiscard]] godot::Ref<CharacterBlueprintResource> get_blueprint() const { return blueprint_; }
+    void set_blueprint(const godot::Ref<LoomisCharacter3DResource> &p_blueprint);
+    [[nodiscard]] godot::Ref<LoomisCharacter3DResource> get_blueprint() const { return blueprint_; }
 
     void set_undo_redo(const godot::Ref<IdeamUndoRedo> &p_undo_redo) { undo_redo_ = p_undo_redo; }
     [[nodiscard]] godot::Ref<IdeamUndoRedo> get_undo_redo() const { return undo_redo_; }

@@ -8,8 +8,8 @@
 namespace ideam::core {
 
 namespace {
-constexpr float kPi    = 3.14159265358979323846f;
-constexpr float kTwoPi = 6.28318530717958647692f;
+constexpr float kPi      = 3.14159265358979323846f;
+constexpr float kTwoPi   = 6.28318530717958647692f;
 constexpr float kDeg2Rad = kPi / 180.0f;
 
 glm::mat4 compose_trs(const glm::vec3 &p_pos, const glm::vec3 &p_euler_deg) {
@@ -20,6 +20,23 @@ glm::mat4 compose_trs(const glm::vec3 &p_pos, const glm::vec3 &p_euler_deg) {
     m = glm::rotate(m, p_euler_deg.z * kDeg2Rad, glm::vec3(0.0f, 0.0f, 1.0f));
     return m;
 }
+
+glm::mat4 make_bishop_frame_matrix(const glm::vec3 &p_pos, const glm::vec3 &p_tangent) {
+    const auto frame = ParallelTransport3D<float>::make_initial_frame(p_pos, p_tangent);
+    // Align local +Y with curve tangent so upright spine/torso volumes flow smoothly along the gesture line
+    const glm::vec3 up      = glm::length(frame.tangent) > 1e-5f ? glm::normalize(frame.tangent) : glm::vec3(0.0f, 1.0f, 0.0f);
+    const glm::vec3 right   = glm::length(frame.binormal) > 1e-5f ? glm::normalize(frame.binormal) : glm::vec3(1.0f, 0.0f, 0.0f);
+    const glm::vec3 forward = glm::normalize(glm::cross(right, up));
+    const glm::vec3 ortho_r = glm::normalize(glm::cross(up, forward));
+
+    glm::mat4 m(1.0f);
+    m[0] = glm::vec4(ortho_r, 0.0f);
+    m[1] = glm::vec4(up, 0.0f);
+    m[2] = glm::vec4(forward, 0.0f);
+    m[3] = glm::vec4(p_pos, 1.0f);
+    return m;
+}
+
 } // namespace
 
 void FormScaffoldCore::clear() {
@@ -63,30 +80,62 @@ uint32_t FormScaffoldCore::find_node_id(std::string_view p_name) const noexcept 
 void FormScaffoldCore::evaluate() {
     ruler_graph_.evaluate();
 
+    const bool has_valid_loa = use_line_of_action_ && (line_of_action_.get_point_count() >= 2u);
+
     for (auto &n : nodes_) {
+        // 1. Live ProportionRulerGraph scale evaluation
         glm::vec3 ext = n.half_extents;
-        if (n.ruler_scale_x_id != 0xFFFFFFFFu) ext.x = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_x_id, ext.x) * n.ruler_mult_x);
-        if (n.ruler_scale_y_id != 0xFFFFFFFFu) ext.y = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_y_id, ext.y) * n.ruler_mult_y);
-        if (n.ruler_scale_z_id != 0xFFFFFFFFu) ext.z = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_z_id, ext.z) * n.ruler_mult_z);
+        if (n.ruler_scale_x_id != 0xFFFFFFFFu) {
+            ext.x = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_x_id, ext.x) * n.ruler_mult_x);
+        }
+        if (n.ruler_scale_y_id != 0xFFFFFFFFu) {
+            ext.y = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_y_id, ext.y) * n.ruler_mult_y);
+        }
+        if (n.ruler_scale_z_id != 0xFFFFFFFFu) {
+            ext.z = std::max(0.005f, ruler_graph_.get_value(n.ruler_scale_z_id, ext.z) * n.ruler_mult_z);
+        }
         n.evaluated_half_extents = ext;
 
-        // Apply Loomis Contrapposto opposing shoulder/pelvis counter-tilt and axial twist
+        // 2. Live ruler-proportional offset scaling
+        glm::vec3 eff_offset = n.local_offset;
+        if (n.ruler_offset_scale_id != 0xFFFFFFFFu && n.ruler_offset_ref_value > 1e-4f) {
+            const float cur_val = ruler_graph_.get_value(n.ruler_offset_scale_id, n.ruler_offset_ref_value);
+            const float ratio   = std::max(0.05f, cur_val / n.ruler_offset_ref_value);
+            eff_offset *= ratio;
+        }
+
+        // 3. Apply Loomis Contrapposto opposing shoulder/pelvis counter-tilt and axial twist
         glm::vec3 rot = n.local_rotation_deg;
         rot.z += contrapposto_amount_ * 12.0f * n.contrapposto_tilt_weight;
         rot.y += contrapposto_amount_ * 10.0f * n.contrapposto_twist_weight;
 
-        n.local_transform = compose_trs(n.local_offset, rot);
-        if (n.parent_id != 0xFFFFFFFFu && n.parent_id < nodes_.size()) {
-            n.world_transform = nodes_[n.parent_id].world_transform * n.local_transform;
+        // 4. Line of Action gesture-curve override via Bishop frames (for spine/torso/pelvis/neck/head)
+        if (has_valid_loa && n.follows_line_of_action) {
+            const float t = std::clamp(n.line_of_action_t, 0.0f, 1.0f);
+            const glm::vec3 loa_pos  = line_of_action_.get_point(t, false);
+            const glm::vec3 loa_tang = line_of_action_.get_tangent(t, false);
+            const glm::mat4 bishop   = make_bishop_frame_matrix(loa_pos, loa_tang);
+            const glm::mat4 rot_mat  = compose_trs(glm::vec3(0.0f), rot);
+            n.world_transform = bishop * rot_mat;
+            if (n.parent_id != 0xFFFFFFFFu && n.parent_id < nodes_.size()) {
+                n.local_transform = glm::inverse(nodes_[n.parent_id].world_transform) * n.world_transform;
+            } else {
+                n.local_transform = n.world_transform;
+            }
         } else {
-            n.world_transform = n.local_transform;
+            n.local_transform = compose_trs(eff_offset, rot);
+            if (n.parent_id != 0xFFFFFFFFu && n.parent_id < nodes_.size()) {
+                n.world_transform = nodes_[n.parent_id].world_transform * n.local_transform;
+            } else {
+                n.world_transform = n.local_transform;
+            }
         }
 
-        // Sync embedded StructureNodePod & SocketPod
+        // 5. Sync embedded StructureNodePod & SocketPod
         n.structure_pod.node_id          = n.node_id;
         n.structure_pod.parent_id        = n.parent_id;
         n.structure_pod.semantic_tag_id  = n.semantic_role_id;
-        n.structure_pod.rest_obb_center  = n.local_offset;
+        n.structure_pod.rest_obb_center  = eff_offset;
         n.structure_pod.rest_obb_extents = n.evaluated_half_extents;
         n.structure_pod.fitted_transform = n.world_transform;
         n.structure_pod.size_flags_x     = DESIGN_SIZE_PROPORTIONAL_RATIO;
@@ -127,7 +176,7 @@ ScaffoldBalanceReport FormScaffoldCore::compute_balance_report() const {
     if (support_count > 0u) {
         rep.support_center = support_sum / static_cast<float>(support_count);
         rep.support_center.y = 0.0f;
-        float max_r = 0.12f; // Minimum foot/paw pad radius
+        float max_r = 0.12f;
         for (const auto &sp : support_pts) {
             const float d = glm::length(glm::vec2(sp.x - rep.support_center.x, sp.z - rep.support_center.z));
             max_r = std::max(max_r, d + 0.08f);
@@ -154,7 +203,7 @@ glm::vec3 FormScaffoldCore::_eval_local_primitive_surface(
     const glm::vec3 &ext = p_node.evaluated_half_extents;
 
     const float theta = u * kTwoPi;
-    const float phi   = (v - 0.5f) * kPi; // -pi/2 (bottom) .. +pi/2 (top)
+    const float phi   = (v - 0.5f) * kPi;
     const float ct = std::cos(theta);
     const float st = std::sin(theta);
     const float cp = std::cos(phi);
@@ -166,16 +215,13 @@ glm::vec3 FormScaffoldCore::_eval_local_primitive_surface(
         }
 
         case ScaffoldPrimitiveType::PRIMITIVE_SLICED_SPHERE: {
-            // Classic Loomis Cranium: sphere with shaved temporal side planes + hanging jaw/muzzle wedge
             float x = cp * ct * ext.x;
             float y = sp * ext.y;
             float z = cp * st * ext.z;
 
-            // Shave left/right temporal planes at `side_shave_ratio * ext.x`
             const float shave_x = std::clamp(p_node.side_shave_ratio, 0.35f, 1.0f) * ext.x;
             x = std::clamp(x, -shave_x, shave_x);
 
-            // Lower-front hemisphere drops into the Loomis jaw / muzzle wedge (+Z = front)
             if (y < 0.0f && z > 0.0f) {
                 const float front_factor = std::clamp(z / std::max(1e-4f, ext.z), 0.0f, 1.0f);
                 const float lower_factor = std::clamp(-y / std::max(1e-4f, ext.y), 0.0f, 1.0f);
@@ -187,21 +233,17 @@ glm::vec3 FormScaffoldCore::_eval_local_primitive_surface(
         }
 
         case ScaffoldPrimitiveType::PRIMITIVE_EGG_ELLIPSOID: {
-            // Loomis Thoracic Egg / Avian Keel: asymmetric upper/lower fullness
             const float taper = 1.0f + std::clamp(p_node.egg_taper, -0.55f, 0.55f) * sp;
             return glm::vec3(cp * ct * ext.x * taper, sp * ext.y, cp * st * ext.z * taper);
         }
 
         case ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE: {
-            // Loomis Anti-Sausage Limb: smooth proximal->distal taper + asymmetric opposing muscle rhythm
             const float y = (v * 2.0f - 1.0f) * ext.y;
-            // End-cap rounding near v=0 and v=1
             const float cap_sin = std::sin(std::clamp(v, 0.001f, 0.999f) * kPi);
             const float cap_scale = std::pow(cap_sin, 0.32f);
             const float tx = glm::mix(1.0f, std::clamp(p_node.top_taper_x, 0.2f, 2.0f), v);
             const float tz = glm::mix(1.0f, std::clamp(p_node.top_taper_z, 0.2f, 2.0f), v);
 
-            // Paired Gaussian rhythm bulges (outer side ct > 0 peaks at high_u; inner side ct < 0 peaks at low_u)
             const float d_hi = (v - p_node.asymmetry_high_u) / 0.18f;
             const float d_lo = (v - p_node.asymmetry_low_u)  / 0.18f;
             const float bulge_hi = p_node.asymmetry_high_amp * std::exp(-0.5f * d_hi * d_hi) * std::max(0.0f, ct);
@@ -212,7 +254,6 @@ glm::vec3 FormScaffoldCore::_eval_local_primitive_surface(
         }
 
         case ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX: {
-            // Loomis Pelvic Wedge / Hand Palm Wedge / Seat Box (superellipsoid-rounded box for clean UV frames)
             const float sgn_c = (ct >= 0.0f) ? 1.0f : -1.0f;
             const float sgn_s = (st >= 0.0f) ? 1.0f : -1.0f;
             const float bx = sgn_c * std::pow(std::abs(ct), 0.35f);
@@ -354,7 +395,7 @@ std::vector<ScaffoldBoneExportEntry> FormScaffoldCore::build_skeleton_export_pla
 }
 
 // ============================================================================
-// Universal Andrew Loomis Body-Plan Scaffold Presets
+// Universal Andrew Loomis Body-Plan Scaffold Presets (Live Ruler-Bound)
 // ============================================================================
 
 FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
@@ -365,6 +406,23 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     sc.set_ruler_graph(ProportionRulerGraph::create_loomis_biped_canon(p_canon, p_head_height_m));
     sc.set_scaffold_name(sc.get_ruler_graph().get_canon_name());
     const auto &rg = sc.get_ruler_graph();
+
+    const uint32_t r_head_h   = rg.find_node_id("head_height");
+    const uint32_t r_head_w   = rg.find_node_id("head_width");
+    const uint32_t r_head_d   = rg.find_node_id("head_depth");
+    const uint32_t r_neck_h   = rg.find_node_id("neck_height");
+    const uint32_t r_sh_w     = rg.find_node_id("shoulder_width");
+    const uint32_t r_rib_h    = rg.find_node_id("ribcage_height");
+    const uint32_t r_rib_d    = rg.find_node_id("ribcage_depth");
+    const uint32_t r_pel_w    = rg.find_node_id("pelvis_width");
+    const uint32_t r_pel_h    = rg.find_node_id("pelvis_height");
+    const uint32_t r_pel_d    = rg.find_node_id("pelvis_depth");
+    const uint32_t r_ua_len   = rg.find_node_id("upper_arm_len");
+    const uint32_t r_fa_len   = rg.find_node_id("forearm_len");
+    const uint32_t r_hand_len = rg.find_node_id("hand_len");
+    const uint32_t r_th_len   = rg.find_node_id("thigh_len");
+    const uint32_t r_sh_len   = rg.find_node_id("shin_len");
+    const uint32_t r_ft_len   = rg.find_node_id("foot_len");
 
     const float pelvis_y = rg.get_value_by_name("landmark_pelvis", 0.85f);
     const float sh_w     = rg.get_value_by_name("shoulder_width", 0.46f);
@@ -387,6 +445,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     pelvis.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
     pelvis.local_offset = glm::vec3(0.0f, pelvis_y, 0.0f);
     pelvis.half_extents = glm::vec3(hip_w * 0.5f, pel_h * 0.5f, rg.get_value_by_name("pelvis_depth", 0.21f) * 0.5f);
+    pelvis.ruler_scale_x_id = r_pel_w; pelvis.ruler_mult_x = 0.5f;
+    pelvis.ruler_scale_y_id = r_pel_h; pelvis.ruler_mult_y = 0.5f;
+    pelvis.ruler_scale_z_id = r_pel_d; pelvis.ruler_mult_z = 0.5f;
+    pelvis.ruler_offset_scale_id = r_head_h; pelvis.ruler_offset_ref_value = head_h;
+    pelvis.follows_line_of_action = true; pelvis.line_of_action_t = 0.0f;
     pelvis.top_taper_x = 0.88f;
     pelvis.mass_weight = 14.0f;
     pelvis.contrapposto_tilt_weight = -1.0f;
@@ -401,6 +464,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     thorax.type = ScaffoldPrimitiveType::PRIMITIVE_EGG_ELLIPSOID;
     thorax.local_offset = glm::vec3(0.0f, pel_h * 0.5f + rib_h * 0.62f, 0.0f);
     thorax.half_extents = glm::vec3(sh_w * 0.42f, rib_h * 0.55f, rg.get_value_by_name("ribcage_depth", 0.24f) * 0.5f);
+    thorax.ruler_scale_x_id = r_sh_w;  thorax.ruler_mult_x = 0.42f;
+    thorax.ruler_scale_y_id = r_rib_h; thorax.ruler_mult_y = 0.55f;
+    thorax.ruler_scale_z_id = r_rib_d; thorax.ruler_mult_z = 0.50f;
+    thorax.ruler_offset_scale_id = r_head_h; thorax.ruler_offset_ref_value = head_h;
+    thorax.follows_line_of_action = true; thorax.line_of_action_t = 0.48f;
     thorax.egg_taper = 0.28f;
     thorax.mass_weight = 22.0f;
     thorax.contrapposto_tilt_weight = 1.0f;
@@ -417,6 +485,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     neck.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
     neck.local_offset = glm::vec3(0.0f, rib_h * 0.55f + neck_h * 0.5f, 0.0f);
     neck.half_extents = glm::vec3(head_h * 0.24f, neck_h * 0.55f, head_h * 0.24f);
+    neck.ruler_scale_x_id = r_head_h; neck.ruler_mult_x = 0.24f;
+    neck.ruler_scale_y_id = r_neck_h; neck.ruler_mult_y = 0.55f;
+    neck.ruler_scale_z_id = r_head_h; neck.ruler_mult_z = 0.24f;
+    neck.ruler_offset_scale_id = r_head_h; neck.ruler_offset_ref_value = head_h;
+    neck.follows_line_of_action = true; neck.line_of_action_t = 0.78f;
     neck.mass_weight = 2.0f;
     neck.socket.physics_binding_mode = SocketPhysicsBindingMode::PHYSICS_BIND_GENERIC_6DOF_JOINT_3D;
     neck.socket.joint_limit_lower = -35.0f;
@@ -430,6 +503,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     head.type = ScaffoldPrimitiveType::PRIMITIVE_SLICED_SPHERE;
     head.local_offset = glm::vec3(0.0f, neck_h * 0.5f + head_h * 0.48f, 0.01f);
     head.half_extents = glm::vec3(rg.get_value_by_name("head_width", 0.16f) * 0.5f, head_h * 0.42f, rg.get_value_by_name("head_depth", 0.19f) * 0.5f);
+    head.ruler_scale_x_id = r_head_w; head.ruler_mult_x = 0.50f;
+    head.ruler_scale_y_id = r_head_h; head.ruler_mult_y = 0.42f;
+    head.ruler_scale_z_id = r_head_d; head.ruler_mult_z = 0.50f;
+    head.ruler_offset_scale_id = r_head_h; head.ruler_offset_ref_value = head_h;
+    head.follows_line_of_action = true; head.line_of_action_t = 1.0f;
     head.side_shave_ratio = 0.72f;
     head.jaw_drop_ratio = 0.48f;
     head.jaw_width_ratio = 0.60f;
@@ -439,7 +517,7 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
     head.socket.joint_limit_upper = 45.0f;
     sc.add_node(head);
 
-    // Bilateral Arms & Legs with Loomis anti-sausage asymmetric rhythm
+    // Bilateral Arms & Legs with Loomis anti-sausage asymmetric rhythm & live ruler bindings
     for (int side = -1; side <= 1; side += 2) {
         const std::string sfx = (side < 0) ? "_L" : "_R";
         const float sx = static_cast<float>(side);
@@ -450,6 +528,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         uarm.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         uarm.local_offset = glm::vec3(sx * sh_w * 0.48f, rib_h * 0.35f - ua_len * 0.45f, 0.0f);
         uarm.half_extents = glm::vec3(head_h * 0.21f, ua_len * 0.5f, head_h * 0.21f);
+        uarm.ruler_scale_x_id = r_head_h; uarm.ruler_mult_x = 0.21f;
+        uarm.ruler_scale_y_id = r_ua_len; uarm.ruler_mult_y = 0.50f;
+        uarm.ruler_scale_z_id = r_head_h; uarm.ruler_mult_z = 0.21f;
+        uarm.ruler_offset_scale_id = r_head_h; uarm.ruler_offset_ref_value = head_h;
         uarm.top_taper_x = 1.15f;
         uarm.asymmetry_high_u = 0.75f; uarm.asymmetry_high_amp = 0.16f;
         uarm.asymmetry_low_u  = 0.45f; uarm.asymmetry_low_amp  = 0.10f;
@@ -465,6 +547,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         farm.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         farm.local_offset = glm::vec3(0.0f, -(ua_len * 0.5f + fa_len * 0.48f), 0.0f);
         farm.half_extents = glm::vec3(head_h * 0.16f, fa_len * 0.5f, head_h * 0.16f);
+        farm.ruler_scale_x_id = r_head_h; farm.ruler_mult_x = 0.16f;
+        farm.ruler_scale_y_id = r_fa_len; farm.ruler_mult_y = 0.50f;
+        farm.ruler_scale_z_id = r_head_h; farm.ruler_mult_z = 0.16f;
+        farm.ruler_offset_scale_id = r_head_h; farm.ruler_offset_ref_value = head_h;
         farm.top_taper_x = 1.25f;
         farm.asymmetry_high_u = 0.72f; farm.asymmetry_high_amp = 0.18f;
         farm.mass_weight = 1.8f;
@@ -479,6 +565,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         hand.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
         hand.local_offset = glm::vec3(0.0f, -(fa_len * 0.5f + hand_len * 0.45f), 0.0f);
         hand.half_extents = glm::vec3(head_h * 0.18f, hand_len * 0.5f, head_h * 0.07f);
+        hand.ruler_scale_x_id = r_head_h;   hand.ruler_mult_x = 0.18f;
+        hand.ruler_scale_y_id = r_hand_len; hand.ruler_mult_y = 0.50f;
+        hand.ruler_scale_z_id = r_head_h;   hand.ruler_mult_z = 0.07f;
+        hand.ruler_offset_scale_id = r_head_h; hand.ruler_offset_ref_value = head_h;
         hand.top_taper_x = 1.12f;
         hand.mass_weight = 0.6f;
         hand.socket.physics_binding_mode = SocketPhysicsBindingMode::PHYSICS_BIND_GENERIC_6DOF_JOINT_3D;
@@ -490,6 +580,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         thigh.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         thigh.local_offset = glm::vec3(sx * hip_w * 0.32f, -(pel_h * 0.35f + th_len * 0.48f), 0.0f);
         thigh.half_extents = glm::vec3(head_h * 0.32f, th_len * 0.5f, head_h * 0.32f);
+        thigh.ruler_scale_x_id = r_head_h; thigh.ruler_mult_x = 0.32f;
+        thigh.ruler_scale_y_id = r_th_len; thigh.ruler_mult_y = 0.50f;
+        thigh.ruler_scale_z_id = r_head_h; thigh.ruler_mult_z = 0.32f;
+        thigh.ruler_offset_scale_id = r_head_h; thigh.ruler_offset_ref_value = head_h;
         thigh.top_taper_x = 1.28f;
         thigh.asymmetry_high_u = 0.68f; thigh.asymmetry_high_amp = 0.15f;
         thigh.asymmetry_low_u  = 0.38f; thigh.asymmetry_low_amp  = 0.12f;
@@ -505,8 +599,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         shin.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         shin.local_offset = glm::vec3(0.0f, -(th_len * 0.5f + sh_len * 0.48f), 0.0f);
         shin.half_extents = glm::vec3(head_h * 0.20f, sh_len * 0.5f, head_h * 0.21f);
+        shin.ruler_scale_x_id = r_head_h; shin.ruler_mult_x = 0.20f;
+        shin.ruler_scale_y_id = r_sh_len; shin.ruler_mult_y = 0.50f;
+        shin.ruler_scale_z_id = r_head_h; shin.ruler_mult_z = 0.21f;
+        shin.ruler_offset_scale_id = r_head_h; shin.ruler_offset_ref_value = head_h;
         shin.top_taper_x = 1.32f;
-        // Classic Loomis calf rhythm: high outer gastrocnemius, lower inner soleus
         shin.asymmetry_high_u = 0.72f; shin.asymmetry_high_amp = 0.22f * sx;
         shin.asymmetry_low_u  = 0.52f; shin.asymmetry_low_amp  = 0.16f * (-sx);
         shin.mass_weight = 4.2f;
@@ -521,6 +618,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_biped_scaffold(
         foot.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
         foot.local_offset = glm::vec3(0.0f, -(sh_len * 0.5f + head_h * 0.14f), ft_len * 0.22f);
         foot.half_extents = glm::vec3(head_h * 0.19f, head_h * 0.14f, ft_len * 0.5f);
+        foot.ruler_scale_x_id = r_head_h; foot.ruler_mult_x = 0.19f;
+        foot.ruler_scale_y_id = r_head_h; foot.ruler_mult_y = 0.14f;
+        foot.ruler_scale_z_id = r_ft_len; foot.ruler_mult_z = 0.50f;
+        foot.ruler_offset_scale_id = r_head_h; foot.ruler_offset_ref_value = head_h;
         foot.top_taper_z = 0.72f;
         foot.mass_weight = 1.2f;
         foot.is_ground_support = true;
@@ -538,13 +639,22 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
     sc.set_scaffold_name("Loomis Quadruped Scaffold");
     const auto &rg = sc.get_ruler_graph();
 
-    const float sh = rg.get_value_by_name("shoulder_height", p_shoulder_height_m);
-    const float rib_l = rg.get_value_by_name("ribcage_length", sh * 0.68f);
-    const float rib_d = rg.get_value_by_name("ribcage_depth", sh * 0.46f);
-    const float rib_w = rg.get_value_by_name("ribcage_width", sh * 0.36f);
-    const float pel_l = rg.get_value_by_name("pelvis_length", sh * 0.38f);
-    const float pel_w = rg.get_value_by_name("pelvis_width", sh * 0.32f);
-    const float neck_l = rg.get_value_by_name("neck_length", sh * 0.42f);
+    const uint32_t r_sh     = rg.find_node_id("shoulder_height");
+    const uint32_t r_rib_l  = rg.find_node_id("ribcage_length");
+    const uint32_t r_rib_d  = rg.find_node_id("ribcage_depth");
+    const uint32_t r_rib_w  = rg.find_node_id("ribcage_width");
+    const uint32_t r_pel_l  = rg.find_node_id("pelvis_length");
+    const uint32_t r_pel_w  = rg.find_node_id("pelvis_width");
+    const uint32_t r_neck_l = rg.find_node_id("neck_length");
+    const uint32_t r_sk_l   = rg.find_node_id("skull_length");
+
+    const float sh      = rg.get_value_by_name("shoulder_height", p_shoulder_height_m);
+    const float rib_l   = rg.get_value_by_name("ribcage_length", sh * 0.68f);
+    const float rib_d   = rg.get_value_by_name("ribcage_depth", sh * 0.46f);
+    const float rib_w   = rg.get_value_by_name("ribcage_width", sh * 0.36f);
+    const float pel_l   = rg.get_value_by_name("pelvis_length", sh * 0.38f);
+    const float pel_w   = rg.get_value_by_name("pelvis_width", sh * 0.32f);
+    const float neck_l  = rg.get_value_by_name("neck_length", sh * 0.42f);
     const float skull_l = rg.get_value_by_name("skull_length", sh * 0.40f);
 
     ScaffoldNodeEntry thorax{};
@@ -553,6 +663,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
     thorax.type = ScaffoldPrimitiveType::PRIMITIVE_EGG_ELLIPSOID;
     thorax.local_offset = glm::vec3(0.0f, sh * 0.72f, rib_l * 0.25f);
     thorax.half_extents = glm::vec3(rib_w * 0.5f, rib_d * 0.5f, rib_l * 0.5f);
+    thorax.ruler_scale_x_id = r_rib_w; thorax.ruler_mult_x = 0.5f;
+    thorax.ruler_scale_y_id = r_rib_d; thorax.ruler_mult_y = 0.5f;
+    thorax.ruler_scale_z_id = r_rib_l; thorax.ruler_mult_z = 0.5f;
+    thorax.ruler_offset_scale_id = r_sh; thorax.ruler_offset_ref_value = sh;
+    thorax.follows_line_of_action = true; thorax.line_of_action_t = 0.45f;
     thorax.mass_weight = 24.0f;
     const uint32_t id_thorax = sc.add_node(thorax);
 
@@ -562,6 +677,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
     pelvis.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
     pelvis.local_offset = glm::vec3(0.0f, sh * 0.04f, -(rib_l * 0.55f + pel_l * 0.45f));
     pelvis.half_extents = glm::vec3(pel_w * 0.5f, rib_d * 0.38f, pel_l * 0.5f);
+    pelvis.ruler_scale_x_id = r_pel_w; pelvis.ruler_mult_x = 0.50f;
+    pelvis.ruler_scale_y_id = r_rib_d; pelvis.ruler_mult_y = 0.38f;
+    pelvis.ruler_scale_z_id = r_pel_l; pelvis.ruler_mult_z = 0.50f;
+    pelvis.ruler_offset_scale_id = r_sh; pelvis.ruler_offset_ref_value = sh;
+    pelvis.follows_line_of_action = true; pelvis.line_of_action_t = 0.0f;
     pelvis.mass_weight = 14.0f;
     const uint32_t id_pelvis = sc.add_node(pelvis);
 
@@ -572,6 +692,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
     neck.local_offset = glm::vec3(0.0f, rib_d * 0.38f, rib_l * 0.52f);
     neck.local_rotation_deg = glm::vec3(38.0f, 0.0f, 0.0f);
     neck.half_extents = glm::vec3(rib_w * 0.26f, neck_l * 0.5f, rib_w * 0.28f);
+    neck.ruler_scale_x_id = r_rib_w;  neck.ruler_mult_x = 0.26f;
+    neck.ruler_scale_y_id = r_neck_l; neck.ruler_mult_y = 0.50f;
+    neck.ruler_scale_z_id = r_rib_w;  neck.ruler_mult_z = 0.28f;
+    neck.ruler_offset_scale_id = r_sh; neck.ruler_offset_ref_value = sh;
+    neck.follows_line_of_action = true; neck.line_of_action_t = 0.78f;
     neck.mass_weight = 4.0f;
     const uint32_t id_neck = sc.add_node(neck);
 
@@ -582,13 +707,17 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
     skull.local_offset = glm::vec3(0.0f, neck_l * 0.55f, skull_l * 0.25f);
     skull.local_rotation_deg = glm::vec3(-38.0f, 0.0f, 0.0f);
     skull.half_extents = glm::vec3(skull_l * 0.34f, skull_l * 0.32f, skull_l * 0.42f);
+    skull.ruler_scale_x_id = r_sk_l; skull.ruler_mult_x = 0.34f;
+    skull.ruler_scale_y_id = r_sk_l; skull.ruler_mult_y = 0.32f;
+    skull.ruler_scale_z_id = r_sk_l; skull.ruler_mult_z = 0.42f;
+    skull.ruler_offset_scale_id = r_sh; skull.ruler_offset_ref_value = sh;
+    skull.follows_line_of_action = true; skull.line_of_action_t = 1.0f;
     skull.side_shave_ratio = 0.78f;
     skull.jaw_drop_ratio = 0.28f;
-    skull.muzzle_length_ratio = 0.65f; // Quadruped snout extension
+    skull.muzzle_length_ratio = 0.65f;
     skull.mass_weight = 4.5f;
     sc.add_node(skull);
 
-    // 4 Legs + Ground-Support Paw Wedges
     const float leg_h = sh * 0.55f;
     for (int side = -1; side <= 1; side += 2) {
         const std::string sfx = (side < 0) ? "_L" : "_R";
@@ -600,6 +729,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
         fleg.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         fleg.local_offset = glm::vec3(sx * rib_w * 0.46f, -leg_h * 0.55f, rib_l * 0.22f);
         fleg.half_extents = glm::vec3(sh * 0.065f, leg_h * 0.5f, sh * 0.075f);
+        fleg.ruler_scale_x_id = r_sh; fleg.ruler_mult_x = 0.065f;
+        fleg.ruler_scale_y_id = r_sh; fleg.ruler_mult_y = 0.275f;
+        fleg.ruler_scale_z_id = r_sh; fleg.ruler_mult_z = 0.075f;
+        fleg.ruler_offset_scale_id = r_sh; fleg.ruler_offset_ref_value = sh;
         fleg.top_taper_x = 1.35f;
         fleg.mass_weight = 4.0f;
         fleg.is_ground_support = true;
@@ -611,6 +744,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_quadruped_scaffold(float p_shou
         hleg.type = ScaffoldPrimitiveType::PRIMITIVE_TAPERED_CAPSULE;
         hleg.local_offset = glm::vec3(sx * pel_w * 0.48f, -leg_h * 0.58f, -pel_l * 0.12f);
         hleg.half_extents = glm::vec3(sh * 0.075f, leg_h * 0.52f, sh * 0.09f);
+        hleg.ruler_scale_x_id = r_sh; hleg.ruler_mult_x = 0.075f;
+        hleg.ruler_scale_y_id = r_sh; hleg.ruler_mult_y = 0.286f;
+        hleg.ruler_scale_z_id = r_sh; hleg.ruler_mult_z = 0.090f;
+        hleg.ruler_offset_scale_id = r_sh; hleg.ruler_offset_ref_value = sh;
         hleg.top_taper_x = 1.45f;
         hleg.mass_weight = 5.0f;
         hleg.is_ground_support = true;
@@ -627,8 +764,16 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
     sc.set_scaffold_name("Loomis Avian Scaffold");
     const auto &rg = sc.get_ruler_graph();
 
-    const float k = rg.get_value_by_name("keel_length", p_keel_length_m);
-    const float w_in = rg.get_value_by_name("wing_inner_len", k * 0.75f);
+    const uint32_t r_keel   = rg.find_node_id("keel_length");
+    const uint32_t r_keel_w = rg.find_node_id("keel_width");
+    const uint32_t r_keel_d = rg.find_node_id("keel_depth");
+    const uint32_t r_win    = rg.find_node_id("wing_inner_len");
+    const uint32_t r_wout   = rg.find_node_id("wing_outer_len");
+    const uint32_t r_tarsus = rg.find_node_id("tarsus_length");
+    const uint32_t r_skull  = rg.find_node_id("skull_length");
+
+    const float k     = rg.get_value_by_name("keel_length", p_keel_length_m);
+    const float w_in  = rg.get_value_by_name("wing_inner_len", k * 0.75f);
     const float w_out = rg.get_value_by_name("wing_outer_len", k * 0.85f);
 
     ScaffoldNodeEntry keel{};
@@ -638,6 +783,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
     keel.local_offset = glm::vec3(0.0f, k * 0.90f, 0.0f);
     keel.local_rotation_deg = glm::vec3(-28.0f, 0.0f, 0.0f);
     keel.half_extents = glm::vec3(k * 0.29f, k * 0.32f, k * 0.52f);
+    keel.ruler_scale_x_id = r_keel_w; keel.ruler_mult_x = 0.50f;
+    keel.ruler_scale_y_id = r_keel_d; keel.ruler_mult_y = 0.50f;
+    keel.ruler_scale_z_id = r_keel;   keel.ruler_mult_z = 0.52f;
+    keel.ruler_offset_scale_id = r_keel; keel.ruler_offset_ref_value = k;
+    keel.follows_line_of_action = true; keel.line_of_action_t = 0.40f;
     keel.egg_taper = 0.25f;
     keel.mass_weight = 6.0f;
     const uint32_t id_keel = sc.add_node(keel);
@@ -649,7 +799,12 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
     head.local_offset = glm::vec3(0.0f, k * 0.45f, k * 0.48f);
     head.local_rotation_deg = glm::vec3(28.0f, 0.0f, 0.0f);
     head.half_extents = glm::vec3(k * 0.16f, k * 0.16f, k * 0.20f);
-    head.muzzle_length_ratio = 0.85f; // Beak wedge
+    head.ruler_scale_x_id = r_skull; head.ruler_mult_x = 0.38f;
+    head.ruler_scale_y_id = r_skull; head.ruler_mult_y = 0.38f;
+    head.ruler_scale_z_id = r_skull; head.ruler_mult_z = 0.48f;
+    head.ruler_offset_scale_id = r_keel; head.ruler_offset_ref_value = k;
+    head.follows_line_of_action = true; head.line_of_action_t = 1.0f;
+    head.muzzle_length_ratio = 0.85f;
     head.jaw_width_ratio = 0.32f;
     head.mass_weight = 1.0f;
     sc.add_node(head);
@@ -664,6 +819,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
         wing_in.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
         wing_in.local_offset = glm::vec3(sx * (k * 0.28f + w_in * 0.45f), k * 0.18f, k * 0.05f);
         wing_in.half_extents = glm::vec3(w_in * 0.5f, k * 0.06f, k * 0.26f);
+        wing_in.ruler_scale_x_id = r_win;  wing_in.ruler_mult_x = 0.50f;
+        wing_in.ruler_scale_y_id = r_keel; wing_in.ruler_mult_y = 0.06f;
+        wing_in.ruler_scale_z_id = r_keel; wing_in.ruler_mult_z = 0.26f;
+        wing_in.ruler_offset_scale_id = r_keel; wing_in.ruler_offset_ref_value = k;
         wing_in.mass_weight = 1.2f;
         const uint32_t id_win = sc.add_node(wing_in);
 
@@ -673,6 +832,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
         wing_out.type = ScaffoldPrimitiveType::PRIMITIVE_WEDGE_BOX;
         wing_out.local_offset = glm::vec3(sx * (w_in * 0.5f + w_out * 0.45f), 0.0f, -k * 0.04f);
         wing_out.half_extents = glm::vec3(w_out * 0.5f, k * 0.035f, k * 0.20f);
+        wing_out.ruler_scale_x_id = r_wout; wing_out.ruler_mult_x = 0.50f;
+        wing_out.ruler_scale_y_id = r_keel; wing_out.ruler_mult_y = 0.035f;
+        wing_out.ruler_scale_z_id = r_keel; wing_out.ruler_mult_z = 0.20f;
+        wing_out.ruler_offset_scale_id = r_keel; wing_out.ruler_offset_ref_value = k;
         wing_out.top_taper_z = 0.45f;
         wing_out.mass_weight = 0.7f;
         sc.add_node(wing_out);
@@ -684,6 +847,10 @@ FormScaffoldCore FormScaffoldCore::create_loomis_avian_scaffold(float p_keel_len
         leg.local_offset = glm::vec3(sx * k * 0.16f, -k * 0.52f, -k * 0.08f);
         leg.local_rotation_deg = glm::vec3(28.0f, 0.0f, 0.0f);
         leg.half_extents = glm::vec3(k * 0.05f, k * 0.34f, k * 0.05f);
+        leg.ruler_scale_x_id = r_keel;   leg.ruler_mult_x = 0.05f;
+        leg.ruler_scale_y_id = r_tarsus; leg.ruler_mult_y = 0.55f;
+        leg.ruler_scale_z_id = r_keel;   leg.ruler_mult_z = 0.05f;
+        leg.ruler_offset_scale_id = r_keel; leg.ruler_offset_ref_value = k;
         leg.mass_weight = 0.6f;
         leg.is_ground_support = true;
         sc.add_node(leg);
@@ -697,17 +864,28 @@ FormScaffoldCore FormScaffoldCore::create_loomis_serpentine_scaffold(float p_sku
     FormScaffoldCore sc;
     sc.set_ruler_graph(ProportionRulerGraph::create_loomis_serpentine_canon(p_skull_length_m));
     sc.set_scaffold_name("Loomis Serpentine Scaffold");
+    const auto &rg = sc.get_ruler_graph();
 
-    const uint32_t segs = std::clamp<uint32_t>(p_segments, 4u, 24u);
-    const float body_len = sc.get_ruler_graph().get_value_by_name("body_length", p_skull_length_m * 14.0f);
-    const float seg_len = body_len / static_cast<float>(segs);
+    const uint32_t r_skull   = rg.find_node_id("skull_length");
+    const uint32_t r_skull_w = rg.find_node_id("skull_width");
+    const uint32_t r_body_l  = rg.find_node_id("body_length");
+
+    const uint32_t segs  = std::clamp<uint32_t>(p_segments, 4u, 24u);
+    const float skull_l  = rg.get_value_by_name("skull_length", p_skull_length_m);
+    const float body_len = rg.get_value_by_name("body_length", p_skull_length_m * 14.0f);
+    const float seg_len  = body_len / static_cast<float>(segs);
 
     ScaffoldNodeEntry head{};
     head.name = "Head";
     head.parent_id = 0xFFFFFFFFu;
     head.type = ScaffoldPrimitiveType::PRIMITIVE_SLICED_SPHERE;
-    head.local_offset = glm::vec3(0.0f, p_skull_length_m * 0.42f, 0.0f);
-    head.half_extents = glm::vec3(p_skull_length_m * 0.34f, p_skull_length_m * 0.24f, p_skull_length_m * 0.50f);
+    head.local_offset = glm::vec3(0.0f, skull_l * 0.42f, 0.0f);
+    head.half_extents = glm::vec3(skull_l * 0.34f, skull_l * 0.24f, skull_l * 0.50f);
+    head.ruler_scale_x_id = r_skull_w; head.ruler_mult_x = 0.52f;
+    head.ruler_scale_y_id = r_skull;   head.ruler_mult_y = 0.24f;
+    head.ruler_scale_z_id = r_skull;   head.ruler_mult_z = 0.50f;
+    head.ruler_offset_scale_id = r_skull; head.ruler_offset_ref_value = skull_l;
+    head.follows_line_of_action = true; head.line_of_action_t = 0.0f;
     head.muzzle_length_ratio = 0.55f;
     head.mass_weight = 1.5f;
     head.is_ground_support = true;
@@ -715,9 +893,8 @@ FormScaffoldCore FormScaffoldCore::create_loomis_serpentine_scaffold(float p_sku
 
     for (uint32_t i = 0u; i < segs; ++i) {
         const float t = static_cast<float>(i + 1u) / static_cast<float>(segs);
-        // Smooth Loomis serpentine girth rhythm: slender neck -> full midbody -> tapered tail
         const float girth = std::sin(std::clamp(t, 0.05f, 0.98f) * kPi) * 0.42f + 0.08f;
-        const float r = p_skull_length_m * girth;
+        const float r = skull_l * girth;
 
         ScaffoldNodeEntry seg{};
         seg.name = "SpineSeg_" + std::to_string(i);
@@ -726,6 +903,11 @@ FormScaffoldCore FormScaffoldCore::create_loomis_serpentine_scaffold(float p_sku
         seg.local_offset = glm::vec3(0.0f, 0.0f, -seg_len);
         seg.local_rotation_deg = glm::vec3(90.0f, 0.0f, 0.0f);
         seg.half_extents = glm::vec3(r, seg_len * 0.52f, r);
+        seg.ruler_scale_x_id = r_skull;  seg.ruler_mult_x = girth;
+        seg.ruler_scale_y_id = r_body_l; seg.ruler_mult_y = 0.52f / static_cast<float>(segs);
+        seg.ruler_scale_z_id = r_skull;  seg.ruler_mult_z = girth;
+        seg.ruler_offset_scale_id = r_body_l; seg.ruler_offset_ref_value = body_len;
+        seg.follows_line_of_action = true; seg.line_of_action_t = t;
         seg.mass_weight = std::max(0.2f, girth * 4.0f);
         seg.is_ground_support = (i == segs / 2u || i == segs - 1u);
         seg.socket.physics_binding_mode = SocketPhysicsBindingMode::PHYSICS_BIND_GENERIC_6DOF_JOINT_3D;

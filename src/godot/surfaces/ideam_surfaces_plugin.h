@@ -15,6 +15,7 @@
  */
 
 #include "../editor/ideam_editor_plugin.h"
+#include "../gizmos/ideam_spatial_toolbar.h"
 #include "../utilities/ideam_undo_redo.h"
 #include "editor/surfaces_inspector.h"
 #include "surface_mesh_node_3d.h"
@@ -43,6 +44,9 @@ private:
 
     godot::Ref<SurfacesInspector> surfaces_inspector_;
     godot::Ref<SurfacePatchGizmo> surface_patch_gizmo_;
+    IdeamSpatialToolbar *spatial_toolbar_ = nullptr;
+    uint64_t selected_surface_id_         = 0u;
+    void _on_surface_mode_changed(const godot::StringName &p_mode_id);
 
     void _register_tools_and_workspace();
     void _unregister_tools_and_workspace();
@@ -56,6 +60,9 @@ public:
     // Lifecycle
     void _enter_tree() override;
     void _exit_tree() override;
+    bool _handles(godot::Object *p_object) const override;
+    void _edit(godot::Object *p_object) override;
+    void _make_visible(bool p_visible) override;
 
     // Menu callback
     void open_surfaces_composer();

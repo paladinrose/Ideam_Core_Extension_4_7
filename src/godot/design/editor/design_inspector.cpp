@@ -38,6 +38,12 @@ void DesignInspector::_on_help_pressed(const godot::StringName &p_topic_id) {
     ToolRegistry::get_singleton().dispatch_help_request(p_topic_id, "design.inspector.header", ctx);
 }
 
+#ifdef TOOLS_ENABLED
+godot::EditorUndoRedoManager *DesignInspector::get_undo_redo() const {
+    return IdeamDesignPlugin::get_static_undo_redo();
+}
+#endif
+
 bool DesignInspector::_can_handle(godot::Object *p_object) const {
     if (!p_object) {
         return false;
@@ -51,6 +57,8 @@ bool DesignInspector::_can_handle(godot::Object *p_object) const {
            p_object->is_class("ProportionRulerGraphResource") ||
            p_object->is_class("FormScaffoldNode3D") ||
            p_object->is_class("Container3D") ||
+           p_object->is_class("ProportionContainer3D") ||
+           p_object->is_class("Socket3D") ||
            p_object->is_class("SemanticStructure3D");
 }
 
@@ -60,8 +68,10 @@ void DesignInspector::_parse_begin(godot::Object *p_object) {
         return;
     }
 
-    // Inject IdeamUndoRedo into scaffold & ruler resources
-    Ref<IdeamUndoRedo> ur = IdeamDesignPlugin::create_undo_redo_wrapper();
+    IdeamEditorInspectorPlugin::_parse_begin(p_object);
+
+    // Reuse shared ToolContext IdeamUndoRedo across Inspector & 3D Gizmos
+    Ref<IdeamUndoRedo> ur = resolve_shared_undo_redo();
     if (auto *sc = Object::cast_to<FormScaffoldResource>(p_object)) {
         sc->set_undo_redo(ur);
     } else if (auto *rg = Object::cast_to<ProportionRulerGraphResource>(p_object)) {
@@ -82,6 +92,8 @@ void DesignInspector::_parse_begin(godot::Object *p_object) {
         open_target = Ref<Resource>(res);
     } else if (auto *node = Object::cast_to<FormScaffoldNode3D>(p_object)) {
         open_target = node->get_scaffold();
+    } else if (auto *prop_c = Object::cast_to<ProportionContainer3D>(p_object)) {
+        open_target = prop_c->get_ruler_graph();
     }
 
     if (open_target.is_valid()) {

@@ -22,7 +22,7 @@ void CharacterMorphSliderPanel::_bind_methods() {
     ClassDB::bind_method(D_METHOD("set_blueprint", "blueprint"), &CharacterMorphSliderPanel::set_blueprint);
     ClassDB::bind_method(D_METHOD("get_blueprint"), &CharacterMorphSliderPanel::get_blueprint);
     ADD_PROPERTY(
-        PropertyInfo(Variant::OBJECT, "blueprint", PROPERTY_HINT_RESOURCE_TYPE, "CharacterBlueprintResource"),
+        PropertyInfo(Variant::OBJECT, "blueprint", PROPERTY_HINT_RESOURCE_TYPE, "LoomisCharacter3DResource"),
         "set_blueprint",
         "get_blueprint"
     );
@@ -39,7 +39,7 @@ void CharacterMorphSliderPanel::_bind_methods() {
     ADD_SIGNAL(MethodInfo("morph_sliders_changed"));
 }
 
-void CharacterMorphSliderPanel::set_blueprint(const godot::Ref<CharacterBlueprintResource> &p_blueprint) {
+void CharacterMorphSliderPanel::set_blueprint(const godot::Ref<LoomisCharacter3DResource> &p_blueprint) {
     blueprint_ = p_blueprint;
     if (get_child_count() == 0) {
         _rebuild_ui();
@@ -142,7 +142,7 @@ void CharacterMorphSliderPanel::_rebuild_ui() {
 void CharacterMorphSliderPanel::_sync_from_blueprint() {
     if (blueprint_.is_null()) {
         if (telemetry_label_) {
-            telemetry_label_->set_text("No CharacterBlueprintResource assigned.");
+            telemetry_label_->set_text("No LoomisCharacter3DResource assigned.");
         }
         return;
     }

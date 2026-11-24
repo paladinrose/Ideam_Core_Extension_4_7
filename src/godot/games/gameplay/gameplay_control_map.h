@@ -468,7 +468,7 @@ public:
 
     /**
      * Replaces legacy `xrcontroller3d_animated_parameters.gd` by binding tracked VR trigger/grip
-     * analog floats directly onto an `AnimationTree` or `ParametricCharacterNode3D`.
+     * analog floats directly onto an `AnimationTree` or `LoomisCharacterNode3D`.
      */
     void apply_vr_analog_to_animation_target(godot::Node *p_target, int p_hand = -1) const;
 

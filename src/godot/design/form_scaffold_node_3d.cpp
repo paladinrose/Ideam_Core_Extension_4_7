@@ -205,51 +205,61 @@ godot::TypedArray<godot::Dictionary> FormScaffoldNode3D::build_ragdoll_collider_
 }
 
 // ============================================================================
-// FormScaffoldGizmo Implementation
+// FormScaffoldGizmo Implementation (Trans-Environment `IdeamGizmo`)
 // ============================================================================
 
-FormScaffoldGizmo::FormScaffoldGizmo() {
-    _init_materials();
+bool FormScaffoldGizmo::can_handle(godot::Node3D *p_target) const {
+    return godot::Object::cast_to<FormScaffoldNode3D>(p_target) != nullptr;
 }
 
-void FormScaffoldGizmo::_init_materials() {
-    create_material("ruler_staff", godot::Color(0.32f, 0.85f, 0.98f, 0.92f), false, true, false);
-    create_material("bone_links", godot::Color(0.98f, 0.80f, 0.28f, 0.90f), false, true, false);
-    create_material("plumb_balanced", godot::Color(0.34f, 0.94f, 0.48f, 0.92f), false, true, false);
-    create_material("plumb_offbalance", godot::Color(0.98f, 0.42f, 0.25f, 0.95f), false, true, false);
-    create_handle_material("handles");
-}
-
-bool FormScaffoldGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return godot::Object::cast_to<FormScaffoldNode3D>(p_for_node_3d) != nullptr;
-}
-
-godot::String FormScaffoldGizmo::_get_gizmo_name() const {
+godot::String FormScaffoldGizmo::get_gizmo_name() const {
     return "IdeamFormScaffoldGizmo";
 }
 
-int32_t FormScaffoldGizmo::_get_priority() const {
+int32_t FormScaffoldGizmo::get_priority() const {
     return 0;
 }
 
-void FormScaffoldGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
-    p_gizmo->clear();
-    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_gizmo->get_node_3d());
+void FormScaffoldGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
     if (!node || !node->get_scaffold().is_valid()) return;
 
     const auto &sc = node->get_scaffold()->get_core_scaffold();
     const auto &nodes = sc.nodes();
+    const uint64_t inst_id = node->get_instance_id();
 
     // 1. Socket / Bone Hierarchy Links + Interactive Handles
     if (node->get_show_bone_hierarchy() && !nodes.empty()) {
         godot::PackedVector3Array bone_lines;
-        godot::PackedVector3Array handles;
-        godot::PackedInt32Array handle_ids;
 
         for (const auto &sn : nodes) {
             const godot::Vector3 wp(sn.world_transform[3][0], sn.world_transform[3][1], sn.world_transform[3][2]);
-            handles.append(wp);
-            handle_ids.append(HANDLE_NODE_BASE + static_cast<int32_t>(sn.node_id));
+            const int32_t hid = HANDLE_NODE_BASE + static_cast<int32_t>(sn.node_id);
+
+            uint32_t hstate = GIZMO_STATE_NONE;
+            if (p_view.active_handle_id == hid) {
+                hstate |= GIZMO_STATE_DRAGGING;
+                if (active_drags_.has(inst_id) && active_drags_[inst_id].limit_reached) {
+                    hstate |= GIZMO_STATE_LIMIT_REACHED;
+                }
+            } else if (p_view.hovered_handle_id == hid) {
+                hstate |= GIZMO_STATE_HOVER;
+            }
+
+            r_out.add_handle(
+                hid,
+                wp,
+                GIZMO_HANDLE_SCAFFOLD,
+                HANDLE_SHAPE_SPHERE,
+                static_cast<real_t>(0.038),
+                hstate,
+                godot::String::utf8(sn.name.c_str()),
+                false
+            );
 
             if (sn.parent_id != 0xFFFFFFFFu && sn.parent_id < nodes.size()) {
                 const auto &pn = nodes[sn.parent_id];
@@ -259,10 +269,7 @@ void FormScaffoldGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gi
             }
         }
         if (!bone_lines.is_empty()) {
-            p_gizmo->add_lines(bone_lines, get_material("bone_links", p_gizmo));
-        }
-        if (!handles.is_empty()) {
-            p_gizmo->add_handles(handles, get_material("handles", p_gizmo), handle_ids);
+            r_out.add_lines(bone_lines, GIZMO_LINE_BONE_LINK);
         }
     }
 
@@ -279,112 +286,121 @@ void FormScaffoldGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gi
         ruler_lines.append(godot::Vector3(staff_x, 0.0f, 0.0f));
         ruler_lines.append(godot::Vector3(staff_x, max_h, 0.0f));
 
-        // Unit subdivisions along staff
         const float unit = std::max(0.05f, rg.get_base_unit_meters());
         for (float y = 0.0f; y <= max_h + 1e-3f; y += unit) {
             ruler_lines.append(godot::Vector3(staff_x - 0.08f, y, 0.0f));
             ruler_lines.append(godot::Vector3(staff_x + 0.08f, y, 0.0f));
         }
-        // Landmark ticks
         for (const auto &rn : rg.nodes()) {
             if (!rn.is_landmark) continue;
             ruler_lines.append(godot::Vector3(staff_x, rn.computed_value, 0.0f));
             ruler_lines.append(godot::Vector3(staff_x + 0.22f, rn.computed_value, 0.0f));
         }
-        p_gizmo->add_lines(ruler_lines, get_material("ruler_staff", p_gizmo));
+        r_out.add_lines(ruler_lines, GIZMO_LINE_RULER);
     }
 
     // 3. Loomis Center-of-Gravity Plumb Line & Support Ring
     if (node->get_show_balance_plumb_line()) {
         const auto bal = sc.compute_balance_report();
-        godot::PackedVector3Array plumb_lines;
+        const GizmoSemanticRole plumb_role = bal.is_balanced ? GIZMO_PLUMB_BALANCED : GIZMO_PLUMB_UNBALANCED;
         const godot::Vector3 cog(bal.center_of_gravity.x, bal.center_of_gravity.y, bal.center_of_gravity.z);
         const godot::Vector3 gnd(bal.plumb_ground_point.x, 0.0f, bal.plumb_ground_point.z);
-        plumb_lines.append(cog);
-        plumb_lines.append(gnd);
-
-        // Draw ground support circle
-        const int segs = 16;
-        const float r = std::max(0.08f, bal.support_radius);
-        for (int i = 0; i < segs; ++i) {
-            const float a0 = static_cast<float>(i) / static_cast<float>(segs) * 6.2831853f;
-            const float a1 = static_cast<float>(i + 1) / static_cast<float>(segs) * 6.2831853f;
-            plumb_lines.append(godot::Vector3(bal.support_center.x + std::cos(a0) * r, 0.005f, bal.support_center.z + std::sin(a0) * r));
-            plumb_lines.append(godot::Vector3(bal.support_center.x + std::cos(a1) * r, 0.005f, bal.support_center.z + std::sin(a1) * r));
-        }
-        p_gizmo->add_lines(plumb_lines, get_material(bal.is_balanced ? "plumb_balanced" : "plumb_offbalance", p_gizmo));
+        r_out.add_segment(cog, gnd, plumb_role);
+        r_out.add_circle(
+            godot::Vector3(bal.support_center.x, 0.005f, bal.support_center.z),
+            godot::Vector3(0.0f, 1.0f, 0.0f),
+            std::max(0.08f, bal.support_radius),
+            20,
+            plumb_role
+        );
     }
 }
 
-godot::String FormScaffoldGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String FormScaffoldGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
     if (node && node->get_scaffold().is_valid()) {
         return node->get_scaffold()->get_node_name(p_handle_id - HANDLE_NODE_BASE);
     }
     return "Scaffold Node";
 }
 
-godot::Variant FormScaffoldGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant FormScaffoldGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
     if (!node || !node->get_scaffold().is_valid()) return godot::Vector3();
 
     const int nid = p_handle_id - HANDLE_NODE_BASE;
     const godot::Vector3 off = node->get_scaffold()->get_node_local_offset(nid);
-    ScaffoldDragState st{nid, off, true};
+    ScaffoldDragState st{nid, off, true, false};
     active_drags_[node->get_instance_id()] = st;
     return off;
 }
 
-void FormScaffoldGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void FormScaffoldGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
 ) {
-    (void)p_secondary;
-    if (!p_camera) return;
-    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_gizmo->get_node_3d());
+    (void)p_ray;
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
+    if (!node || !node->get_scaffold().is_valid()) return;
+
+    const int nid = p_handle_id - HANDLE_NODE_BASE;
+    const godot::Vector3 off = node->get_scaffold()->get_node_local_offset(nid);
+    ScaffoldDragState st{nid, off, true, false};
+    active_drags_[node->get_instance_id()] = st;
+}
+
+void FormScaffoldGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
+) {
+    (void)p_modifiers;
+    if (!p_ray.is_valid() || !p_ray.camera) return;
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
     if (!node || !node->get_scaffold().is_valid()) return;
 
     const int nid = p_handle_id - HANDLE_NODE_BASE;
     const godot::Transform3D gt = node->get_global_transform();
     const godot::Vector3 cur_world = gt.xform(node->get_scaffold()->get_node_world_position(nid));
-    const godot::Vector3 cam_fwd = -p_camera->get_global_transform().basis.get_column(2);
+    const godot::Vector3 cam_fwd = -p_ray.camera->get_global_transform().basis.get_column(2);
     const godot::Plane drag_plane(cam_fwd, cur_world);
 
     godot::Vector3 hit;
-    if (drag_plane.intersects_ray(
-            p_camera->project_ray_origin(p_screen_pos),
-            p_camera->project_ray_normal(p_screen_pos),
-            &hit)) {
+    if (drag_plane.intersects_ray(p_ray.origin, p_ray.normal, &hit)) {
         const godot::Vector3 delta_world = hit - cur_world;
         const godot::Vector3 delta_local = gt.basis.inverse().xform(delta_world);
-        node->get_scaffold()->set_node_local_offset(nid, node->get_scaffold()->get_node_local_offset(nid) + delta_local);
+        godot::Vector3 proposed = node->get_scaffold()->get_node_local_offset(nid) + delta_local;
+        bool clamped = false;
+        if (offset_clamp_cb_) {
+            proposed = offset_clamp_cb_(nid, proposed, clamped);
+        }
+        const uint64_t inst_id = node->get_instance_id();
+        if (active_drags_.has(inst_id)) {
+            active_drags_[inst_id].limit_reached = clamped;
+        }
+        node->get_scaffold()->set_node_local_offset(nid, proposed);
     }
 }
 
-void FormScaffoldGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void FormScaffoldGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
     (void)p_handle_id;
-    (void)p_secondary;
-    (void)p_restore;
-    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<FormScaffoldNode3D>(p_target);
     if (!node || !node->get_scaffold().is_valid()) return;
 
     const uint64_t id = node->get_instance_id();
@@ -401,7 +417,10 @@ void FormScaffoldGizmo::_commit_handle(
 
     const godot::Vector3 final_off = scaffold->get_node_local_offset(st.node_id);
     scaffold->set_node_local_offset(st.node_id, st.initial_local_offset);
-    if (!scaffold->get_undo_redo().is_valid()) {
+    godot::Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+    if (ur.is_valid()) {
+        scaffold->set_undo_redo(ur);
+    } else if (!scaffold->get_undo_redo().is_valid()) {
         scaffold->set_undo_redo(IdeamDesignPlugin::create_undo_redo_wrapper());
     }
     scaffold->commit_set_node_local_offset(st.node_id, final_off);

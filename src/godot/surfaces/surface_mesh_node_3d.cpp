@@ -228,18 +228,6 @@ godot::Transform3D SurfaceMeshNode3D::sample_world_frame(int p_patch_id, real_t 
 // SurfacePatchGizmo Implementation
 // ============================================================================
 
-SurfacePatchGizmo::SurfacePatchGizmo() {
-    _init_materials();
-}
-
-void SurfacePatchGizmo::_init_materials() {
-    create_material("isoparm_u", godot::Color(0.32f, 0.82f, 0.98f, 0.85f), false, true, false);
-    create_material("isoparm_v", godot::Color(0.38f, 0.92f, 0.58f, 0.85f), false, true, false);
-    create_material("control_cage", godot::Color(0.98f, 0.72f, 0.25f, 0.78f), false, true, false);
-    create_material("normal_needle", godot::Color(0.96f, 0.36f, 0.42f, 0.85f), false, true, false);
-    create_handle_material("handles");
-}
-
 godot::Ref<NurbsPatch3DResource> SurfacePatchGizmo::_resolve_editable_nurbs(const SurfaceMeshNode3D *p_node) {
     if (!p_node) return godot::Ref<NurbsPatch3DResource>();
     if (auto *nurbs = godot::Object::cast_to<NurbsPatch3DResource>(p_node->get_surface_patch().ptr())) {
@@ -248,21 +236,25 @@ godot::Ref<NurbsPatch3DResource> SurfacePatchGizmo::_resolve_editable_nurbs(cons
     return godot::Ref<NurbsPatch3DResource>();
 }
 
-bool SurfacePatchGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return godot::Object::cast_to<SurfaceMeshNode3D>(p_for_node_3d) != nullptr;
+bool SurfacePatchGizmo::can_handle(godot::Node3D *p_target) const {
+    return godot::Object::cast_to<SurfaceMeshNode3D>(p_target) != nullptr;
 }
 
-godot::String SurfacePatchGizmo::_get_gizmo_name() const {
+godot::String SurfacePatchGizmo::get_gizmo_name() const {
     return "IdeamSurfacePatchGizmo";
 }
 
-int32_t SurfacePatchGizmo::_get_priority() const {
+int32_t SurfacePatchGizmo::get_priority() const {
     return 0;
 }
 
-void SurfacePatchGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
-    p_gizmo->clear();
-    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_gizmo->get_node_3d());
+void SurfacePatchGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
+    (void)p_view;
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
     if (!node) return;
 
     godot::Ref<SurfacePatchResource> patch = node->get_surface_patch();
@@ -271,7 +263,9 @@ void SurfacePatchGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gi
     }
     if (!patch.is_valid() || !patch->is_patch_valid()) return;
 
-    // 1. Draw U & V isoparm curves
+    const godot::StringName mode = get_active_tool_mode();
+
+    // 1. U & V isoparm curves
     constexpr int kIsoLines = 5;
     constexpr int kSamples  = 16;
     godot::PackedVector3Array u_lines;
@@ -288,66 +282,65 @@ void SurfacePatchGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gi
             v_lines.append(patch->sample_position(fixed, t1));
         }
     }
-    p_gizmo->add_lines(u_lines, get_material("isoparm_u", p_gizmo));
-    p_gizmo->add_lines(v_lines, get_material("isoparm_v", p_gizmo));
+    r_out.add_lines(u_lines, GIZMO_LINE_AXIS_NORMAL);
+    r_out.add_lines(v_lines, GIZMO_PLUMB_BALANCED);
 
-    // 2. Optional normal needles
-    if (node->get_show_normal_needles()) {
+    // 2. Normal needles
+    if (node->get_show_normal_needles() || mode == godot::StringName("normals")) {
         godot::PackedVector3Array needles;
         for (int j = 0; j < kIsoLines; ++j) {
             const real_t v = static_cast<real_t>(j) / static_cast<real_t>(kIsoLines - 1);
             for (int i = 0; i < kIsoLines; ++i) {
                 const real_t u = static_cast<real_t>(i) / static_cast<real_t>(kIsoLines - 1);
-                const godot::Vector3 p = patch->sample_position(u, v);
-                const godot::Vector3 n = patch->sample_normal(u, v);
-                needles.append(p);
-                needles.append(p + n * 0.25f);
+                const godot::Vector3 pt = patch->sample_position(u, v);
+                const godot::Vector3 n  = patch->sample_normal(u, v);
+                needles.append(pt);
+                needles.append(pt + n * 0.25f);
             }
         }
-        p_gizmo->add_lines(needles, get_material("normal_needle", p_gizmo));
+        r_out.add_lines(needles, GIZMO_LINE_AXIS_TANGENT);
     }
 
     // 3. NURBS control cage & interactive 3D drag handles
     godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
-    if (nurbs.is_valid() && node->get_show_control_cage()) {
+    if (nurbs.is_valid() && (node->get_show_control_cage() || mode == godot::StringName("cage"))) {
         const int nu = nurbs->get_count_u();
         const int nv = nurbs->get_count_v();
         godot::PackedVector3Array cage;
-        godot::PackedVector3Array handles;
-        godot::PackedInt32Array handle_ids;
 
         for (int j = 0; j < nv; ++j) {
             for (int i = 0; i < nu; ++i) {
-                const godot::Vector3 p = nurbs->get_control_point(i, j);
-                handles.append(p);
-                handle_ids.append(HANDLE_CP_BASE + j * nu + i);
-
+                const godot::Vector3 pt = nurbs->get_control_point(i, j);
+                r_out.add_handle(
+                    HANDLE_CP_BASE + j * nu + i,
+                    pt,
+                    GIZMO_HANDLE_SPLINE_ANCHOR,
+                    HANDLE_SHAPE_SPHERE,
+                    static_cast<real_t>(0.045),
+                    GIZMO_STATE_NONE,
+                    godot::String("Control Point (") + godot::String::num_int64(i) + godot::String(", ") + godot::String::num_int64(j) + godot::String(")")
+                );
                 if (i + 1 < nu) {
-                    cage.append(p);
+                    cage.append(pt);
                     cage.append(nurbs->get_control_point(i + 1, j));
                 }
                 if (j + 1 < nv) {
-                    cage.append(p);
+                    cage.append(pt);
                     cage.append(nurbs->get_control_point(i, j + 1));
                 }
             }
         }
-        if (!cage.is_empty()) {
-            p_gizmo->add_lines(cage, get_material("control_cage", p_gizmo));
-        }
-        if (!handles.is_empty()) {
-            p_gizmo->add_handles(handles, get_material("handles", p_gizmo), handle_ids);
-        }
+        if (!cage.is_empty()) r_out.add_lines(cage, GIZMO_HANDLE_SPLINE_TANGENT);
     }
 }
 
-godot::String SurfacePatchGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String SurfacePatchGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
     godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
     if (nurbs.is_valid() && nurbs->get_count_u() > 0) {
         const int idx = p_handle_id - HANDLE_CP_BASE;
@@ -358,74 +351,78 @@ godot::String SurfacePatchGizmo::_get_handle_name(
     return "Surface Handle";
 }
 
-godot::Variant SurfacePatchGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant SurfacePatchGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
     godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
     if (!nurbs.is_valid() || nurbs->get_count_u() <= 0) return godot::Vector3();
-
     const int idx = p_handle_id - HANDLE_CP_BASE;
-    const int u = idx % nurbs->get_count_u();
-    const int v = idx / nurbs->get_count_u();
-    const godot::Vector3 pt = nurbs->get_control_point(u, v);
-
-    PatchDragState st{};
-    st.initial_snapshot = nurbs->get_snapshot_state();
-    st.initial_local_pos = pt;
-    st.active = true;
-    active_drags_[node->get_instance_id()] = st;
-    return pt;
+    return nurbs->get_control_point(idx % nurbs->get_count_u(), idx / nurbs->get_count_u());
 }
 
-void SurfacePatchGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SurfacePatchGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
 ) {
-    (void)p_secondary;
-    if (!p_camera) return;
-    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_gizmo->get_node_3d());
+    (void)p_ray;
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
     godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
-    if (!nurbs.is_valid() || nurbs->get_count_u() <= 0) return;
+    if (!node || !nurbs.is_valid() || nurbs->get_count_u() <= 0) return;
+
+    const int idx = p_handle_id - HANDLE_CP_BASE;
+    PatchDragState st{};
+    st.initial_snapshot  = nurbs->get_snapshot_state();
+    st.initial_local_pos = nurbs->get_control_point(idx % nurbs->get_count_u(), idx / nurbs->get_count_u());
+    st.active = true;
+    active_drags_[node->get_instance_id()] = st;
+}
+
+void SurfacePatchGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
+) {
+    (void)p_modifiers;
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
+    godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
+    if (!node || !nurbs.is_valid() || nurbs->get_count_u() <= 0 || !p_ray.is_valid()) return;
+
+    if (!active_drags_.has(node->get_instance_id())) {
+        on_handle_drag_begin(p_target, p_handle_id, p_ray);
+    }
 
     const int idx = p_handle_id - HANDLE_CP_BASE;
     const int u = idx % nurbs->get_count_u();
     const int v = idx / nurbs->get_count_u();
 
-    const godot::Transform3D gt = node->get_global_transform();
+    const godot::Transform3D gt   = node->get_global_transform();
     const godot::Vector3 world_pt = gt.xform(nurbs->get_control_point(u, v));
-    const godot::Vector3 cam_fwd = -p_camera->get_global_transform().basis.get_column(2);
-    const godot::Plane drag_plane(cam_fwd, world_pt);
-
-    const godot::Vector3 ray_origin = p_camera->project_ray_origin(p_screen_pos);
-    const godot::Vector3 ray_dir    = p_camera->project_ray_normal(p_screen_pos);
+    godot::Vector3 plane_n = -p_ray.normal.normalized();
+    if (p_ray.camera) {
+        plane_n = -p_ray.camera->get_global_transform().basis.get_column(2).normalized();
+    }
+    const godot::Plane drag_plane(plane_n, world_pt);
     godot::Vector3 hit;
-    if (drag_plane.intersects_ray(
-            p_camera->project_ray_origin(p_screen_pos),
-            p_camera->project_ray_normal(p_screen_pos),
-            &hit)) {
-        const godot::Vector3 local_hit = gt.affine_inverse().xform(godot::Vector3(hit));
+    if (drag_plane.intersects_ray(p_ray.origin, p_ray.normal, &hit)) {
+        const godot::Vector3 local_hit = gt.affine_inverse().xform(hit);
         nurbs->set_control_point(u, v, local_hit, nurbs->get_control_weight(u, v));
+        node->update_gizmos();
     }
 }
 
-void SurfacePatchGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SurfacePatchGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
     (void)p_handle_id;
-    (void)p_secondary;
-    (void)p_restore;
-    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SurfaceMeshNode3D>(p_target);
     godot::Ref<NurbsPatch3DResource> nurbs = _resolve_editable_nurbs(node);
     if (!node || !nurbs.is_valid()) return;
 
@@ -437,13 +434,17 @@ void SurfacePatchGizmo::_commit_handle(
 
     if (p_cancel) {
         nurbs->apply_snapshot_state(st.initial_snapshot);
+        node->update_gizmos();
         return;
     }
 
     if (!nurbs->get_undo_redo().is_valid()) {
-        nurbs->set_undo_redo(IdeamSurfacesPlugin::create_undo_redo_wrapper());
+        godot::Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+        if (ur.is_null()) ur = IdeamSurfacesPlugin::create_undo_redo_wrapper();
+        nurbs->set_undo_redo(ur);
     }
     nurbs->commit_apply_snapshot(st.initial_snapshot, "Move Surface Control Point");
+    node->update_gizmos();
 }
 
 } // namespace ideam::godot_ext

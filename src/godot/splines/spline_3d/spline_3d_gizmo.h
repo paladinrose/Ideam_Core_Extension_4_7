@@ -2,41 +2,35 @@
 
 /**
  * spline_3d_gizmo.h
- * 3D Viewport EditorNode3DGizmoPlugin for `SplineNode3D` (`src/godot/splines/spline_3d/`).
+ * Trans-Environment `IdeamGizmo` for `SplineNode3D` (`src/godot/splines/spline_3d/`).
  *
- * Capabilities:
- *   - Curve-type color-coded 3D path rendering (`Linear`, `Catmull-Rom`, `Cubic Bezier`, `Step`)
- *     with highlighted active section and optional twist-free Bishop / Up-Vector coordinate frames.
+ * Works identically in Godot Editor 3D Viewport, Custom SubViewports, and Runtime 3D Worlds:
+ *   - Semantic curve path rendering with highlighted active section and optional twist-free
+ *     Bishop / Up-Vector coordinate frames.
  *   - Primary 3D anchor handles (`0 .. N-1`) for interactive 3D point translation.
  *   - Secondary tangent stalk handles (`back_handle` and `fore_handle`) for Bezier/Catmull-Rom sculpting.
  *   - Section midpoint split handles (`+`) that subdivide a section and insert a new 3D anchor on commit.
- *   - Wireframe 3D AABB bounding box with dedicated Uniform/Axis Scale and Y-Axis Rotation handles.
- *   - Full `IdeamUndoRedo` snapshot and method-commit integration via `IdeamSplinesPlugin`.
+ *   - Wireframe 3D AABB bounding box with dedicated Scale and Y-Axis Rotation handles.
+ *   - Full `IdeamUndoRedo` snapshot and method-commit integration via `ToolContext` / `IdeamSplinesPlugin`.
  */
 
-#include <godot_cpp/classes/camera3d.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo.hpp>
-#include <godot_cpp/classes/editor_node3d_gizmo_plugin.hpp>
-#include <godot_cpp/classes/node3d.hpp>
-#include <godot_cpp/classes/standard_material3d.hpp>
-#include <godot_cpp/core/class_db.hpp>
-#include <godot_cpp/templates/hash_map.hpp>
-#include <godot_cpp/variant/dictionary.hpp>
-#include <godot_cpp/variant/string.hpp>
-#include <godot_cpp/variant/variant.hpp>
-#include <godot_cpp/variant/vector2.hpp>
-#include <godot_cpp/variant/vector3.hpp>
-
+#include "../../gizmos/ideam_gizmo.h"
 #include "spline_3d_resource.h"
 #include "spline_node3d.h"
 
+#include <godot_cpp/templates/hash_map.hpp>
+#include <godot_cpp/variant/aabb.hpp>
+#include <godot_cpp/variant/dictionary.hpp>
+#include <godot_cpp/variant/string.hpp>
+#include <godot_cpp/variant/variant.hpp>
+#include <godot_cpp/variant/vector3.hpp>
+
 namespace ideam::godot_ext {
 
-class Spline3DGizmo : public godot::EditorNode3DGizmoPlugin {
-    GDCLASS(Spline3DGizmo, godot::EditorNode3DGizmoPlugin)
+class Spline3DGizmo : public IdeamGizmo {
+    GDCLASS(Spline3DGizmo, IdeamGizmo)
 
 public:
-    // Handle ID ranges encoded in a single 32-bit integer for O(1) decoding
     static constexpr int32_t HANDLE_ANCHOR_BASE          = 0;
     static constexpr int32_t HANDLE_BACK_OFFSET          = 10000;
     static constexpr int32_t HANDLE_FORE_OFFSET          = 20000;
@@ -47,67 +41,70 @@ public:
 private:
     struct DragState {
         godot::Dictionary initial_snapshot;
+        godot::Variant initial_value;
         godot::Vector3 initial_handle_pos = godot::Vector3(0.0f, 0.0f, 0.0f);
         godot::AABB initial_aabb;
         bool active = false;
     };
 
-    mutable godot::HashMap<uint64_t, DragState> active_drags;
+    mutable godot::HashMap<uint64_t, DragState> active_drags_;
 
-    void _init_gizmo_materials();
-
-    [[nodiscard]] static godot::Vector3 _project_screen_to_local_plane(
+    [[nodiscard]] static godot::Vector3 _project_ray_to_local_plane(
         const SplineNode3D *p_node,
-        godot::Camera3D *p_camera,
-        const godot::Vector2 &p_screen_pos,
+        const GizmoRay &p_ray,
         const godot::Vector3 &p_plane_origin_local
     );
 
-    [[nodiscard]] godot::Ref<godot::StandardMaterial3D> _get_curve_material(
+    [[nodiscard]] static GizmoSemanticRole _role_for_curve_type(
         SplineCurveType p_type,
-        bool p_selected,
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo
-    );
+        bool p_selected
+    ) noexcept;
 
 protected:
     static void _bind_methods();
 
 public:
-    Spline3DGizmo();
-    ~Spline3DGizmo() override;
+    Spline3DGizmo() = default;
+    ~Spline3DGizmo() override = default;
 
-    // --- EditorNode3DGizmoPlugin Virtual Overrides ---
-    [[nodiscard]] bool _has_gizmo(godot::Node3D *p_for_node_3d) const override;
-    [[nodiscard]] godot::String _get_gizmo_name() const override;
-    [[nodiscard]] int32_t _get_priority() const override;
+    [[nodiscard]] bool can_handle(godot::Node3D *p_target) const override;
+    [[nodiscard]] godot::String get_gizmo_name() const override;
+    [[nodiscard]] int32_t get_priority() const override;
 
-    void _redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) override;
+    void build_draw_list(
+        godot::Node3D *p_target,
+        IdeamGizmoDrawList &r_out,
+        const GizmoViewState &p_view
+    ) const override;
 
-    [[nodiscard]] godot::String _get_handle_name(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    [[nodiscard]] godot::String get_handle_name(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
 
-    [[nodiscard]] godot::Variant _get_handle_value(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    [[nodiscard]] godot::Variant get_handle_value(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
         bool p_secondary
     ) const override;
 
-    void _set_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_begin(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        godot::Camera3D *p_camera,
-        const godot::Vector2 &p_screen_pos
+        const GizmoRay &p_ray
     ) override;
 
-    void _commit_handle(
-        const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+    void on_handle_drag_update(
+        godot::Node3D *p_target,
         int32_t p_handle_id,
-        bool p_secondary,
-        const godot::Variant &p_restore,
+        const GizmoRay &p_ray,
+        godot::BitField<godot::KeyModifierMask> p_modifiers
+    ) override;
+
+    void on_handle_drag_commit(
+        godot::Node3D *p_target,
+        int32_t p_handle_id,
         bool p_cancel
     ) override;
 };

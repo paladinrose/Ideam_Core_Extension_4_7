@@ -18,6 +18,10 @@ void ToolContext::_bind_methods() {
         PropertyInfo(Variant::INT, "theme_index")
     ));
     ADD_SIGNAL(MethodInfo(
+        "theme_3d_changed",
+        PropertyInfo(Variant::OBJECT, "theme_3d", PROPERTY_HINT_RESOURCE_TYPE, "Resource")
+    ));
+    ADD_SIGNAL(MethodInfo(
         "update_policy_changed",
         PropertyInfo(Variant::INT, "policy")
     ));
@@ -61,6 +65,14 @@ void ToolContext::_bind_methods() {
     );
     ClassDB::bind_method(D_METHOD("get_active_theme"), &ToolContext::get_active_theme);
     ClassDB::bind_method(D_METHOD("get_active_theme_index"), &ToolContext::get_active_theme_index);
+
+    ClassDB::bind_method(D_METHOD("set_active_theme_3d", "theme_3d"), &ToolContext::set_active_theme_3d);
+    ClassDB::bind_method(D_METHOD("get_active_theme_3d"), &ToolContext::get_active_theme_3d);
+    ADD_PROPERTY(
+        PropertyInfo(Variant::OBJECT, "active_theme_3d", PROPERTY_HINT_RESOURCE_TYPE, "Resource"),
+        "set_active_theme_3d",
+        "get_active_theme_3d"
+    );
 
     ClassDB::bind_method(D_METHOD("set_update_commit_policy", "policy"), &ToolContext::set_update_commit_policy);
     ClassDB::bind_method(D_METHOD("get_update_commit_policy"), &ToolContext::get_update_commit_policy);
@@ -140,6 +152,14 @@ void ToolContext::set_active_theme(const godot::Ref<godot::Theme> &p_theme, int 
     active_theme_       = p_theme;
     active_theme_index_ = p_index;
     emit_signal("theme_changed", active_theme_, active_theme_index_);
+}
+
+void ToolContext::set_active_theme_3d(const godot::Ref<godot::Resource> &p_theme_3d) {
+    if (active_theme_3d_ == p_theme_3d) {
+        return;
+    }
+    active_theme_3d_ = p_theme_3d;
+    emit_signal("theme_3d_changed", active_theme_3d_);
 }
 
 void ToolContext::set_update_commit_policy(UpdateCommitPolicy p_policy) {

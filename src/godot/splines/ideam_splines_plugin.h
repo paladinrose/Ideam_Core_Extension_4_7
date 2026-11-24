@@ -17,6 +17,7 @@
  */
 
 #include "../editor/ideam_editor_plugin.h"
+#include "../gizmos/ideam_spatial_toolbar.h"
 #include "../utilities/ideam_undo_redo.h"
 #include "editor/spline_1d_resource_inspector.h"
 #include "editor/spline_2d_resource_inspector.h"
@@ -68,6 +69,11 @@ private:
     // 2D Scene-Space Viewport Editor & Canvas Toolbar (SplineNode2D & SplinePolygon2D)
     Spline2DViewportEditor *spline_2d_viewport_editor = nullptr;
 
+    // 3D Spatial Viewport Toolbar (Spline3DViewportEditor)
+    IdeamSpatialToolbar *spline_3d_toolbar_ = nullptr;
+    uint64_t selected_spatial_node_id_      = 0u;
+    void _on_spline_3d_mode_changed(const godot::StringName &p_mode_id);
+
 public:
     IdeamSplinesPlugin();
     ~IdeamSplinesPlugin() override;
@@ -84,6 +90,7 @@ public:
     void _make_visible(bool p_visible) override;
     bool _forward_canvas_gui_input(const godot::Ref<godot::InputEvent> &p_event) override;
     void _forward_canvas_draw_over_viewport(godot::Control *p_viewport_control) override;
+    int32_t _forward_3d_gui_input(godot::Camera3D *p_viewport_camera, const godot::Ref<godot::InputEvent> &p_event) override;
 
     // --- Cross-Plugin Ecosystem & TaskDomainPack Handshake ---
     [[nodiscard]] godot::StringName get_plugin_domain_name() const { return godot::StringName("IdeamSplines"); }

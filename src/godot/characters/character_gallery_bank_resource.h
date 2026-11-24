@@ -12,12 +12,12 @@
  *   - `BANK_DETAIL`:   Layer 4 Unconstrained Asymmetric Detail Deltas
  *
  * Pre-populates Andrew Loomis starter presets out of the box and supports live keyword/tag
- * search, 1-click apply onto `BodyPlanResource` / `CharacterInstanceResource`, and saving
+ * search, 1-click apply onto `BodyPlanResource` / `LoomisCharacter3DResource`, and saving
  * custom studio presets.
  */
 
 #include "body_plan_resource.h"
-#include "character_instance_resource.h"
+#include "loomis_character_3d_resource.h"
 #include "../tools/smart/smart_tool_profile.h"
 
 #include <godot_cpp/variant/dictionary.hpp>
@@ -89,7 +89,7 @@ public:
 
     bool apply_preset_to_character_instance(
         const godot::String &p_preset_id,
-        const godot::Ref<CharacterInstanceResource> &p_instance
+        const godot::Ref<LoomisCharacter3DResource> &p_instance
     ) const;
 };
 

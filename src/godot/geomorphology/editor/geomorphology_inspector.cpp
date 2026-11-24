@@ -1,4 +1,5 @@
 #include "godot/geomorphology/editor/geomorphology_inspector.h"
+#include "godot/geomorphology/ideam_geomorphology_plugin.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 
 #include <godot_cpp/classes/button.hpp>
@@ -23,6 +24,12 @@ void GeomorphologyInspector::_on_open_in_planetary_modeler(const godot::Ref<godo
     }
 }
 
+#ifdef TOOLS_ENABLED
+godot::EditorUndoRedoManager *GeomorphologyInspector::get_undo_redo() const {
+    return IdeamGeomorphologyPlugin::get_static_undo_redo();
+}
+#endif
+
 bool GeomorphologyInspector::_can_handle(godot::Object* p_object) const {
     if (!p_object) {
         return false;
@@ -33,6 +40,8 @@ bool GeomorphologyInspector::_can_handle(godot::Object* p_object) const {
 
 void GeomorphologyInspector::_parse_begin(godot::Object* p_object) {
     using namespace godot;
+
+    IdeamEditorInspectorPlugin::_parse_begin(p_object);
 
     Ref<GeomorphologyTerrainResource> terrain_res;
     if (auto* direct_res = Object::cast_to<GeomorphologyTerrainResource>(p_object)) {

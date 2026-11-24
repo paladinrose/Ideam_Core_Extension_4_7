@@ -246,6 +246,7 @@ struct SurfaceQuadMesh3D {
     std::vector<uint32_t> vertex_patch_ids;
     std::vector<uint32_t> vertex_ring_indices;
     std::vector<uint8_t>  vertex_min_lod_levels;
+    std::vector<T>        vertex_crease_sharpness;
 
     std::vector<SurfaceQuadFacePod> quads;
     std::vector<uint32_t> quad_patch_ids;
@@ -258,6 +259,7 @@ struct SurfaceQuadMesh3D {
         vertex_patch_ids.clear();
         vertex_ring_indices.clear();
         vertex_min_lod_levels.clear();
+        vertex_crease_sharpness.clear();
         quads.clear();
         quad_patch_ids.clear();
     }
@@ -274,6 +276,12 @@ struct SurfaceQuadMesh3D {
         vertex_patch_ids.insert(vertex_patch_ids.end(), p_other.vertex_patch_ids.begin(), p_other.vertex_patch_ids.end());
         vertex_ring_indices.insert(vertex_ring_indices.end(), p_other.vertex_ring_indices.begin(), p_other.vertex_ring_indices.end());
         vertex_min_lod_levels.insert(vertex_min_lod_levels.end(), p_other.vertex_min_lod_levels.begin(), p_other.vertex_min_lod_levels.end());
+        if (!p_other.vertex_crease_sharpness.empty()) {
+            vertex_crease_sharpness.resize(base_v, static_cast<T>(0));
+            vertex_crease_sharpness.insert(vertex_crease_sharpness.end(), p_other.vertex_crease_sharpness.begin(), p_other.vertex_crease_sharpness.end());
+        } else if (!vertex_crease_sharpness.empty()) {
+            vertex_crease_sharpness.resize(positions.size(), static_cast<T>(0));
+        }
 
         quads.reserve(quads.size() + p_other.quads.size());
         for (const auto &q : p_other.quads) {
@@ -333,6 +341,82 @@ struct SurfaceQuadMesh3D {
         }
 
         for (size_t i = 0; i < vcount; ++i) {
+            const T len = glm::length(normals[i]);
+            if (len > static_cast<T>(1e-6)) {
+                normals[i] /= len;
+            } else {
+                normals[i] = Vec3(static_cast<T>(0), static_cast<T>(1), static_cast<T>(0));
+            }
+        }
+    }
+
+    void recompute_normals_with_creases(T p_crease_angle_deg = static_cast<T>(42.0)) {
+        const size_t vcount = positions.size();
+        if (vcount == 0u || quads.empty()) {
+            return;
+        }
+        const T cos_thresh = static_cast<T>(std::cos(static_cast<double>(p_crease_angle_deg) * 3.14159265358979323846 / 180.0));
+
+        std::vector<Vec3> face_normals(quads.size(), Vec3(static_cast<T>(0), static_cast<T>(1), static_cast<T>(0)));
+        std::vector<std::vector<size_t>> vert_faces(vcount);
+        for (size_t qi = 0; qi < quads.size(); ++qi) {
+            const auto &q = quads[qi];
+            if (q[0] >= vcount || q[1] >= vcount || q[2] >= vcount || q[3] >= vcount) continue;
+            const Vec3 n0 = glm::cross(positions[q[1]] - positions[q[0]], positions[q[2]] - positions[q[0]]);
+            const Vec3 n1 = glm::cross(positions[q[2]] - positions[q[0]], positions[q[3]] - positions[q[0]]);
+            const Vec3 fn = n0 + n1;
+            const T flen  = glm::length(fn);
+            face_normals[qi] = (flen > static_cast<T>(1e-6)) ? (fn / flen) : Vec3(static_cast<T>(0), static_cast<T>(1), static_cast<T>(0));
+            for (int c = 0; c < 4; ++c) {
+                vert_faces[q[c]].push_back(qi);
+            }
+        }
+
+        normals.assign(vcount, Vec3(static_cast<T>(0)));
+        const bool has_crease_weights = (vertex_crease_sharpness.size() == vcount);
+
+        for (size_t qi = 0; qi < quads.size(); ++qi) {
+            auto &q = quads[qi];
+            if (q[0] >= vcount || q[1] >= vcount || q[2] >= vcount || q[3] >= vcount) continue;
+            const Vec3 &fn = face_normals[qi];
+
+            for (int c = 0; c < 4; ++c) {
+                const uint32_t vi = q[c];
+                const T sharp = has_crease_weights ? vertex_crease_sharpness[vi] : static_cast<T>(0);
+                const T eff_cos = cos_thresh + (static_cast<T>(0.995) - cos_thresh) * std::clamp(sharp, static_cast<T>(0), static_cast<T>(1));
+
+                Vec3 accum = fn;
+                bool any_divergent = false;
+                for (size_t oq : vert_faces[vi]) {
+                    if (oq == qi) continue;
+                    const T d = glm::dot(fn, face_normals[oq]);
+                    if (d >= eff_cos) {
+                        accum += face_normals[oq];
+                    } else {
+                        any_divergent = true;
+                    }
+                }
+                const T alen = glm::length(accum);
+                const Vec3 resolved_n = (alen > static_cast<T>(1e-6)) ? (accum / alen) : fn;
+
+                if (any_divergent) {
+                    const uint32_t new_vi = static_cast<uint32_t>(positions.size());
+                    positions.push_back(positions[vi]);
+                    normals.push_back(resolved_n);
+                    if (vi < tangents.size()) tangents.push_back(tangents[vi]);
+                    if (vi < uvs.size()) uvs.push_back(uvs[vi]);
+                    if (vi < vertex_patch_ids.size()) vertex_patch_ids.push_back(vertex_patch_ids[vi]);
+                    if (vi < vertex_ring_indices.size()) vertex_ring_indices.push_back(vertex_ring_indices[vi]);
+                    if (vi < vertex_min_lod_levels.size()) vertex_min_lod_levels.push_back(vertex_min_lod_levels[vi]);
+                    if (has_crease_weights) vertex_crease_sharpness.push_back(sharp);
+                    q[c] = new_vi;
+                } else {
+                    normals[vi] = resolved_n;
+                }
+            }
+        }
+
+        for (size_t i = 0; i < normals.size(); ++i) {
             const T len = glm::length(normals[i]);
             if (len > static_cast<T>(1e-6)) {
                 normals[i] /= len;

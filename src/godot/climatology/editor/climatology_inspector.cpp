@@ -1,4 +1,5 @@
 #include "godot/climatology/editor/climatology_inspector.h"
+#include "godot/climatology/ideam_climatology_plugin.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 
 #include <godot_cpp/classes/button.hpp>
@@ -23,6 +24,12 @@ void ClimatologyInspector::_on_open_in_planetary_modeler(const godot::Ref<godot:
     }
 }
 
+#ifdef TOOLS_ENABLED
+godot::EditorUndoRedoManager *ClimatologyInspector::get_undo_redo() const {
+    return IdeamClimatologyPlugin::get_static_undo_redo();
+}
+#endif
+
 bool ClimatologyInspector::_can_handle(godot::Object* p_object) const {
     if (!p_object) {
         return false;
@@ -33,6 +40,8 @@ bool ClimatologyInspector::_can_handle(godot::Object* p_object) const {
 
 void ClimatologyInspector::_parse_begin(godot::Object* p_object) {
     using namespace godot;
+
+    IdeamEditorInspectorPlugin::_parse_begin(p_object);
 
     Ref<ClimatologyAtmosphereResource> atmo_res;
     if (auto* direct_res = Object::cast_to<ClimatologyAtmosphereResource>(p_object)) {

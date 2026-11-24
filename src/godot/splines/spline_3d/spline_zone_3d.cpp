@@ -245,35 +245,32 @@ godot::Vector3 SplineZone3D::sample_flow_velocity_at_world_pos(const godot::Vect
 // SplineCorridorGizmo Implementation
 // ============================================================================
 
-SplineCorridorGizmo::SplineCorridorGizmo() {
-    create_material("corridor_wire", godot::Color(0.98f, 0.76f, 0.28f, 0.85f), false, false, true);
-    create_handle_material("corridor_handles");
+bool SplineCorridorGizmo::can_handle(godot::Node3D *p_target) const {
+    return p_target != nullptr && godot::Object::cast_to<SplineZone3D>(p_target) != nullptr;
 }
 
-bool SplineCorridorGizmo::_has_gizmo(godot::Node3D *p_for_node_3d) const {
-    return p_for_node_3d != nullptr && godot::Object::cast_to<SplineZone3D>(p_for_node_3d) != nullptr;
-}
-
-godot::String SplineCorridorGizmo::_get_gizmo_name() const {
+godot::String SplineCorridorGizmo::get_gizmo_name() const {
     return "SplineCorridorGizmo";
 }
 
-int32_t SplineCorridorGizmo::_get_priority() const {
+int32_t SplineCorridorGizmo::get_priority() const {
     return 10;
 }
 
-void SplineCorridorGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo) {
+void SplineCorridorGizmo::build_draw_list(
+    godot::Node3D *p_target,
+    IdeamGizmoDrawList &r_out,
+    const GizmoViewState &p_view
+) const {
     using namespace godot;
-    if (p_gizmo.is_null()) return;
-    p_gizmo->clear();
-
-    SplineZone3D *node = Object::cast_to<SplineZone3D>(p_gizmo->get_node_3d());
+    (void)p_view;
+    auto *node = Object::cast_to<SplineZone3D>(p_target);
     if (!node) return;
 
     const Ref<Spline4DResource> s4 = node->get_spline_4d();
     const Ref<Spline3DResource> s3 = node->get_spline_3d();
-    const bool use_4d              = s4.is_valid() && s4->get_point_count() >= 2;
-    const bool use_3d              = !use_4d && s3.is_valid() && s3->get_point_count() >= 2;
+    const bool use_4d = s4.is_valid() && s4->get_point_count() >= 2;
+    const bool use_3d = !use_4d && s3.is_valid() && s3->get_point_count() >= 2;
     if (!use_4d && !use_3d) return;
 
     PackedVector3Array lines;
@@ -291,20 +288,15 @@ void SplineCorridorGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
             const real_t t_next       = static_cast<real_t>(i + 1) / static_cast<real_t>(n_frames - 1);
             const Transform3D next_xf = frames[i + 1];
             const float r_next        = static_cast<float>(node->sample_corridor_radius_at_percent(t_next));
-
             lines.push_back(xf.origin);
             lines.push_back(next_xf.origin);
 
-            // 4 longitudinal corridor rails (+X, -X, +Y, -Y)
             for (int rail = 0; rail < 4; ++rail) {
                 const float ang = static_cast<float>(rail) * (3.141592653589793f * 0.5f);
-                const Vector3 d0 = Vector3(std::cos(ang) * r, std::sin(ang) * r, 0.0f);
-                const Vector3 d1 = Vector3(std::cos(ang) * r_next, std::sin(ang) * r_next, 0.0f);
-                lines.push_back(xf.xform(d0));
-                lines.push_back(next_xf.xform(d1));
+                lines.push_back(xf.xform(Vector3(std::cos(ang) * r, std::sin(ang) * r, 0.0f)));
+                lines.push_back(next_xf.xform(Vector3(std::cos(ang) * r_next, std::sin(ang) * r_next, 0.0f)));
             }
         }
-
         if (i % 2 == 0) {
             constexpr int RING_SEG = 16;
             for (int k = 0; k < RING_SEG; ++k) {
@@ -315,74 +307,91 @@ void SplineCorridorGizmo::_redraw(const godot::Ref<godot::EditorNode3DGizmo> &p_
             }
         }
     }
+    if (!lines.is_empty()) r_out.add_lines(lines, GIZMO_HANDLE_SPLINE_TANGENT);
 
-    if (!lines.is_empty()) {
-        p_gizmo->add_lines(lines, get_material("corridor_wire", p_gizmo));
-    }
-
-    PackedVector3Array handles;
-    PackedInt32Array handle_ids;
     const int n_pts = use_4d ? s4->get_point_count() : s3->get_point_count();
     for (int i = 0; i < n_pts; ++i) {
-        handles.push_back(use_4d ? s4->get_point_position_3d(i) : s3->get_point_position(i));
-        handle_ids.push_back(HANDLE_ANCHOR_BASE + i);
+        r_out.add_handle(
+            HANDLE_ANCHOR_BASE + i,
+            use_4d ? s4->get_point_position_3d(i) : s3->get_point_position(i),
+            GIZMO_HANDLE_SPLINE_ANCHOR,
+            HANDLE_SHAPE_SPHERE,
+            static_cast<real_t>(0.05),
+            GIZMO_STATE_NONE,
+            String("Corridor Path Point ") + String::num_int64(i)
+        );
     }
     if (!frames.is_empty()) {
         const Transform3D xf0 = frames[0];
-        handles.push_back(xf0.xform(Vector3(static_cast<float>(node->get_base_corridor_radius()), 0.0f, 0.0f)));
-        handle_ids.push_back(HANDLE_CORRIDOR_RADIUS);
-    }
-    if (!handles.is_empty()) {
-        p_gizmo->add_handles(handles, get_material("corridor_handles", p_gizmo), handle_ids);
+        r_out.add_handle(
+            HANDLE_CORRIDOR_RADIUS,
+            xf0.xform(Vector3(static_cast<float>(node->get_base_corridor_radius()), 0.0f, 0.0f)),
+            GIZMO_LINE_RULER,
+            HANDLE_SHAPE_RING,
+            static_cast<real_t>(0.05),
+            GIZMO_STATE_NONE,
+            "Base Corridor Radius"
+        );
     }
 }
 
-godot::String SplineCorridorGizmo::_get_handle_name(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::String SplineCorridorGizmo::get_handle_name(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
-    (void)p_gizmo;
+    (void)p_target;
     (void)p_secondary;
     if (p_handle_id == HANDLE_CORRIDOR_RADIUS) return "Base Corridor Radius";
-    return "Corridor Path Point " + godot::String::num_int64(p_handle_id);
+    return godot::String("Corridor Path Point ") + godot::String::num_int64(p_handle_id);
 }
 
-godot::Variant SplineCorridorGizmo::_get_handle_value(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+godot::Variant SplineCorridorGizmo::get_handle_value(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
     bool p_secondary
 ) const {
     (void)p_secondary;
-    if (p_gizmo.is_null()) return godot::Variant();
-    SplineZone3D *node = godot::Object::cast_to<SplineZone3D>(p_gizmo->get_node_3d());
+    auto *node = godot::Object::cast_to<SplineZone3D>(p_target);
     if (!node) return godot::Variant();
     if (p_handle_id == HANDLE_CORRIDOR_RADIUS) return node->get_base_corridor_radius();
-    if (node->get_spline_4d().is_valid() && p_handle_id < node->get_spline_4d()->get_point_count()) {
+    if (node->get_spline_4d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_spline_4d()->get_point_count()) {
         return node->get_spline_4d()->get_point_position_3d(p_handle_id);
     }
-    if (node->get_spline_3d().is_valid() && p_handle_id < node->get_spline_3d()->get_point_count()) {
+    if (node->get_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_spline_3d()->get_point_count()) {
         return node->get_spline_3d()->get_point_position(p_handle_id);
     }
     return godot::Variant();
 }
 
-void SplineCorridorGizmo::_set_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineCorridorGizmo::on_handle_drag_begin(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    godot::Camera3D *p_camera,
-    const godot::Vector2 &p_screen_pos
+    const GizmoRay &p_ray
+) {
+    (void)p_ray;
+    if (!p_target) return;
+    drag_restore_[p_target->get_instance_id()] = get_handle_value(p_target, p_handle_id, false);
+}
+
+void SplineCorridorGizmo::on_handle_drag_update(
+    godot::Node3D *p_target,
+    int32_t p_handle_id,
+    const GizmoRay &p_ray,
+    godot::BitField<godot::KeyModifierMask> p_modifiers
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null() || !p_camera) return;
-    SplineZone3D *node = Object::cast_to<SplineZone3D>(p_gizmo->get_node_3d());
-    if (!node) return;
+    (void)p_modifiers;
+    auto *node = Object::cast_to<SplineZone3D>(p_target);
+    if (!node || !p_ray.is_valid()) return;
+
+    if (!drag_restore_.has(node->get_instance_id())) {
+        on_handle_drag_begin(p_target, p_handle_id, p_ray);
+    }
 
     const Transform3D inv_gxf = node->get_global_transform().affine_inverse();
-    const Vector3 ray_from    = inv_gxf.xform(p_camera->project_ray_origin(p_screen_pos));
-    const Vector3 ray_dir     = inv_gxf.basis.xform(p_camera->project_ray_normal(p_screen_pos)).normalized();
+    const Vector3 ray_from    = inv_gxf.xform(p_ray.origin);
+    const Vector3 ray_dir     = inv_gxf.basis.xform(p_ray.normal).normalized();
 
     if (p_handle_id == HANDLE_CORRIDOR_RADIUS) {
         const Vector3 p0 = (node->get_spline_3d().is_valid() && node->get_spline_3d()->get_point_count() > 0)
@@ -390,6 +399,7 @@ void SplineCorridorGizmo::_set_handle(
             : Vector3();
         const Vector3 hit = ray_from + ray_dir * std::max(0.1f, (p0 - ray_from).dot(ray_dir));
         node->set_base_corridor_radius(hit.distance_to(p0));
+        node->update_gizmos();
         return;
     }
 
@@ -402,37 +412,39 @@ void SplineCorridorGizmo::_set_handle(
         const float dist  = std::max(0.1f, (cur - ray_from).dot(ray_dir));
         node->get_spline_3d()->set_point_position(p_handle_id, ray_from + ray_dir * dist);
     }
+    node->update_gizmos();
 }
 
-void SplineCorridorGizmo::_commit_handle(
-    const godot::Ref<godot::EditorNode3DGizmo> &p_gizmo,
+void SplineCorridorGizmo::on_handle_drag_commit(
+    godot::Node3D *p_target,
     int32_t p_handle_id,
-    bool p_secondary,
-    const godot::Variant &p_restore,
     bool p_cancel
 ) {
     using namespace godot;
-    (void)p_secondary;
-    if (p_gizmo.is_null()) return;
-    SplineZone3D *node = Object::cast_to<SplineZone3D>(p_gizmo->get_node_3d());
+    auto *node = Object::cast_to<SplineZone3D>(p_target);
     if (!node) return;
+    const uint64_t nid = node->get_instance_id();
+    if (!drag_restore_.has(nid)) return;
+    const Variant restore = drag_restore_[nid];
+    drag_restore_.erase(nid);
 
     if (p_handle_id == HANDLE_CORRIDOR_RADIUS) {
         if (p_cancel) {
-            node->set_base_corridor_radius(p_restore);
+            node->set_base_corridor_radius(restore);
             return;
         }
-        Ref<IdeamUndoRedo> ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
+        Ref<IdeamUndoRedo> ur = resolve_undo_redo();
+        if (ur.is_null()) ur = IdeamSplinesPlugin::create_undo_redo_wrapper();
         ur->create_action("Adjust Corridor Radius", UndoRedo::MERGE_DISABLE, node);
         ur->add_do_method(Callable(node, "set_base_corridor_radius").bind(node->get_base_corridor_radius()));
-        ur->add_undo_method(Callable(node, "set_base_corridor_radius").bind(p_restore));
+        ur->add_undo_method(Callable(node, "set_base_corridor_radius").bind(restore));
         ur->commit_action(false);
         return;
     }
 
     if (node->get_spline_3d().is_valid() && p_handle_id >= 0 && p_handle_id < node->get_spline_3d()->get_point_count()) {
         const Vector3 final_pos = node->get_spline_3d()->get_point_position(p_handle_id);
-        node->get_spline_3d()->set_point_position(p_handle_id, p_restore);
+        node->get_spline_3d()->set_point_position(p_handle_id, restore);
         if (!p_cancel) {
             node->get_spline_3d()->commit_set_point_position(p_handle_id, final_pos);
         }

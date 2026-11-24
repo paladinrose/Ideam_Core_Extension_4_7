@@ -40,6 +40,9 @@ private:
 
     CoreSpline core_spline;
 
+    // Scaffold-anchored spline metadata (Phase 3 Character/Design binding)
+    godot::TypedArray<godot::Dictionary> scaffold_anchors_;
+
     // Staging caches for order-independent .tres property deserialization
     godot::PackedVector3Array pending_back_handles;
     godot::PackedVector3Array pending_fore_handles;
@@ -287,6 +290,20 @@ public:
         real_t p_radius = static_cast<real_t>(5.0),
         int p_points = 8
     );
+    // ========================================================================
+    // Scaffold-Anchored Spline Bindings (Phase 3)
+    // ========================================================================
+
+    void set_scaffold_anchors(const godot::TypedArray<godot::Dictionary> &p_anchors);
+    [[nodiscard]] godot::TypedArray<godot::Dictionary> get_scaffold_anchors() const { return scaffold_anchors_; }
+    void bind_point_to_scaffold(
+        int p_point_index,
+        int p_scaffold_node_id,
+        const godot::Vector3 &p_local_offset = godot::Vector3(),
+        int p_attach_mode = 0
+    );
+    void clear_scaffold_anchors();
+
     [[nodiscard]] static godot::Ref<Spline3DResource> create_helix(
         real_t p_radius = static_cast<real_t>(5.0),
         real_t p_height = static_cast<real_t>(10.0),

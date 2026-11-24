@@ -1,4 +1,5 @@
 #include "godot/ecology/editor/ecology_inspector.h"
+#include "godot/ecology/ideam_ecology_plugin.h"
 #include "godot/geomorphology/ui/planetary_systems_modeler.h"
 
 #include <godot_cpp/classes/button.hpp>
@@ -23,6 +24,12 @@ void EcologyInspector::_on_open_in_planetary_modeler(const godot::Ref<godot::Res
     }
 }
 
+#ifdef TOOLS_ENABLED
+godot::EditorUndoRedoManager *EcologyInspector::get_undo_redo() const {
+    return IdeamEcologyPlugin::get_static_undo_redo();
+}
+#endif
+
 bool EcologyInspector::_can_handle(godot::Object* p_object) const {
     if (!p_object) {
         return false;
@@ -33,6 +40,8 @@ bool EcologyInspector::_can_handle(godot::Object* p_object) const {
 
 void EcologyInspector::_parse_begin(godot::Object* p_object) {
     using namespace godot;
+
+    IdeamEditorInspectorPlugin::_parse_begin(p_object);
 
     Ref<EcologyBiosphereResource> bio_res;
     if (auto* direct_res = Object::cast_to<EcologyBiosphereResource>(p_object)) {

@@ -33,15 +33,26 @@ void IdeamDesignPlugin::_enter_tree() {
     set_plugin_active("IdeamDesign", true);
     register_to_ecosystem("WizardSettings", "IdeamDesign", godot::String(DESIGN_SETTINGS_PATH.data()));
 
+    godot::Ref<ToolContext> ctx = get_or_create_plugin_tool_context();
+
     if (!inspector_plugin_.is_valid()) {
         inspector_plugin_.instantiate();
     }
+    inspector_plugin_->set_tool_context(ctx);
     add_inspector_plugin(inspector_plugin_);
 
+    // Register trans-environment IdeamGizmos (FormScaffoldGizmo + Socket3DGizmo)
     if (!form_scaffold_gizmo_.is_valid()) {
         form_scaffold_gizmo_.instantiate();
     }
-    add_node_3d_gizmo_plugin(form_scaffold_gizmo_);
+    form_scaffold_gizmo_->set_tool_context(ctx);
+    register_ideam_gizmo(form_scaffold_gizmo_);
+
+    if (!socket_3d_gizmo_.is_valid()) {
+        socket_3d_gizmo_.instantiate();
+    }
+    socket_3d_gizmo_->set_tool_context(ctx);
+    register_ideam_gizmo(socket_3d_gizmo_);
 
     _register_tools_and_workspace();
 
@@ -57,10 +68,9 @@ void IdeamDesignPlugin::_exit_tree() {
 
     _unregister_tools_and_workspace();
 
-    if (form_scaffold_gizmo_.is_valid()) {
-        remove_node_3d_gizmo_plugin(form_scaffold_gizmo_);
-        form_scaffold_gizmo_.unref();
-    }
+    cleanup_ideam_spatial_registrations();
+    form_scaffold_gizmo_.unref();
+    socket_3d_gizmo_.unref();
 
     if (inspector_plugin_.is_valid()) {
         remove_inspector_plugin(inspector_plugin_);
@@ -148,7 +158,6 @@ void IdeamDesignPlugin::_register_tools_and_workspace() {
     reg.register_control({ws_id, "Theme3DResource", "Themes & Styles", "3D Theme", UPDATE_ON_COMMIT, make_style_host, nullptr});
     reg.register_control({ws_id, "Style3DResource", "Themes & Styles", "3D Style", UPDATE_ON_COMMIT, make_style_host, nullptr});
 
-    // Register ToolDescriptor catalog entries for IdeamTutorials & AgentToolBridge
     auto add_desc = [&](const char *p_id, ToolTier p_tier, const char *p_name, const char *p_desc,
                         std::initializer_list<const char *> p_classes, std::initializer_list<const char *> p_tags) {
         godot::Ref<ToolDescriptor> d;
@@ -178,10 +187,15 @@ void IdeamDesignPlugin::_register_tools_and_workspace() {
              {"FormScaffoldResource", "ProportionRulerGraphResource"},
              {"design", "loomis", "scaffold", "proportions", "contrapposto", "skeleton"});
 
-    add_desc("FormScaffoldGizmo", TOOL_TIER_DOMAIN, "3D Loomis Scaffold Gizmo",
-             "3D viewport gizmo drawing canonical proportion ruler staves, center-of-gravity plumb lines, bone hierarchies, and Undo/Redo node handles.",
+    add_desc("FormScaffoldGizmo", TOOL_TIER_DOMAIN, "3D Loomis Scaffold Gizmo (Trans-Environment)",
+             "Trans-environment IdeamGizmo drawing canonical proportion ruler staves, center-of-gravity plumb lines, bone hierarchies, and Undo/Redo node handles.",
              {"FormScaffoldNode3D"},
              {"design", "loomis", "gizmo", "ruler", "balance"});
+
+    add_desc("Socket3DGizmo", TOOL_TIER_DOMAIN, "3D Socket & Joint Mating Gizmo",
+             "Trans-environment IdeamGizmo rendering male/female polarity rings, clearance bounds, normal/tangent arrows, and snap-preview highlights.",
+             {"Socket3D"},
+             {"design", "socket", "joint", "gizmo", "mating"});
 }
 
 void IdeamDesignPlugin::_unregister_tools_and_workspace() {
