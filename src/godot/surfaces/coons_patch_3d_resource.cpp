@@ -271,10 +271,10 @@ void CoonsPatch3DResource::setup_default_pillow_patch(real_t p_width, real_t p_d
     auto make_arch_res = [](const godot::Vector3 &p0, const godot::Vector3 &p1, const godot::Vector3 &mid_off) {
         godot::Ref<Spline3DResource> s;
         s.instantiate();
-        s->set_default_curve_type(SplineResource::CURVE_CATMULL_ROM);
-        s->add_point(p0, SplineResource::CURVE_CATMULL_ROM);
-        s->add_point((p0 + p1) * 0.5f + mid_off, SplineResource::CURVE_CATMULL_ROM);
-        s->add_point(p1, SplineResource::CURVE_CATMULL_ROM);
+        s->set_default_curve_type(CURVE_CATMULL_ROM);
+        s->add_point(p0, CURVE_CATMULL_ROM);
+        s->add_point((p0 + p1) * 0.5f + mid_off, CURVE_CATMULL_ROM);
+        s->add_point(p1, CURVE_CATMULL_ROM);
         return s;
     };
 

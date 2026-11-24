@@ -87,7 +87,7 @@ void WorkflowProfile::apply_overrides_to_context(const godot::Ref<ToolContext> &
     }
     const godot::Array keys = smart_tool_overrides_.keys();
     for (int i = 0; i < keys.size(); ++i) {
-        const godot::StringName tool_id(godot::String(keys[i]));
+        const godot::StringName tool_id{godot::String(keys[i])};
         godot::Ref<godot::Resource> profile = smart_tool_overrides_[keys[i]];
         if (profile.is_valid()) {
             p_context->push_preference_override(tool_id, profile);
@@ -101,7 +101,7 @@ void WorkflowProfile::release_overrides_from_context(const godot::Ref<ToolContex
     }
     const godot::Array keys = smart_tool_overrides_.keys();
     for (int i = 0; i < keys.size(); ++i) {
-        const godot::StringName tool_id(godot::String(keys[i]));
+        const godot::StringName tool_id{godot::String(keys[i])};
         godot::Ref<godot::Resource> profile = smart_tool_overrides_[keys[i]];
         if (profile.is_valid()) {
             p_context->pop_preference_override(tool_id);
